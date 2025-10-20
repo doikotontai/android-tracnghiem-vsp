@@ -73,11 +73,15 @@
                  </button>
                  <div id="timer" class="text-2xl font-bold text-slate-900 bg-white px-4 py-2 rounded-lg shadow-sm">⏳ 20:00</div>
             </header>
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="lg:col-span-1 quiz-card p-4">
+            <!-- Thay đổi layout tại đây: flex-col cho mobile, grid cho desktop -->
+            <div class="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-4 gap-6">
+                <!-- Danh sách câu hỏi (chuyển xuống dưới trên mobile bằng order-last) -->
+                <div class="lg:col-span-1 quiz-card p-4 order-last lg:order-none">
                     <h2 class="text-xl font-bold mb-4">Danh sách câu</h2>
-                    <div id="question-list" class="grid grid-cols-7 sm:grid-cols-10 lg:grid-cols-7 gap-1.5 max-h-[60vh] lg:max-h-full overflow-y-auto pr-2"></div>
+                    <!-- Bỏ giới hạn chiều cao trên mobile, điều chỉnh grid và padding -->
+                    <div id="question-list" class="grid grid-cols-8 sm:grid-cols-12 lg:grid-cols-7 gap-2 pb-2 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto lg:pr-2"></div>
                 </div>
+                 <!-- Nội dung câu hỏi -->
                 <div class="lg:col-span-3 quiz-card p-6 md:p-8">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="question-header" class="text-xl font-bold text-slate-900"></h2>
