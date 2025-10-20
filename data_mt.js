@@ -355,22 +355,22 @@ const data_mt = {
       {
         "question": "36. Theo quy trình P6/QA/21 Rev.5, điều nào sau đây là đúng về bột từ Magnaflux #9C:",
         "options": [
-          "Màu xám",
-          "Màu đen",
-          "Màu đỏ",
-          "Không được phép sử dụng với gông từ DC",
-          "Cả c và d"
+          "a.Màu xám",
+          "b.Màu đen",
+          "c.Màu đỏ",
+          "d.Không được phép sử dụng với gông từ DC",
+          "e.Cả c và d"
         ],
         "answer": [2]
       },
       {
         "question": "37. Theo quy trình P6/QA/21 Rev.5, điều nào sau đây là đúng về dung dịch bột từ trong kiểm tra MT:",
         "options": [
-          "Bột từ Magnaflux 7C cần phải được kiểm tra nồng độ hàng ngày",
-          "Bột từ SM-15 cần phải được kiểm tra độ thấm ướt hàng ngày",
-          "Bột từ Magnaflux #1 cần phải được kiểm tra nồng độ hàng ngày",
-          "Bột từ Magnaflux #8A cần phải được kiểm tra nồng độ hàng ngày",
-          "Cả a và b"
+          "a.Bột từ Magnaflux 7C cần phải được kiểm tra nồng độ hàng ngày",
+          "b.Bột từ SM-15 cần phải được kiểm tra độ thấm ướt hàng ngày",
+          "c.Bột từ Magnaflux #1 cần phải được kiểm tra nồng độ hàng ngày",
+          "d.Bột từ Magnaflux #8A cần phải được kiểm tra nồng độ hàng ngày",
+          "e.Cả a và b"
         ],
         "answer": [0]
       },
@@ -508,10 +508,10 @@ const data_mt = {
       {
         "question": "51.Khi giải đoán chỉ thị kiểm tra bột từ, điều kiện chiếu sáng tối thiểu là:",
         "options": [
-          "Không có quy định cụ thể",
-          "Ánh sáng tự nhiên lớn hơn 1076 lux",
-          "Ánh sáng nhân tạo lớn hơn 1076 lux",
-          "Cả b và c đều đúng"
+          "a.Không có quy định cụ thể",
+          "b.Ánh sáng tự nhiên lớn hơn 1076 lux",
+          "c.Ánh sáng nhân tạo lớn hơn 1076 lux",
+          "d.Cả b và c đều đúng"
         ],
         "answer": [3]
       },
@@ -598,10 +598,10 @@ const data_mt = {
       {
         "question": "60. Khi kiểm tra mối hàn chữ T bằng gông từ, góc giữa gông từ và mối hàn được áp dụng",
         "options": [
-          "Bằng 45 độ",
-          "0 độ và 90 độ",
-          "Cả a và b đều có thể áp dụng",
-          "Không có quy định cụ thể trong quy trình kiểm tra"
+          "a.Bằng 45 độ",
+          "b.0 độ và 90 độ",
+          "c.Cả a và b đều có thể áp dụng",
+          "d.Không có quy định cụ thể trong quy trình kiểm tra"
         ],
         "answer": [1]
       },
@@ -618,10 +618,10 @@ const data_mt = {
       {
         "question": "62. Hướng đặt gông từ để phát hiện tốt nhất khuyết tật nứt chevron",
         "options": [
-          "Vuông góc với trục mối hàn",
-          "Song song với trục mối hàn",
-          "45 độ với trục mối hàn",
-          "Cả b và c"
+          "a.Vuông góc với trục mối hàn",
+          "b.Song song với trục mối hàn",
+          "c.45 độ với trục mối hàn",
+          "d.Cả b và c"
         ],
         "answer": [1]
       },
@@ -828,10 +828,10 @@ const data_mt = {
       {
         "question": "83.Một chỉ thị đường do bất liên tục không ngấu tạo ra có chiều dài đo được là 4 mm. Chỉ thị này được đánh giá theo ASME B31.3 - 2022 là",
         "options": [
-          "Chấp nhận",
-          "Không chấp nhận",
-          "Liên quan",
-          "Cả b và c"
+          "a.Chấp nhận",
+          "b.Không chấp nhận",
+          "c.Liên quan",
+          "d.Cả b và c"
         ],
         "answer": [3]
       },
@@ -868,10 +868,10 @@ const data_mt = {
       {
         "question": "87.Một chỉ thị đường do bất liên tục không ngấu tạo ra có chiều dài đo được là 2mm. Chỉ thị này được đánh giá theo ASME B31.3 - 2022 là:",
         "options": [
-          "Chấp nhận",
-          "Không chấp nhận",
-          "Liên quan",
-          "Cả b và c"
+          "a.Chấp nhận",
+          "b.Không chấp nhận",
+          "c.Liên quan",
+          "d.Cả b và c"
         ],
         "answer": [3]
       },
@@ -1038,11 +1038,11 @@ const data_mt = {
       {
         "question": "104.Khi thực hiện kiểm tra MT cho mối hàn dầm sàn, bạn ghi nhận các vị trí cháy cạnh. Theo tiêu chuẩn, để đánh giá các chỉ thị cháy cạnh cần xác định độ sâu. Bạn nên làm gì?",
         "options": [
-          "Không cần đánh giá cháy cạnh vì NDT thường không có dụng cụ đo",
-          "Liên hệ QC kiểm tra độ sâu và đánh giá",
-          "Dùng các công cụ hỗ trợ (lược siêu âm) để xác định độ sâu cháy cạnh và đánh giá",
-          "Tốt nhất nên đánh dấu cho mài và hàn đắp",
-          "Thực hiện c và d"
+          "a.Không cần đánh giá cháy cạnh vì NDT thường không có dụng cụ đo",
+          "b.Liên hệ QC kiểm tra độ sâu và đánh giá",
+          "c.Dùng các công cụ hỗ trợ (lược siêu âm) để xác định độ sâu cháy cạnh và đánh giá",
+          "d.Tốt nhất nên đánh dấu cho mài và hàn đắp",
+          "e.Thực hiện c và d"
         ],
         "answer": [4]
       },
@@ -1069,10 +1069,10 @@ const data_mt = {
       {
         "question": "107.Theo bạn tại sao đối với kỹ thuật kiểm tra bột từ khô, bột từ cần xịt ngay SAU khi từ hóa?",
         "options": [
-          "Đảm bảo độ nhạy kiểm tra tối ưu",
-          "Nếu xịt trước khi từ hóa, bột từ phân tán và bay khỏi vùng kiểm tra",
-          "Đảm bảo hạt từ khô linh động",
-          "Không nhất thiết xịt sau từ hóa, có thể xịt bột từ trước cũng được"
+          "a.Đảm bảo độ nhạy kiểm tra tối ưu",
+          "b.Nếu xịt trước khi từ hóa, bột từ phân tán và bay khỏi vùng kiểm tra",
+          "c.Đảm bảo hạt từ khô linh động",
+          "d.Không nhất thiết xịt sau từ hóa, có thể xịt bột từ trước cũng được"
         ],
         "answer": [1]
       },
@@ -1089,3 +1089,4 @@ const data_mt = {
       }
     ]
 }
+
