@@ -142,7 +142,7 @@ const data_mt = {
         "answer": [0]
       },
       {
-        "question": "15.	Theo quy trình P6/QA/21 Rev.4, loại thiết bị gông từ AC nào được phép sử dụng:",
+        "question": "15.Theo quy trình P6/QA/21 Rev.4, loại thiết bị gông từ AC nào được phép sử dụng:",
         "options": [
           "Y1, Y2, YM5",
           "Y1, Y2, Y7",
@@ -174,20 +174,20 @@ const data_mt = {
       {
         "question": "18. Theo quy trình OCD-PR-11, lực nâng tối thiểu (kg) của gông từ (Yoke) AC và DC ở khoảng cách cực từ 50 - 100 mm.",
         "options": [
-            "4.5; 5.4",
-            "4.5; 13.5",
-            "4.5; 23.0",
-            "13.5; 23"
+          "4.5; 5.4",
+          "4.5; 13.5",
+          "4.5; 23.0",
+          "13.5; 23"
         ],
         "answer": [1]
       },
       {
         "question": "19.Theo quy trình P6/QA/21 Rev.4, lực nâng tối thiểu (kg) của gông từ (Yoke) DC tại khoảng cách cực từ 50-100 mm và 100-150 mm.",
         "options": [
-            "4.5; 5.4",
-            "4.5; 13.5",
-            "4.5; 23.0",
-            "13.5; 23"
+          "4.5; 5.4",
+          "4.5; 13.5",
+          "4.5; 23.0",
+          "13.5; 23"
         ],
         "answer": [3]
       },
@@ -294,11 +294,11 @@ const data_mt = {
       {
         "question": "30.Theo quy trình P6/QA/21, nồng độ mực từ tự pha đối với bình chứa mẫu 100 ml sau khi lắng 30 phút?",
         "options": [
-            "1.2 % - 2.4 %",
-            "1.2 ml – 2.4 ml",
-            "2.0 % - 4.0 %",
-            "2.0 ml - 4.0 ml",
-            "1.2 % - 2.4 % hoặc 1.2 ml – 2.4 ml"
+          "1.2 % - 2.4 %",
+          "1.2 ml – 2.4 ml",
+          "2.0 % - 4.0 %",
+          "2.0 ml - 4.0 ml",
+          "1.2 % - 2.4 % hoặc 1.2 ml – 2.4 ml"
         ],
         "answer": [4]
       },
@@ -315,10 +315,10 @@ const data_mt = {
       {
         "question": "32. Theo qui trình P6/QA/21, khi tiến hành pha mực từ, nồng độ mực từ phải nằm trong khoảng:",
         "options": [
-            "2.0 - 4.0.",
-            "0.3 – 0.5.",
-            "1.2 – 2.4 %.",
-            "Không được quá đặc và cũng không được quá loãng."
+          "2.0 - 4.0.",
+          "0.3 – 0.5.",
+          "1.2 – 2.4 %.",
+          "Không được quá đặc và cũng không được quá loãng."
         ],
         "answer": [2]
       },
@@ -598,8 +598,8 @@ const data_mt = {
       {
         "question": "60. Khi kiểm tra mối hàn chữ T bằng gông từ, góc giữa gông từ và mối hàn được áp dụng",
         "options": [
-          "Bằng 45o",
-          "0o và 90o",
+          "Bằng 45 độ",
+          "0 độ và 90 độ",
           "Cả a và b đều có thể áp dụng",
           "Không có quy định cụ thể trong quy trình kiểm tra"
         ],
@@ -1089,4 +1089,3 @@ const data_mt = {
       }
     ]
 }
-
