@@ -52,7 +52,7 @@
         <!-- Màn hình chọn môn học -->
         <div id="selector-screen" class="max-w-4xl mx-auto">
             <header class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-slate-900">Bài tập Trắc nghiệm - Phong Lưu</h1>
+                <h1 class="text-4xl font-bold text-slate-900">Tool Trắc nghiệm Pro</h1>
                 <p class="text-lg text-slate-600 mt-2">Chọn một bộ câu hỏi để bắt đầu</p>
             </header>
             <div id="subject-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -76,7 +76,7 @@
             <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 quiz-card p-4">
                     <h2 class="text-xl font-bold mb-4">Danh sách câu</h2>
-                    <div id="question-list" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-2 max-h-[60vh] lg:max-h-full overflow-y-auto pr-2"></div>
+                    <div id="question-list" class="grid grid-cols-7 sm:grid-cols-10 lg:grid-cols-7 gap-1.5 max-h-[60vh] lg:max-h-full overflow-y-auto pr-2"></div>
                 </div>
                 <div class="lg:col-span-3 quiz-card p-6 md:p-8">
                     <div class="flex justify-between items-center mb-4">
@@ -528,7 +528,7 @@
                 listEl.innerHTML = '';
                 state.pickedIndices.forEach((qIndex, displayIndex) => {
                     const item = document.createElement('div');
-                    item.className = 'question-list-item w-10 h-10 flex items-center justify-center font-medium rounded-md border-2 cursor-pointer';
+                    item.className = 'question-list-item w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border-2 cursor-pointer';
                     item.textContent = displayIndex + 1;
                     item.addEventListener('click', () => {
                         state.currentIndex = displayIndex;
@@ -853,4 +853,3 @@
     </script>
 </body>
 </html>
-
