@@ -74,10 +74,10 @@ const data_pt = {
       {
         "question": "8.Quy trình kiểm tra chất lỏng thẩm thấu P6/QA/22 cho phép kiểm tra:",
         "options": [
-          "Khuyết tật bề mặt của kim loại cơ bản và mối hàn",
-          "Mối hàn của mọi kim loại có chiều dầy từ 8mm trở lên",
-          "Bất kỳ khuyết tật trong mối hàn",
-          "Cả a và c"
+          "a.Khuyết tật bề mặt của kim loại cơ bản và mối hàn",
+          "b.Mối hàn của mọi kim loại có chiều dầy từ 8mm trở lên",
+          "c.Bất kỳ khuyết tật trong mối hàn",
+          "d.Cả a và c"
         ],
         "answer": [0]
       },
@@ -124,10 +124,10 @@ const data_pt = {
       {
         "question": "13.Theo qui trình P6/QA/22, những cá nhân nào được phép thực hiện việc kiểm tra?",
         "options": [
-          "Chỉ những cá nhân sự được sát hạch theo tiêu chuẩn SNT-TC-1A cấp II hoặc cấp III",
-          "các kỹ thuật viên được sát hạch theo SNT-TC-1A.",
-          "các kỹ thuật viên được sát hạch theo SNT-TC-1A cấp I được phép kiểm tra nhưng việc thực hiện báo cáo chỉ do nhân viên cấp II trở lên",
-          "both a and c/ cả a và c"
+          "a.Chỉ những cá nhân sự được sát hạch theo tiêu chuẩn SNT-TC-1A cấp II hoặc cấp III",
+          "b.các kỹ thuật viên được sát hạch theo SNT-TC-1A.",
+          "c.các kỹ thuật viên được sát hạch theo SNT-TC-1A cấp I được phép kiểm tra nhưng việc thực hiện báo cáo chỉ do nhân viên cấp II trở lên",
+          "d.both a and c/ cả a và c"
         ],
         "answer": [0]
       },
@@ -144,10 +144,10 @@ const data_pt = {
       {
         "question": "15.Theo quy trình P6/QA/22, nhân sự PT có thể chứng nhận theo hệ thống nào ngoài OCD-PR-16?",
         "options": [
-          "CSWIP/PCN",
-          "ISO 9712",
-          "Cả A và B",
-          "Không hệ thống nào"
+          "a.CSWIP/PCN",
+          "b.ISO 9712",
+          "c.Cả A và B",
+          "d.Không hệ thống nào"
         ],
         "answer": [2]
       },
@@ -174,10 +174,10 @@ const data_pt = {
       {
         "question": "18.Vật tư kiểm tra thẩm thấu phù hợp theo quy trình là:",
         "options": [
-          "Đồng nhất từ một nhà sản xuất",
-          "Dùng kết hợp nhiều nhà sản xuất",
-          "Có thể sử dụng kết hợp vật tư tương đương của nhiều nhà sản xuất khác nhau.",
-          "Cả a và c"
+          "a.Đồng nhất từ một nhà sản xuất",
+          "b.Dùng kết hợp nhiều nhà sản xuất",
+          "c.Có thể sử dụng kết hợp vật tư tương đương của nhiều nhà sản xuất khác nhau.",
+          "d.Cả a và c"
         ],
         "answer": [0]
       },
@@ -304,11 +304,11 @@ const data_pt = {
       {
         "question": "31.Bạn là kỹ thuật viên PT cấp 2 và được giao công việc kiểm tra PT mối hàn trong khu vực nhà xưởng. Bạn cần thực hiện điều gì?",
         "options": [
-          "Đảm bảo mối hàn được vệ sinh phù hợp",
-          "Yêu cầu bộ phận thi công cấp thêm đèn chiếu sáng và kiểm tra cường độ ánh sáng tối thiểu 1076 lux",
-          "Yêu cầu bộ phận thi công cấp thêm đèn chiếu sáng và không cần kiểm tra cường độ ánh sáng",
-          "Không cần kiểm tra cường độ ánh sáng vì nhà xưởng luôn có đèn và bình thường mắt vẫn thấy rõ",
-          "a và b đúng"
+          "a.Đảm bảo mối hàn được vệ sinh phù hợp",
+          "b.Yêu cầu bộ phận thi công cấp thêm đèn chiếu sáng và kiểm tra cường độ ánh sáng tối thiểu 1076 lux",
+          "c.Yêu cầu bộ phận thi công cấp thêm đèn chiếu sáng và không cần kiểm tra cường độ ánh sáng",
+          "d.Không cần kiểm tra cường độ ánh sáng vì nhà xưởng luôn có đèn và bình thường mắt vẫn thấy rõ",
+          "e.a và b đúng"
         ],
         "answer": [4]
       },
@@ -616,11 +616,11 @@ const data_pt = {
       {
         "question": "62.Theo qui trình kiểm tra chất lỏng thẩm thấu P6/QA/22, chất hiện được phun lên bề mặt bằng cách:",
         "options": [
-          "Việc áp chất hiện phải được thực hiện trước khi chất làm sạch bay hơi",
-          "Phun thành màng mỏng và đều lên bề mặt kiểm tra",
-          "Nếu có thể, chất hiện được tưới tràn đều lên bề mặt sẽ tốt hơn",
-          "Cả b và c",
-          "Tất cả đáp án trên"
+          "a.Việc áp chất hiện phải được thực hiện trước khi chất làm sạch bay hơi",
+          "b.Phun thành màng mỏng và đều lên bề mặt kiểm tra",
+          "c.Nếu có thể, chất hiện được tưới tràn đều lên bề mặt sẽ tốt hơn",
+          "d.Cả b và c",
+          "e.Tất cả đáp án trên"
         ],
         "answer": [1]
       },
@@ -687,10 +687,10 @@ const data_pt = {
       {
         "question": "69.Mối hàn sau khi được kiểm tra thẩm thấu:",
         "options": [
-          "Phải được làm sạch các chất thấm",
-          "Phải được làm sạch các chất hiện",
-          "Cả a và b",
-          "Phải được làm sạch các chất thấm, chất hiện, chất làm sạch nếu có."
+          "a.Phải được làm sạch các chất thấm",
+          "b.Phải được làm sạch các chất hiện",
+          "c.Cả a và b",
+          "d.Phải được làm sạch các chất thấm, chất hiện, chất làm sạch nếu có."
         ],
         "answer": [3]
       },
@@ -807,10 +807,10 @@ const data_pt = {
       {
         "question": "81.Theo tiêu chuẩn AWS D1.1 2020, bảng 10.15 đối với rỗ khí:",
         "options": [
-          "Các mối hàn đối đầu vát mép thấu hoàn toàn, nằm ngang so với hướng ứng suất kéo phải không có rỗ khí dạng ống",
-          "Mật độ của các rỗ khí dạng ống trong các mối hàn fillet không vượt quá 1 cái trên mỗi 4 in. (100 mm) độ dài mối hàn và đường kính cực đại không vượt quá 3/32 in. (2.5 mm)",
-          "Cả a và b đều đúng",
-          "Không áp dụng tiêu chí này"
+          "a.Các mối hàn đối đầu vát mép thấu hoàn toàn, nằm ngang so với hướng ứng suất kéo phải không có rỗ khí dạng ống",
+          "b.Mật độ của các rỗ khí dạng ống trong các mối hàn fillet không vượt quá 1 cái trên mỗi 4 in. (100 mm) độ dài mối hàn và đường kính cực đại không vượt quá 3/32 in. (2.5 mm)",
+          "c.Cả a và b đều đúng",
+          "d.Không áp dụng tiêu chí này"
         ],
         "answer": [2]
       },
@@ -857,11 +857,11 @@ const data_pt = {
       {
         "question": "86.Theo qui trình kiểm tra chất lỏng thẩm thấu P6/QA/22, tiêu chuẩn chấp nhận đối với mối hàn ống công nghệ áp dụng:",
         "options": [
-          "ASME B31.3:",
-          "ASME VIII",
-          "AWS D1.1",
-          "Hoặc các tiêu chuẩn khác theo yêu cầu khách hàng",
-          "Cả a. và d."
+          "a.ASME B31.3:",
+          "b.ASME VIII",
+          "c.AWS D1.1",
+          "d.Hoặc các tiêu chuẩn khác theo yêu cầu khách hàng",
+          "e.Cả a. và d."
         ],
         "answer": [4]
       },
