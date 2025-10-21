@@ -255,6 +255,17 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, runTransaction, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Firebase Config and Initialization
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEFAULT_API_KEY", authDomain: "DEFAULT_AUTH_DOMAIN", projectId: "DEFAULT_PROJECT_ID" };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+        
+        setLogLevel('debug');
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+        const db = getFirestore(firebaseApp);
+        
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "123";
 
@@ -289,16 +300,7 @@
             },
             
             initVisitorCounter() {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEFAULT_API_KEY", authDomain: "DEFAULT_AUTH_DOMAIN", projectId: "DEFAULT_PROJECT_ID" };
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-                
-                setLogLevel('debug');
-
-                const firebaseApp = initializeApp(firebaseConfig);
-                const auth = getAuth(firebaseApp);
-                const db = getFirestore(firebaseApp);
-
+                // This function now uses the top-level auth, db, and appId variables
                 const counterRef = doc(db, `artifacts/${appId}/public/data/visitor_counter`, "visits");
 
                 async function incrementVisitorCount() {
@@ -319,7 +321,9 @@
                 
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
+                        console.log("Visitor counter: User authenticated.", user.uid);
                         if (!sessionStorage.getItem('quiz-app-visited')) {
+                            console.log("Visitor counter: New session, incrementing count.");
                             await incrementVisitorCount();
                             sessionStorage.setItem('quiz-app-visited', 'true');
                         }
@@ -328,8 +332,10 @@
                             const visitorCountElement = document.getElementById('visitor-count');
                             if (visitorCountElement) {
                                 if (doc.exists()) {
+                                    console.log("Visitor counter: Snapshot received with count:", doc.data().count);
                                     visitorCountElement.textContent = doc.data().count.toLocaleString('vi-VN');
                                 } else {
+                                    console.log("Visitor counter: Document does not exist.");
                                     visitorCountElement.textContent = '0';
                                 }
                             }
@@ -338,23 +344,28 @@
                             const visitorCountElement = document.getElementById('visitor-count');
                             if(visitorCountElement) visitorCountElement.textContent = 'Lỗi';
                         });
+                    } else {
+                        console.log("Visitor counter: User not authenticated.");
                     }
                 });
 
                 async function authenticateUser() {
                      try {
                         if (initialAuthToken) {
+                             console.log("Visitor counter: Authenticating with custom token...");
                             await signInWithCustomToken(auth, initialAuthToken);
                         } else {
+                            console.log("Visitor counter: Authenticating anonymously...");
                             await signInAnonymously(auth);
                         }
                     } catch (error) {
-                        console.error("Lỗi xác thực:", error);
+                        console.error("Lỗi xác thực bộ đếm:", error);
                     }
                 }
                 
                 authenticateUser();
             },
+
 
             loadDataFromFiles() {
                 if (typeof data_antoan !== 'undefined') questionData['antoan'] = data_antoan;
