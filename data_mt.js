@@ -1079,11 +1079,11 @@ const data_mt = {
       {
         "question": "108.Khi thực hiện công việc trên biển, bạn được bộ phân thi công yêu cầu hỗ trợ khử từ cho chi tiết ống piping bị nhiễm từ. Bạn nên làm gì?",
         "options": [
-          "Phối hợp thực hiện bằng gông từ AC hiện có",
-          "Từ chối thực hiện vì trong quy trình MT không đề cập",
-          "Giải thích với bộ phận thi công rằng cường độ và hướng từ dư trong ống không xác định được nên gông từ hiện có không hiệu quả",
-          "Nếu không có sẵn thiết bị khử từ, phương pháp khò đốt nóng đầu ống đến nhiệt độ curie là tốt nhất",
-          "Cả c và d"
+          "a.Phối hợp thực hiện bằng gông từ AC hiện có",
+          "b.Từ chối thực hiện vì trong quy trình MT không đề cập",
+          "c.Giải thích với bộ phận thi công rằng cường độ và hướng từ dư trong ống không xác định được nên gông từ hiện có không hiệu quả",
+          "d.Nếu không có sẵn thiết bị khử từ, phương pháp khò đốt nóng đầu ống đến nhiệt độ curie là tốt nhất",
+          "e.Cả c và d"
         ],
         "answer": [4]
       }
