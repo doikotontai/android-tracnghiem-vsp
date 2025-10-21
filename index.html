@@ -254,17 +254,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, runTransaction, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase Config and Initialization
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEFAULT_API_KEY", authDomain: "DEFAULT_AUTH_DOMAIN", projectId: "DEFAULT_PROJECT_ID" };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-        
-        setLogLevel('debug');
-
-        const firebaseApp = initializeApp(firebaseConfig);
-        const auth = getAuth(firebaseApp);
-        const db = getFirestore(firebaseApp);
         
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "123";
@@ -296,77 +285,9 @@
                 this.loadDataFromFiles();
                 this.renderSubjectList();
                 this.attachEventListeners();
-                this.initVisitorCounter();
+                // Visitor counter is now initialized separately outside this object
             },
             
-            initVisitorCounter() {
-                // This function now uses the top-level auth, db, and appId variables
-                const counterRef = doc(db, `artifacts/${appId}/public/data/visitor_counter`, "visits");
-
-                async function incrementVisitorCount() {
-                    try {
-                        await runTransaction(db, async (transaction) => {
-                            const counterDoc = await transaction.get(counterRef);
-                            if (!counterDoc.exists()) {
-                                transaction.set(counterRef, { count: 1 });
-                            } else {
-                                const newCount = counterDoc.data().count + 1;
-                                transaction.update(counterRef, { count: newCount });
-                            }
-                        });
-                    } catch (error) {
-                        console.error("Lỗi khi cập nhật lượt truy cập:", error);
-                    }
-                }
-                
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        console.log("Visitor counter: User authenticated.", user.uid);
-                        if (!sessionStorage.getItem('quiz-app-visited')) {
-                            console.log("Visitor counter: New session, incrementing count.");
-                            await incrementVisitorCount();
-                            sessionStorage.setItem('quiz-app-visited', 'true');
-                        }
-                        
-                        onSnapshot(counterRef, (doc) => {
-                            const visitorCountElement = document.getElementById('visitor-count');
-                            if (visitorCountElement) {
-                                if (doc.exists()) {
-                                    console.log("Visitor counter: Snapshot received with count:", doc.data().count);
-                                    visitorCountElement.textContent = doc.data().count.toLocaleString('vi-VN');
-                                } else {
-                                    console.log("Visitor counter: Document does not exist.");
-                                    visitorCountElement.textContent = '0';
-                                }
-                            }
-                        }, (error) => {
-                             console.error("Lỗi khi lấy dữ liệu lượt truy cập:", error);
-                            const visitorCountElement = document.getElementById('visitor-count');
-                            if(visitorCountElement) visitorCountElement.textContent = 'Lỗi';
-                        });
-                    } else {
-                        console.log("Visitor counter: User not authenticated.");
-                    }
-                });
-
-                async function authenticateUser() {
-                     try {
-                        if (initialAuthToken) {
-                             console.log("Visitor counter: Authenticating with custom token...");
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            console.log("Visitor counter: Authenticating anonymously...");
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) {
-                        console.error("Lỗi xác thực bộ đếm:", error);
-                    }
-                }
-                
-                authenticateUser();
-            },
-
-
             loadDataFromFiles() {
                 if (typeof data_antoan !== 'undefined') questionData['antoan'] = data_antoan;
                 if (typeof data_mt !== 'undefined') questionData['mt'] = data_mt;
@@ -420,7 +341,7 @@
                 
                 const footer = $('#app-footer');
                 if (footer) {
-                    if (screenName === 'quiz') {
+                    if (screenName === 'quiz' || screenName === 'admin') {
                         footer.classList.add('hidden');
                     } else {
                         footer.classList.remove('hidden');
@@ -957,7 +878,81 @@
             }
         };
 
-        app.init();
+        // Initialize the main application
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+        // --- Visitor Counter Logic (self-contained) ---
+        (async () => {
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEFAULT_API_KEY", authDomain: "DEFAULT_AUTH_DOMAIN", projectId: "DEFAULT_PROJECT_ID" };
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+                
+                setLogLevel('debug');
+
+                const firebaseApp = initializeApp(firebaseConfig);
+                const auth = getAuth(firebaseApp);
+                const db = getFirestore(firebaseApp);
+                
+                const counterRef = doc(db, `artifacts/${appId}/public/data/visitor_counter`, "visits");
+
+                const incrementVisitorCount = async () => {
+                    try {
+                        await runTransaction(db, async (transaction) => {
+                            const counterDoc = await transaction.get(counterRef);
+                            const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
+                            transaction.set(counterRef, { count: newCount });
+                            console.log("Visitor count incremented to:", newCount);
+                        });
+                    } catch (error) {
+                        console.error("Lỗi khi cập nhật lượt truy cập:", error);
+                    }
+                };
+
+                const setupSnapshotListener = () => {
+                     onSnapshot(counterRef, (doc) => {
+                        const visitorCountElement = document.getElementById('visitor-count');
+                        if (visitorCountElement) {
+                            if (doc.exists()) {
+                                visitorCountElement.textContent = doc.data().count.toLocaleString('vi-VN');
+                            } else {
+                                visitorCountElement.textContent = '0';
+                            }
+                        }
+                    }, (error) => {
+                        console.error("Lỗi khi lắng nghe dữ liệu truy cập:", error);
+                        const visitorCountElement = document.getElementById('visitor-count');
+                        if (visitorCountElement) visitorCountElement.textContent = 'Lỗi';
+                    });
+                }
+                
+                // Authenticate and then set up listeners
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                console.log("Visitor counter: Authentication successful.");
+                
+                // Now that we are authenticated, set up the listener
+                setupSnapshotListener();
+
+                // Increment count only if it's a new session
+                if (!sessionStorage.getItem('quiz-app-visited')) {
+                    await incrementVisitorCount();
+                    sessionStorage.setItem('quiz-app-visited', 'true');
+                }
+
+            } catch (error) {
+                console.error("Lỗi nghiêm trọng trong quá trình khởi tạo bộ đếm:", error);
+                 const visitorCountElement = document.getElementById('visitor-count');
+                if (visitorCountElement) visitorCountElement.textContent = 'Lỗi';
+            }
+        })();
+
     </script>
 </body>
 </html>
