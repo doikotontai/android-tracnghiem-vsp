@@ -2,12 +2,11 @@ const data_antoan = {
     name: "An Toàn Lao Động",
     questions: [
   {
-    "question": "abc123",
+    "question": "4805. Các tài liệu nào cần được cung cấp cùng với các hóa chất",
     "options": [
       "Hàng hóa phải có nhãn hóa chất bằng tiếng Việt. Nếu nhãn chính bằng tiếng nước ngoài thì phải đảm bảo có nhãn phụ bằng tiếng Việt",
       "phiếu an toàn hóa chất (MSDS) phải được thể hiện bằng 02 ngôn ngữ: tiếng Việt và tiếng Anh.",
-      "Nhãn chính hoặc nhãn phụ; bảng dữ liệu an toàn hóa chất (MSDS), các phiếu an toàn an hóa chất đối với các hóa chất nguy hiểm.",
-      "a"
+      "Nhãn chính hoặc nhãn phụ; bảng dữ liệu an toàn hóa chất (MSDS), các phiếu an toàn an hóa chất đối với các hóa chất nguy hiểm."
     ],
     "answer": [
       2,
