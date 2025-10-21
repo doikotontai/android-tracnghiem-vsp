@@ -123,13 +123,19 @@
             font-weight: bold;
             border-width: 2px;
         }
+        .legacy-question-nav-item.skipped {
+            background-color: #FFCC00; /* Màu vàng cho câu hỏi đã xem nhưng chưa trả lời */
+            border-color: #e6b800;
+        }
         .legacy-question-nav-item.answered.correct {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
+            background-color: #006600; /* Màu xanh cho câu trả lời đúng */
+            border-color: #004d00;
+            color: white;
         }
         .legacy-question-nav-item.answered.wrong {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
+            background-color: #990000; /* Màu đỏ cho câu trả lời sai */
+            border-color: #800000;
+            color: white;
         }
         .legacy-btn-container {
             display: flex;
@@ -165,7 +171,7 @@
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
     <!-- Top Panel similar to index1.html -->
-    <div id="id_toppanel" style="padding: 6px; border-bottom: 1px solid #ccc; background-color: #f0f0f0;">
+    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0;">
         <div style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem;">
             <!-- IMPORTANT: Replace "logo.png" with the actual path to your logo file -->
             <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
@@ -261,6 +267,7 @@
             userAnswers: {},
             timerId: null,
             secondsLeft: 0,
+            viewedIndices: new Set(), // Theo dõi các câu hỏi đã được xem
             testConfig: {
                 questionCount: 20,
                 durationMinutes: 20
@@ -339,6 +346,7 @@
 
             startQuiz(mode) {
                 state.mode = mode;
+                state.viewedIndices.clear(); // Xóa danh sách câu đã xem khi bắt đầu
                 
                 const subjectData = window.questionData[state.currentSubjectKey];
                 if (!subjectData || !subjectData.questions || subjectData.questions.length === 0) {
@@ -371,10 +379,12 @@
                 $('#stop-btn').className = 'legacy-btn';
 
                 if (mode === 'test') {
+                    $('#hint-btn').style.display = 'none';
                     const pickCount = Math.min(state.testConfig.questionCount, total);
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random()).slice(0, pickCount);
                     this.startTimer();
                 } else { // review mode
+                    $('#hint-btn').style.display = 'inline-flex';
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
                     if ($('#timer')) $('#timer').classList.add('hidden');
                 }
@@ -432,11 +442,13 @@
                 items.forEach((item, displayIndex) => {
                     const qIndex = state.pickedIndices[displayIndex];
                     
-                    item.classList.remove('current', 'answered', 'correct', 'wrong');
+                    item.classList.remove('current', 'answered', 'correct', 'wrong', 'skipped');
 
                     if (qIndex in state.userAnswers) {
                         const isCorrect = this.checkCorrectness(qIndex, state.userAnswers[qIndex]);
                         item.classList.add('answered', isCorrect ? 'correct' : 'wrong');
+                    } else if (state.viewedIndices.has(qIndex)) {
+                        item.classList.add('skipped');
                     }
 
                     if (displayIndex === state.currentIndex) {
@@ -448,6 +460,7 @@
             renderQuestion() {
                 if (state.currentIndex < 0 || state.currentIndex >= state.pickedIndices.length) return;
                 const qIndex = state.pickedIndices[state.currentIndex];
+                state.viewedIndices.add(qIndex); // Đánh dấu câu hỏi này đã được xem
                 const question = state.questions[qIndex];
                 
                 const indexedOptions = question.options.map((opt, i) => ({ text: opt, originalIndex: i }));
@@ -601,4 +614,3 @@
     </script>
 </body>
 </html>
-
