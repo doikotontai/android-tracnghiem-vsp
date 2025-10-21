@@ -1069,10 +1069,10 @@ const data_mt = {
       {
         "question": "107.Theo bạn tại sao đối với kỹ thuật kiểm tra bột từ khô, bột từ cần xịt ngay SAU khi từ hóa?",
         "options": [
-          "a.Đảm bảo độ nhạy kiểm tra tối ưu",
-          "b.Nếu xịt trước khi từ hóa, bột từ phân tán và bay khỏi vùng kiểm tra",
-          "c.Đảm bảo hạt từ khô linh động",
-          "d.Không nhất thiết xịt sau từ hóa, có thể xịt bột từ trước cũng được"
+          "Đảm bảo độ nhạy kiểm tra tối ưu",
+          "Nếu xịt trước khi từ hóa, bột từ phân tán và bay khỏi vùng kiểm tra",
+          "Đảm bảo hạt từ khô linh động",
+          "Không nhất thiết xịt sau từ hóa, có thể xịt bột từ trước cũng được"
         ],
         "answer": [1]
       },
