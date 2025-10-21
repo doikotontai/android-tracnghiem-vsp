@@ -453,7 +453,7 @@
                 const indexedOptions = question.options.map((opt, i) => ({ text: opt, originalIndex: i }));
                 const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
 
-                const headerText = `Самопроверка: Câu hỏi ${state.currentIndex + 1} Từ ${state.pickedIndices.length}`;
+                const headerText = `Câu hỏi ${state.currentIndex + 1} Từ ${state.pickedIndices.length}`;
                 $('#question-header').textContent = headerText;
                 $('#question-header').className = 'legacy-question-header';
                 
