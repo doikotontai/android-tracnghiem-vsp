@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* Original styles for quiz and other screens */
         body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f0f4f8; }
         .quiz-card { background-color: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s ease-in-out; border: 1px solid transparent; }
@@ -29,6 +30,140 @@
         .option-item.selected .custom-checkbox { background-color: #2563eb; border-color: #2563eb; }
         .custom-checkbox svg { display: none; }
         .option-item.selected .custom-checkbox svg { display: block; }
+
+        /* Styles to mimic index1.html on the homepage */
+        .legacy-body {
+            font-family: Arial, sans-serif;
+            background-color: #d7e6f7;
+        }
+        .legacy-body #app {
+            padding: 0;
+        }
+        .subject-item-legacy {
+            border: 1px solid #ccc;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #f7f7f7;
+            margin-bottom: 10px;
+            transition: background-color 0.2s;
+            width: 400px;
+        }
+        .subject-item-legacy:hover {
+            background-color: #e7e7e7;
+        }
+        .subject-item-legacy h3 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .subject-item-legacy p {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0 0 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* New legacy styles for review mode to mimic ontap-1.html */
+        .legacy-quiz-layout {
+            width: 770px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .legacy-quiz-layout .question-content-container {
+             border: none;
+             padding: 0;
+        }
+        .legacy-quiz-layout .question-list-container {
+             margin-top: 25px;
+             border-top: 1px solid #ccc;
+             padding-top: 15px;
+        }
+        #question-header.legacy-question-header {
+            color: #990000;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+        #question-text.legacy-question-text {
+            font-size: 16px;
+            font-weight: normal;
+            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 80px;
+        }
+        .legacy-answer-container label {
+            display: flex;
+            align-items: center;
+            margin: 0 0 5px 0;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+            border: 1px solid #ccc;
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+        .legacy-answer-container input {
+            margin-right: 10px;
+        }
+        #question-list.legacy-question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .legacy-question-nav-item {
+            border: 1px solid #999;
+            width: 28px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000;
+        }
+        .legacy-question-nav-item.current {
+            background-color: #ccc;
+            font-weight: bold;
+            border-width: 2px;
+        }
+        .legacy-question-nav-item.answered.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .legacy-question-nav-item.answered.wrong {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .legacy-btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .legacy-btn, .legacy-btn-primary {
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #adadad;
+            font-size: 14px;
+        }
+        .legacy-btn {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .legacy-btn-primary {
+            background-color: #2563eb;
+            color: white;
+            border-color: #1e4ed8;
+        }
     </style>
     <!-- Tải dữ liệu câu hỏi -->
     <script src="data_antoan.js"></script>
@@ -48,41 +183,47 @@
 </head>
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
+    <!-- Top Panel similar to index1.html -->
+    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0;">
+        <table style="width: 100%;">
+            <tr>
+                <td><img src="https://placehold.co/150x50?text=Logo" alt="Vietsovpetro" /></td>
+                <td class="title" style="text-align: center; font-size: 24px; font-weight: bold; font-family: Arial, sans-serif;">Vietsovpetro</td>
+                <td style="width: 180px;"></td> <!-- Spacer to balance the logo -->
+            </tr>
+        </table>
+    </div>
+
     <div id="app" class="p-4 sm:p-6 md:p-8 flex-grow">
         <!-- Màn hình chọn môn học -->
         <div id="selector-screen" class="max-w-4xl mx-auto">
-            <header class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-slate-900">Bộ câu hỏi trắc nghiệm - NDT</h1>
-                <p class="text-lg text-slate-600 mt-2">Chọn một bộ câu hỏi để bắt đầu</p>
-            </header>
-            <div id="subject-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            <div class="mt-8 text-center">
-                <button id="admin-login-btn" class="btn btn-secondary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11z"/></svg>
-                    <span class="ml-2">Quản lý</span>
-                </button>
-            </div>
+            <table align="center" style="margin-top: 40px; border: 1px solid #999;">
+                 <tr style="background-color: #f0f0f0;">
+                    <td style="font-weight: bold; padding: 10px; font-family: Arial, sans-serif;">Chọn môn học để bẳt đầu việc tự sát hạch</td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px;">
+                        <div id="subject-list"></div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <!-- Màn hình làm bài -->
         <div id="quiz-screen" class="hidden">
-             <header class="flex items-center justify-between mb-4 max-w-7xl mx-auto">
+             <header id="quiz-header-modern" class="flex items-center justify-between mb-4 max-w-7xl mx-auto">
                  <button id="back-to-selector" class="btn btn-secondary">
                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
                      <span class="ml-2">Chọn môn khác</span>
                  </button>
                  <div id="timer" class="text-2xl font-bold text-slate-900 bg-white px-4 py-2 rounded-lg shadow-sm">⏳ 20:00</div>
             </header>
-            <!-- Thay đổi layout tại đây: flex-col cho mobile, grid cho desktop -->
-            <div class="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-4 gap-6">
-                <!-- Danh sách câu hỏi (chuyển xuống dưới trên mobile bằng order-last) -->
-                <div class="lg:col-span-1 quiz-card p-4 order-last lg:order-none">
+            <div id="quiz-layout-container" class="max-w-7xl mx-auto">
+                 <div class="question-list-container quiz-card p-4 order-last lg:order-none">
                     <h2 class="text-xl font-bold mb-4">Danh sách câu</h2>
-                    <!-- Bỏ giới hạn chiều cao trên mobile, điều chỉnh grid và padding -->
-                    <div id="question-list" class="grid grid-cols-8 sm:grid-cols-12 lg:grid-cols-7 gap-2 pb-2 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto lg:pr-2"></div>
+                    <div id="question-list"></div>
                 </div>
-                 <!-- Nội dung câu hỏi -->
-                <div class="lg:col-span-3 quiz-card p-6 md:p-8">
+                <div class="question-content-container quiz-card p-6 md:p-8">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="question-header" class="text-xl font-bold text-slate-900"></h2>
                         <span id="question-status-badge" class="px-3 py-1 text-sm font-medium rounded-full"></span>
@@ -92,7 +233,7 @@
                     <div id="feedback-container" class="mt-6 hidden">
                         <div id="feedback-text" class="p-4 rounded-lg font-medium"></div>
                     </div>
-                    <div class="mt-8 pt-6 border-t border-slate-200 flex flex-wrap gap-4 justify-between items-center">
+                    <div id="button-container" class="mt-8 pt-6 border-t border-slate-200 flex flex-wrap gap-4 justify-between items-center">
                         <button id="prev-btn" class="btn btn-secondary">← Trước</button>
                         <div class="flex gap-4">
                              <button id="hint-btn" class="btn btn-secondary">💡 Gợi ý</button>
@@ -108,6 +249,7 @@
         <div id="admin-screen" class="hidden max-w-7xl mx-auto">
             <header class="flex flex-wrap gap-4 items-center justify-between mb-6">
                 <h2 class="text-3xl font-bold">Khu vực Quản lý</h2>
+                 <button id="admin-login-btn-placeholder" class="btn btn-secondary" style="display: none;"></button>
                 <button id="back-to-selector-from-admin" class="btn btn-secondary">
                      <span>&larr;</span><span class="ml-2">Quay lại</span>
                 </button>
@@ -120,7 +262,6 @@
                     </nav>
                 </div>
                 <div id="admin-tab-content" class="p-4 sm:p-6">
-                    <!-- Tab quản lý câu hỏi -->
                     <div id="tab-questions">
                          <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
                            <div class="flex items-center gap-4">
@@ -143,7 +284,6 @@
                              </button>
                          </div>
                     </div>
-                    <!-- Tab xem kết quả thi -->
                     <div id="tab-results" class="hidden">
                          <div class="flex justify-between items-center mb-4">
                             <p class="text-slate-600">Danh sách kết quả các bài thi đã được ghi nhận.</p>
@@ -239,7 +379,7 @@
         </div>
     </div>
     
-    <footer id="app-footer" class="text-center p-6 mt-auto border-t border-slate-200 bg-white shadow-inner">
+    <footer id="app-footer" class="text-center p-6 mt-auto border-t border-slate-200 bg-white shadow-inner" style="display: none;">
         <p class="text-slate-600">&copy; 2025 BCH-XNXL. Tạo bởi Phong Lưu.</p>
     </footer>
 
@@ -274,6 +414,7 @@
                 this.loadDataFromFiles();
                 this.renderSubjectList();
                 this.attachEventListeners();
+                this.showScreen('selector'); 
             },
             
             loadDataFromFiles() {
@@ -288,7 +429,10 @@
             },
 
             attachEventListeners() {
-                $('#admin-login-btn').addEventListener('click', () => $('#password-modal').classList.remove('hidden'));
+                const adminLoginBtn = $('#admin-login-btn-placeholder');
+                if (adminLoginBtn) {
+                    adminLoginBtn.addEventListener('click', () => $('#password-modal').classList.remove('hidden'));
+                }
                 $('#password-form').addEventListener('submit', (e) => { e.preventDefault(); this.handlePasswordSubmit(); });
                 $('#back-to-selector-from-admin').addEventListener('click', () => this.goHome(true));
                 $('#admin-tabs').addEventListener('click', (e) => this.switchAdminTab(e));
@@ -319,21 +463,25 @@
                 $('#close-test-info-modal-btn').addEventListener('click', () => {
                     $('#test-info-modal').classList.add('hidden');
                     $('#test-info-form').reset();
-                    $('#mode-modal').classList.remove('hidden'); // Quay lại màn hình chọn chế độ
+                    $('#mode-modal').classList.remove('hidden');
                 });
             },
 
             showScreen(screenName) {
+                const isLegacy = screenName === 'selector' || (screenName === 'quiz' && state.mode === 'review');
+                document.body.classList.toggle('legacy-body', isLegacy);
+
                 ['selector', 'quiz', 'admin'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
                 $(`#${screenName}-screen`).classList.remove('hidden');
                 
                 const footer = $('#app-footer');
+                const topPanel = $('#id_toppanel');
+
+                topPanel.style.display = isLegacy ? 'block' : 'none';
+                $('#quiz-header-modern').style.display = (screenName === 'quiz' && !isLegacy) ? 'flex' : 'none';
+
                 if (footer) {
-                    if (screenName === 'quiz' || screenName === 'admin') {
-                        footer.classList.add('hidden');
-                    } else {
-                        footer.classList.remove('hidden');
-                    }
+                   footer.style.display = 'none';
                 }
             },
             
@@ -377,12 +525,13 @@
 
             renderSubjectList() {
                 const listEl = $('#subject-list');
+                listEl.className = '';
                 listEl.innerHTML = '';
                 Object.entries(questionData).forEach(([key, data]) => {
                     const count = data.questions.length;
                     const card = document.createElement('div');
-                    card.className = 'quiz-card p-6 text-center cursor-pointer transition-transform hover:scale-105 hover:shadow-xl';
-                    card.innerHTML = `<h3 class="text-2xl font-bold text-slate-800">${data.name}</h3><p class="text-slate-500 mt-2">${count} câu hỏi</p>`;
+                    card.className = 'subject-item-legacy';
+                    card.innerHTML = `<h3>${data.name}</h3><p>${count} câu hỏi</p>`;
                     card.addEventListener('click', () => this.selectSubject(key));
                     listEl.appendChild(card);
                 });
@@ -414,23 +563,58 @@
                     $('#test-info-form').reset();
                 }
 
-                state.questions = questionData[state.currentSubjectKey].questions;
+                const subjectData = questionData[state.currentSubjectKey];
+                if (!subjectData || !subjectData.questions || subjectData.questions.length === 0) {
+                    alert(`Lỗi: Không tìm thấy dữ liệu câu hỏi hoặc bộ đề trống cho môn học "${state.currentSubjectKey}".`);
+                    this.goHome();
+                    return;
+                }
+                state.questions = subjectData.questions;
                 const total = state.questions.length;
 
                 $('#mode-modal').classList.add('hidden');
                 this.showScreen('quiz');
 
-                if (mode === 'test') {
+                const layoutContainer = $('#quiz-layout-container');
+                const qListContainer = layoutContainer.querySelector('.question-list-container');
+                const qContentContainer = layoutContainer.querySelector('.question-content-container');
+                const btnContainer = $('#button-container');
+
+
+                if (mode === 'review') {
+                    state.pickedIndices = [...Array(total).keys()]; // No shuffle
+                    $('#timer').classList.add('hidden');
+                    $('#hint-btn').classList.remove('hidden');
+                    layoutContainer.className = 'legacy-quiz-layout';
+                    qContentContainer.classList.remove('quiz-card');
+                    qListContainer.classList.remove('quiz-card');
+                    qListContainer.querySelector('h2').style.display = 'none';
+                    layoutContainer.insertBefore(qContentContainer, qListContainer);
+                    
+                    btnContainer.className = 'legacy-btn-container';
+                    $('#prev-btn').className = 'legacy-btn';
+                    $('#next-btn').className = 'legacy-btn';
+                    $('#hint-btn').className = 'legacy-btn';
+                    $('#submit-btn').className = 'legacy-btn-primary';
+
+                } else { // test mode
                     const pickCount = Math.min(state.testConfig.questionCount, total);
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random()).slice(0, pickCount);
                     state.secondsLeft = state.testConfig.durationMinutes * 60;
                     $('#timer').classList.remove('hidden');
                     $('#hint-btn').classList.add('hidden');
                     this.startTimer();
-                } else {
-                    state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
-                    $('#timer').classList.add('hidden');
-                    $('#hint-btn').classList.remove('hidden');
+                    layoutContainer.className = 'max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-4 gap-6';
+                    qContentContainer.classList.add('quiz-card');
+                    qListContainer.classList.add('quiz-card');
+                    qListContainer.querySelector('h2').style.display = 'block';
+                    layoutContainer.insertBefore(qListContainer, qContentContainer);
+
+                    btnContainer.className = 'mt-8 pt-6 border-t border-slate-200 flex flex-wrap gap-4 justify-between items-center';
+                    $('#prev-btn').className = 'btn btn-secondary';
+                    $('#next-btn').className = 'btn btn-secondary';
+                    $('#hint-btn').className = 'btn btn-secondary';
+                    $('#submit-btn').className = 'btn btn-primary';
                 }
                 
                 state.currentIndex = 0;
@@ -479,74 +663,20 @@
                 state.resultsInMemory.push(result);
                 alert("Kết quả bài thi đã được lưu tạm thời. Quản trị viên cần vào mục Quản lý để lưu lại file vĩnh viễn.");
             },
-
-            loadResults() {
-                return state.resultsInMemory;
-            },
-
-            renderResultsTable() {
-                const results = this.loadResults();
-                const tbody = $('#results-table-body');
-                tbody.innerHTML = '';
-                if (results.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-slate-500">Chưa có kết quả thi nào.</td></tr>';
-                    return;
-                }
-                results.forEach((res, index) => {
-                    const date = new Date(res.timestamp);
-                    const durationMins = Math.floor(res.duration / 60);
-                    const durationSecs = res.duration % 60;
-                    const row = `
-                        <tr>
-                            <td class="p-3 border border-slate-200">${res.name}</td>
-                            <td class="p-3 border border-slate-200">${res.id}</td>
-                            <td class="p-3 border border-slate-200">${res.subject}</td>
-                            <td class="p-3 border border-slate-200 font-bold">${res.score}/${res.total}</td>
-                            <td class="p-3 border border-slate-200">${durationMins}m ${durationSecs}s</td>
-                            <td class="p-3 border border-slate-200">${date.toLocaleString('vi-VN')}</td>
-                            <td class="p-3 border border-slate-200 text-center">
-                                <button data-index="${index}" class="btn btn-danger !p-2 delete-result-btn" title="Xóa kết quả này">
-                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.insertAdjacentHTML('beforeend', row);
-                });
-                
-                $$('.delete-result-btn').forEach(btn => btn.addEventListener('click', (e) => this.deleteResult(e)));
-            },
-
-            deleteResult(event) {
-                const index = parseInt(event.currentTarget.dataset.index);
-                 if (confirm(`Bạn có chắc muốn xóa kết quả của thí sinh này?`)) {
-                    state.resultsInMemory.splice(index, 1);
-                    this.renderResultsTable();
-                }
-            },
             
-            saveResultsToFile() {
-                if (!confirm("Thao tác này sẽ tạo ra file 'results.js' mới. Bạn cần dùng file này để thay thế file cũ. Tiếp tục?")) return;
-                const fileContent = `let savedResults = ${JSON.stringify(state.resultsInMemory, null, 2)};`;
-                const blob = new Blob([fileContent], { type: 'application/javascript' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `results.js`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert(`Đã tạo file 'results.js'.\nVui lòng dùng file này để thay thế file cũ trong thư mục của bạn.`);
-            },
-
             renderQuestionList() {
                 const listEl = $('#question-list');
                 listEl.innerHTML = '';
+                listEl.className = state.mode === 'review' 
+                    ? 'legacy-question-nav' 
+                    : 'grid grid-cols-8 sm:grid-cols-12 lg:grid-cols-7 gap-2 pb-2 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto lg:pr-2';
+
                 state.pickedIndices.forEach((qIndex, displayIndex) => {
                     const item = document.createElement('div');
-                    item.className = 'question-list-item w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border-2 cursor-pointer';
-                    item.textContent = displayIndex + 1;
+                    item.textContent = String(displayIndex + 1).padStart(2, '0');
+                    item.className = state.mode === 'review'
+                        ? 'legacy-question-nav-item'
+                        : 'question-list-item w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border-2 cursor-pointer';
                     item.addEventListener('click', () => {
                         state.currentIndex = displayIndex;
                         this.renderQuestion();
@@ -557,19 +687,42 @@
             },
 
             updateQuestionListStatus() {
-                const items = $$('#question-list .question-list-item');
+                const items = state.mode === 'review'
+                    ? $$('.legacy-question-nav-item')
+                    : $$('.question-list-item');
+                
                 items.forEach((item, displayIndex) => {
                     const qIndex = state.pickedIndices[displayIndex];
-                    item.classList.remove('border-blue-500', 'bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500', 'bg-slate-100', 'border-slate-300', 'scale-110');
+                    
+                    // Reset classes
+                    if(state.mode === 'review') {
+                        item.classList.remove('current', 'answered', 'correct', 'wrong');
+                    } else {
+                        item.classList.remove('border-blue-500', 'bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500', 'bg-slate-100', 'border-slate-300', 'scale-110');
+                    }
+
+                    // Add status classes
                     if (qIndex in state.userAnswers) {
                         const isCorrect = this.checkCorrectness(qIndex, state.userAnswers[qIndex]);
-                        item.classList.add(isCorrect ? 'bg-green-100' : 'bg-red-100', isCorrect ? 'border-green-500' : 'border-red-500');
+                        if (state.mode === 'review') {
+                            item.classList.add('answered', isCorrect ? 'correct' : 'wrong');
+                        } else {
+                            item.classList.add(isCorrect ? 'bg-green-100' : 'bg-red-100', isCorrect ? 'border-green-500' : 'border-red-500');
+                        }
                     } else {
-                        item.classList.add('bg-slate-100', 'border-slate-300');
+                        if (state.mode !== 'review') {
+                            item.classList.add('bg-slate-100', 'border-slate-300');
+                        }
                     }
+
+                    // Add current item class
                     if (displayIndex === state.currentIndex) {
-                        item.classList.add('border-blue-500', 'scale-110');
-                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                         if (state.mode === 'review') {
+                            item.classList.add('current');
+                         } else {
+                            item.classList.add('border-blue-500', 'scale-110');
+                            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                         }
                     }
                 });
             },
@@ -580,22 +733,43 @@
                 const question = state.questions[qIndex];
                 
                 const indexedOptions = question.options.map((opt, i) => ({ text: opt, originalIndex: i }));
-                const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
 
-                $('#question-header').textContent = `Câu ${state.currentIndex + 1}/${state.pickedIndices.length}`;
+                const headerText = state.mode === 'review'
+                    ? `Самопроверка: Câu hỏi ${state.currentIndex + 1} Từ ${state.pickedIndices.length}`
+                    : `Câu hỏi ${state.currentIndex + 1}/${state.pickedIndices.length}`;
+
+                $('#question-header').textContent = headerText;
+                $('#question-header').className = state.mode === 'review' ? 'legacy-question-header' : 'text-xl font-bold text-slate-900';
+                
                 $('#question-text').textContent = question.question;
+                $('#question-text').className = state.mode === 'review' ? 'legacy-question-text' : 'text-lg bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 min-h-[100px]';
+                
                 const optionsContainer = $('#options-container');
                 optionsContainer.innerHTML = '';
+                optionsContainer.className = state.mode === 'review' ? 'legacy-answer-container' : 'space-y-4';
 
-                shuffledOptions.forEach(opt => {
-                    const optionEl = document.createElement('div');
-                    optionEl.className = 'option-item flex items-center gap-4';
-                    optionEl.dataset.originalIndex = opt.originalIndex;
-                    optionEl.innerHTML = `<div class="custom-checkbox"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span class="flex-1">${opt.text}</span>`;
-                    optionEl.addEventListener('click', () => this.toggleOption(optionEl));
-                    optionsContainer.appendChild(optionEl);
-                });
-
+                if (state.mode === 'review') {
+                     indexedOptions.forEach((opt) => {
+                        const optionHTML = `
+                            <label>
+                                <input type="checkbox" name="answer" data-original-index="${opt.originalIndex}">
+                                <span>${opt.text}</span>
+                            </label>
+                        `;
+                        optionsContainer.insertAdjacentHTML('beforeend', optionHTML);
+                    });
+                } else {
+                    const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
+                    shuffledOptions.forEach(opt => {
+                        const optionEl = document.createElement('div');
+                        optionEl.className = 'option-item flex items-center gap-4';
+                        optionEl.dataset.originalIndex = opt.originalIndex;
+                        optionEl.innerHTML = `<div class="custom-checkbox"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span class="flex-1">${opt.text}</span>`;
+                        optionEl.addEventListener('click', () => optionEl.classList.toggle('selected'));
+                        optionsContainer.appendChild(optionEl);
+                    });
+                }
+                
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
             },
@@ -606,9 +780,10 @@
 
                 $('#feedback-container').classList.add('hidden');
                 $('#submit-btn').disabled = isAnswered;
-                $('#submit-btn').classList.toggle('opacity-50', isAnswered);
+                $('#submit-btn').textContent = state.mode === 'review' ? 'Trả lời' : 'Chốt đáp án';
 
                 const badge = $('#question-status-badge');
+                badge.style.display = state.mode === 'review' ? 'none' : 'inline-block';
                 badge.textContent = '';
                 badge.className = 'px-3 py-1 text-sm font-medium rounded-full';
 
@@ -625,47 +800,69 @@
                         $('#feedback-text').innerHTML = feedbackText;
                         $('#feedback-text').className = `p-4 rounded-lg font-medium ${feedbackClass}`;
                         $('#feedback-container').classList.remove('hidden');
-                    }
-                    
-                    const optionElements = $$('#options-container .option-item');
-                    optionElements.forEach(el => {
-                        if (userAnswer.includes(parseInt(el.dataset.originalIndex))) {
-                             el.classList.add('selected');
-                        }
-                        el.style.pointerEvents = 'none';
-                    });
-                } else {
-                     $$('#options-container .option-item').forEach(el => el.style.pointerEvents = 'auto');
-                }
-            },
+                         $$('#options-container input').forEach(el => el.disabled = true);
+                         userAnswer.forEach(ansIdx => {
+                             const checkbox = $(`#options-container input[data-original-index="${ansIdx}"]`);
+                             if (checkbox) checkbox.checked = true;
+                         });
 
-            toggleOption(optionEl) {
-                optionEl.classList.toggle('selected');
+                    } else { // modern mode
+                        $$('#options-container .option-item').forEach(el => {
+                            if (userAnswer.includes(parseInt(el.dataset.originalIndex))) {
+                                el.classList.add('selected');
+                            }
+                            el.style.pointerEvents = 'none';
+                        });
+                    }
+                } else {
+                     if (state.mode === 'review') {
+                         $$('#options-container input').forEach(el => el.disabled = false);
+                     } else {
+                         $$('#options-container .option-item').forEach(el => el.style.pointerEvents = 'auto');
+                     }
+                }
             },
 
             submitAnswer() {
                 const qIndex = state.pickedIndices[state.currentIndex];
                 if (qIndex in state.userAnswers) return;
 
-                const selectedOptions = [...$$('.option-item.selected')].map(el => parseInt(el.dataset.originalIndex));
+                const selectedOptions = state.mode === 'review'
+                    ? [...$$('#options-container input:checked')].map(el => parseInt(el.dataset.originalIndex))
+                    : [...$$('.option-item.selected')].map(el => parseInt(el.dataset.originalIndex));
+                
+                if (selectedOptions.length === 0) {
+                    alert("Vui lòng chọn ít nhất một đáp án.");
+                    return;
+                }
+
                 state.userAnswers[qIndex] = selectedOptions;
 
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
 
                 setTimeout(() => {
-                    const nextUnanswered = state.pickedIndices.findIndex((idx, displayIdx) => !(idx in state.userAnswers) && displayIdx > state.currentIndex);
-                    const firstUnanswered = state.pickedIndices.findIndex(idx => !(idx in state.userAnswers));
-                    
-                    if (nextUnanswered !== -1) {
-                        state.currentIndex = nextUnanswered;
-                    } else if (firstUnanswered !== -1) {
-                         state.currentIndex = firstUnanswered;
-                    } else {
-                        this.finishQuiz();
-                        return;
+                    if (state.mode === 'review') {
+                        if (state.currentIndex < state.pickedIndices.length - 1) {
+                            this.navigateQuestion(1);
+                        } else {
+                            alert("Bạn đã hoàn thành phần ôn tập.");
+                            this.goHome();
+                        }
+                    } else { // Test mode
+                        const nextUnanswered = state.pickedIndices.findIndex((idx, displayIdx) => !(idx in state.userAnswers) && displayIdx > state.currentIndex);
+                        const firstUnanswered = state.pickedIndices.findIndex(idx => !(idx in state.userAnswers));
+                        
+                        if (nextUnanswered !== -1) {
+                            state.currentIndex = nextUnanswered;
+                        } else if (firstUnanswered !== -1) {
+                                state.currentIndex = firstUnanswered;
+                        } else {
+                            this.finishQuiz();
+                            return;
+                        }
+                        this.renderQuestion();
                     }
-                    this.renderQuestion();
                 }, 1200);
             },
 
@@ -723,8 +920,7 @@
                     $('#timer').classList.add('hidden');
                     $('#hint-btn').classList.remove('hidden');
                     $('#results-modal').classList.add('hidden');
-                    this.renderQuestionList();
-                    this.renderQuestion();
+                    this.startQuiz('review');
                 }
             },
 
@@ -866,7 +1062,6 @@
             }
         };
 
-        // Initialize the main application
         document.addEventListener('DOMContentLoaded', () => {
             app.init();
         });
