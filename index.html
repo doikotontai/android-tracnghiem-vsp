@@ -584,7 +584,7 @@
 
 
                 if (mode === 'review') {
-                    state.pickedIndices = [...Array(total).keys()]; // No shuffle
+                    state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
                     $('#timer').classList.add('hidden');
                     $('#hint-btn').classList.remove('hidden');
                     layoutContainer.className = 'legacy-quiz-layout';
@@ -735,6 +735,8 @@
                 const question = state.questions[qIndex];
                 
                 const indexedOptions = question.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+                const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
+
 
                 const headerText = state.mode === 'review'
                     ? `Самопроверка: Câu hỏi ${state.currentIndex + 1} Từ ${state.pickedIndices.length}`
@@ -751,7 +753,7 @@
                 optionsContainer.className = state.mode === 'review' ? 'legacy-answer-container' : 'space-y-4';
 
                 if (state.mode === 'review') {
-                     indexedOptions.forEach((opt) => {
+                     shuffledOptions.forEach((opt) => {
                         const optionHTML = `
                             <label>
                                 <input type="checkbox" name="answer" data-original-index="${opt.originalIndex}">
@@ -761,7 +763,6 @@
                         optionsContainer.insertAdjacentHTML('beforeend', optionHTML);
                     });
                 } else {
-                    const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
                     shuffledOptions.forEach(opt => {
                         const optionEl = document.createElement('div');
                         optionEl.className = 'option-item flex items-center gap-4';
@@ -1070,5 +1071,4 @@
     </script>
 </body>
 </html>
-" selected on the right hand side of my screen. I'm looking for you to do the following: I have already updated the background color in the previous turn. Now, I want to remove the opacity-50 class in the selected code.
 
