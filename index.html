@@ -285,7 +285,6 @@
                 this.loadDataFromFiles();
                 this.renderSubjectList();
                 this.attachEventListeners();
-                // Visitor counter is now initialized separately outside this object
             },
             
             loadDataFromFiles() {
@@ -881,77 +880,80 @@
         // Initialize the main application
         document.addEventListener('DOMContentLoaded', () => {
             app.init();
-        });
 
-        // --- Visitor Counter Logic (self-contained) ---
-        (async () => {
-            try {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEFAULT_API_KEY", authDomain: "DEFAULT_AUTH_DOMAIN", projectId: "DEFAULT_PROJECT_ID" };
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-                
-                setLogLevel('debug');
-
-                const firebaseApp = initializeApp(firebaseConfig);
-                const auth = getAuth(firebaseApp);
-                const db = getFirestore(firebaseApp);
-                
-                const counterRef = doc(db, `artifacts/${appId}/public/data/visitor_counter`, "visits");
-
-                const incrementVisitorCount = async () => {
-                    try {
-                        await runTransaction(db, async (transaction) => {
-                            const counterDoc = await transaction.get(counterRef);
-                            const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
-                            transaction.set(counterRef, { count: newCount });
-                            console.log("Visitor count incremented to:", newCount);
-                        });
-                    } catch (error) {
-                        console.error("Lỗi khi cập nhật lượt truy cập:", error);
+            // --- Visitor Counter Logic (self-contained) ---
+            (async () => {
+                try {
+                    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                    if (!firebaseConfig) {
+                        throw new Error("Firebase config not found.");
                     }
-                };
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+                    
+                    setLogLevel('debug');
 
-                const setupSnapshotListener = () => {
-                     onSnapshot(counterRef, (doc) => {
-                        const visitorCountElement = document.getElementById('visitor-count');
-                        if (visitorCountElement) {
-                            if (doc.exists()) {
-                                visitorCountElement.textContent = doc.data().count.toLocaleString('vi-VN');
-                            } else {
-                                visitorCountElement.textContent = '0';
-                            }
+                    const firebaseApp = initializeApp(firebaseConfig);
+                    const auth = getAuth(firebaseApp);
+                    const db = getFirestore(firebaseApp);
+                    
+                    const counterRef = doc(db, `artifacts/${appId}/public/data/visitor_counter`, "visits");
+
+                    const incrementVisitorCount = async () => {
+                        try {
+                            await runTransaction(db, async (transaction) => {
+                                const counterDoc = await transaction.get(counterRef);
+                                const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
+                                transaction.set(counterRef, { count: newCount });
+                                console.log("Visitor count incremented to:", newCount);
+                            });
+                        } catch (error) {
+                            console.error("Lỗi khi cập nhật lượt truy cập:", error);
                         }
-                    }, (error) => {
-                        console.error("Lỗi khi lắng nghe dữ liệu truy cập:", error);
-                        const visitorCountElement = document.getElementById('visitor-count');
-                        if (visitorCountElement) visitorCountElement.textContent = 'Lỗi';
-                    });
-                }
-                
-                // Authenticate and then set up listeners
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                    };
 
-                console.log("Visitor counter: Authentication successful.");
-                
-                // Now that we are authenticated, set up the listener
-                setupSnapshotListener();
+                    const setupSnapshotListener = () => {
+                        onSnapshot(counterRef, (doc) => {
+                            const visitorCountElement = document.getElementById('visitor-count');
+                            if (visitorCountElement) {
+                                if (doc.exists()) {
+                                    visitorCountElement.textContent = doc.data().count.toLocaleString('vi-VN');
+                                } else {
+                                    visitorCountElement.textContent = '0';
+                                }
+                            }
+                        }, (error) => {
+                            console.error("Lỗi khi lắng nghe dữ liệu truy cập:", error);
+                            const visitorCountElement = document.getElementById('visitor-count');
+                            if (visitorCountElement) visitorCountElement.textContent = 'Lỗi';
+                        });
+                    }
+                    
+                    // Authenticate and then set up listeners
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
 
-                // Increment count only if it's a new session
-                if (!sessionStorage.getItem('quiz-app-visited')) {
-                    await incrementVisitorCount();
-                    sessionStorage.setItem('quiz-app-visited', 'true');
+                    console.log("Visitor counter: Authentication successful.");
+                    
+                    // Now that we are authenticated, set up the listener
+                    setupSnapshotListener();
+
+                    // Increment count only if it's a new session
+                    if (!sessionStorage.getItem('quiz-app-visited')) {
+                        await incrementVisitorCount();
+                        sessionStorage.setItem('quiz-app-visited', 'true');
+                    }
+
+                } catch (error) {
+                    console.error("Lỗi nghiêm trọng trong quá trình khởi tạo bộ đếm:", error);
+                    const visitorCountElement = document.getElementById('visitor-count');
+                    if (visitorCountElement) visitorCountElement.textContent = 'Lỗi';
                 }
-
-            } catch (error) {
-                console.error("Lỗi nghiêm trọng trong quá trình khởi tạo bộ đếm:", error);
-                 const visitorCountElement = document.getElementById('visitor-count');
-                if (visitorCountElement) visitorCountElement.textContent = 'Lỗi';
-            }
-        })();
+            })();
+        });
 
     </script>
 </body>
