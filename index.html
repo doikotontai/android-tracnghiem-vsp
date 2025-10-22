@@ -228,24 +228,25 @@
     <script src="data_paut.js"></script>
     
     <!-- Tải Firebase SDK (THÊM CÁC HÀM MỚI) -->
+    <!-- Script này sẽ chỉ được sử dụng khi cần, không load ngay từ đầu -->
     <script type="module">
+        // Import các hàm cần thiết
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, addDoc, collection, serverTimestamp, setLogLevel, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Gán các hàm vào window để script ở dưới có thể dùng
+        // Điều này là cần thiết vì chúng ta đang dùng 2 script block khác nhau
         window.firebase = {
             initializeApp,
             getAuth,
             signInAnonymously,
-            signInWithCustomToken,
             onAuthStateChanged,
             getFirestore,
             addDoc,
             collection,
             serverTimestamp,
             setLogLevel,
-            // === HÀM MỚI ĐỂ ĐỌC DỮ LIỆU ===
             getDocs,
             query,
             orderBy
@@ -267,7 +268,7 @@
     </div>
 
     <div id="app" class="p-4 sm:p-6 md:p-8 flex-grow">
-        <!-- MÀN HÌNH MỚI: Đăng nhập -->
+        <!-- MÀN HÌNH MỚI: Đăng nhập (bị ẩn ban đầu) -->
         <div id="login-screen" class="max-w-4xl mx-auto hidden">
              <table align="center" style="margin-top: 40px; border: 1px solid #999; width: 100%; max-width: 600px;">
                  <tr style="background-color: #f0f0f0;">
@@ -276,20 +277,18 @@
                 <tr>
                     <td style="padding: 20px;">
                         <form id="login-form">
-                            <!-- Đã xóa trường Họ và tên -->
-                            
                             <label for="user-danhso" style="font-family: Arial, sans-serif; font-size: 14px;">Danh số:</label>
                             <input type="text" id="user-danhso" class="legacy-login-input" required>
                             
-                            <button type="submit" id="login-btn" class="legacy-login-btn">Vào làm bài</button>
+                            <button type="submit" id="login-btn" class="legacy-login-btn">Vào làm bài / Admin</button>
                         </form>
                     </td>
                 </tr>
             </table>
         </div>
         
-        <!-- Màn hình chọn môn học (bị ẩn ban đầu) -->
-        <div id="selector-screen" class="max-w-4xl mx-auto hidden">
+        <!-- Màn hình chọn môn học (hiển thị đầu tiên) -->
+        <div id="selector-screen" class="max-w-4xl mx-auto">
             <table align="center" style="margin-top: 40px; border: 1px solid #999; width: 100%; max-width: 600px;">
                  <tr style="background-color: #f0f0f0;">
                     <td style="font-weight: bold; padding: 10px; font-family: Arial, sans-serif;">Website làm vì đam mê - vui lòng không chê bai</td>
@@ -298,10 +297,7 @@
                     <td style="padding: 20px;">
                         <div id="subject-list" class="flex flex-col items-center"></div>
                         
-                        <!-- === NÚT ADMIN MỚI (BỊ ẨN) === -->
-                        <button id="admin-panel-btn" class="legacy-btn-primary hidden" style="margin-top: 20px; width: 100%; max-width: 400px; background-color: #d97706;">
-                            Xem Bảng Điểm (Admin)
-                        </button>
+                        <!-- Nút Admin đã bị xóa khỏi đây -->
                     </td>
                 </tr>
             </table>
@@ -348,10 +344,9 @@
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>Họ và Tên</th>
-                                <th>Danh số</th>
+                                <th>Danh số (Tên)</th>
                                 <th>Môn thi</th>
-                                <th>Điểm</th>
+                                <th>Điểm (Đúng/Tổng)</th>
                                 <th>Ngày thi</th>
                             </tr>
                         </thead>
@@ -374,15 +369,32 @@
                 </div>
             </div>
         </div>
+        
+        <!-- HỘP THOẠI MỚI: Đang kết nối -->
+        <div id="connecting-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+             <div class="quiz-card p-8 max-w-md w-full text-center">
+                <h2 class="text-2xl font-bold mb-6">Đang kết nối...</h2>
+                <p>Vui lòng chờ trong giây lát.</p>
+            </div>
+        </div>
+        
         <div id="results-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-              <!-- ... (Không đổi) ... -->
+              <!-- ... (Đã bỏ mục Bỏ qua) ... -->
               <div class="quiz-card p-8 max-w-lg w-full">
                 <h2 id="results-title" class="text-3xl font-bold mb-6 text-center">Kết quả</h2>
+                
+                <!-- === BẢNG ĐIỂM SỬA ĐỔI === -->
                 <div class="space-y-4 text-lg">
+                    <div class="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
+                        <span class="font-medium text-blue-700 text-xl">Điểm của bạn:</span>
+                        <span id="results-score-display" class="font-bold text-blue-700 text-2xl"></span>
+                    </div>
                     <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg"><span class="font-medium">Tổng số câu:</span><span id="results-total" class="font-bold"></span></div>
                     <div class="flex justify-between items-center bg-green-50 p-3 rounded-lg"><span class="font-medium text-green-700">✅ Đúng:</span><span id="results-correct" class="font-bold text-green-700"></span></div>
                     <div class="flex justify-between items-center bg-red-50 p-3 rounded-lg"><span class="font-medium text-red-700">❌ Sai:</span><span id="results-wrong" class="font-bold text-red-700"></span></div>
                 </div>
+                <!-- === KẾT THÚC SỬA ĐỔI === -->
+                
                 <div class="mt-8 flex flex-col sm:flex-row gap-4">
                     <button id="review-wrong-btn" class="btn btn-secondary w-full">Xem lại câu sai</button>
                     <button id="close-results-btn" class="btn btn-primary w-full">Đóng</button>
@@ -415,31 +427,44 @@
             userDanhSo: null,
             db: null,
             auth: null,
-            firebaseReady: false,
-            adminPass: "999999" // <-- ĐÂY LÀ "MẬT KHẨU" ADMIN
+            firebaseReady: false, // Sẽ thành true sau khi kết nối
+            adminPass: "999999" // <-- "MẬT KHẨU" ADMIN
         };
         
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
 
         const app = {
-            async init() {
+            init() {
+                // Không kết nối Firebase ngay
                 this.loadDataFromFiles();
                 this.renderSubjectList();
                 this.attachEventListeners();
-                // Bắt đầu bằng cách khởi tạo Firebase
-                await this.initFirebase();
+                // Bắt đầu bằng màn hình chọn môn
+                this.showScreen('selector'); 
             },
 
+            // Hàm initFirebase sẽ được gọi khi cần
             async initFirebase() {
+                // Nếu đã sẵn sàng, không cần làm gì
+                if (state.firebaseReady) return true;
+
                 try {
+                    // Chờ cho `window.firebase` được import (từ script module)
+                    let attempts = 0;
+                    while (!window.firebase && attempts < 50) {
+                        await new Promise(resolve => setTimeout(resolve, 100)); // Chờ 100ms
+                        attempts++;
+                    }
+                    if (!window.firebase) {
+                        throw new Error("Firebase SDK failed to load.");
+                    }
+
                     const {
                         initializeApp, getAuth, signInAnonymously,
                         onAuthStateChanged, getFirestore, setLogLevel
                     } = window.firebase;
                     
-                    // !!! QUAN TRỌNG: Đã cập nhật với thông tin "chìa khoá" bạn vừa cung cấp
-                    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
                     const firebaseConfig = {
                       apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
                       authDomain: "tracnghiemndt.firebaseapp.com",
@@ -449,38 +474,53 @@
                       appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
                       measurementId: "G-TKRBZJT880"
                     };
-                    // !!! ---------------------------------------------- !!!
                     
-                    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("AIzaSyCt14...")) {
-                        console.error("Firebase config is missing or invalid.");
-                        alert("Lỗi cấu hình máy chủ. Bạn chưa dán firebaseConfig vào tệp index.html.");
-                        return;
+                    if (!firebaseConfig.apiKey) {
+                        throw new Error("Firebase config is missing or invalid.");
                     }
 
                     const app = initializeApp(firebaseConfig);
                     state.db = getFirestore(app);
                     state.auth = getAuth(app);
-                    setLogLevel('Debug'); // Bật log chi tiết của Firebase
+                    setLogLevel('Debug');
 
-                    onAuthStateChanged(state.auth, (user) => {
-                        if (user) {
-                            console.log("Firebase Auth user signed in:", user.uid);
-                            state.firebaseReady = true;
-                            // Khi đã xác thực, hiển thị màn hình đăng nhập
-                            this.showScreen('login');
+                    // Trả về một Promise sẽ resolve khi đăng nhập thành công
+                    return new Promise((resolve, reject) => {
+                        onAuthStateChanged(state.auth, (user) => {
+                            if (user) {
+                                console.log("Firebase Auth user signed in:", user.uid);
+                                if (!state.firebaseReady) { // Chỉ resolve lần đầu tiên
+                                    state.firebaseReady = true;
+                                    resolve(true); // Báo hiệu đã sẵn sàng
+                                }
+                            } else {
+                                console.log("Firebase Auth user signed out.");
+                                state.firebaseReady = false;
+                                // Đăng nhập lại nếu bị đăng xuất
+                                signInAnonymously(state.auth).catch(authError => {
+                                    console.error("Anonymous sign-in failed on re-auth:", authError);
+                                    reject(authError);
+                                });
+                            }
+                        });
+
+                        // Thử đăng nhập ẩn danh (chỉ chạy nếu chưa có user)
+                        if (!state.auth.currentUser) {
+                             signInAnonymously(state.auth).catch(authError => {
+                                console.error("Anonymous sign-in failed:", authError);
+                                reject(authError);
+                            });
                         } else {
-                            console.log("Firebase Auth user signed out.");
-                            state.firebaseReady = false;
+                             // Nếu đã có user từ lần trước, resolve ngay
+                             state.firebaseReady = true;
+                             resolve(true);
                         }
                     });
-
-                    // Đăng nhập ẩn danh (cho phiên bản GitHub)
-                    await signInAnonymously(state.auth);
-                    console.log("Signed in anonymously for standalone version.");
 
                 } catch (error) {
                     console.error("Error initializing Firebase:", error);
                     alert("Không thể kết nối đến máy chủ. Vui lòng tải lại trang.");
+                    return false; // Báo hiệu thất bại
                 }
             },
             
@@ -499,49 +539,74 @@
                 $('#login-form').addEventListener('submit', (e) => this.handleLogin(e));
                 
                 // === EVENT LISTENER MỚI ===
-                $('#admin-panel-btn').addEventListener('click', () => this.loadAdminResults());
                 $('#admin-back-btn').addEventListener('click', () => this.showScreen('selector'));
 
-
+                // Cập nhật listener cho các nút chọn chế độ
                 $('#mode-review').addEventListener('click', () => this.startQuiz('review'));
-                $('#mode-test').addEventListener('click', () => this.startQuiz('test'));
+                $('#mode-test').addEventListener('click', () => this.handleTestModeClick()); // Thay đổi
                 
                 $('#prev-btn').addEventListener('click', () => this.navigateQuestion(-1));
                 $('#next-btn').addEventListener('click', () => this.navigateQuestion(1));
                 $('#submit-btn').addEventListener('click', () => this.submitAnswer());
                 $('#hint-btn').addEventListener('click', () => this.showHint());
-                $('#stop-btn').addEventListener('click', () => this.goHome());
+                $('#stop-btn').addEventListener('click', () => this.goHome()); // Sẽ quay về selector
 
-                $('#close-results-btn').addEventListener('click', () => this.closeResults());
+                // === SỬA LỖI NÚT ĐÓNG ===
+                $('#close-results-btn').addEventListener('click', () => this.goHome());
+                
                 $('#review-wrong-btn').addEventListener('click', () => this.reviewWrongAnswers());
             },
 
+            // HÀM MỚI: Xử lý khi bấm "Làm bài thi"
+            async handleTestModeClick() {
+                $('#mode-modal').classList.add('hidden');
+                
+                // Hiển thị modal "Đang kết nối..."
+                $('#connecting-modal').classList.remove('hidden');
+
+                try {
+                    // Gọi hàm initFirebase VÀ CHỜ nó hoàn thành
+                    const success = await this.initFirebase(); 
+                    
+                    $('#connecting-modal').classList.add('hidden'); // Ẩn modal
+
+                    if (success) {
+                        // Nếu kết nối thành công, hiển thị màn hình đăng nhập
+                        this.showScreen('login');
+                    } else {
+                        alert("Kết nối máy chủ thất bại. Vui lòng thử lại.");
+                    }
+                } catch (error) {
+                    $('#connecting-modal').classList.add('hidden');
+                    alert("Đã xảy ra lỗi khi kết nối: " + error.message);
+                    console.error("Firebase init failed:", error);
+                }
+            },
+
+            // HÀM CẬP NHẬT: Xử lý đăng nhập
             handleLogin(e) {
                 e.preventDefault();
-                // const userName = $('#user-name').value.trim(); // Đã xóa
                 const userDanhSo = $('#user-danhso').value.trim();
                 
-                if (userDanhSo) { // Chỉ kiểm tra danh số
+                if (userDanhSo) {
                     state.userName = userDanhSo; // Dùng danh số làm tên
                     state.userDanhSo = userDanhSo;
-                    this.showScreen('selector');
                     
-                    // === LOGIC MỚI ĐỂ HIỆN NÚT ADMIN ===
-                    const adminBtn = $('#admin-panel-btn');
+                    // KIỂM TRA ADMIN
                     if (state.userDanhSo === state.adminPass) {
-                        adminBtn.classList.remove('hidden');
+                        this.loadAdminResults(); // Tải và hiển thị trang admin
                     } else {
-                        adminBtn.classList.add('hidden');
+                        // Nếu là người dùng thường, bắt đầu bài thi
+                        this.startQuiz('test');
                     }
-                    // === KẾT THÚC LOGIC MỚI ===
-
                 } else {
-                    alert("Vui lòng nhập Danh số."); // Cập nhật thông báo
+                    alert("Vui lòng nhập Danh số.");
                 }
             },
 
             showScreen(screenName) {
-                const isLegacy = screenName === 'login' || screenName === 'selector' || screenName === 'quiz' || screenName === 'admin';
+                // Cập nhật danh sách màn hình
+                const isLegacy = ['login', 'selector', 'quiz', 'admin'].includes(screenName);
                 document.body.classList.toggle('legacy-body', isLegacy);
 
                 ['login', 'selector', 'quiz', 'admin'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
@@ -553,13 +618,14 @@
             
             goHome() {
                 clearInterval(state.timerId);
-                // Quay về màn hình đăng nhập thay vì chọn môn
-                this.showScreen('login'); 
+                // Quay về màn hình chọn môn
+                $('#results-modal').classList.add('hidden'); // Đảm bảo modal kết quả đã đóng
+                this.showScreen('selector'); 
             },
 
             renderSubjectList() {
                 const listEl = $('#subject-list');
-                listEl.innerHTML = ''; // Đã xóa class ở đây vì nó được thêm ở HTML
+                listEl.innerHTML = ''; 
                 Object.entries(window.questionData).forEach(([key, data]) => {
                     const count = data.questions.length;
                     const card = document.createElement('div');
@@ -570,46 +636,44 @@
                 });
             },
 
-            // === HÀM MỚI ĐỂ TẢI KẾT QUẢ ADMIN ===
+            // HÀM CẬP NHẬT: Tải kết quả (Bảng Admin)
             async loadAdminResults() {
-                this.showScreen('admin');
-                const resultsBody = $('#results-table-body');
-                resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>';
-                
+                // Đảm bảo đã kết nối
                 if (!state.firebaseReady || !state.db) {
-                     resultsBody.innerHTML = '<tr><td colspan="5" style="color: red; text-align: center; padding: 20px;">Lỗi kết nối Firebase.</td></tr>';
+                     alert("Lỗi: Chưa kết nối Firebase. Không thể tải Bảng điểm.");
+                     this.showScreen('selector'); // Quay lại
                      return;
                 }
+                
+                this.showScreen('admin'); // Hiển thị màn hình admin
+                const resultsBody = $('#results-table-body');
+                resultsBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>';
                 
                 const { collection, query, getDocs, orderBy } = window.firebase;
                 
                 try {
                     const resultsCol = collection(state.db, 'quiz_results');
-                    // Sắp xếp theo 'timestamp' (ngày thi) mới nhất lên đầu
                     const q = query(resultsCol, orderBy('timestamp', 'desc')); 
-                    
                     const querySnapshot = await getDocs(q);
                     
                     resultsBody.innerHTML = ''; // Xóa dòng "Đang tải..."
                     
                     if (querySnapshot.empty) {
-                        resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Chưa có kết quả nào được lưu.</td></tr>';
+                        resultsBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">Chưa có kết quả nào được lưu.</td></tr>';
                         return;
                     }
                     
                     querySnapshot.forEach(doc => {
                         const data = doc.data();
-                        
-                        // Chuyển đổi timestamp của Firebase (nếu có) thành ngày giờ
                         const date = data.timestamp ? data.timestamp.toDate().toLocaleString('vi-VN') : 'Không rõ';
-                        const score = data.score.toFixed(2); // Làm tròn điểm
+                        // Sửa đổi hiển thị điểm
+                        const scoreDisplay = `${data.correct} / ${data.total} (${data.score.toFixed(0)}%)`;
                         
                         const row = `
                             <tr>
-                                <td>${data.userName}</td>
                                 <td>${data.userDanhSo}</td>
                                 <td>${data.subject}</td>
-                                <td>${score}</td>
+                                <td>${scoreDisplay}</td>
                                 <td>${date}</td>
                             </tr>
                         `;
@@ -618,26 +682,29 @@
                     
                 } catch (error) {
                     console.error("Error loading admin results:", error);
-                    resultsBody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center; padding: 20px;">
-                                                Lỗi tải kết quả. 
-                                                <br><br> 
-                                                <strong>Bạn đã cập nhật Firebase Rules chưa?</strong>
-                                                <br>
-                                                (Lỗi: ${error.message})
+                    resultsBody.innerHTML = `<tr><td colspan="4" style="color: red; text-align: center; padding: 20px;">
+                                                Lỗi tải kết quả. (Lỗi: ${error.message})
                                            </td></tr>`;
                 }
             },
-            // === KẾT THÚC HÀM MỚI ===
 
             selectSubject(subjectKey) {
                 state.currentSubjectKey = subjectKey;
                 $('#mode-modal').classList.remove('hidden');
             },
 
+            // HÀM CẬP NHẬT: Bắt đầu Quiz
             startQuiz(mode) {
-                state.mode = mode;
+                state.mode = mode; // 'review', 'test', 'review-wrong'
                 state.viewedIndices.clear(); 
                 
+                // Nếu là 'test' mode, phải đảm bảo đã đăng nhập
+                if (mode === 'test' && !state.userDanhSo) {
+                    alert("Lỗi: Phải đăng nhập để làm bài thi.");
+                    this.showScreen('selector');
+                    return;
+                }
+
                 const subjectData = window.questionData[state.currentSubjectKey];
                 if (!subjectData || !subjectData.questions || subjectData.questions.length === 0) {
                     alert(`Lỗi: Không tìm thấy dữ liệu câu hỏi hoặc bộ đề trống cho môn học "${state.currentSubjectKey}".`);
@@ -647,7 +714,7 @@
                 state.questions = subjectData.questions;
                 const total = state.questions.length;
 
-                $('#mode-modal').classList.add('hidden');
+                $('#mode-modal').classList.add('hidden'); // Đã ẩn ở handleTestModeClick nhưng ẩn lại cho chắc
                 this.showScreen('quiz');
 
                 const layoutContainer = $('#quiz-layout-container');
@@ -676,10 +743,10 @@
                 $('#stop-btn').className = 'legacy-btn';
 
                 if (mode === 'test') {
-                    $('#hint-btn').style.display = 'none';
+                    $('#hint-btn').style.display = 'none'; // Ẩn gợi ý khi thi
                     const pickCount = Math.min(state.testConfig.questionCount, total);
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random()).slice(0, pickCount);
-                    this.startTimer();
+                    // this.startTimer(); // Bỏ timer cho đơn giản
                 } else { // 'review' mode
                     $('#hint-btn').style.display = 'inline-flex';
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
@@ -706,6 +773,12 @@
                 const wrong = answeredCount - correct;
                 
                 $('#results-title').textContent = isAuto ? "Hết giờ!" : "Kết quả";
+                
+                // === YÊU CẦU 2: HIỂN THỊ ĐIỂM ===
+                const scoreText = `${correct} / ${total}`;
+                $('#results-score-display').textContent = scoreText; // Hiển thị điểm
+                // ================================
+                
                 $('#results-total').textContent = total;
                 $('#results-correct').textContent = correct;
                 $('#results-wrong').textContent = wrong;
@@ -720,6 +793,7 @@
             },
 
             async saveResultToFirebase(correct, wrong, total) {
+                // Đảm bảo đã kết nối
                 if (!state.firebaseReady || !state.db) {
                     console.error("Firebase is not ready. Cannot save result.");
                     alert("Lỗi: Không thể lưu kết quả. Vui lòng kiểm tra kết nối.");
@@ -732,7 +806,7 @@
                     const subjectName = window.questionData[state.currentSubjectKey]?.name || state.currentSubjectKey;
                     
                     const resultData = {
-                        userName: state.userName,
+                        userName: state.userName, // Vẫn lưu userName (là danh số)
                         userDanhSo: state.userDanhSo,
                         subject: subjectName,
                         mode: state.mode,
@@ -740,10 +814,9 @@
                         wrong: wrong,
                         total: total,
                         score: (correct / total) * 100,
-                        timestamp: serverTimestamp() // Thêm dấu thời gian của máy chủ
+                        timestamp: serverTimestamp() 
                     };
                     
-                    // Lưu vào collection 'quiz_results'
                     const resultsColPath = `quiz_results`;
                     const docRef = await addDoc(collection(state.db, resultsColPath), resultData);
                     console.log("Result saved to Firebase with ID:", docRef.id);
@@ -799,8 +872,18 @@
                 state.viewedIndices.add(qIndex); 
                 const question = state.questions[qIndex];
                 
+                // Sửa lỗi: Đảm bảo options là một mảng
+                if (!question.options || !Array.isArray(question.options)) {
+                    console.error("Invalid question structure: options is missing or not an array", question);
+                    $('#question-text').textContent = "LỖI: Cấu trúc câu hỏi không hợp lệ.";
+                    $('#options-container').innerHTML = '';
+                    return; 
+                }
+                
                 const indexedOptions = question.options.map((opt, i) => ({ text: opt, originalIndex: i }));
-                const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
+                // Không xáo trộn đáp án nữa để dễ đối chiếu
+                // const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
+                const shuffledOptions = indexedOptions; // Giữ nguyên thứ tự
 
                 const headerText = `Câu hỏi ${state.currentIndex + 1} / ${state.pickedIndices.length}`;
                 $('#question-header').textContent = headerText;
@@ -814,7 +897,6 @@
                 optionsContainer.className = 'legacy-answer-container';
 
                 shuffledOptions.forEach((opt) => {
-                    // *** ĐÂY LÀ CHỖ ĐÃ SỬA LẠI CHO ĐÚNG ***
                     const optionHTML = `
                         <label>
                             <input type="checkbox" name="answer" data-original-index="${opt.originalIndex}">
@@ -836,6 +918,14 @@
 
             updateUIForQuestionState() {
                 const qIndex = state.pickedIndices[state.currentIndex];
+                const question = state.questions[qIndex];
+                
+                // Kiểm tra lại cấu trúc câu hỏi
+                if (!question || !question.answer || !Array.isArray(question.answer)) {
+                    console.error("Invalid question structure for updateUI", question);
+                    return;
+                }
+
                 const isAnswered = qIndex in state.userAnswers;
 
                 $('#feedback-container').classList.add('hidden');
@@ -848,7 +938,7 @@
                 if (isAnswered) {
                     const userAnswer = state.userAnswers[qIndex];
                     const isCorrect = this.checkCorrectness(qIndex, userAnswer);
-                    const correctIndices = state.questions[qIndex].answer;
+                    const correctIndices = question.answer;
                     
                     $$('#options-container input').forEach(el => el.disabled = true);
                     userAnswer.forEach(ansIdx => {
@@ -952,13 +1042,16 @@
             },
 
             checkCorrectness(qIndex, userAnswer) {
-                const correctIndices = new Set(state.questions[qIndex].answer);
+                const question = state.questions[qIndex];
+                if (!question || !question.answer) return false;
+                const correctIndices = new Set(question.answer);
                 const userAnswerSet = new Set(userAnswer);
                 return correctIndices.size === userAnswerSet.size && [...correctIndices].every(item => userAnswerSet.has(item));
             },
 
             getCorrectAnswerText(qIndex) {
                  const question = state.questions[qIndex];
+                 if (!question || !question.answer || !question.options) return "Lỗi câu hỏi";
                  return question.answer.map(i => question.options[i]).join('; ');
             },
 
@@ -969,26 +1062,11 @@
             },
 
             startTimer() {
-                clearInterval(state.timerId);
-                // Tìm lại #timer vì nó có thể chưa tồn tại khi init()
-                const timerEl = $('#timer'); 
-                if (!timerEl) return;
-                timerEl.classList.remove('hidden');
-                state.timerId = setInterval(() => {
-                    state.secondsLeft--;
-                    const minutes = Math.floor(state.secondsLeft / 60);
-                    const seconds = state.secondsLeft % 60;
-                    timerEl.textContent = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                    if (state.secondsLeft <= 0) {
-                        this.finishQuiz(true);
-                    }
-                }, 1000);
+                // Đã bỏ
             },
 
-            closeResults() {
-                $('#results-modal').classList.add('hidden');
-                this.goHome(); // Quay về màn hình đăng nhập
-            },
+            // closeResults() đã được cập nhật trong attachEventListeners
+            // để gọi goHome()
 
             reviewWrongAnswers() {
                 const wrongQIndices = state.pickedIndices.filter(qIndex => qIndex in state.userAnswers && !this.checkCorrectness(qIndex, state.userAnswers[qIndex]));
@@ -1010,18 +1088,18 @@
                     $('#stop-btn').style.display = 'inline-flex';
 
                     this.renderQuestionList();
-                    this.renderQuestion(); // Sẽ chạy updateUIForQuestionState
+                    this.renderQuestion(); 
                 } else {
                     alert("Bạn không có câu trả lời nào sai để xem lại.");
                 }
             }
         };
 
+        // Thay đổi: Chạy app.init() khi DOM đã sẵn sàng
         document.addEventListener('DOMContentLoaded', () => {
             app.init();
         });
     </script>
 </body>
 </html>
-
 
