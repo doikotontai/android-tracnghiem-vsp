@@ -120,16 +120,16 @@
             border-width: 2px;
         }
         .legacy-question-nav-item.skipped {
-            background-color: #FFCC00; 
+            background-color: #FFCC00;
             border-color: #e6b800;
         }
         .legacy-question-nav-item.answered.correct {
-            background-color: #006600; 
+            background-color: #006600;
             border-color: #004d00;
             color: white;
         }
         .legacy-question-nav-item.answered.wrong {
-            background-color: #990000; 
+            background-color: #990000;
             border-color: #800000;
             color: white;
         }
@@ -246,16 +246,16 @@
         // Import các hàm cần thiết
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         // === THÊM `signInWithEmailAndPassword` VÀ `signOut` ===
-        import { 
+        import {
             getAuth, signInAnonymously, onAuthStateChanged,
             signInWithEmailAndPassword, signOut // <-- THÊM MỚI `signOut`
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, addDoc, collection, serverTimestamp, 
+        import {
+            getFirestore, addDoc, collection, serverTimestamp,
             setLogLevel, getDocs, query, orderBy,
-            deleteDoc, doc 
+            deleteDoc, doc
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
+
         // === THÊM REALTIME DATABASE (RTDB) SDK ===
         import {
             getDatabase, ref, onValue, onDisconnect, set
@@ -278,7 +278,7 @@
             getDocs,
             query,
             orderBy,
-            deleteDoc, 
+            deleteDoc,
             doc,
             // === THÊM HÀM MỚI CỦA RTDB ===
             getDatabase,
@@ -294,7 +294,7 @@
     <!-- Top Panel similar to index1.html -->
     <!-- === CẬP NHẬT STYLE CHO TOP PANEL VÀ THÊM BỘ ĐẾM === -->
     <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; position: relative;">
-        
+
         <div id="logo-container" style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem; cursor: pointer;">
             <!-- IMPORTANT: Replace "logo.png" with the actual path to your logo file -->
             <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
@@ -303,7 +303,7 @@
                 XL1709-NDT-BCH
             </div>
         </div>
-        
+
         <!-- === BỘ ĐẾM SỐ NGƯỜI TRUY CẬP === -->
         <div id="presence-counter" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none;">
             <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%;"></span>
@@ -331,12 +331,12 @@
                             <div id="admin-login-group" class="hidden" style="margin-top: 15px;">
                                 <label for="admin-email" style="font-family: Arial, sans-serif; font-size: 14px;">Admin Email:</label>
                                 <input type="email" id="admin-email" class="legacy-login-input">
-                                
+
                                 <label for="admin-password" style="font-family: Arial, sans-serif; font-size: 14px;">Admin Password:</label>
                                 <input type="password" id="admin-password" class="legacy-login-input">
                             </div>
                             <!-- === KẾT THÚC TRƯỜNG MỚI === -->
-                            
+
                             <button type="submit" id="login-btn" class="legacy-login-btn">Vào làm bài</button>
                             <button type="button" id="login-back-btn" class="legacy-login-btn" style="background-color: #6c757d; border-color: #6c757d; margin-top: 10px;">Trở lại</button>
                         </form>
@@ -344,7 +344,7 @@
                 </tr>
             </table>
         </div>
-        
+
         <!-- Màn hình chọn môn học (hiển thị đầu tiên) -->
         <div id="selector-screen" class="max-w-4xl mx-auto">
             <table align="center" style="margin-top: 40px; border: 1px solid #999; width: 100%; max-width: 600px;">
@@ -372,7 +372,7 @@
                 <div class="question-content-container">
                     <!-- === THÊM BỘ ĐẾM GIỜ === -->
                     <div id="timer" class="text-2xl font-bold text-red-600 text-center mb-4 hidden"></div>
-                    
+
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="question-header" class="text-xl font-bold text-slate-900"></h2>
                     </div>
@@ -394,7 +394,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- === MÀN HÌNH ADMIN MỚI === -->
         <div id="admin-screen" class="max-w-4xl mx-auto hidden">
             <div class="admin-panel">
@@ -435,7 +435,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- HỘP THOẠI MỚI: Đang kết nối -->
         <div id="connecting-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
              <div class="quiz-card p-8 max-w-md w-full text-center">
@@ -443,12 +443,12 @@
                 <p>Vui lòng chờ trong giây lát.</p>
             </div>
         </div>
-        
+
         <div id="results-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
               <!-- ... (Đã bỏ mục Bỏ qua) ... -->
               <div class="quiz-card p-8 max-w-lg w-full">
                 <h2 id="results-title" class="text-3xl font-bold mb-6 text-center">Kết quả</h2>
-                
+
                 <!-- === BẢNG ĐIỂM SỬA ĐỔI === -->
                 <div class="space-y-4 text-lg">
                     <div class="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
@@ -460,7 +460,7 @@
                     <div class="flex justify-between items-center bg-red-50 p-3 rounded-lg"><span class="font-medium text-red-700">❌ Sai:</span><span id="results-wrong" class="font-bold text-red-700"></span></div>
                 </div>
                 <!-- === KẾT THÚC SỬA ĐỔI === -->
-                
+
                 <div class="mt-8 flex flex-col sm:flex-row gap-4">
                     <button id="review-wrong-btn" class="btn btn-secondary w-full">Xem lại câu sai</button>
                     <button id="close-results-btn" class="btn btn-primary w-full">Đóng</button>
@@ -468,7 +468,7 @@
              </div>
         </div>
     </div>
-    
+
     <footer id="app-footer" class="text-center p-6 mt-auto border-t border-slate-200 bg-white shadow-inner" style="display: none;">
         <p class="text-slate-600">&copy; 2025 BCH-XNXL. Tạo bởi Phong Lưu.</p>
     </footer>
@@ -497,13 +497,15 @@
             firebaseReady: false, // Sẽ thành true sau khi kết nối
             isFinished: false // Cờ hiệu cho biết bài thi đã nộp hay chưa
         };
-        
+
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
 
         const app = {
             init() {
-                // Không kết nối Firebase ngay
+                // === THAY ĐỔI: Kết nối Firebase ngay khi khởi động ===
+                this.initFirebase(); // Gọi initFirebase ngay
+
                 this.loadDataFromFiles();
                 this.renderSubjectList();
                 this.attachEventListeners();
@@ -511,12 +513,10 @@
                 this.showScreen('selector');
             },
 
-            // Hàm initFirebase sẽ được gọi khi cần
-            async initFirebase(isForAdmin = false) {
+            // === HÀM CẬP NHẬT: initFirebase ===
+            async initFirebase() {
                 // Nếu đã sẵn sàng, không cần làm gì
-                // Trừ khi admin đang đăng nhập, chúng ta cần đảm bảo
-                // auth object được trả về là mới nhất
-                if (state.firebaseReady && !isForAdmin) return true;
+                if (state.firebaseReady) return true;
 
                 try {
                     // Chờ cho `window.firebase` được import (từ script module)
@@ -534,7 +534,7 @@
                         onAuthStateChanged, getFirestore, setLogLevel,
                         getDatabase // === THÊM HÀM RTDB ===
                     } = window.firebase;
-                    
+
                     const firebaseConfig = {
                       apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
                       authDomain: "tracnghiemndt.firebaseapp.com",
@@ -544,7 +544,7 @@
                       appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
                       measurementId: "G-TKRBZJT880"
                     };
-                    
+
                     if (!firebaseConfig.apiKey) {
                         throw new Error("Firebase config is missing or invalid.");
                     }
@@ -555,22 +555,39 @@
                     state.auth = getAuth(app);
                     setLogLevel('Debug');
 
-                    // === LOGIC MỚI: KHÔNG TỰ ĐỘNG ĐĂNG NHẬP ẨN DANH ===
-                    // Chỉ khởi tạo và báo sẵn sàng
-                    state.firebaseReady = true;
-                    
-                    // Thêm nút Admin nếu đã đăng nhập admin từ trước
-                    this.checkAdminAndShowButton();
-                    
-                    return true;
+                    // === LOGIC MỚI: TỰ ĐỘNG ĐĂNG NHẬP ẨN DANH BAN ĐẦU ===
+                    onAuthStateChanged(state.auth, async (user) => {
+                         if (!user) {
+                             // Nếu chưa đăng nhập, thử đăng nhập ẩn danh
+                             try {
+                                await signInAnonymously(state.auth);
+                                console.log("Signed in anonymously.");
+                                this.setupPresence(); // Kích hoạt presence sau khi đăng nhập
+                                state.firebaseReady = true; // Đánh dấu sẵn sàng
+                                this.checkAdminAndShowButton(); // Kiểm tra lại admin
+                             } catch (error) {
+                                console.error("Anonymous sign-in failed:", error);
+                                alert("Không thể thiết lập phiên làm việc ẩn danh. Vui lòng thử lại.");
+                             }
+                         } else {
+                             // Đã đăng nhập (có thể là ẩn danh hoặc admin)
+                             console.log("User already signed in:", user.uid);
+                             this.setupPresence(); // Kích hoạt presence
+                             state.firebaseReady = true; // Đánh dấu sẵn sàng
+                             this.checkAdminAndShowButton(); // Kiểm tra lại admin
+                         }
+                    });
+
+                    return true; // Trả về true ngay, onAuthStateChanged sẽ xử lý tiếp
 
                 } catch (error) {
                     console.error("Error initializing Firebase:", error);
                     alert("Không thể kết nối đến máy chủ. Vui lòng tải lại trang.");
+                    state.firebaseReady = false; // Đảm bảo trạng thái là false nếu lỗi
                     return false; // Báo hiệu thất bại
                 }
             },
-            
+
             loadDataFromFiles() {
                 window.questionData = {};
                 if (typeof data_antoan !== 'undefined') window.questionData['antoan'] = data_antoan;
@@ -584,10 +601,10 @@
             attachEventListeners() {
                 // === YÊU CẦU 2: Thêm sự kiện click cho logo ===
                 $('#logo-container').addEventListener('click', () => this.goHome());
-            
+
                 // Event listener mới
                 $('#login-form').addEventListener('submit', (e) => this.handleLogin(e));
-                
+
                 // === EVENT LISTENER MỚI ===
                 $('#admin-back-btn').addEventListener('click', () => this.showScreen('selector'));
                 // === THÊM MỚI ===
@@ -596,8 +613,9 @@
 
                 // Cập nhật listener cho các nút chọn chế độ
                 $('#mode-review').addEventListener('click', () => this.startQuiz('review'));
-                $('#mode-test').addEventListener('click', () => this.handleTestModeClick()); // Thay đổi
-                
+                // === THAY ĐỔI: handleTestModeClick -> showLoginScreenForTest ===
+                $('#mode-test').addEventListener('click', () => this.showLoginScreenForTest());
+
                 $('#prev-btn').addEventListener('click', () => this.navigateQuestion(-1));
                 $('#next-btn').addEventListener('click', () => this.navigateQuestion(1));
                 $('#submit-btn').addEventListener('click', () => this.submitAnswer());
@@ -606,22 +624,27 @@
 
                 // === SỬA LỖI NÚT ĐÓNG ===
                 $('#close-results-btn').addEventListener('click', () => this.goHome());
-                
+
                 $('#review-wrong-btn').addEventListener('click', () => this.reviewWrongAnswers());
-                
+
                 // === YÊU CẦU 3: LƯU KHI TẮT TRANG ===
                 window.addEventListener('beforeunload', () => this.handleWindowClose());
-                
+
                 // === SỰ KIỆN MỚI: Thay đổi ô danh số ===
                 $('#user-danhso').addEventListener('input', (e) => this.checkDanhSoForAdmin(e.target.value));
             },
 
             // === HÀM MỚI: THIẾT LẬP HIỆN DIỆN (PRESENCE) ===
             setupPresence() {
+                // Chờ Firebase SDK load xong
+                if (!window.firebase) {
+                    console.error("Firebase SDK not loaded yet for presence.");
+                    return;
+                }
                 const { ref, onValue, onDisconnect, set } = window.firebase;
                 const rtdb = state.rtdb; // Lấy rtdb từ state
                 const uid = state.auth.currentUser?.uid;
-                
+
                 if (!rtdb || !uid) {
                     console.error("RTDB or UID not available for presence.");
                     return;
@@ -653,7 +676,7 @@
                     console.log("Firebase auth not ready, cannot logout.");
                     return;
                 }
-                
+
                 try {
                     const { signOut, ref, set } = window.firebase;
                     const rtdb = state.rtdb;
@@ -664,17 +687,25 @@
                         const userPresenceRef = ref(rtdb, 'presence/' + uid);
                         set(userPresenceRef, null); // Xóa
                     }
-                    
+
                     await signOut(state.auth);
-                    
+
                     // Ẩn bộ đếm
                     $('#presence-counter').style.display = 'none';
-                    
+
                     // Xóa các nút admin khỏi UI
                     $('#admin-button-container').innerHTML = '';
-                    
+
                     alert("Đăng xuất Admin thành công.");
-                    
+
+                    // === THAY ĐỔI: Đăng nhập lại ẩn danh sau khi admin logout ===
+                    // Để presence hoạt động tiếp
+                    if (state.auth) {
+                         const { signInAnonymously } = window.firebase;
+                         await signInAnonymously(state.auth);
+                         this.setupPresence(); // Kích hoạt lại presence
+                    }
+
                     this.showScreen('selector');
 
                 } catch (error) {
@@ -696,33 +727,17 @@
                 }
             },
 
-            // HÀM MỚI: Xử lý khi bấm "Làm bài thi"
-            async handleTestModeClick() {
-                $('#mode-modal').classList.add('hidden');
-                
-                // Hiển thị modal "Đang kết nối..."
-                $('#connecting-modal').classList.remove('hidden');
-
-                try {
-                    // Gọi hàm initFirebase VÀ CHỜ nó hoàn thành
-                    const success = await this.initFirebase(false); 
-                    
-                    $('#connecting-modal').classList.add('hidden'); // Ẩn modal
-
-                    if (success) {
-                        // Nếu kết nối thành công, hiển thị màn hình đăng nhập
-                        this.showScreen('login');
-                        // Reset form admin
-                        this.checkDanhSoForAdmin($('#user-danhso').value);
-                    } else {
-                        alert("Kết nối máy chủ thất bại. Vui lòng thử lại.");
-                    }
-                } catch (error) {
-                    $('#connecting-modal').classList.add('hidden');
-                    alert("Đã xảy ra lỗi khi kết nối: " + error.message);
-                    console.error("Firebase init failed:", error);
-                }
+            // === HÀM MỚI: Chỉ hiển thị màn hình đăng nhập ===
+            showLoginScreenForTest() {
+                 $('#mode-modal').classList.add('hidden');
+                 if (!state.firebaseReady) {
+                     alert("Đang chờ kết nối máy chủ, vui lòng thử lại sau giây lát.");
+                     return;
+                 }
+                 this.showScreen('login');
+                 this.checkDanhSoForAdmin($('#user-danhso').value); // Reset form
             },
+
 
             // === HÀM CẬP NHẬT: Xử lý đăng nhập ===
             async handleLogin(e) {
@@ -730,10 +745,10 @@
                 const userDanhSo = $('#user-danhso').value.trim();
                 const adminEmail = $('#admin-email').value.trim();
                 const adminPassword = $('#admin-password').value.trim();
-                
+
                 const loginBtn = $('#login-btn');
                 loginBtn.disabled = true;
-                
+
                 // TRƯỜNG HỢP 1: Đăng nhập ADMIN
                 if (userDanhSo.toLowerCase() === 'admin') {
                     if (!adminEmail || !adminPassword) {
@@ -741,27 +756,42 @@
                         loginBtn.disabled = false;
                         return;
                     }
-                    
+
                     loginBtn.textContent = 'Đang đăng nhập...';
                     try {
-                        const { signInWithEmailAndPassword } = window.firebase;
+                        const { signInWithEmailAndPassword, ref, set } = window.firebase;
+
+                        // === THAY ĐỔI: Xóa presence cũ trước khi đăng nhập admin ===
+                        const oldUid = state.auth.currentUser?.uid;
+                        if(state.rtdb && oldUid) {
+                            const oldPresenceRef = ref(state.rtdb, 'presence/' + oldUid);
+                            set(oldPresenceRef, null);
+                        }
+
                         // Đăng nhập, Firebase sẽ tự động nhớ phiên đăng nhập
                         await signInWithEmailAndPassword(state.auth, adminEmail, adminPassword);
-                        
-                        this.setupPresence(); // === THÊM MỚI: Bật presence cho admin ===
-                        
-                        // Đăng nhập thành công, tải bảng điểm
-                        // Sửa: không tải ở đây, chỉ quay về selector
-                        this.showScreen('selector'); 
-                        
+
+                        this.setupPresence(); // Bật presence cho admin
+
+                        // Đăng nhập thành công, quay về selector
+                        this.showScreen('selector');
+
                     } catch (error) {
                         alert("Đăng nhập Admin thất bại. Sai Email hoặc Password.");
                         console.error("Admin Login Error:", error);
+                        // === THAY ĐỔI: Nếu đăng nhập admin lỗi, thử đăng nhập lại ẩn danh ===
+                        try {
+                             const { signInAnonymously } = window.firebase;
+                             await signInAnonymously(state.auth);
+                             this.setupPresence();
+                        } catch (anonError) {
+                             console.error("Failed to re-sign in anonymously after admin failure:", anonError);
+                        }
                     } finally {
                         loginBtn.disabled = false;
                         loginBtn.textContent = 'Đăng nhập Admin';
                     }
-                    
+
                 // TRƯỜNG HỢP 2: Thí sinh làm bài
                 } else {
                     if (!userDanhSo) {
@@ -769,26 +799,29 @@
                         loginBtn.disabled = false;
                         return;
                     }
-                    
+
                     loginBtn.textContent = 'Đang vào thi...';
                     try {
-                        // Đăng nhập ẩn danh
-                        const { signInAnonymously } = window.firebase;
-                        await signInAnonymously(state.auth);
-                        
-                        this.setupPresence(); // === THÊM MỚI: Bật presence cho thí sinh ===
-                        
+                        // === THAY ĐỔI: Không cần đăng nhập ẩn danh lại vì đã làm ở init ===
+                        // Chỉ cần kiểm tra xem đã có user chưa
+                        if (!state.auth.currentUser) {
+                           throw new Error("Người dùng chưa được xác thực.");
+                        }
+                         // Kích hoạt presence (có thể đã được gọi ở init, gọi lại cho chắc)
+                        this.setupPresence();
+
                         // Lưu thông tin và bắt đầu thi
                         state.userName = userDanhSo;
                         state.userDanhSo = userDanhSo;
                         this.startQuiz('test');
-                        
+
                     } catch (error) {
-                         alert("Không thể bắt đầu phiên làm bài. Vui lòng thử lại.");
-                         console.error("Anonymous login error:", error);
+                         alert("Không thể bắt đầu phiên làm bài. Vui lòng thử lại. Lỗi: " + error.message);
+                         console.error("Error starting test:", error);
+                         // Nếu lỗi, quay về màn hình chọn
+                         this.showScreen('selector');
                     } finally {
-                        loginBtn.disabled = false;
-                        loginBtn.textContent = 'Vào làm bài';
+                        // Không reset nút ở đây vì đã chuyển màn hình
                     }
                 }
             },
@@ -800,95 +833,114 @@
 
                 ['login', 'selector', 'quiz', 'admin'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
                 $(`#${screenName}-screen`).classList.remove('hidden');
-                
+
                 const topPanel = $('#id_toppanel');
                 topPanel.style.display = isLegacy ? 'block' : 'none';
-                
+
                 // === KIỂM TRA VÀ HIỂN THỊ NÚT ADMIN ===
                 if (screenName === 'selector') {
                     // Luôn kiểm tra khi quay về màn hình selector
-                    this.checkAdminAndShowButton();
+                    // Đảm bảo firebase sẵn sàng trước khi kiểm tra
+                    if (state.firebaseReady) {
+                        this.checkAdminAndShowButton();
+                    } else {
+                         console.log("Firebase not ready yet, deferring admin check.");
+                    }
                 }
             },
-            
+
             // === HÀM MỚI: KIỂM TRA VÀ HIỆN NÚT ADMIN ===
             async checkAdminAndShowButton() {
-                // Khởi tạo firebase nếu chưa
-                if (!state.firebaseReady) {
-                    await this.initFirebase(true); // Khởi tạo cho admin
-                }
-                
+                // Đảm bảo firebase đã sẵn sàng
+                 if (!state.firebaseReady || !state.auth || !state.db) {
+                     console.log("Firebase components not ready for admin check.");
+                     return;
+                 }
+
                 const adminBtnContainer = $('#admin-button-container');
                 adminBtnContainer.innerHTML = ''; // Xóa nút cũ
 
                 try {
-                    // Thử tải kết quả (với quyền admin)
-                    // Rules sẽ tự động chặn nếu không phải admin
-                    const { collection, query, getDocs, orderBy } = window.firebase;
-                    const resultsCol = collection(state.db, 'quiz_results');
-                    const q = query(resultsCol, orderBy('timestamp', 'desc')); 
-                    await getDocs(q); // Thử đọc dữ liệu
-                    
-                    // Nếu không bị lỗi, nghĩa là BẠN LÀ ADMIN
-                    
-                    // === THÊM MỚI: Bật presence nếu admin đã đăng nhập từ trước ===
-                    if (state.auth.currentUser) {
-                        this.setupPresence();
-                    }
-                    
-                    const adminBtn = document.createElement('button');
-                    adminBtn.textContent = 'Xem Bảng Điểm (Admin)';
-                    adminBtn.className = 'legacy-btn'; // Dùng style cũ
-                    adminBtn.style.backgroundColor = '#f97316'; // Màu cam
-                    adminBtn.style.color = 'white';
-                    adminBtn.style.width = '100%';
-                    adminBtn.addEventListener('click', () => this.loadAdminResults());
-                    adminBtnContainer.appendChild(adminBtn);
-                    
-                    // === THÊM NÚT ĐĂNG XUẤT ===
-                    const logoutBtn = document.createElement('button');
-                    logoutBtn.textContent = 'Thoát tài khoản Admin';
-                    logoutBtn.className = 'legacy-btn';
-                    logoutBtn.style.backgroundColor = '#6c757d'; // Màu xám
-                    logoutBtn.style.color = 'white';
-                    logoutBtn.style.width = '100%';
-                    logoutBtn.style.marginTop = '10px';
-                    logoutBtn.addEventListener('click', () => this.handleAdminLogout()); // GỌI HÀM MỚI
-                    adminBtnContainer.appendChild(logoutBtn);
+                    // === THAY ĐỔI: Kiểm tra trực tiếp xem UID có trong collection 'admins' không ===
+                    const { doc, getDoc } = window.firebase; // Cần getDoc
+                    const user = state.auth.currentUser;
 
+                    if (user && !user.isAnonymous) { // Chỉ kiểm tra nếu là user thật (không ẩn danh)
+                        const adminDocRef = doc(state.db, 'admins', user.uid);
+                        const adminDocSnap = await getDoc(adminDocRef);
+
+                        if (adminDocSnap.exists()) {
+                            // UID tồn tại trong 'admins' => LÀ ADMIN
+                            console.log("User IS admin.");
+                            this.setupPresence(); // Kích hoạt presence cho admin
+
+                            const adminBtn = document.createElement('button');
+                            adminBtn.textContent = 'Xem Bảng Điểm (Admin)';
+                            adminBtn.className = 'legacy-btn'; // Dùng style cũ
+                            adminBtn.style.backgroundColor = '#f97316'; // Màu cam
+                            adminBtn.style.color = 'white';
+                            adminBtn.style.width = '100%';
+                            adminBtn.addEventListener('click', () => this.loadAdminResults());
+                            adminBtnContainer.appendChild(adminBtn);
+
+                            // === THÊM NÚT ĐĂNG XUẤT ===
+                            const logoutBtn = document.createElement('button');
+                            logoutBtn.textContent = 'Thoát tài khoản Admin';
+                            logoutBtn.className = 'legacy-btn';
+                            logoutBtn.style.backgroundColor = '#6c757d'; // Màu xám
+                            logoutBtn.style.color = 'white';
+                            logoutBtn.style.width = '100%';
+                            logoutBtn.style.marginTop = '10px';
+                            logoutBtn.addEventListener('click', () => this.handleAdminLogout()); // GỌI HÀM MỚI
+                            adminBtnContainer.appendChild(logoutBtn);
+                        } else {
+                             // User đã đăng nhập nhưng UID không có trong 'admins'
+                             console.log("User is logged in but NOT admin.");
+                             // Không hiện nút admin, nhưng presence vẫn chạy (nếu là ẩn danh)
+                             if(user.isAnonymous) this.setupPresence();
+                             else $('#presence-counter').style.display = 'none'; // Ẩn nếu là user thật nhưng k phải admin
+                        }
+                    } else if (user && user.isAnonymous) {
+                         // Là user ẩn danh -> không phải admin
+                         console.log("User is anonymous, hiding admin button.");
+                         this.setupPresence(); // Vẫn kích hoạt presence
+                    } else {
+                         // Không có user nào đăng nhập (trạng thái ban đầu trước khi init xong)
+                         console.log("No user logged in, hiding admin button.");
+                         $('#presence-counter').style.display = 'none';
+                    }
 
                 } catch (error) {
-                    // Lỗi: PERMISSION_DENIED. Đây là người dùng thường, không làm gì cả.
-                    console.log("User is not admin. Hiding admin button.");
-                    // Ẩn bộ đếm nếu không phải admin
-                    $('#presence-counter').style.display = 'none';
+                    // Lỗi khi truy cập Firestore (ví dụ: mất mạng)
+                    console.error("Error checking admin status:", error);
+                    $('#presence-counter').style.display = 'none'; // Ẩn bộ đếm nếu lỗi
                 }
             },
-            
+
             goHome() {
                 clearInterval(state.timerId);
                 state.isFinished = true; // Đánh dấu là đã xong, ngăn 'beforeunload'
-                
-                // === THÊM MỚI: Ngắt kết nối presence thủ công khi về home ===
-                // (Vì người dùng có thể vẫn đăng nhập)
+
+                // === THAY ĐỔI: Chỉ ngắt presence nếu là user ẩn danh ===
+                // Admin giữ nguyên trạng thái đăng nhập và presence
                 const { ref, set } = window.firebase;
                 const rtdb = state.rtdb;
-                const uid = state.auth?.currentUser?.uid;
-                if (rtdb && uid) {
-                    const userPresenceRef = ref(rtdb, 'presence/' + uid);
+                const user = state.auth?.currentUser;
+                if (rtdb && user && user.isAnonymous) {
+                    const userPresenceRef = ref(rtdb, 'presence/' + user.uid);
                     set(userPresenceRef, null); // Xóa
+                    // Ẩn bộ đếm nếu là user ẩn danh về home
+                    $('#presence-counter').style.display = 'none';
                 }
-                // Ẩn bộ đếm
-                $('#presence-counter').style.display = 'none';
-                
+
                 // Quay về màn hình chọn môn
                 $('#results-modal').classList.add('hidden'); // Đảm bảo modal kết quả đã đóng
-                this.showScreen('selector'); 
+                this.showScreen('selector');
             },
 
             renderSubjectList() {
                 const listEl = $('#subject-list');
-                listEl.innerHTML = ''; 
+                listEl.innerHTML = '';
                 Object.entries(window.questionData).forEach(([key, data]) => {
                     const count = data.questions.length;
                     const card = document.createElement('div');
@@ -901,37 +953,37 @@
 
             // HÀM CẬP NHẬT: Tải kết quả (Bảng Admin)
             async loadAdminResults() {
-                // Đảm bảo đã kết nối
-                if (!state.firebaseReady || !state.db) {
-                     alert("Lỗi: Chưa kết nối Firebase. Không thể tải Bảng điểm.");
+                // Đảm bảo đã kết nối và là admin
+                 if (!state.firebaseReady || !state.db || !state.auth?.currentUser || state.auth.currentUser.isAnonymous) {
+                     alert("Lỗi: Yêu cầu quyền Admin để xem Bảng điểm.");
                      this.showScreen('selector'); // Quay lại
                      return;
-                }
-                
+                 }
+
                 this.showScreen('admin'); // Hiển thị màn hình admin
                 const resultsBody = $('#results-table-body');
                 resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>';
-                
+
                 const { collection, query, getDocs, orderBy } = window.firebase;
-                
+
                 try {
                     const resultsCol = collection(state.db, 'quiz_results');
-                    const q = query(resultsCol, orderBy('timestamp', 'desc')); 
+                    const q = query(resultsCol, orderBy('timestamp', 'desc'));
                     const querySnapshot = await getDocs(q);
-                    
+
                     resultsBody.innerHTML = ''; // Xóa dòng "Đang tải..."
-                    
+
                     if (querySnapshot.empty) {
                         resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Chưa có kết quả nào được lưu.</td></tr>';
                         return;
                     }
-                    
+
                     querySnapshot.forEach(doc => {
                         const data = doc.data();
                         const date = data.timestamp ? data.timestamp.toDate().toLocaleString('vi-VN') : 'Không rõ';
                         // Sửa đổi hiển thị điểm
                         const scoreDisplay = `${data.correct} / ${data.total} (${data.score.toFixed(0)}%)`;
-                        
+
                         const row = `
                             <tr>
                                 <td>${data.userDanhSo}</td>
@@ -951,16 +1003,16 @@
                     resultsBody.querySelectorAll('.admin-delete-btn').forEach(btn => {
                         btn.addEventListener('click', (e) => this.handleDeleteResult(e));
                     });
-                    
+
                 } catch (error) {
-                    // LỖI NÀY SẼ XẢY RA NẾU ADMIN ĐĂNG XUẤT
+                    // LỖI NÀY VẪN CÓ THỂ XẢY RA NẾU RULES SAI HOẶC MẤT MẠNG
                     console.error("Error loading admin results:", error);
                     resultsBody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center; padding: 20px;">
-                                                Lỗi tải kết quả. Bạn có phải là Admin? (Lỗi: ${error.message})
+                                                Lỗi tải kết quả. (${error.message})
                                            </td></tr>`;
                 }
             },
-            
+
             // === HÀM MỚI ĐỂ XỬ LÝ XÓA ===
             async handleDeleteResult(e) {
                 const docId = e.target.dataset.id;
@@ -968,7 +1020,7 @@
 
                 // Do không dùng confirm(), chúng ta sẽ xóa trực tiếp
                 // và tải lại bảng
-                
+
                 // Vô hiệu hóa nút để tránh click đúp
                 e.target.disabled = true;
                 e.target.textContent = 'Đang xóa...';
@@ -977,9 +1029,9 @@
                     const { deleteDoc, doc } = window.firebase;
                     const docRef = doc(state.db, 'quiz_results', docId);
                     await deleteDoc(docRef);
-                    
+
                     // Tải lại bảng kết quả sau khi xóa thành công
-                    this.loadAdminResults(); 
+                    this.loadAdminResults();
 
                 } catch (error) {
                     console.error("Error deleting document:", error);
@@ -1004,23 +1056,28 @@
                     $('#mode-review').style.display = 'block';
                     $('#mode-test').style.display = 'block';
                 }
-                
+
                 $('#mode-modal').classList.remove('hidden');
             },
 
             // HÀM CẬP NHẬT: Bắt đầu Quiz
             startQuiz(mode) {
                 state.mode = mode; // 'review', 'test', 'review-wrong'
-                state.viewedIndices.clear(); 
+                state.viewedIndices.clear();
                 state.isFinished = false; // Đặt lại cờ hiệu
                 state.secondsLeft = state.testConfig.durationMinutes * 60; // Đặt thời gian
-                
-                // Nếu là 'test' mode, phải đảm bảo đã đăng nhập
+
+                // === THAY ĐỔI: Chế độ ôn tập không cần đăng nhập/danh số ===
                 if (mode === 'test' && !state.userDanhSo) {
                     alert("Lỗi: Phải đăng nhập để làm bài thi.");
                     this.showScreen('selector');
                     return;
                 }
+                 // === THAY ĐỔI: Kích hoạt presence khi bắt đầu quiz (cho cả ôn tập) ===
+                 if(state.firebaseReady && state.auth.currentUser) {
+                    this.setupPresence();
+                 }
+
 
                 const subjectData = window.questionData[state.currentSubjectKey];
                 if (!subjectData || !subjectData.questions || subjectData.questions.length === 0) {
@@ -1044,7 +1101,7 @@
                 qListContainer.classList.remove('quiz-card');
                 qListContainer.querySelector('h2').style.display = 'none';
                 layoutContainer.insertBefore(qContentContainer, qListContainer);
-                
+
                 btnContainer.className = 'legacy-btn-container';
                 $('#prev-btn').className = 'legacy-btn';
                 $('#next-btn').className = 'legacy-btn';
@@ -1052,29 +1109,29 @@
                 $('#submit-btn').className = 'legacy-btn-primary';
                 // === YÊU CẦU 1: Thêm class cho nút "Dừng làm bài" ===
                 $('#stop-btn').className = 'legacy-btn';
-                
+
                 $('#submit-btn').style.display = 'inline-flex';
                 $('#prev-btn').style.display = 'inline-flex';
                 $('#next-btn').style.display = 'inline-flex';
-                
+
                 // Ẩn/hiện nút dựa trên chế độ
                 if (mode === 'test') {
                     $('#hint-btn').style.display = 'none'; // Ẩn gợi ý khi thi
                     $('#stop-btn').style.display = 'none'; // Yêu cầu 2: Ẩn "Dừng làm bài"
                     this.startTimer(); // Yêu cầu 1: Bắt đầu tính giờ
-                    
+
                     const pickCount = Math.min(state.testConfig.questionCount, total);
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random()).slice(0, pickCount);
                 } else { // 'review' or 'review-wrong'
                     $('#hint-btn').style.display = 'inline-flex';
                     $('#stop-btn').style.display = 'inline-flex'; // Hiển thị "Dừng làm bài"
                     $('#timer').classList.add('hidden'); // Ẩn đồng hồ
-                    
+
                     if (mode === 'review') { // Chỉ xáo trộn khi ôn tập
                         state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
                     }
                 }
-                
+
                 // Logic 'review-wrong'
                 if(mode === 'review-wrong') {
                      $('#submit-btn').style.display = 'none';
@@ -1084,25 +1141,25 @@
                      $('#submit-btn').style.display = 'inline-flex';
                 }
 
-                
+
                 state.currentIndex = 0;
                 state.userAnswers = {};
                 this.renderQuestionList();
                 this.renderQuestion();
             },
-            
+
             // === CẬP NHẬT HÀM NÀY ===
             async finishQuiz(isAuto = false) {
                 // Yêu cầu 3: Ngăn việc chạy lặp lại
-                if (state.isFinished) return; 
+                if (state.isFinished) return;
                 state.isFinished = true; // Đánh dấu đã nộp ngay lập tức
-                
+
                 clearInterval(state.timerId);
                 $('#timer').classList.add('hidden');
 
                 const total = state.pickedIndices.length;
                 let correct = 0;
-                
+
                 // Đếm điểm
                 state.pickedIndices.forEach(qIndex => {
                     // Nếu câu hỏi đã được trả lời VÀ trả lời đúng
@@ -1111,32 +1168,45 @@
                     }
                     // Những câu chưa trả lời (không có trong userAnswers) sẽ tự động bị tính là sai (vì correct không tăng)
                 });
-                
+
                 // Yêu cầu 1: Câu chưa làm tính là sai
                 const wrong = total - correct; // Tất cả những câu không đúng đều là sai
-                
+
                 $('#results-title').textContent = isAuto ? "Hết giờ!" : "Kết quả";
-                
+
                 // === SỬA LỖI ĐIỂM ===
                 const scoreText = `${correct} / ${total}`;
-                $('#results-score-display').textContent = scoreText; 
-                
+                $('#results-score-display').textContent = scoreText;
+
                 $('#results-total').textContent = total;
                 $('#results-correct').textContent = correct;
                 $('#results-wrong').textContent = wrong; // Hiển thị số câu sai
-                
-                $('#review-wrong-btn').style.display = wrong > 0 ? 'flex' : 'none'; 
-                
+
+                $('#review-wrong-btn').style.display = wrong > 0 ? 'flex' : 'none';
+
                 // Chỉ hiển thị modal nếu không phải là do tắt trình duyệt
-                if (!isAuto || (isAuto && state.secondsLeft <= 0)) {
+                // HOẶC nếu là admin (admin không nộp bài khi tắt trình duyệt)
+                const isAdmin = state.auth.currentUser && !state.auth.currentUser.isAnonymous;
+                if (!isAuto || (isAuto && state.secondsLeft <= 0) || isAdmin ) {
                      $('#results-modal').classList.remove('hidden');
                 }
+
 
                 // LƯU KẾT QUẢ LÊN FIREBASE (Fire-and-forget)
                 if (state.mode === 'test') { // Chỉ lưu kết quả khi làm bài thi
                     // Chúng ta không 'await' ở đây để nó có thể chạy trong 'beforeunload'
                     await this.saveResultToFirebase(correct, wrong, total);
                 }
+
+                 // === THAY ĐỔI: Ngắt presence sau khi thi xong ===
+                 const { ref, set } = window.firebase;
+                 const rtdb = state.rtdb;
+                 const user = state.auth?.currentUser;
+                 if (rtdb && user && user.isAnonymous) { // Chỉ ngắt nếu là user thường
+                     const userPresenceRef = ref(rtdb, 'presence/' + user.uid);
+                     set(userPresenceRef, null); // Xóa
+                     $('#presence-counter').style.display = 'none'; // Ẩn bộ đếm
+                 }
             },
 
             async saveResultToFirebase(correct, wrong, total) {
@@ -1146,12 +1216,12 @@
                     // Không alert ở đây vì có thể chạy ngầm khi tắt tab
                     return;
                 }
-                
+
                 const { collection, addDoc, serverTimestamp } = window.firebase;
-                
+
                 try {
                     const subjectName = window.questionData[state.currentSubjectKey]?.name || state.currentSubjectKey;
-                    
+
                     const resultData = {
                         userName: state.userName, // Vẫn lưu userName (là danh số)
                         userDanhSo: state.userDanhSo,
@@ -1161,9 +1231,9 @@
                         wrong: wrong,
                         total: total,
                         score: (correct / total) * 100,
-                        timestamp: serverTimestamp() 
+                        timestamp: serverTimestamp()
                     };
-                    
+
                     const resultsColPath = `quiz_results`;
                     const docRef = await addDoc(collection(state.db, resultsColPath), resultData);
                     console.log("Result saved to Firebase with ID:", docRef.id);
@@ -1173,7 +1243,7 @@
                     // Không alert ở đây
                 }
             },
-            
+
             renderQuestionList() {
                 const listEl = $('#question-list');
                 listEl.innerHTML = '';
@@ -1194,10 +1264,10 @@
 
             updateQuestionListStatus() {
                 const items = $$('.legacy-question-nav-item');
-                
+
                 items.forEach((item, displayIndex) => {
                     const qIndex = state.pickedIndices[displayIndex];
-                    
+
                     item.classList.remove('current', 'answered', 'correct', 'wrong', 'skipped');
 
                     if (qIndex in state.userAnswers) {
@@ -1216,17 +1286,17 @@
             renderQuestion() {
                 if (state.currentIndex < 0 || state.currentIndex >= state.pickedIndices.length) return;
                 const qIndex = state.pickedIndices[state.currentIndex];
-                state.viewedIndices.add(qIndex); 
+                state.viewedIndices.add(qIndex);
                 const question = state.questions[qIndex];
-                
+
                 // Sửa lỗi: Đảm bảo options là một mảng
                 if (!question.options || !Array.isArray(question.options)) {
                     console.error("Invalid question structure: options is missing or not an array", question);
                     $('#question-text').textContent = "LỖI: Cấu trúc câu hỏi không hợp lệ.";
                     $('#options-container').innerHTML = '';
-                    return; 
+                    return;
                 }
-                
+
                 const indexedOptions = question.options.map((opt, i) => ({ text: opt, originalIndex: i }));
                 // Không xáo trộn đáp án nữa để dễ đối chiếu
                 // const shuffledOptions = indexedOptions.sort(() => Math.random() - 0.5);
@@ -1235,10 +1305,10 @@
                 const headerText = `Câu hỏi ${state.currentIndex + 1} / ${state.pickedIndices.length}`;
                 $('#question-header').textContent = headerText;
                 $('#question-header').className = 'legacy-question-header';
-                
+
                 $('#question-text').textContent = question.question;
                 $('#question-text').className = 'legacy-question-text';
-                
+
                 const optionsContainer = $('#options-container');
                 optionsContainer.innerHTML = '';
                 optionsContainer.className = 'legacy-answer-container';
@@ -1247,7 +1317,7 @@
                     const optionHTML = `
                         <label>
                             <input type="checkbox" name="answer" data-original-index="${opt.originalIndex}">
-                            <span>${opt.text}</span> 
+                            <span>${opt.text}</span>
                         </label>
                     `;
                     optionsContainer.insertAdjacentHTML('beforeend', optionHTML);
@@ -1258,7 +1328,7 @@
                     label.style.border = '1px solid #000';
                     label.style.textDecoration = 'none';
                 });
-                
+
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
             },
@@ -1266,7 +1336,7 @@
             updateUIForQuestionState() {
                 const qIndex = state.pickedIndices[state.currentIndex];
                 const question = state.questions[qIndex];
-                
+
                 // Kiểm tra lại cấu trúc câu hỏi
                 if (!question || !question.answer || !Array.isArray(question.answer)) {
                     console.error("Invalid question structure for updateUI", question);
@@ -1276,17 +1346,17 @@
                 const isAnswered = qIndex in state.userAnswers;
 
                 $('#feedback-container').classList.add('hidden');
-                
-                if (state.mode !== 'review-wrong') { 
+
+                if (state.mode !== 'review-wrong') {
                     $('#submit-btn').disabled = isAnswered;
-                    $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời'; 
+                    $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời';
                 }
 
                 if (isAnswered) {
                     const userAnswer = state.userAnswers[qIndex];
                     const isCorrect = this.checkCorrectness(qIndex, userAnswer);
                     const correctIndices = question.answer;
-                    
+
                     $$('#options-container input').forEach(el => el.disabled = true);
                     userAnswer.forEach(ansIdx => {
                         const checkbox = $(`#options-container input[data-original-index="${ansIdx}"]`);
@@ -1311,7 +1381,7 @@
                             }
                         });
 
-                    } else if (!isCorrect) { 
+                    } else if (!isCorrect) {
                         correctIndices.forEach(correctIndex => {
                             const correctLabel = $(`#options-container input[data-original-index="${correctIndex}"]`).closest('label');
                             if (correctLabel) {
@@ -1327,12 +1397,12 @@
 
             findNextUnansweredQuestionIndex() {
                 const total = state.pickedIndices.length;
-                
+
                 // Tìm từ câu hiện tại -> cuối
                 for (let i = state.currentIndex + 1; i < total; i++) {
                     const qIndex = state.pickedIndices[i];
                     if (!(qIndex in state.userAnswers)) {
-                        return i; 
+                        return i;
                     }
                 }
 
@@ -1340,7 +1410,7 @@
                 for (let i = 0; i < state.currentIndex; i++) {
                     const qIndex = state.pickedIndices[i];
                     if (!(qIndex in state.userAnswers)) {
-                        return i; 
+                        return i;
                     }
                 }
 
@@ -1352,7 +1422,7 @@
                 if (qIndex in state.userAnswers) return;
 
                 const selectedOptions = [...$$('#options-container input:checked')].map(el => parseInt(el.dataset.originalIndex));
-                
+
                 if (selectedOptions.length === 0) {
                     alert("Vui lòng chọn ít nhất một đáp án.");
                     return;
@@ -1407,13 +1477,13 @@
                  const correctText = this.getCorrectAnswerText(qIndex);
                  alert(`💡 Gợi ý đáp án:\n\n- ${correctText.replace(/; /g, '\n- ')}`);
             },
-            
+
             // === HÀM MỚI: BẮT ĐẦU ĐỒNG HỒ ===
             startTimer() {
                 const timerEl = $('#timer');
                 if (!timerEl) return;
                 timerEl.classList.remove('hidden');
-                
+
                 clearInterval(state.timerId); // Xóa timer cũ nếu có
 
                 timerEl.textContent = `⏳ ${String(state.testConfig.durationMinutes).padStart(2, '0')}:00`;
@@ -1423,13 +1493,13 @@
                         clearInterval(state.timerId);
                         return;
                     }
-                    
+
                     state.secondsLeft--;
                     const minutes = Math.floor(state.secondsLeft / 60);
                     const seconds = state.secondsLeft % 60;
-                    
+
                     timerEl.textContent = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                    
+
                     if (state.secondsLeft <= 0) {
                         clearInterval(state.timerId);
                         alert("Hết giờ! Bài thi của bạn sẽ được nộp tự động.");
@@ -1437,9 +1507,18 @@
                     }
                 }, 1000);
             },
-            
+
             // === HÀM MỚI: XỬ LÝ TẮT TRANG ===
             handleWindowClose() {
+                // === THAY ĐỔI: Ngắt presence khi tắt trang ===
+                 const { ref, set } = window.firebase;
+                 const rtdb = state.rtdb;
+                 const user = state.auth?.currentUser;
+                 if (rtdb && user) {
+                     const userPresenceRef = ref(rtdb, 'presence/' + user.uid);
+                     set(userPresenceRef, null); // Xóa ngay lập tức, không đợi onDisconnect
+                 }
+
                 if (state.mode === 'test' && !state.isFinished) {
                     // Đây là một lệnh "fire-and-forget" (bắn và quên)
                     // Trình duyệt sẽ CỐ GẮNG gửi request này trước khi đóng
@@ -1453,7 +1532,7 @@
 
             reviewWrongAnswers() {
                 const wrongQIndices = state.pickedIndices.filter(qIndex => qIndex in state.userAnswers && !this.checkCorrectness(qIndex, state.userAnswers[qIndex]));
-                
+
                 if (wrongQIndices.length > 0) {
                     state.pickedIndices = wrongQIndices; // Chỉ giữ lại các câu sai
                     state.currentIndex = 0;
@@ -1472,7 +1551,7 @@
                     $('#stop-btn').style.display = 'inline-flex'; // Vẫn cho phép "Dừng" xem lại
 
                     this.renderQuestionList();
-                    this.renderQuestion(); 
+                    this.renderQuestion();
                 } else {
                     alert("Bạn không có câu trả lời nào sai để xem lại.");
                 }
