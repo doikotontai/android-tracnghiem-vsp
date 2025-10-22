@@ -1525,6 +1525,8 @@
             // === HÀM MỚI: XỬ LÝ TẮT TRANG ===
             handleWindowClose() {
                 // === THAY ĐỔI: Ngắt presence khi tắt trang ===
+                 // Bỏ qua việc xóa thủ công, chỉ dựa vào onDisconnect
+                 /*
                  const { ref, set } = window.firebase;
                  const rtdb = state.rtdb;
                  const user = state.auth?.currentUser;
@@ -1532,6 +1534,7 @@
                      const userPresenceRef = ref(rtdb, 'presence/' + user.uid);
                      set(userPresenceRef, null); // Xóa ngay lập tức, không đợi onDisconnect
                  }
+                 */
 
                 if (state.mode === 'test' && !state.isFinished) {
                     // Đây là một lệnh "fire-and-forget" (bắn và quên)
@@ -1540,6 +1543,7 @@
                     this.finishQuiz(true); // 'isAuto = true'
                 }
             },
+
 
             // closeResults() đã được cập nhật trong attachEventListeners
             // để gọi goHome()
