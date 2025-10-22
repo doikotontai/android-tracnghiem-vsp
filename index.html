@@ -67,13 +67,13 @@
              border-top: 1px solid #000;
              padding-top: 15px;
         }
-        /* === GIẢM MARGIN BOTTOM (Lần 2) === */
         #question-header.legacy-question-header {
             color: #990000;
             font-family: Arial, sans-serif;
             font-size: 14px;
             font-weight: normal;
-            margin-bottom: 2px; /* Giảm thêm */
+            margin-bottom: 0px; /* Giảm thêm thành 0 */
+            padding-bottom: 2px; /* Thêm padding nhỏ nếu cần */
         }
         #question-text.legacy-question-text {
             font-size: 16px;
@@ -293,11 +293,10 @@
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
     <!-- Top Panel similar to index1.html -->
-    <!-- === CẬP NHẬT STYLE CHO TOP PANEL (Lần 3 - Final) === -->
-    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; flex-direction: row; /* Hàng */ align-items: center; justify-content: space-between; /* Đẩy ra 2 bên */ width: 100%;">
+    <!-- === CẬP NHẬT STYLE CHO TOP PANEL (Lần 5 - Final FINAL Check) === -->
+    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; align-items: center; justify-content: space-between; width: 100%;">
 
-        <div id="logo-container" style="display: flex; align-items: center; text-align: left; gap: 1rem; cursor: pointer; padding-left: 10px;">
-            <!-- IMPORTANT: Replace "logo.png" with the actual path to your logo file -->
+        <div id="logo-container" style="display: flex; align-items: center; text-align: left; gap: 1rem; cursor: pointer; padding-left: 10px; flex-shrink: 0;"> /* Added flex-shrink: 0 */
             <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
             <div class="title" style="font-size: 1rem; font-weight: bold; font-family: Arial, sans-serif; line-height: 1.2;">
                 © 2025<br>
@@ -305,9 +304,12 @@
             </div>
         </div>
 
+        <!-- Spacer to push counter to the right -->
+        <div style="flex-grow: 1;"></div>
+
         <!-- === BỘ ĐẾM SỐ NGƯỜI TRUY CẬP === -->
-        <div id="presence-counter" style="font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none; padding-right: 15px;">
-            <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%;"></span>
+        <div id="presence-counter" style="font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none; padding-right: 15px; white-space: nowrap;"> /* Added white-space: nowrap */
+            <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; margin-right: 4px;"></span> /* Added margin-right */
             Đang truy cập: <span id="presence-count" style="font-weight: bold;">1</span>
         </div>
     </div>
@@ -647,6 +649,9 @@
                 const rtdb = state.rtdb; // Lấy rtdb từ state
                 const uid = state.auth.currentUser?.uid;
 
+                // === THÊM CONSOLE LOG ĐỂ DEBUG ===
+                console.log("Setting up presence for UID:", uid);
+
                 if (!rtdb || !uid) {
                     console.error("RTDB or UID not available for presence.");
                     return;
@@ -658,19 +663,27 @@
                 // Hiển thị bộ đếm
                 const counterEl = $('#presence-counter');
                 const countEl = $('#presence-count');
-                counterEl.style.display = 'block';
+                counterEl.style.display = 'block'; // Luôn hiển thị khi hàm chạy
 
                 // Lắng nghe thay đổi
                 onValue(presenceListRef, (snapshot) => {
                     const count = snapshot.numChildren();
+                    // === THÊM CONSOLE LOG ĐỂ DEBUG ===
+                    console.log("Presence count updated:", count);
                     countEl.textContent = count;
                 });
 
                 // Đặt trạng thái online
-                set(userPresenceRef, true);
+                set(userPresenceRef, true)
+                    .then(() => console.log("Presence set to true for UID:", uid))
+                    .catch((error) => console.error("Error setting presence:", error));
+
                 // Xóa trạng thái khi ngắt kết nối
-                onDisconnect(userPresenceRef).remove();
+                onDisconnect(userPresenceRef).remove()
+                    .then(() => console.log("onDisconnect rule set for UID:", uid))
+                    .catch((error) => console.error("Error setting onDisconnect:", error));
             },
+
 
             // === HÀM MỚI: ĐĂNG XUẤT ADMIN ===
             async handleAdminLogout() {
@@ -705,7 +718,7 @@
                     if (state.auth) {
                          const { signInAnonymously } = window.firebase;
                          await signInAnonymously(state.auth);
-                         this.setupPresence(); // Kích hoạt lại presence
+                         // setupPresence sẽ được gọi lại bởi onAuthStateChanged
                     }
 
                     this.showScreen('selector');
@@ -772,8 +785,7 @@
 
                         // Đăng nhập, Firebase sẽ tự động nhớ phiên đăng nhập
                         await signInWithEmailAndPassword(state.auth, adminEmail, adminPassword);
-
-                        this.setupPresence(); // Bật presence cho admin
+                        // setupPresence sẽ được gọi lại bởi onAuthStateChanged
 
                         // Đăng nhập thành công, quay về selector
                         this.showScreen('selector');
@@ -785,7 +797,7 @@
                         try {
                              const { signInAnonymously } = window.firebase;
                              await signInAnonymously(state.auth);
-                             this.setupPresence();
+                             // setupPresence sẽ được gọi lại bởi onAuthStateChanged
                         } catch (anonError) {
                              console.error("Failed to re-sign in anonymously after admin failure:", anonError);
                         }
