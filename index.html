@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Original styles for quiz and other screens */
+        /* ... styles ... */
         body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f0f4f8; }
         .quiz-card { background-color: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s ease-in-out; border: 1px solid transparent; }
@@ -18,7 +18,7 @@
         .btn-secondary { background-color: #e2e8f0; color: #1e293b; }
         .btn-secondary:hover { background-color: #cbd5e1; }
       
-        /* Styles to mimic index1.html on the homepage */
+        /* ... legacy styles ... */
         .legacy-body {
             font-family: Arial, sans-serif;
             background-color: #d7e6f7;
@@ -53,8 +53,6 @@
             margin: 5px 0 0 0;
             font-family: Arial, sans-serif;
         }
-
-        /* New legacy styles for review mode to mimic ontap-1.html */
         .legacy-quiz-layout {
             max-width: 770px;
             width: 100%;
@@ -159,6 +157,25 @@
             color: white;
             border-color: #1e4ed8;
         }
+        
+        /* Kiểu cho form đăng nhập */
+        .legacy-login-input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 16px;
+            border: 1px solid #999;
+            margin-bottom: 15px;
+            font-family: Arial, sans-serif;
+        }
+        .legacy-login-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2563eb;
+            color: white;
+            border: 1px solid #1e4ed8;
+            cursor: pointer;
+            width: 100%;
+        }
     </style>
     <!-- Tải dữ liệu câu hỏi -->
     <script src="data_antoan.js"></script>
@@ -167,6 +184,27 @@
     <script src="data_ut.js"></script>
     <script src="data_rt.js"></script>
     <script src="data_paut.js"></script>
+    
+    <!-- Tải Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, addDoc, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Gán các hàm vào window để script ở dưới có thể dùng
+        window.firebase = {
+            initializeApp,
+            getAuth,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+            getFirestore,
+            addDoc,
+            collection,
+            serverTimestamp,
+            setLogLevel
+        };
+    </script>
 </head>
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
@@ -183,8 +221,30 @@
     </div>
 
     <div id="app" class="p-4 sm:p-6 md:p-8 flex-grow">
-        <!-- Màn hình chọn môn học -->
-        <div id="selector-screen" class="max-w-4xl mx-auto">
+        <!-- MÀN HÌNH MỚI: Đăng nhập -->
+        <div id="login-screen" class="max-w-4xl mx-auto hidden">
+             <table align="center" style="margin-top: 40px; border: 1px solid #999; width: 100%; max-width: 600px;">
+                 <tr style="background-color: #f0f0f0;">
+                    <td style="font-weight: bold; padding: 10px; font-family: Arial, sans-serif;">Thông tin thí sinh</td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px;">
+                        <form id="login-form">
+                            <label for="user-name" style="font-family: Arial, sans-serif; font-size: 14px;">Họ và tên:</label>
+                            <input type="text" id="user-name" class="legacy-login-input" required>
+                            
+                            <label for="user-danhso" style="font-family: Arial, sans-serif; font-size: 14px;">Danh số:</label>
+                            <input type="text" id="user-danhso" class="legacy-login-input" required>
+                            
+                            <button type="submit" id="login-btn" class="legacy-login-btn">Vào làm bài</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Màn hình chọn môn học (bị ẩn ban đầu) -->
+        <div id="selector-screen" class="max-w-4xl mx-auto hidden">
             <table align="center" style="margin-top: 40px; border: 1px solid #999; width: 100%; max-width: 600px;">
                  <tr style="background-color: #f0f0f0;">
                     <td style="font-weight: bold; padding: 10px; font-family: Arial, sans-serif;">Website làm vì đam mê - vui lòng không chê bai</td>
@@ -199,7 +259,8 @@
 
         <!-- Màn hình làm bài -->
         <div id="quiz-screen" class="hidden">
-            <div id="quiz-layout-container" class="max-w-7xl mx-auto">
+            <!-- ... (giữ nguyên cấu trúc màn hình quiz) ... -->
+             <div id="quiz-layout-container" class="max-w-7xl mx-auto">
                  <div class="question-list-container">
                     <h2 class="text-xl font-bold mb-4">Danh sách câu</h2>
                     <div id="question-list"></div>
@@ -218,7 +279,6 @@
                         <div class="flex gap-4">
                              <button id="hint-btn">💡 Gợi ý</button>
                              <button id="submit-btn">Trả lời</button>
-                             <!-- ĐÃ XÓA NÚT NỘP BÀI -->
                              <button id="stop-btn">Dừng làm bài</button>
                         </div>
                         <button id="next-btn">Tiếp →</button>
@@ -229,6 +289,7 @@
 
         <!-- CÁC HỘP THOẠI -->
         <div id="mode-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+             <!-- ... (giữ nguyên) ... -->
              <div class="quiz-card p-8 max-w-md w-full text-center">
                 <h2 class="text-2xl font-bold mb-6">Chọn chế độ</h2>
                 <div class="space-y-4">
@@ -238,13 +299,13 @@
             </div>
         </div>
         <div id="results-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+              <!-- ... (giữ nguyên) ... -->
               <div class="quiz-card p-8 max-w-lg w-full">
                 <h2 id="results-title" class="text-3xl font-bold mb-6 text-center">Kết quả</h2>
                 <div class="space-y-4 text-lg">
                     <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg"><span class="font-medium">Tổng số câu:</span><span id="results-total" class="font-bold"></span></div>
                     <div class="flex justify-between items-center bg-green-50 p-3 rounded-lg"><span class="font-medium text-green-700">✅ Đúng:</span><span id="results-correct" class="font-bold text-green-700"></span></div>
                     <div class="flex justify-between items-center bg-red-50 p-3 rounded-lg"><span class="font-medium text-red-700">❌ Sai:</span><span id="results-wrong" class="font-bold text-red-700"></span></div>
-                    <!-- ĐÃ XÓA DÒNG "BỎ QUA" -->
                 </div>
                 <div class="mt-8 flex flex-col sm:flex-row gap-4">
                     <button id="review-wrong-btn" class="btn btn-secondary w-full">Xem lại câu sai</button>
@@ -268,22 +329,75 @@
             userAnswers: {},
             timerId: null,
             secondsLeft: 0,
-            viewedIndices: new Set(), // Theo dõi các câu hỏi đã được xem
+            viewedIndices: new Set(),
             testConfig: {
                 questionCount: 20,
                 durationMinutes: 20
             },
+            // Trạng thái mới
+            userName: null,
+            userDanhSo: null,
+            db: null,
+            auth: null,
+            appId: typeof __app_id !== 'undefined' ? __app_id : 'default-app-id',
+            firebaseReady: false
         };
         
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
 
         const app = {
-            init() {
+            async init() {
                 this.loadDataFromFiles();
                 this.renderSubjectList();
                 this.attachEventListeners();
-                this.showScreen('selector'); 
+                // Bắt đầu bằng cách khởi tạo Firebase
+                await this.initFirebase();
+            },
+
+            async initFirebase() {
+                try {
+                    const {
+                        initializeApp, getAuth, signInAnonymously, signInWithCustomToken,
+                        onAuthStateChanged, getFirestore, setLogLevel
+                    } = window.firebase;
+                    
+                    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                    
+                    if (!firebaseConfig.apiKey) {
+                        console.error("Firebase config is missing or invalid.");
+                        alert("Lỗi cấu hình máy chủ. Không thể đăng nhập.");
+                        return;
+                    }
+
+                    const app = initializeApp(firebaseConfig);
+                    state.db = getFirestore(app);
+                    state.auth = getAuth(app);
+                    setLogLevel('Debug'); // Bật log chi tiết của Firebase
+
+                    onAuthStateChanged(state.auth, (user) => {
+                        if (user) {
+                            console.log("Firebase Auth user signed in:", user.uid);
+                            state.firebaseReady = true;
+                            // Khi đã xác thực, hiển thị màn hình đăng nhập
+                            this.showScreen('login');
+                        } else {
+                            console.log("Firebase Auth user signed out.");
+                            state.firebaseReady = false;
+                        }
+                    });
+
+                    // Đăng nhập
+                    if (typeof __initial_auth_token !== 'undefined') {
+                        await signInWithCustomToken(state.auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(state.auth);
+                    }
+
+                } catch (error) {
+                    console.error("Error initializing Firebase:", error);
+                    alert("Không thể kết nối đến máy chủ. Vui lòng tải lại trang.");
+                }
             },
             
             loadDataFromFiles() {
@@ -297,6 +411,9 @@
             },
 
             attachEventListeners() {
+                // Event listener mới
+                $('#login-form').addEventListener('submit', (e) => this.handleLogin(e));
+
                 $('#mode-review').addEventListener('click', () => this.startQuiz('review'));
                 $('#mode-test').addEventListener('click', () => this.startQuiz('test'));
                 
@@ -305,17 +422,30 @@
                 $('#submit-btn').addEventListener('click', () => this.submitAnswer());
                 $('#hint-btn').addEventListener('click', () => this.showHint());
                 $('#stop-btn').addEventListener('click', () => this.goHome());
-                // ĐÃ XÓA event listener của Nút nộp bài
 
                 $('#close-results-btn').addEventListener('click', () => this.closeResults());
                 $('#review-wrong-btn').addEventListener('click', () => this.reviewWrongAnswers());
             },
 
+            handleLogin(e) {
+                e.preventDefault();
+                const userName = $('#user-name').value.trim();
+                const userDanhSo = $('#user-danhso').value.trim();
+                
+                if (userName && userDanhSo) {
+                    state.userName = userName;
+                    state.userDanhSo = userDanhSo;
+                    this.showScreen('selector');
+                } else {
+                    alert("Vui lòng nhập đầy đủ Họ tên và Danh số.");
+                }
+            },
+
             showScreen(screenName) {
-                const isLegacy = screenName === 'selector' || screenName === 'quiz';
+                const isLegacy = screenName === 'login' || screenName === 'selector' || screenName === 'quiz';
                 document.body.classList.toggle('legacy-body', isLegacy);
 
-                ['selector', 'quiz'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
+                ['login', 'selector', 'quiz'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
                 $(`#${screenName}-screen`).classList.remove('hidden');
                 
                 const topPanel = $('#id_toppanel');
@@ -324,10 +454,12 @@
             
             goHome() {
                 clearInterval(state.timerId);
-                this.showScreen('selector');
+                // Quay về màn hình đăng nhập thay vì chọn môn
+                this.showScreen('login'); 
             },
 
             renderSubjectList() {
+                 // ... (giữ nguyên)
                 const listEl = $('#subject-list');
                 listEl.className = 'flex flex-col items-center';
                 listEl.innerHTML = '';
@@ -347,8 +479,9 @@
             },
 
             startQuiz(mode) {
+                 // ... (giữ nguyên logic, chỉ thay đổi 1 dòng)
                 state.mode = mode;
-                state.viewedIndices.clear(); // Xóa danh sách câu đã xem khi bắt đầu
+                state.viewedIndices.clear(); 
                 
                 const subjectData = window.questionData[state.currentSubjectKey];
                 if (!subjectData || !subjectData.questions || subjectData.questions.length === 0) {
@@ -379,14 +512,11 @@
                 $('#hint-btn').className = 'legacy-btn';
                 $('#submit-btn').className = 'legacy-btn-primary';
                 
-                // Đảm bảo các nút hiển thị chính xác khi bắt đầu bài test
                 $('#submit-btn').style.display = 'inline-flex';
                 $('#prev-btn').style.display = 'inline-flex';
                 $('#next-btn').style.display = 'inline-flex';
                 $('#stop-btn').style.display = 'inline-flex';
-                $('#hint-btn').style.display = 'inline-flex'; // Đảm bảo hint-btn hiển thị
-
-                // ĐÃ XÓA định dạng nút Nộp bài
+                $('#hint-btn').style.display = 'inline-flex'; 
 
                 $('#stop-btn').className = 'legacy-btn';
 
@@ -407,7 +537,7 @@
                 this.renderQuestion();
             },
 
-            finishQuiz(isAuto = false) {
+            async finishQuiz(isAuto = false) {
                 clearInterval(state.timerId);
                 const total = state.pickedIndices.length;
                 let correct = 0;
@@ -419,19 +549,58 @@
                 
                 const answeredCount = Object.keys(state.userAnswers).length;
                 const wrong = answeredCount - correct;
-                // ĐÃ XÓA TÍNH TOÁN "SKIPPED"
                 
                 $('#results-title').textContent = isAuto ? "Hết giờ!" : "Kết quả";
                 $('#results-total').textContent = total;
                 $('#results-correct').textContent = correct;
                 $('#results-wrong').textContent = wrong;
                 
-                // SỬA LỖI: Hiển thị nút "Xem lại câu sai" nếu có câu sai
                 $('#review-wrong-btn').style.display = wrong > 0 ? 'flex' : 'none'; 
                 $('#results-modal').classList.remove('hidden');
+
+                // LƯU KẾT QUẢ LÊN FIREBASE
+                if (state.mode === 'test') { // Chỉ lưu kết quả khi làm bài thi
+                    await this.saveResultToFirebase(correct, wrong, total);
+                }
+            },
+
+            async saveResultToFirebase(correct, wrong, total) {
+                if (!state.firebaseReady || !state.db) {
+                    console.error("Firebase is not ready. Cannot save result.");
+                    alert("Lỗi: Không thể lưu kết quả. Vui lòng kiểm tra kết nối.");
+                    return;
+                }
+                
+                const { collection, addDoc, serverTimestamp } = window.firebase;
+                
+                try {
+                    const subjectName = window.questionData[state.currentSubjectKey]?.name || state.currentSubjectKey;
+                    
+                    const resultData = {
+                        userName: state.userName,
+                        userDanhSo: state.userDanhSo,
+                        subject: subjectName,
+                        mode: state.mode,
+                        correct: correct,
+                        wrong: wrong,
+                        total: total,
+                        score: (correct / total) * 100,
+                        timestamp: serverTimestamp() // Thêm dấu thời gian của máy chủ
+                    };
+                    
+                    // Lưu vào collection public
+                    const resultsColPath = `artifacts/${state.appId}/public/data/quiz_results`;
+                    const docRef = await addDoc(collection(state.db, resultsColPath), resultData);
+                    console.log("Result saved to Firebase with ID:", docRef.id);
+
+                } catch (error) {
+                    console.error("Error saving result to Firebase:", error);
+                    alert("Đã có lỗi xảy ra khi lưu kết quả của bạn.");
+                }
             },
             
             renderQuestionList() {
+                 // ... (giữ nguyên)
                 const listEl = $('#question-list');
                 listEl.innerHTML = '';
                 listEl.className = 'legacy-question-nav';
@@ -450,6 +619,7 @@
             },
 
             updateQuestionListStatus() {
+                 // ... (giữ nguyên)
                 const items = $$('.legacy-question-nav-item');
                 
                 items.forEach((item, displayIndex) => {
@@ -471,9 +641,10 @@
             },
 
             renderQuestion() {
+                 // ... (giữ nguyên)
                 if (state.currentIndex < 0 || state.currentIndex >= state.pickedIndices.length) return;
                 const qIndex = state.pickedIndices[state.currentIndex];
-                state.viewedIndices.add(qIndex); // Đánh dấu câu hỏi này đã được xem
+                state.viewedIndices.add(qIndex); 
                 const question = state.questions[qIndex];
                 
                 const indexedOptions = question.options.map((opt, i) => ({ text: opt, originalIndex: i }));
@@ -500,7 +671,6 @@
                     optionsContainer.insertAdjacentHTML('beforeend', optionHTML);
                 });
 
-                // Xóa style cũ khi render câu hỏi mới (cho chế độ xem lại)
                 $$('.legacy-answer-container label').forEach(label => {
                     label.style.backgroundColor = '';
                     label.style.border = '1px solid #000';
@@ -512,12 +682,12 @@
             },
 
             updateUIForQuestionState() {
+                 // ... (giữ nguyên)
                 const qIndex = state.pickedIndices[state.currentIndex];
                 const isAnswered = qIndex in state.userAnswers;
 
                 $('#feedback-container').classList.add('hidden');
                 
-                // Chỉ bật/tắt nút Trả lời nếu không ở chế độ xem lại câu sai
                 if (state.mode !== 'review-wrong') { 
                     $('#submit-btn').disabled = isAnswered;
                     $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời'; 
@@ -534,9 +704,7 @@
                         if (checkbox) checkbox.checked = true;
                     });
 
-                    // CẬP NHẬT LOGIC: Hiển thị đáp án đúng/sai
                     if (state.mode === 'review-wrong') {
-                        // Chế độ xem lại: Tô màu cả đúng và sai
                         correctIndices.forEach(correctIndex => {
                             const correctLabel = $(`#options-container input[data-original-index="${correctIndex}"]`).closest('label');
                             if (correctLabel) {
@@ -555,7 +723,6 @@
                         });
 
                     } else if (!isCorrect) { 
-                        // Chế độ làm bài: Chỉ tô màu đáp án đúng
                         correctIndices.forEach(correctIndex => {
                             const correctLabel = $(`#options-container input[data-original-index="${correctIndex}"]`).closest('label');
                             if (correctLabel) {
@@ -569,30 +736,29 @@
                 }
             },
 
-            // HÀM MỚI: Tìm câu hỏi tiếp theo chưa được trả lời
             findNextUnansweredQuestionIndex() {
+                 // ... (giữ nguyên)
                 const total = state.pickedIndices.length;
                 
-                // 1. Tìm từ vị trí hiện tại + 1 đến cuối
                 for (let i = state.currentIndex + 1; i < total; i++) {
                     const qIndex = state.pickedIndices[i];
                     if (!(qIndex in state.userAnswers)) {
-                        return i; // Trả về vị trí (displayIndex)
+                        return i; 
                     }
                 }
 
-                // 2. Nếu không tìm thấy, quay vòng lại từ đầu đến vị trí hiện tại
                 for (let i = 0; i < state.currentIndex; i++) {
                     const qIndex = state.pickedIndices[i];
                     if (!(qIndex in state.userAnswers)) {
-                        return i; // Trả về vị trí (displayIndex)
+                        return i; 
                     }
                 }
 
-                return -1; // Tất cả các câu khác đã được trả lời
+                return -1; 
             },
 
             submitAnswer() {
+                 // ... (giữ nguyên)
                 const qIndex = state.pickedIndices[state.currentIndex];
                 if (qIndex in state.userAnswers) return;
 
@@ -608,31 +774,25 @@
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
 
-                // CẬP NHẬT LOGIC:
-                // Kiểm tra xem đã trả lời hết câu hỏi chưa
                 const totalQuestions = state.pickedIndices.length;
                 const answeredQuestions = Object.keys(state.userAnswers).length;
                 const isQuizComplete = answeredQuestions === totalQuestions;
 
                 setTimeout(() => {
                     if (isQuizComplete) {
-                        // Nếu đã trả lời hết, tự động nộp bài
                         this.finishQuiz(false);
                     } else {
-                        // Nếu chưa hết, tìm câu tiếp theo CHƯA TRẢ LỜI
                         const nextUnansweredIndex = this.findNextUnansweredQuestionIndex();
                         if (nextUnansweredIndex !== -1) {
                             state.currentIndex = nextUnansweredIndex;
                             this.renderQuestion();
                         }
-                        // Nếu không tìm thấy (nextUnansweredIndex === -1), nghĩa là
-                        // câu vừa trả lời là câu cuối cùng còn sót lại -> Lẽ ra isQuizComplete phải là true
-                        // Nhưng để an toàn, chúng ta không làm gì cả, chờ người dùng tự click.
                     }
                 }, 200);
             },
 
             navigateQuestion(direction) {
+                 // ... (giữ nguyên)
                 const newIndex = state.currentIndex + direction;
                 if (newIndex >= 0 && newIndex < state.pickedIndices.length) {
                     state.currentIndex = newIndex;
@@ -640,26 +800,28 @@
                 }
             },
 
-            // ĐÃ XÓA HÀM: attemptFinishQuiz()
-
             checkCorrectness(qIndex, userAnswer) {
+                 // ... (giữ nguyên)
                 const correctIndices = new Set(state.questions[qIndex].answer);
                 const userAnswerSet = new Set(userAnswer);
                 return correctIndices.size === userAnswerSet.size && [...correctIndices].every(item => userAnswerSet.has(item));
             },
 
             getCorrectAnswerText(qIndex) {
+                 // ... (giữ nguyên)
                  const question = state.questions[qIndex];
                  return question.answer.map(i => question.options[i]).join('; ');
             },
 
             showHint() {
+                 // ... (giữ nguyên)
                  const qIndex = state.pickedIndices[state.currentIndex];
                  const correctText = this.getCorrectAnswerText(qIndex);
                  alert(`💡 Gợi ý đáp án:\n\n- ${correctText.replace(/; /g, '\n- ')}`);
             },
 
             startTimer() {
+                 // ... (giá trị nguyên)
                 clearInterval(state.timerId);
                 const timerEl = $('#timer');
                 if (!timerEl) return;
@@ -670,7 +832,6 @@
                     const seconds = state.secondsLeft % 60;
                     timerEl.textContent = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                     if (state.secondsLeft <= 0) {
-                        clearInterval(state.timerId);
                         this.finishQuiz(true);
                     }
                 }, 1000);
@@ -678,31 +839,28 @@
 
             closeResults() {
                 $('#results-modal').classList.add('hidden');
-                this.goHome();
+                this.goHome(); // Quay về màn hình đăng nhập
             },
 
             reviewWrongAnswers() {
+                 // ... (giữ nguyên)
                 const wrongQIndices = state.pickedIndices.filter(qIndex => qIndex in state.userAnswers && !this.checkCorrectness(qIndex, state.userAnswers[qIndex]));
                 
                 if (wrongQIndices.length > 0) {
-                    state.pickedIndices = wrongQIndices; // Chỉ giữ lại các câu sai
+                    state.pickedIndices = wrongQIndices; 
                     state.currentIndex = 0;
-                    state.mode = 'review-wrong'; // <-- Đặt chế độ xem lại câu sai
+                    state.mode = 'review-wrong'; 
                     state.viewedIndices.clear();
 
                     $('#results-modal').classList.add('hidden');
                     this.showScreen('quiz');
 
-                    // Cấu hình lại các nút cho chế độ "Xem lại"
                     $('#submit-btn').style.display = 'none';
                     $('#hint-btn').style.display = 'none';
                     $('#prev-btn').style.display = 'inline-flex';
                     $('#next-btn').style.display = 'inline-flex';
                     $('#stop-btn').style.display = 'inline-flex';
 
-
-                    // Cập nhật lại UI cho các câu hỏi sai
-                    // state.userAnswers KHÔNG bị xóa, nên câu trả lời sai của người dùng sẽ được hiển thị
                     this.renderQuestionList();
                     this.renderQuestion();
                 } else {
