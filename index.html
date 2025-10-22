@@ -302,6 +302,8 @@
                             <input type="text" id="user-danhso" class="legacy-login-input" required>
                             
                             <button type="submit" id="login-btn" class="legacy-login-btn">Vào làm bài / Admin</button>
+                            <!-- === THÊM NÚT TRỞ LẠI === -->
+                            <button type="button" id="login-back-btn" class="legacy-login-btn" style="background-color: #6c757d; border-color: #6c757d; margin-top: 10px;">Trở lại</button>
                         </form>
                     </td>
                 </tr>
@@ -333,6 +335,9 @@
                     <div id="question-list"></div>
                 </div>
                 <div class="question-content-container">
+                    <!-- === THÊM BỘ ĐẾM GIỜ === -->
+                    <div id="timer" class="text-2xl font-bold text-red-600 text-center mb-4 hidden"></div>
+                    
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="question-header" class="text-xl font-bold text-slate-900"></h2>
                     </div>
@@ -346,6 +351,7 @@
                         <div class="flex gap-4">
                              <button id="hint-btn">💡 Gợi ý</button>
                              <button id="submit-btn">Trả lời</button>
+                             <!-- Nút "Dừng làm bài" sẽ bị ẩn/hiện bằng JS -->
                              <button id="stop-btn">Dừng làm bài</button>
                         </div>
                         <button id="next-btn">Tiếp →</button>
@@ -389,6 +395,8 @@
                 <div class="space-y-4">
                     <button id="mode-review" class="btn btn-primary w-full text-lg">Ôn tập toàn bộ</button>
                     <button id="mode-test" class="btn btn-primary w-full text-lg">Làm bài thi</button>
+                    <!-- === THÊM NÚT TRỞ LẠI === -->
+                    <button id="mode-back-btn" class="btn btn-secondary w-full text-lg">Trở lại</button>
                 </div>
             </div>
         </div>
@@ -443,7 +451,7 @@
             viewedIndices: new Set(),
             testConfig: {
                 questionCount: 20,
-                durationMinutes: 20
+                durationMinutes: 20 // 20 phút
             },
             // Trạng thái mới
             userName: null,
@@ -451,7 +459,8 @@
             db: null,
             auth: null,
             firebaseReady: false, // Sẽ thành true sau khi kết nối
-            adminPass: "999999" // <-- "MẬT KHẨU" ADMIN
+            adminPass: "999999", // <-- "MẬT KHẨU" ADMIN
+            isFinished: false // Cờ hiệu cho biết bài thi đã nộp hay chưa
         };
         
         const $ = (selector) => document.querySelector(selector);
@@ -563,6 +572,10 @@
                 
                 // === EVENT LISTENER MỚI ===
                 $('#admin-back-btn').addEventListener('click', () => this.showScreen('selector'));
+                // === THÊM MỚI ===
+                $('#login-back-btn').addEventListener('click', () => this.showScreen('selector'));
+                $('#mode-back-btn').addEventListener('click', () => $('#mode-modal').classList.add('hidden'));
+
 
                 // Cập nhật listener cho các nút chọn chế độ
                 $('#mode-review').addEventListener('click', () => this.startQuiz('review'));
@@ -578,6 +591,9 @@
                 $('#close-results-btn').addEventListener('click', () => this.goHome());
                 
                 $('#review-wrong-btn').addEventListener('click', () => this.reviewWrongAnswers());
+                
+                // === YÊU CẦU 3: LƯU KHI TẮT TRANG ===
+                window.addEventListener('beforeunload', () => this.handleWindowClose());
             },
 
             // HÀM MỚI: Xử lý khi bấm "Làm bài thi"
@@ -641,6 +657,7 @@
             
             goHome() {
                 clearInterval(state.timerId);
+                state.isFinished = true; // Đánh dấu là đã xong, ngăn 'beforeunload'
                 // Quay về màn hình chọn môn
                 $('#results-modal').classList.add('hidden'); // Đảm bảo modal kết quả đã đóng
                 this.showScreen('selector'); 
@@ -749,8 +766,21 @@
                 }
             },
 
+            // === CẬP NHẬT HÀM NÀY ===
             selectSubject(subjectKey) {
                 state.currentSubjectKey = subjectKey;
+
+                // Yêu cầu 2: Môn 'antoan' (An Toàn Lao Động) chỉ có "Ôn tập"
+                if (subjectKey === 'antoan') {
+                    // Chỉ hiển thị "Ôn tập", ẩn "Làm bài thi"
+                    $('#mode-review').style.display = 'block';
+                    $('#mode-test').style.display = 'none';
+                } else {
+                    // Các môn khác hiển thị cả hai
+                    $('#mode-review').style.display = 'block';
+                    $('#mode-test').style.display = 'block';
+                }
+                
                 $('#mode-modal').classList.remove('hidden');
             },
 
@@ -758,6 +788,8 @@
             startQuiz(mode) {
                 state.mode = mode; // 'review', 'test', 'review-wrong'
                 state.viewedIndices.clear(); 
+                state.isFinished = false; // Đặt lại cờ hiệu
+                state.secondsLeft = state.testConfig.durationMinutes * 60; // Đặt thời gian
                 
                 // Nếu là 'test' mode, phải đảm bảo đã đăng nhập
                 if (mode === 'test' && !state.userDanhSo) {
@@ -798,58 +830,85 @@
                 $('#submit-btn').style.display = 'inline-flex';
                 $('#prev-btn').style.display = 'inline-flex';
                 $('#next-btn').style.display = 'inline-flex';
-                $('#stop-btn').style.display = 'inline-flex';
-                $('#hint-btn').style.display = 'inline-flex'; 
-
-                $('#stop-btn').className = 'legacy-btn';
-
+                
+                // Ẩn/hiện nút dựa trên chế độ
                 if (mode === 'test') {
                     $('#hint-btn').style.display = 'none'; // Ẩn gợi ý khi thi
+                    $('#stop-btn').style.display = 'none'; // Yêu cầu 2: Ẩn "Dừng làm bài"
+                    this.startTimer(); // Yêu cầu 1: Bắt đầu tính giờ
+                    
                     const pickCount = Math.min(state.testConfig.questionCount, total);
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random()).slice(0, pickCount);
-                    // this.startTimer(); // Bỏ timer cho đơn giản
-                } else { // 'review' mode
+                } else { // 'review' or 'review-wrong'
                     $('#hint-btn').style.display = 'inline-flex';
-                    state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
-                    if ($('#timer')) $('#timer').classList.add('hidden');
+                    $('#stop-btn').style.display = 'inline-flex'; // Hiển thị "Dừng làm bài"
+                    $('#timer').classList.add('hidden'); // Ẩn đồng hồ
+                    
+                    if (mode === 'review') { // Chỉ xáo trộn khi ôn tập
+                        state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
+                    }
                 }
+                
+                // Logic 'review-wrong'
+                if(mode === 'review-wrong') {
+                     $('#submit-btn').style.display = 'none';
+                     $('#hint-btn').style.display = 'none';
+                     $('#stop-btn').style.display = 'inline-flex';
+                } else {
+                     $('#submit-btn').style.display = 'inline-flex';
+                }
+
                 
                 state.currentIndex = 0;
                 state.userAnswers = {};
                 this.renderQuestionList();
                 this.renderQuestion();
             },
-
-            async finishQuiz(isAuto = false) {
+            
+            // === CẬP NHẬT HÀM NÀY ===
+            finishQuiz(isAuto = false) {
+                // Yêu cầu 3: Ngăn việc chạy lặp lại
+                if (state.isFinished) return; 
+                state.isFinished = true; // Đánh dấu đã nộp ngay lập tức
+                
                 clearInterval(state.timerId);
+                $('#timer').classList.add('hidden');
+
                 const total = state.pickedIndices.length;
                 let correct = 0;
+                
+                // Đếm điểm
                 state.pickedIndices.forEach(qIndex => {
+                    // Nếu câu hỏi đã được trả lời VÀ trả lời đúng
                     if (qIndex in state.userAnswers && this.checkCorrectness(qIndex, state.userAnswers[qIndex])) {
                         correct++;
                     }
+                    // Những câu chưa trả lời (không có trong userAnswers) sẽ tự động bị tính là sai (vì correct không tăng)
                 });
                 
-                const answeredCount = Object.keys(state.userAnswers).length;
-                const wrong = answeredCount - correct;
+                // Yêu cầu 1: Câu chưa làm tính là sai
+                const wrong = total - correct; // Tất cả những câu không đúng đều là sai
                 
                 $('#results-title').textContent = isAuto ? "Hết giờ!" : "Kết quả";
                 
-                // === YÊU CẦU 2: HIỂN THỊ ĐIỂM ===
                 const scoreText = `${correct} / ${total}`;
-                $('#results-score-display').textContent = scoreText; // Hiển thị điểm
-                // ================================
+                $('#results-score-display').textContent = scoreText; 
                 
                 $('#results-total').textContent = total;
                 $('#results-correct').textContent = correct;
-                $('#results-wrong').textContent = wrong;
+                $('#results-wrong').textContent = wrong; // Hiển thị số câu sai
                 
                 $('#review-wrong-btn').style.display = wrong > 0 ? 'flex' : 'none'; 
-                $('#results-modal').classList.remove('hidden');
+                
+                // Chỉ hiển thị modal nếu không phải là do tắt trình duyệt
+                if (!isAuto || (isAuto && state.secondsLeft <= 0)) {
+                     $('#results-modal').classList.remove('hidden');
+                }
 
-                // LƯU KẾT QUẢ LÊN FIREBASE
+                // LƯU KẾT QUẢ LÊN FIREBASE (Fire-and-forget)
                 if (state.mode === 'test') { // Chỉ lưu kết quả khi làm bài thi
-                    await this.saveResultToFirebase(correct, wrong, total);
+                    // Chúng ta không 'await' ở đây để nó có thể chạy trong 'beforeunload'
+                    this.saveResultToFirebase(correct, wrong, total);
                 }
             },
 
@@ -857,7 +916,7 @@
                 // Đảm bảo đã kết nối
                 if (!state.firebaseReady || !state.db) {
                     console.error("Firebase is not ready. Cannot save result.");
-                    alert("Lỗi: Không thể lưu kết quả. Vui lòng kiểm tra kết nối.");
+                    // Không alert ở đây vì có thể chạy ngầm khi tắt tab
                     return;
                 }
                 
@@ -884,7 +943,7 @@
 
                 } catch (error) {
                     console.error("Error saving result to Firebase:", error);
-                    alert("Đã có lỗi xảy ra khi lưu kết quả của bạn.");
+                    // Không alert ở đây
                 }
             },
             
@@ -1121,9 +1180,40 @@
                  const correctText = this.getCorrectAnswerText(qIndex);
                  alert(`💡 Gợi ý đáp án:\n\n- ${correctText.replace(/; /g, '\n- ')}`);
             },
-
+            
+            // === HÀM MỚI: BẮT ĐẦU ĐỒNG HỒ ===
             startTimer() {
-                // Đã bỏ
+                const timerEl = $('#timer');
+                if (!timerEl) return;
+                timerEl.classList.remove('hidden');
+                
+                clearInterval(state.timerId); // Xóa timer cũ nếu có
+
+                timerEl.textContent = `⏳ ${String(state.testConfig.durationMinutes).padStart(2, '0')}:00`;
+
+                state.timerId = setInterval(() => {
+                    state.secondsLeft--;
+                    const minutes = Math.floor(state.secondsLeft / 60);
+                    const seconds = state.secondsLeft % 60;
+                    
+                    timerEl.textContent = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    
+                    if (state.secondsLeft <= 0) {
+                        clearInterval(state.timerId);
+                        alert("Hết giờ! Bài thi của bạn sẽ được nộp tự động.");
+                        this.finishQuiz(true); // 'isAuto = true'
+                    }
+                }, 1000);
+            },
+            
+            // === HÀM MỚI: XỬ LÝ TẮT TRANG ===
+            handleWindowClose() {
+                if (state.mode === 'test' && !state.isFinished) {
+                    // Đây là một lệnh "fire-and-forget" (bắn và quên)
+                    // Trình duyệt sẽ CỐ GẮNG gửi request này trước khi đóng
+                    // không thể 'await' ở đây.
+                    this.finishQuiz(true); // 'isAuto = true'
+                }
             },
 
             // closeResults() đã được cập nhật trong attachEventListeners
@@ -1137,6 +1227,7 @@
                     state.currentIndex = 0;
                     state.mode = 'review-wrong'; // Chuyển sang chế độ xem lại
                     state.viewedIndices.clear();
+                    state.isFinished = true; // Đánh dấu là đã xong (để 'beforeunload' không chạy)
 
                     $('#results-modal').classList.add('hidden');
                     this.showScreen('quiz');
@@ -1146,7 +1237,7 @@
                     $('#hint-btn').style.display = 'none';
                     $('#prev-btn').style.display = 'inline-flex';
                     $('#next-btn').style.display = 'inline-flex';
-                    $('#stop-btn').style.display = 'inline-flex';
+                    $('#stop-btn').style.display = 'inline-flex'; // Vẫn cho phép "Dừng" xem lại
 
                     this.renderQuestionList();
                     this.renderQuestion(); 
