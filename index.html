@@ -217,7 +217,8 @@
                         <button id="prev-btn">← Trước</button>
                         <div class="flex gap-4">
                              <button id="hint-btn">💡 Gợi ý</button>
-                             <button id="submit-btn">Chốt đáp án</button>
+                             <button id="submit-btn">Trả lời</button>
+                             <!-- ĐÃ XÓA NÚT NỘP BÀI -->
                              <button id="stop-btn">Dừng làm bài</button>
                         </div>
                         <button id="next-btn">Tiếp →</button>
@@ -304,6 +305,7 @@
                 $('#submit-btn').addEventListener('click', () => this.submitAnswer());
                 $('#hint-btn').addEventListener('click', () => this.showHint());
                 $('#stop-btn').addEventListener('click', () => this.goHome());
+                // ĐÃ XÓA event listener của Nút nộp bài
 
                 $('#close-results-btn').addEventListener('click', () => this.closeResults());
                 $('#review-wrong-btn').addEventListener('click', () => this.reviewWrongAnswers());
@@ -376,6 +378,9 @@
                 $('#next-btn').className = 'legacy-btn';
                 $('#hint-btn').className = 'legacy-btn';
                 $('#submit-btn').className = 'legacy-btn-primary';
+                
+                // ĐÃ XÓA định dạng nút Nộp bài
+
                 $('#stop-btn').className = 'legacy-btn';
 
                 if (mode === 'test') {
@@ -497,7 +502,7 @@
 
                 $('#feedback-container').classList.add('hidden');
                 $('#submit-btn').disabled = isAnswered;
-                $('#submit-btn').textContent = 'Trả lời';
+                $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời'; // Cập nhật text
 
                 if (isAnswered) {
                     const userAnswer = state.userAnswers[qIndex];
@@ -524,6 +529,29 @@
                 }
             },
 
+            // HÀM MỚI: Tìm câu hỏi tiếp theo chưa được trả lời
+            findNextUnansweredQuestionIndex() {
+                const total = state.pickedIndices.length;
+                
+                // 1. Tìm từ vị trí hiện tại + 1 đến cuối
+                for (let i = state.currentIndex + 1; i < total; i++) {
+                    const qIndex = state.pickedIndices[i];
+                    if (!(qIndex in state.userAnswers)) {
+                        return i; // Trả về vị trí (displayIndex)
+                    }
+                }
+
+                // 2. Nếu không tìm thấy, quay vòng lại từ đầu đến vị trí hiện tại
+                for (let i = 0; i < state.currentIndex; i++) {
+                    const qIndex = state.pickedIndices[i];
+                    if (!(qIndex in state.userAnswers)) {
+                        return i; // Trả về vị trí (displayIndex)
+                    }
+                }
+
+                return -1; // Tất cả các câu khác đã được trả lời
+            },
+
             submitAnswer() {
                 const qIndex = state.pickedIndices[state.currentIndex];
                 if (qIndex in state.userAnswers) return;
@@ -540,11 +568,26 @@
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
 
+                // CẬP NHẬT LOGIC:
+                // Kiểm tra xem đã trả lời hết câu hỏi chưa
+                const totalQuestions = state.pickedIndices.length;
+                const answeredQuestions = Object.keys(state.userAnswers).length;
+                const isQuizComplete = answeredQuestions === totalQuestions;
+
                 setTimeout(() => {
-                    if (state.currentIndex < state.pickedIndices.length - 1) {
-                        this.navigateQuestion(1);
+                    if (isQuizComplete) {
+                        // Nếu đã trả lời hết, tự động nộp bài
+                        this.finishQuiz(false);
                     } else {
-                        this.finishQuiz();
+                        // Nếu chưa hết, tìm câu tiếp theo CHƯA TRẢ LỜI
+                        const nextUnansweredIndex = this.findNextUnansweredQuestionIndex();
+                        if (nextUnansweredIndex !== -1) {
+                            state.currentIndex = nextUnansweredIndex;
+                            this.renderQuestion();
+                        }
+                        // Nếu không tìm thấy (nextUnansweredIndex === -1), nghĩa là
+                        // câu vừa trả lời là câu cuối cùng còn sót lại -> Lẽ ra isQuizComplete phải là true
+                        // Nhưng để an toàn, chúng ta không làm gì cả, chờ người dùng tự click.
                     }
                 }, 200);
             },
@@ -556,6 +599,8 @@
                     this.renderQuestion();
                 }
             },
+
+            // ĐÃ XÓA HÀM: attemptFinishQuiz()
 
             checkCorrectness(qIndex, userAnswer) {
                 const correctIndices = new Set(state.questions[qIndex].answer);
@@ -614,3 +659,4 @@
     </script>
 </body>
 </html>
+
