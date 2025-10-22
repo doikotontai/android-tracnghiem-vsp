@@ -67,12 +67,13 @@
              border-top: 1px solid #000;
              padding-top: 15px;
         }
+        /* === GIẢM MARGIN BOTTOM (Lần 2) === */
         #question-header.legacy-question-header {
             color: #990000;
             font-family: Arial, sans-serif;
             font-size: 14px;
             font-weight: normal;
-            margin-bottom: 10px;
+            margin-bottom: 2px; /* Giảm thêm */
         }
         #question-text.legacy-question-text {
             font-size: 16px;
@@ -239,7 +240,7 @@
     <script src="data_ut.js"></script>
     <script src="data_rt.js"></script>
     <script src="data_paut.js"></script>
-    
+
     <!-- Tải Firebase SDK (THÊM CÁC HÀM MỚI) -->
     <!-- Script này sẽ chỉ được sử dụng khi cần, không load ngay từ đầu -->
     <script type="module">
@@ -292,10 +293,10 @@
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
     <!-- Top Panel similar to index1.html -->
-    <!-- === CẬP NHẬT STYLE CHO TOP PANEL VÀ DI CHUYỂN BỘ ĐẾM === -->
-    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; flex-direction: column; /* Đổi thành cột */ align-items: center; justify-content: center;">
+    <!-- === CẬP NHẬT STYLE CHO TOP PANEL (Lần 3 - Final) === -->
+    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; flex-direction: row; /* Hàng */ align-items: center; justify-content: space-between; /* Đẩy ra 2 bên */ width: 100%;">
 
-        <div id="logo-container" style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem; cursor: pointer; margin-bottom: 5px; /* Thêm margin dưới logo */">
+        <div id="logo-container" style="display: flex; align-items: center; text-align: left; gap: 1rem; cursor: pointer; padding-left: 10px;">
             <!-- IMPORTANT: Replace "logo.png" with the actual path to your logo file -->
             <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
             <div class="title" style="font-size: 1rem; font-weight: bold; font-family: Arial, sans-serif; line-height: 1.2;">
@@ -304,12 +305,13 @@
             </div>
         </div>
 
-        <!-- === BỘ ĐẾM SỐ NGƯỜI TRUY CẬP (Đã xóa position absolute) === -->
-        <div id="presence-counter" style="font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none; text-align: center;">
+        <!-- === BỘ ĐẾM SỐ NGƯỜI TRUY CẬP === -->
+        <div id="presence-counter" style="font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none; padding-right: 15px;">
             <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%;"></span>
             Đang truy cập: <span id="presence-count" style="font-weight: bold;">1</span>
         </div>
     </div>
+
 
     <div id="app" class="p-4 sm:p-6 md:p-8 flex-grow">
         <!-- MÀN HÌNH Đăng nhập (bị ẩn ban đầu) -->
@@ -1565,5 +1567,4 @@
     </script>
 </body>
 </html>
-" selected in the Canvas.
 
