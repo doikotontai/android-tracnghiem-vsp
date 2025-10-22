@@ -282,7 +282,8 @@
 
     <!-- Top Panel similar to index1.html -->
     <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0;">
-        <div style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem;">
+        <!-- === YÊU CẦU 2: Thêm ID và cursor: pointer === -->
+        <div id="logo-container" style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem; cursor: pointer;">
             <!-- IMPORTANT: Replace "logo.png" with the actual path to your logo file -->
             <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
             <div class="title" style="font-size: 1rem; font-weight: bold; font-family: Arial, sans-serif; line-height: 1.2;">
@@ -560,6 +561,9 @@
             },
 
             attachEventListeners() {
+                // === YÊU CẦU 2: Thêm sự kiện click cho logo ===
+                $('#logo-container').addEventListener('click', () => this.goHome());
+            
                 // Event listener mới
                 $('#login-form').addEventListener('submit', (e) => this.handleLogin(e));
                 
@@ -957,6 +961,8 @@
                 $('#next-btn').className = 'legacy-btn';
                 $('#hint-btn').className = 'legacy-btn';
                 $('#submit-btn').className = 'legacy-btn-primary';
+                // === YÊU CẦU 1: Thêm class cho nút "Dừng làm bài" ===
+                $('#stop-btn').className = 'legacy-btn';
                 
                 $('#submit-btn').style.display = 'inline-flex';
                 $('#prev-btn').style.display = 'inline-flex';
@@ -1022,6 +1028,7 @@
                 
                 $('#results-title').textContent = isAuto ? "Hết giờ!" : "Kết quả";
                 
+                // === SỬA LỖI ĐIỂM ===
                 const scoreText = `${correct} / ${total}`;
                 $('#results-score-display').textContent = scoreText; 
                 
