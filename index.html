@@ -217,6 +217,19 @@
         .admin-table tr:hover {
             background-color: #f1f1f1;
         }
+        /* === STYLE NÚT XÓA MỚI === */
+        .admin-delete-btn {
+            background-color: #dc2626; /* Màu đỏ */
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .admin-delete-btn:hover {
+            background-color: #b91c1c;
+        }
         /* === KẾT THÚC STYLE MỚI === */
     </style>
     <!-- Tải dữ liệu câu hỏi -->
@@ -233,7 +246,12 @@
         // Import các hàm cần thiết
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, addDoc, collection, serverTimestamp, setLogLevel, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // === THÊM `deleteDoc` VÀ `doc` ===
+        import { 
+            getFirestore, addDoc, collection, serverTimestamp, 
+            setLogLevel, getDocs, query, orderBy,
+            deleteDoc, doc 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Gán các hàm vào window để script ở dưới có thể dùng
         // Điều này là cần thiết vì chúng ta đang dùng 2 script block khác nhau
@@ -249,7 +267,10 @@
             setLogLevel,
             getDocs,
             query,
-            orderBy
+            orderBy,
+            // === THÊM HÀM MỚI VÀO WINDOW ===
+            deleteDoc, 
+            doc         
         };
     </script>
 </head>
@@ -348,6 +369,8 @@
                                 <th>Môn thi</th>
                                 <th>Điểm (Đúng/Tổng)</th>
                                 <th>Ngày thi</th>
+                                <!-- === THÊM CỘT MỚI === -->
+                                <th>Hành động</th>
                             </tr>
                         </thead>
                         <tbody id="results-table-body">
@@ -647,7 +670,7 @@
                 
                 this.showScreen('admin'); // Hiển thị màn hình admin
                 const resultsBody = $('#results-table-body');
-                resultsBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>';
+                resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>';
                 
                 const { collection, query, getDocs, orderBy } = window.firebase;
                 
@@ -659,7 +682,7 @@
                     resultsBody.innerHTML = ''; // Xóa dòng "Đang tải..."
                     
                     if (querySnapshot.empty) {
-                        resultsBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">Chưa có kết quả nào được lưu.</td></tr>';
+                        resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Chưa có kết quả nào được lưu.</td></tr>';
                         return;
                     }
                     
@@ -675,16 +698,54 @@
                                 <td>${data.subject}</td>
                                 <td>${scoreDisplay}</td>
                                 <td>${date}</td>
+                                <!-- === THÊM NÚT XÓA === -->
+                                <td>
+                                    <button class="admin-delete-btn" data-id="${doc.id}">Xóa</button>
+                                </td>
                             </tr>
                         `;
                         resultsBody.insertAdjacentHTML('beforeend', row);
                     });
+
+                    // === THÊM EVENT LISTENER CHO CÁC NÚT XÓA ===
+                    resultsBody.querySelectorAll('.admin-delete-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => this.handleDeleteResult(e));
+                    });
                     
                 } catch (error) {
                     console.error("Error loading admin results:", error);
-                    resultsBody.innerHTML = `<tr><td colspan="4" style="color: red; text-align: center; padding: 20px;">
+                    resultsBody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center; padding: 20px;">
                                                 Lỗi tải kết quả. (Lỗi: ${error.message})
                                            </td></tr>`;
+                }
+            },
+            
+            // === HÀM MỚI ĐỂ XỬ LÝ XÓA ===
+            async handleDeleteResult(e) {
+                const docId = e.target.dataset.id;
+                if (!docId) return;
+
+                // Do không dùng confirm(), chúng ta sẽ xóa trực tiếp
+                // và tải lại bảng
+                
+                // Vô hiệu hóa nút để tránh click đúp
+                e.target.disabled = true;
+                e.target.textContent = 'Đang xóa...';
+
+                try {
+                    const { deleteDoc, doc } = window.firebase;
+                    const docRef = doc(state.db, 'quiz_results', docId);
+                    await deleteDoc(docRef);
+                    
+                    // Tải lại bảng kết quả sau khi xóa thành công
+                    this.loadAdminResults(); 
+
+                } catch (error) {
+                    console.error("Error deleting document:", error);
+                    alert("Lỗi: Không thể xóa kết quả. Vui lòng thử lại.");
+                    // Bật lại nút nếu lỗi
+                    e.target.disabled = false;
+                    e.target.textContent = 'Xóa';
                 }
             },
 
