@@ -67,18 +67,20 @@
              border-top: 1px solid #000;
              padding-top: 15px;
         }
+        /* === GIẢM MARGIN BOTTOM === */
         #question-header.legacy-question-header {
             color: #990000;
             font-family: Arial, sans-serif;
             font-size: 14px;
             font-weight: normal;
-            margin-bottom: 0px; /* Giảm thêm thành 0 */
-            padding-bottom: 2px; /* Thêm padding nhỏ nếu cần */
+            margin-bottom: 5px; /* Giảm khoảng cách dưới */
+            padding-bottom: 0px; /* Bỏ padding dưới nếu không cần */
         }
+        /* === GIẢM MARGIN BOTTOM === */
         #question-text.legacy-question-text {
             font-size: 16px;
             font-weight: normal;
-            margin-bottom: 20px;
+            margin-bottom: 5px; /* Giảm khoảng cách dưới bằng khoảng cách giữa các đáp án */
             font-family: Arial, sans-serif;
             background-color: transparent;
             border: 1px solid #000;
@@ -88,7 +90,7 @@
         .legacy-answer-container label {
             display: flex;
             align-items: center;
-            margin: 0 0 5px 0;
+            margin: 0 0 5px 0; /* Khoảng cách giữa các đáp án là 5px */
             font-size: 15px;
             font-family: Arial, sans-serif;
             border: 1px solid #000;
@@ -1146,5 +1148,4 @@
     </script>
 </body>
 </html>
-
 
