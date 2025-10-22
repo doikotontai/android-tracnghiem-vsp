@@ -244,7 +244,7 @@
                     <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg"><span class="font-medium">Tổng số câu:</span><span id="results-total" class="font-bold"></span></div>
                     <div class="flex justify-between items-center bg-green-50 p-3 rounded-lg"><span class="font-medium text-green-700">✅ Đúng:</span><span id="results-correct" class="font-bold text-green-700"></span></div>
                     <div class="flex justify-between items-center bg-red-50 p-3 rounded-lg"><span class="font-medium text-red-700">❌ Sai:</span><span id="results-wrong" class="font-bold text-red-700"></span></div>
-                    <div class="flex justify-between items-center bg-yellow-50 p-3 rounded-lg"><span class="font-medium text-yellow-700">⚪ Bỏ qua:</span><span id="results-skipped" class="font-bold text-yellow-700"></span></div>
+                    <!-- ĐÃ XÓA DÒNG "BỎ QUA" -->
                 </div>
                 <div class="mt-8 flex flex-col sm:flex-row gap-4">
                     <button id="review-wrong-btn" class="btn btn-secondary w-full">Xem lại câu sai</button>
@@ -261,7 +261,7 @@
     <script>
         const state = {
             currentSubjectKey: null,
-            mode: 'review',
+            mode: 'review', // 'review', 'test', 'review-wrong'
             questions: [],
             pickedIndices: [],
             currentIndex: 0,
@@ -379,6 +379,13 @@
                 $('#hint-btn').className = 'legacy-btn';
                 $('#submit-btn').className = 'legacy-btn-primary';
                 
+                // Đảm bảo các nút hiển thị chính xác khi bắt đầu bài test
+                $('#submit-btn').style.display = 'inline-flex';
+                $('#prev-btn').style.display = 'inline-flex';
+                $('#next-btn').style.display = 'inline-flex';
+                $('#stop-btn').style.display = 'inline-flex';
+                $('#hint-btn').style.display = 'inline-flex'; // Đảm bảo hint-btn hiển thị
+
                 // ĐÃ XÓA định dạng nút Nộp bài
 
                 $('#stop-btn').className = 'legacy-btn';
@@ -388,7 +395,7 @@
                     const pickCount = Math.min(state.testConfig.questionCount, total);
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random()).slice(0, pickCount);
                     this.startTimer();
-                } else { // review mode
+                } else { // 'review' mode
                     $('#hint-btn').style.display = 'inline-flex';
                     state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
                     if ($('#timer')) $('#timer').classList.add('hidden');
@@ -412,14 +419,15 @@
                 
                 const answeredCount = Object.keys(state.userAnswers).length;
                 const wrong = answeredCount - correct;
-                const skipped = total - answeredCount;
+                // ĐÃ XÓA TÍNH TOÁN "SKIPPED"
                 
                 $('#results-title').textContent = isAuto ? "Hết giờ!" : "Kết quả";
                 $('#results-total').textContent = total;
                 $('#results-correct').textContent = correct;
                 $('#results-wrong').textContent = wrong;
-                $('#results-skipped').textContent = skipped;
-                $('#review-wrong-btn').style.display = wrong > 0 ? 'flex' : 'none';
+                
+                // SỬA LỖI: Hiển thị nút "Xem lại câu sai" nếu có câu sai
+                $('#review-wrong-btn').style.display = wrong > 0 ? 'flex' : 'none'; 
                 $('#results-modal').classList.remove('hidden');
             },
             
@@ -491,6 +499,13 @@
                     `;
                     optionsContainer.insertAdjacentHTML('beforeend', optionHTML);
                 });
+
+                // Xóa style cũ khi render câu hỏi mới (cho chế độ xem lại)
+                $$('.legacy-answer-container label').forEach(label => {
+                    label.style.backgroundColor = '';
+                    label.style.border = '1px solid #000';
+                    label.style.textDecoration = 'none';
+                });
                 
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
@@ -501,12 +516,17 @@
                 const isAnswered = qIndex in state.userAnswers;
 
                 $('#feedback-container').classList.add('hidden');
-                $('#submit-btn').disabled = isAnswered;
-                $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời'; // Cập nhật text
+                
+                // Chỉ bật/tắt nút Trả lời nếu không ở chế độ xem lại câu sai
+                if (state.mode !== 'review-wrong') { 
+                    $('#submit-btn').disabled = isAnswered;
+                    $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời'; 
+                }
 
                 if (isAnswered) {
                     const userAnswer = state.userAnswers[qIndex];
                     const isCorrect = this.checkCorrectness(qIndex, userAnswer);
+                    const correctIndices = state.questions[qIndex].answer;
                     
                     $$('#options-container input').forEach(el => el.disabled = true);
                     userAnswer.forEach(ansIdx => {
@@ -514,8 +534,28 @@
                         if (checkbox) checkbox.checked = true;
                     });
 
-                    if (!isCorrect) {
-                        const correctIndices = state.questions[qIndex].answer;
+                    // CẬP NHẬT LOGIC: Hiển thị đáp án đúng/sai
+                    if (state.mode === 'review-wrong') {
+                        // Chế độ xem lại: Tô màu cả đúng và sai
+                        correctIndices.forEach(correctIndex => {
+                            const correctLabel = $(`#options-container input[data-original-index="${correctIndex}"]`).closest('label');
+                            if (correctLabel) {
+                                correctLabel.style.backgroundColor = '#d4edda'; // Xanh lá
+                                correctLabel.style.border = '2px solid #006600';
+                            }
+                        });
+                         userAnswer.forEach(ansIdx => {
+                            if (!correctIndices.includes(ansIdx)) {
+                                const wrongLabel = $(`#options-container input[data-original-index="${ansIdx}"]`).closest('label');
+                                if (wrongLabel) {
+                                     wrongLabel.style.backgroundColor = '#f8d7da'; // Đỏ
+                                     wrongLabel.style.textDecoration = 'line-through';
+                                }
+                            }
+                        });
+
+                    } else if (!isCorrect) { 
+                        // Chế độ làm bài: Chỉ tô màu đáp án đúng
                         correctIndices.forEach(correctIndex => {
                             const correctLabel = $(`#options-container input[data-original-index="${correctIndex}"]`).closest('label');
                             if (correctLabel) {
@@ -643,12 +683,30 @@
 
             reviewWrongAnswers() {
                 const wrongQIndices = state.pickedIndices.filter(qIndex => qIndex in state.userAnswers && !this.checkCorrectness(qIndex, state.userAnswers[qIndex]));
+                
                 if (wrongQIndices.length > 0) {
-                    state.pickedIndices = wrongQIndices;
+                    state.pickedIndices = wrongQIndices; // Chỉ giữ lại các câu sai
                     state.currentIndex = 0;
-                    state.mode = 'review';
+                    state.mode = 'review-wrong'; // <-- Đặt chế độ xem lại câu sai
+                    state.viewedIndices.clear();
+
                     $('#results-modal').classList.add('hidden');
-                    this.startQuiz('review');
+                    this.showScreen('quiz');
+
+                    // Cấu hình lại các nút cho chế độ "Xem lại"
+                    $('#submit-btn').style.display = 'none';
+                    $('#hint-btn').style.display = 'none';
+                    $('#prev-btn').style.display = 'inline-flex';
+                    $('#next-btn').style.display = 'inline-flex';
+                    $('#stop-btn').style.display = 'inline-flex';
+
+
+                    // Cập nhật lại UI cho các câu hỏi sai
+                    // state.userAnswers KHÔNG bị xóa, nên câu trả lời sai của người dùng sẽ được hiển thị
+                    this.renderQuestionList();
+                    this.renderQuestion();
+                } else {
+                    alert("Bạn không có câu trả lời nào sai để xem lại.");
                 }
             }
         };
