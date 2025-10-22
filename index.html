@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ... styles ... */
+        /* ... (Các style cũ không thay đổi) ... */
         body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f0f4f8; }
         .quiz-card { background-color: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s ease-in-out; border: 1px solid transparent; }
@@ -17,8 +17,6 @@
         .btn-primary:hover { background-color: #1d4ed8; }
         .btn-secondary { background-color: #e2e8f0; color: #1e293b; }
         .btn-secondary:hover { background-color: #cbd5e1; }
-      
-        /* ... legacy styles ... */
         .legacy-body {
             font-family: Arial, sans-serif;
             background-color: #d7e6f7;
@@ -122,16 +120,16 @@
             border-width: 2px;
         }
         .legacy-question-nav-item.skipped {
-            background-color: #FFCC00; /* Màu vàng cho câu hỏi đã xem nhưng chưa trả lời */
+            background-color: #FFCC00; 
             border-color: #e6b800;
         }
         .legacy-question-nav-item.answered.correct {
-            background-color: #006600; /* Màu xanh cho câu trả lời đúng */
+            background-color: #006600; 
             border-color: #004d00;
             color: white;
         }
         .legacy-question-nav-item.answered.wrong {
-            background-color: #990000; /* Màu đỏ cho câu trả lời sai */
+            background-color: #990000; 
             border-color: #800000;
             color: white;
         }
@@ -157,8 +155,6 @@
             color: white;
             border-color: #1e4ed8;
         }
-        
-        /* Kiểu cho form đăng nhập */
         .legacy-login-input {
             width: 100%;
             padding: 8px 10px;
@@ -176,6 +172,52 @@
             cursor: pointer;
             width: 100%;
         }
+
+        /* === STYLE MỚI CHO TRANG ADMIN === */
+        .admin-panel {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            border: 1px solid #999;
+            margin-top: 40px;
+            width: 100%;
+            max-width: 1000px; /* Rộng hơn để chứa bảng */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .admin-panel-header {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-panel-body {
+            padding: 20px;
+            overflow-x: auto; /* Cho phép cuộn ngang nếu bảng quá rộng */
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .admin-table th, .admin-table td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .admin-table th {
+            background-color: #f7f7f7;
+            font-weight: bold;
+        }
+        .admin-table tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+        .admin-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        /* === KẾT THÚC STYLE MỚI === */
     </style>
     <!-- Tải dữ liệu câu hỏi -->
     <script src="data_antoan.js"></script>
@@ -185,11 +227,11 @@
     <script src="data_rt.js"></script>
     <script src="data_paut.js"></script>
     
-    <!-- Tải Firebase SDK -->
+    <!-- Tải Firebase SDK (THÊM CÁC HÀM MỚI) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, addDoc, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, addDoc, collection, serverTimestamp, setLogLevel, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Gán các hàm vào window để script ở dưới có thể dùng
         window.firebase = {
@@ -202,7 +244,11 @@
             addDoc,
             collection,
             serverTimestamp,
-            setLogLevel
+            setLogLevel,
+            // === HÀM MỚI ĐỂ ĐỌC DỮ LIỆU ===
+            getDocs,
+            query,
+            orderBy
         };
     </script>
 </head>
@@ -230,8 +276,7 @@
                 <tr>
                     <td style="padding: 20px;">
                         <form id="login-form">
-                            <label for="user-name" style="font-family: Arial, sans-serif; font-size: 14px;">Họ và tên:</label>
-                            <input type="text" id="user-name" class="legacy-login-input" required>
+                            <!-- Đã xóa trường Họ và tên -->
                             
                             <label for="user-danhso" style="font-family: Arial, sans-serif; font-size: 14px;">Danh số:</label>
                             <input type="text" id="user-danhso" class="legacy-login-input" required>
@@ -251,7 +296,12 @@
                 </tr>
                 <tr>
                     <td style="padding: 20px;">
-                        <div id="subject-list"></div>
+                        <div id="subject-list" class="flex flex-col items-center"></div>
+                        
+                        <!-- === NÚT ADMIN MỚI (BỊ ẨN) === -->
+                        <button id="admin-panel-btn" class="legacy-btn-primary hidden" style="margin-top: 20px; width: 100%; max-width: 400px; background-color: #d97706;">
+                            Xem Bảng Điểm (Admin)
+                        </button>
                     </td>
                 </tr>
             </table>
@@ -259,7 +309,7 @@
 
         <!-- Màn hình làm bài -->
         <div id="quiz-screen" class="hidden">
-            <!-- ... (giữ nguyên cấu trúc màn hình quiz) ... -->
+             <!-- ... (Nội dung màn hình quiz không đổi) ... -->
              <div id="quiz-layout-container" class="max-w-7xl mx-auto">
                  <div class="question-list-container">
                     <h2 class="text-xl font-bold mb-4">Danh sách câu</h2>
@@ -286,10 +336,36 @@
                 </div>
             </div>
         </div>
+        
+        <!-- === MÀN HÌNH ADMIN MỚI === -->
+        <div id="admin-screen" class="max-w-4xl mx-auto hidden">
+            <div class="admin-panel">
+                 <div class="admin-panel-header">
+                    <span>Bảng Kết Quả Thi</span>
+                    <button id="admin-back-btn" class="legacy-btn">Quay lại</button>
+                 </div>
+                 <div class="admin-panel-body">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Họ và Tên</th>
+                                <th>Danh số</th>
+                                <th>Môn thi</th>
+                                <th>Điểm</th>
+                                <th>Ngày thi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table-body">
+                            <!-- Kết quả sẽ được tải vào đây -->
+                        </tbody>
+                    </table>
+                 </div>
+            </div>
+        </div>
 
         <!-- CÁC HỘP THOẠI -->
         <div id="mode-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-             <!-- ... (giữ nguyên) ... -->
+             <!-- ... (Không đổi) ... -->
              <div class="quiz-card p-8 max-w-md w-full text-center">
                 <h2 class="text-2xl font-bold mb-6">Chọn chế độ</h2>
                 <div class="space-y-4">
@@ -299,7 +375,7 @@
             </div>
         </div>
         <div id="results-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-              <!-- ... (giữ nguyên) ... -->
+              <!-- ... (Không đổi) ... -->
               <div class="quiz-card p-8 max-w-lg w-full">
                 <h2 id="results-title" class="text-3xl font-bold mb-6 text-center">Kết quả</h2>
                 <div class="space-y-4 text-lg">
@@ -339,8 +415,8 @@
             userDanhSo: null,
             db: null,
             auth: null,
-            appId: typeof __app_id !== 'undefined' ? __app_id : 'default-app-id',
-            firebaseReady: false
+            firebaseReady: false,
+            adminPass: "999999" // <-- ĐÂY LÀ "MẬT KHẨU" ADMIN
         };
         
         const $ = (selector) => document.querySelector(selector);
@@ -358,15 +434,26 @@
             async initFirebase() {
                 try {
                     const {
-                        initializeApp, getAuth, signInAnonymously, signInWithCustomToken,
+                        initializeApp, getAuth, signInAnonymously,
                         onAuthStateChanged, getFirestore, setLogLevel
                     } = window.firebase;
                     
-                    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                    // !!! QUAN TRỌNG: Đã cập nhật với thông tin "chìa khoá" bạn vừa cung cấp
+                    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+                    const firebaseConfig = {
+                      apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
+                      authDomain: "tracnghiemndt.firebaseapp.com",
+                      projectId: "tracnghiemndt",
+                      storageBucket: "tracnghiemndt.firebasestorage.app",
+                      messagingSenderId: "187385061213",
+                      appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
+                      measurementId: "G-TKRBZJT880"
+                    };
+                    // !!! ---------------------------------------------- !!!
                     
-                    if (!firebaseConfig.apiKey) {
+                    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("AIzaSyCt14...")) {
                         console.error("Firebase config is missing or invalid.");
-                        alert("Lỗi cấu hình máy chủ. Không thể đăng nhập.");
+                        alert("Lỗi cấu hình máy chủ. Bạn chưa dán firebaseConfig vào tệp index.html.");
                         return;
                     }
 
@@ -387,12 +474,9 @@
                         }
                     });
 
-                    // Đăng nhập
-                    if (typeof __initial_auth_token !== 'undefined') {
-                        await signInWithCustomToken(state.auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(state.auth);
-                    }
+                    // Đăng nhập ẩn danh (cho phiên bản GitHub)
+                    await signInAnonymously(state.auth);
+                    console.log("Signed in anonymously for standalone version.");
 
                 } catch (error) {
                     console.error("Error initializing Firebase:", error);
@@ -413,6 +497,11 @@
             attachEventListeners() {
                 // Event listener mới
                 $('#login-form').addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // === EVENT LISTENER MỚI ===
+                $('#admin-panel-btn').addEventListener('click', () => this.loadAdminResults());
+                $('#admin-back-btn').addEventListener('click', () => this.showScreen('selector'));
+
 
                 $('#mode-review').addEventListener('click', () => this.startQuiz('review'));
                 $('#mode-test').addEventListener('click', () => this.startQuiz('test'));
@@ -429,23 +518,33 @@
 
             handleLogin(e) {
                 e.preventDefault();
-                const userName = $('#user-name').value.trim();
+                // const userName = $('#user-name').value.trim(); // Đã xóa
                 const userDanhSo = $('#user-danhso').value.trim();
                 
-                if (userName && userDanhSo) {
-                    state.userName = userName;
+                if (userDanhSo) { // Chỉ kiểm tra danh số
+                    state.userName = userDanhSo; // Dùng danh số làm tên
                     state.userDanhSo = userDanhSo;
                     this.showScreen('selector');
+                    
+                    // === LOGIC MỚI ĐỂ HIỆN NÚT ADMIN ===
+                    const adminBtn = $('#admin-panel-btn');
+                    if (state.userDanhSo === state.adminPass) {
+                        adminBtn.classList.remove('hidden');
+                    } else {
+                        adminBtn.classList.add('hidden');
+                    }
+                    // === KẾT THÚC LOGIC MỚI ===
+
                 } else {
-                    alert("Vui lòng nhập đầy đủ Họ tên và Danh số.");
+                    alert("Vui lòng nhập Danh số."); // Cập nhật thông báo
                 }
             },
 
             showScreen(screenName) {
-                const isLegacy = screenName === 'login' || screenName === 'selector' || screenName === 'quiz';
+                const isLegacy = screenName === 'login' || screenName === 'selector' || screenName === 'quiz' || screenName === 'admin';
                 document.body.classList.toggle('legacy-body', isLegacy);
 
-                ['login', 'selector', 'quiz'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
+                ['login', 'selector', 'quiz', 'admin'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
                 $(`#${screenName}-screen`).classList.remove('hidden');
                 
                 const topPanel = $('#id_toppanel');
@@ -459,10 +558,8 @@
             },
 
             renderSubjectList() {
-                 // ... (giữ nguyên)
                 const listEl = $('#subject-list');
-                listEl.className = 'flex flex-col items-center';
-                listEl.innerHTML = '';
+                listEl.innerHTML = ''; // Đã xóa class ở đây vì nó được thêm ở HTML
                 Object.entries(window.questionData).forEach(([key, data]) => {
                     const count = data.questions.length;
                     const card = document.createElement('div');
@@ -473,13 +570,71 @@
                 });
             },
 
+            // === HÀM MỚI ĐỂ TẢI KẾT QUẢ ADMIN ===
+            async loadAdminResults() {
+                this.showScreen('admin');
+                const resultsBody = $('#results-table-body');
+                resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>';
+                
+                if (!state.firebaseReady || !state.db) {
+                     resultsBody.innerHTML = '<tr><td colspan="5" style="color: red; text-align: center; padding: 20px;">Lỗi kết nối Firebase.</td></tr>';
+                     return;
+                }
+                
+                const { collection, query, getDocs, orderBy } = window.firebase;
+                
+                try {
+                    const resultsCol = collection(state.db, 'quiz_results');
+                    // Sắp xếp theo 'timestamp' (ngày thi) mới nhất lên đầu
+                    const q = query(resultsCol, orderBy('timestamp', 'desc')); 
+                    
+                    const querySnapshot = await getDocs(q);
+                    
+                    resultsBody.innerHTML = ''; // Xóa dòng "Đang tải..."
+                    
+                    if (querySnapshot.empty) {
+                        resultsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Chưa có kết quả nào được lưu.</td></tr>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        
+                        // Chuyển đổi timestamp của Firebase (nếu có) thành ngày giờ
+                        const date = data.timestamp ? data.timestamp.toDate().toLocaleString('vi-VN') : 'Không rõ';
+                        const score = data.score.toFixed(2); // Làm tròn điểm
+                        
+                        const row = `
+                            <tr>
+                                <td>${data.userName}</td>
+                                <td>${data.userDanhSo}</td>
+                                <td>${data.subject}</td>
+                                <td>${score}</td>
+                                <td>${date}</td>
+                            </tr>
+                        `;
+                        resultsBody.insertAdjacentHTML('beforeend', row);
+                    });
+                    
+                } catch (error) {
+                    console.error("Error loading admin results:", error);
+                    resultsBody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center; padding: 20px;">
+                                                Lỗi tải kết quả. 
+                                                <br><br> 
+                                                <strong>Bạn đã cập nhật Firebase Rules chưa?</strong>
+                                                <br>
+                                                (Lỗi: ${error.message})
+                                           </td></tr>`;
+                }
+            },
+            // === KẾT THÚC HÀM MỚI ===
+
             selectSubject(subjectKey) {
                 state.currentSubjectKey = subjectKey;
                 $('#mode-modal').classList.remove('hidden');
             },
 
             startQuiz(mode) {
-                 // ... (giữ nguyên logic, chỉ thay đổi 1 dòng)
                 state.mode = mode;
                 state.viewedIndices.clear(); 
                 
@@ -588,8 +743,8 @@
                         timestamp: serverTimestamp() // Thêm dấu thời gian của máy chủ
                     };
                     
-                    // Lưu vào collection public
-                    const resultsColPath = `artifacts/${state.appId}/public/data/quiz_results`;
+                    // Lưu vào collection 'quiz_results'
+                    const resultsColPath = `quiz_results`;
                     const docRef = await addDoc(collection(state.db, resultsColPath), resultData);
                     console.log("Result saved to Firebase with ID:", docRef.id);
 
@@ -600,7 +755,6 @@
             },
             
             renderQuestionList() {
-                 // ... (giữ nguyên)
                 const listEl = $('#question-list');
                 listEl.innerHTML = '';
                 listEl.className = 'legacy-question-nav';
@@ -619,7 +773,6 @@
             },
 
             updateQuestionListStatus() {
-                 // ... (giữ nguyên)
                 const items = $$('.legacy-question-nav-item');
                 
                 items.forEach((item, displayIndex) => {
@@ -641,7 +794,6 @@
             },
 
             renderQuestion() {
-                 // ... (giữ nguyên)
                 if (state.currentIndex < 0 || state.currentIndex >= state.pickedIndices.length) return;
                 const qIndex = state.pickedIndices[state.currentIndex];
                 state.viewedIndices.add(qIndex); 
@@ -662,10 +814,11 @@
                 optionsContainer.className = 'legacy-answer-container';
 
                 shuffledOptions.forEach((opt) => {
+                    // *** ĐÂY LÀ CHỖ ĐÃ SỬA LẠI CHO ĐÚNG ***
                     const optionHTML = `
                         <label>
                             <input type="checkbox" name="answer" data-original-index="${opt.originalIndex}">
-                            <span>${opt.text}</span>
+                            <span>${opt.text}</span> 
                         </label>
                     `;
                     optionsContainer.insertAdjacentHTML('beforeend', optionHTML);
@@ -682,7 +835,6 @@
             },
 
             updateUIForQuestionState() {
-                 // ... (giữ nguyên)
                 const qIndex = state.pickedIndices[state.currentIndex];
                 const isAnswered = qIndex in state.userAnswers;
 
@@ -737,9 +889,9 @@
             },
 
             findNextUnansweredQuestionIndex() {
-                 // ... (giữ nguyên)
                 const total = state.pickedIndices.length;
                 
+                // Tìm từ câu hiện tại -> cuối
                 for (let i = state.currentIndex + 1; i < total; i++) {
                     const qIndex = state.pickedIndices[i];
                     if (!(qIndex in state.userAnswers)) {
@@ -747,6 +899,7 @@
                     }
                 }
 
+                // Nếu không thấy, tìm từ đầu -> câu hiện tại
                 for (let i = 0; i < state.currentIndex; i++) {
                     const qIndex = state.pickedIndices[i];
                     if (!(qIndex in state.userAnswers)) {
@@ -754,11 +907,10 @@
                     }
                 }
 
-                return -1; 
+                return -1; // Tất cả đã được trả lời
             },
 
             submitAnswer() {
-                 // ... (giữ nguyên)
                 const qIndex = state.pickedIndices[state.currentIndex];
                 if (qIndex in state.userAnswers) return;
 
@@ -788,11 +940,10 @@
                             this.renderQuestion();
                         }
                     }
-                }, 200);
+                }, 200); // Tự động chuyển sau 0.2 giây
             },
 
             navigateQuestion(direction) {
-                 // ... (giữ nguyên)
                 const newIndex = state.currentIndex + direction;
                 if (newIndex >= 0 && newIndex < state.pickedIndices.length) {
                     state.currentIndex = newIndex;
@@ -801,29 +952,26 @@
             },
 
             checkCorrectness(qIndex, userAnswer) {
-                 // ... (giữ nguyên)
                 const correctIndices = new Set(state.questions[qIndex].answer);
                 const userAnswerSet = new Set(userAnswer);
                 return correctIndices.size === userAnswerSet.size && [...correctIndices].every(item => userAnswerSet.has(item));
             },
 
             getCorrectAnswerText(qIndex) {
-                 // ... (giữ nguyên)
                  const question = state.questions[qIndex];
                  return question.answer.map(i => question.options[i]).join('; ');
             },
 
             showHint() {
-                 // ... (giữ nguyên)
                  const qIndex = state.pickedIndices[state.currentIndex];
                  const correctText = this.getCorrectAnswerText(qIndex);
                  alert(`💡 Gợi ý đáp án:\n\n- ${correctText.replace(/; /g, '\n- ')}`);
             },
 
             startTimer() {
-                 // ... (giá trị nguyên)
                 clearInterval(state.timerId);
-                const timerEl = $('#timer');
+                // Tìm lại #timer vì nó có thể chưa tồn tại khi init()
+                const timerEl = $('#timer'); 
                 if (!timerEl) return;
                 timerEl.classList.remove('hidden');
                 state.timerId = setInterval(() => {
@@ -843,18 +991,18 @@
             },
 
             reviewWrongAnswers() {
-                 // ... (giữ nguyên)
                 const wrongQIndices = state.pickedIndices.filter(qIndex => qIndex in state.userAnswers && !this.checkCorrectness(qIndex, state.userAnswers[qIndex]));
                 
                 if (wrongQIndices.length > 0) {
-                    state.pickedIndices = wrongQIndices; 
+                    state.pickedIndices = wrongQIndices; // Chỉ giữ lại các câu sai
                     state.currentIndex = 0;
-                    state.mode = 'review-wrong'; 
+                    state.mode = 'review-wrong'; // Chuyển sang chế độ xem lại
                     state.viewedIndices.clear();
 
                     $('#results-modal').classList.add('hidden');
                     this.showScreen('quiz');
 
+                    // Ẩn/hiện các nút cho chế độ xem lại
                     $('#submit-btn').style.display = 'none';
                     $('#hint-btn').style.display = 'none';
                     $('#prev-btn').style.display = 'inline-flex';
@@ -862,7 +1010,7 @@
                     $('#stop-btn').style.display = 'inline-flex';
 
                     this.renderQuestionList();
-                    this.renderQuestion();
+                    this.renderQuestion(); // Sẽ chạy updateUIForQuestionState
                 } else {
                     alert("Bạn không có câu trả lời nào sai để xem lại.");
                 }
@@ -875,4 +1023,5 @@
     </script>
 </body>
 </html>
+
 
