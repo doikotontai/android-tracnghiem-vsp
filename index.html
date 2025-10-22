@@ -293,10 +293,10 @@
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
     <!-- Top Panel similar to index1.html -->
-    <!-- === CẬP NHẬT STYLE CHO TOP PANEL (Lần 5 - Final FINAL Check) === -->
-    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <!-- === CẬP NHẬT STYLE CHO TOP PANEL (Lần 6 - Using margin-left: auto) === -->
+    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; align-items: center; width: 100%;">
 
-        <div id="logo-container" style="display: flex; align-items: center; text-align: left; gap: 1rem; cursor: pointer; padding-left: 10px; flex-shrink: 0;"> /* Added flex-shrink: 0 */
+        <div id="logo-container" style="display: flex; align-items: center; text-align: left; gap: 1rem; cursor: pointer; padding-left: 10px; flex-shrink: 0;">
             <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
             <div class="title" style="font-size: 1rem; font-weight: bold; font-family: Arial, sans-serif; line-height: 1.2;">
                 © 2025<br>
@@ -304,12 +304,9 @@
             </div>
         </div>
 
-        <!-- Spacer to push counter to the right -->
-        <div style="flex-grow: 1;"></div>
-
-        <!-- === BỘ ĐẾM SỐ NGƯỜI TRUY CẬP === -->
-        <div id="presence-counter" style="font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none; padding-right: 15px; white-space: nowrap;"> /* Added white-space: nowrap */
-            <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; margin-right: 4px;"></span> /* Added margin-right */
+        <!-- === BỘ ĐẾM SỐ NGƯỜI TRUY CẬP (Sử dụng margin-left: auto) === -->
+        <div id="presence-counter" style="margin-left: auto; /* Đẩy sang phải */ font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none; padding-right: 15px; white-space: nowrap;">
+            <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; margin-right: 4px;"></span>
             Đang truy cập: <span id="presence-count" style="font-weight: bold;">1</span>
         </div>
     </div>
@@ -679,9 +676,12 @@
                     .catch((error) => console.error("Error setting presence:", error));
 
                 // Xóa trạng thái khi ngắt kết nối
+                // === TẠM THỜI VÔ HIỆU HÓA onDisconnect ĐỂ DEBUG ===
+                /*
                 onDisconnect(userPresenceRef).remove()
                     .then(() => console.log("onDisconnect rule set for UID:", uid))
                     .catch((error) => console.error("Error setting onDisconnect:", error));
+                */
             },
 
 
@@ -1522,24 +1522,11 @@
                 }, 1000);
             },
 
-            // === HÀM MỚI: XỬ LÝ TẮT TRANG ===
+            // === HÀM MỚI: XỬ LÝ TẮT TRANG (ĐÃ BỎ XÓA PRESENCE THỦ CÔNG) ===
             handleWindowClose() {
-                // === THAY ĐỔI: Ngắt presence khi tắt trang ===
-                 // Bỏ qua việc xóa thủ công, chỉ dựa vào onDisconnect
-                 /*
-                 const { ref, set } = window.firebase;
-                 const rtdb = state.rtdb;
-                 const user = state.auth?.currentUser;
-                 if (rtdb && user) {
-                     const userPresenceRef = ref(rtdb, 'presence/' + user.uid);
-                     set(userPresenceRef, null); // Xóa ngay lập tức, không đợi onDisconnect
-                 }
-                 */
-
+                // Chỉ còn xử lý nộp bài thi dở dang
                 if (state.mode === 'test' && !state.isFinished) {
                     // Đây là một lệnh "fire-and-forget" (bắn và quên)
-                    // Trình duyệt sẽ CỐ GẮNG gửi request này trước khi đóng
-                    // không thể 'await' ở đây.
                     this.finishQuiz(true); // 'isAuto = true'
                 }
             },
