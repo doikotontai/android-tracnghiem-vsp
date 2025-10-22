@@ -245,10 +245,10 @@
     <script type="module">
         // Import các hàm cần thiết
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // === THÊM `signInWithEmailAndPassword` ===
+        // === THÊM `signInWithEmailAndPassword` VÀ `signOut` ===
         import { 
             getAuth, signInAnonymously, onAuthStateChanged,
-            signInWithEmailAndPassword 
+            signInWithEmailAndPassword, signOut // <-- THÊM MỚI `signOut`
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, addDoc, collection, serverTimestamp, 
@@ -264,6 +264,7 @@
             onAuthStateChanged,
             // === THÊM HÀM MỚI ===
             signInWithEmailAndPassword,
+            signOut, // <-- THÊM MỚI `signOut`
             getFirestore,
             addDoc,
             collection,
@@ -474,7 +475,6 @@
             db: null,
             auth: null,
             firebaseReady: false, // Sẽ thành true sau khi kết nối
-            // === MẬT KHẨU ADMIN ĐÃ BỊ XÓA ===
             isFinished: false // Cờ hiệu cho biết bài thi đã nộp hay chưa
         };
         
@@ -591,6 +591,30 @@
                 $('#user-danhso').addEventListener('input', (e) => this.checkDanhSoForAdmin(e.target.value));
             },
 
+            // === HÀM MỚI: ĐĂNG XUẤT ADMIN ===
+            async handleAdminLogout() {
+                if (!state.auth) {
+                    console.log("Firebase auth not ready, cannot logout.");
+                    return;
+                }
+                
+                try {
+                    const { signOut } = window.firebase;
+                    await signOut(state.auth);
+                    
+                    // Xóa các nút admin khỏi UI
+                    $('#admin-button-container').innerHTML = '';
+                    
+                    alert("Đăng xuất Admin thành công.");
+                    
+                    this.showScreen('selector');
+
+                } catch (error) {
+                    console.error("Error signing out:", error);
+                    alert("Đăng xuất thất bại. Vui lòng thử lại.");
+                }
+            },
+
             // === HÀM MỚI: Kiểm tra danh số để hiện/ẩn form admin ===
             checkDanhSoForAdmin(danhSo) {
                 const adminGroup = $('#admin-login-group');
@@ -653,10 +677,12 @@
                     loginBtn.textContent = 'Đang đăng nhập...';
                     try {
                         const { signInWithEmailAndPassword } = window.firebase;
+                        // Đăng nhập, Firebase sẽ tự động nhớ phiên đăng nhập
                         await signInWithEmailAndPassword(state.auth, adminEmail, adminPassword);
                         
                         // Đăng nhập thành công, tải bảng điểm
-                        await this.loadAdminResults();
+                        // Sửa: không tải ở đây, chỉ quay về selector
+                        this.showScreen('selector'); 
                         
                     } catch (error) {
                         alert("Đăng nhập Admin thất bại. Sai Email hoặc Password.");
@@ -708,6 +734,7 @@
                 
                 // === KIỂM TRA VÀ HIỂN THỊ NÚT ADMIN ===
                 if (screenName === 'selector') {
+                    // Luôn kiểm tra khi quay về màn hình selector
                     this.checkAdminAndShowButton();
                 }
             },
@@ -724,7 +751,6 @@
 
                 try {
                     // Thử tải kết quả (với quyền admin)
-                    // Đây là cách duy nhất để kiểm tra quyền mà không cần lộ mật khẩu
                     // Rules sẽ tự động chặn nếu không phải admin
                     const { collection, query, getDocs, orderBy } = window.firebase;
                     const resultsCol = collection(state.db, 'quiz_results');
@@ -740,6 +766,18 @@
                     adminBtn.style.width = '100%';
                     adminBtn.addEventListener('click', () => this.loadAdminResults());
                     adminBtnContainer.appendChild(adminBtn);
+                    
+                    // === THÊM NÚT ĐĂNG XUẤT ===
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.textContent = 'Thoát tài khoản Admin';
+                    logoutBtn.className = 'legacy-btn';
+                    logoutBtn.style.backgroundColor = '#6c757d'; // Màu xám
+                    logoutBtn.style.color = 'white';
+                    logoutBtn.style.width = '100%';
+                    logoutBtn.style.marginTop = '10px';
+                    logoutBtn.addEventListener('click', () => this.handleAdminLogout()); // GỌI HÀM MỚI
+                    adminBtnContainer.appendChild(logoutBtn);
+
 
                 } catch (error) {
                     // Lỗi: PERMISSION_DENIED. Đây là người dùng thường, không làm gì cả.
@@ -959,7 +997,7 @@
             },
             
             // === CẬP NHẬT HÀM NÀY ===
-            finishQuiz(isAuto = false) {
+            async finishQuiz(isAuto = false) {
                 // Yêu cầu 3: Ngăn việc chạy lặp lại
                 if (state.isFinished) return; 
                 state.isFinished = true; // Đánh dấu đã nộp ngay lập tức
@@ -1001,7 +1039,7 @@
                 // LƯU KẾT QUẢ LÊN FIREBASE (Fire-and-forget)
                 if (state.mode === 'test') { // Chỉ lưu kết quả khi làm bài thi
                     // Chúng ta không 'await' ở đây để nó có thể chạy trong 'beforeunload'
-                    this.saveResultToFirebase(correct, wrong, total);
+                    await this.saveResultToFirebase(correct, wrong, total);
                 }
             },
 
