@@ -283,12 +283,14 @@
     <!-- Top Panel similar to index1.html -->
     <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0;">
         <div style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem;">
-            <!-- IMPORTANT: Replace "logo.png" with the actual path to your logo file -->
-            <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
-            <div class="title" style="font-size: 1rem; font-weight: bold; font-family: Arial, sans-serif; line-height: 1.2;">
-                © 2025<br>
-                XL1709-NDT-BCH
-            </div>
+            <!-- YÊU CẦU 1: Bọc logo trong thẻ <a> để về trang chủ -->
+            <a href="#" id="logo-link" style="display: flex; align-items: center; gap: 1rem; text-decoration: none; color: inherit;">
+                <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
+                <div class="title" style="font-size: 1rem; font-weight: bold; font-family: Arial, sans-serif; line-height: 1.2;">
+                    © 2025<br>
+                    XL1709-NDT-BCH
+                </div>
+            </a>
         </div>
     </div>
 
@@ -568,6 +570,18 @@
                 // === THÊM MỚI ===
                 $('#login-back-btn').addEventListener('click', () => this.showScreen('selector'));
                 $('#mode-back-btn').addEventListener('click', () => $('#mode-modal').classList.add('hidden'));
+
+                // === YÊU CẦU 1: Bấm logo về trang chủ ===
+                $('#logo-link').addEventListener('click', (e) => {
+                    e.preventDefault(); // Ngăn thẻ <a> nhảy trang
+                    
+                    // Kiểm tra nếu đang thi
+                    if (state.mode === 'test' && !state.isFinished) {
+                         alert("Bạn đang trong bài thi. Vui lòng hoàn thành bài thi trước khi về trang chủ.");
+                    } else {
+                         this.goHome(); // Dùng lại hàm goHome để reset
+                    }
+                });
 
                 // Cập nhật listener cho các nút chọn chế độ
                 $('#mode-review').addEventListener('click', () => this.startQuiz('review'));
@@ -957,6 +971,8 @@
                 $('#next-btn').className = 'legacy-btn';
                 $('#hint-btn').className = 'legacy-btn';
                 $('#submit-btn').className = 'legacy-btn-primary';
+                // === YÊU CẦU 2: Thêm class cho nút "Dừng làm bài" ===
+                $('#stop-btn').className = 'legacy-btn';
                 
                 $('#submit-btn').style.display = 'inline-flex';
                 $('#prev-btn').style.display = 'inline-flex';
