@@ -592,15 +592,18 @@
                                 await signInAnonymously(state.auth);
                                 console.log("Signed in anonymously.");
                                 state.firebaseReady = true;
-                                this.checkAdminAndShowButton();
+                                // Không gọi checkAdmin ngay, đợi firebaseReady hoàn toàn
                              } catch (error) {
                                 console.error("Anonymous sign-in failed:", error);
                                 alert("Không thể thiết lập phiên làm việc ẩn danh. Vui lòng thử lại.");
                              }
                          } else {
                              console.log("User already signed in:", user.uid);
-                             state.firebaseReady = true;
-                             this.checkAdminAndShowButton();
+                             state.firebaseReady = true; // Đánh dấu sẵn sàng
+                             // Gọi checkAdmin khi auth state đã sẵn sàng VÀ đang ở màn hình selector
+                             if ($('#selector-screen') && !$('#selector-screen').classList.contains('hidden')) {
+                                this.checkAdminAndShowButton();
+                             }
                          }
                     });
 
@@ -662,12 +665,13 @@
                     $('#admin-button-container').innerHTML = '';
                     alert("Đăng xuất Admin thành công.");
 
-                    if (state.auth) {
-                         const { signInAnonymously } = window.firebase;
-                         await signInAnonymously(state.auth);
-                         // Bỏ setupPresence
-                    }
-                    this.showScreen('selector');
+                    // Sẽ tự động đăng nhập ẩn danh lại nhờ onAuthStateChanged
+                    // if (state.auth) {
+                    //      const { signInAnonymously } = window.firebase;
+                    //      await signInAnonymously(state.auth);
+                    // }
+                    // Không cần showScreen vì onAuthStateChanged sẽ xử lý
+                    // this.showScreen('selector');
                 } catch (error) {
                     console.error("Error signing out:", error);
                     alert("Đăng xuất thất bại.");
@@ -696,7 +700,7 @@
                  this.checkDanhSoForAdmin($('#user-danhso').value);
             },
 
-            // === HÀM CẬP NHẬT: Bỏ RTDB ===
+            // === HÀM CẬP NHẬT: Bỏ RTDB, sửa logic admin login ===
             async handleLogin(e) {
                 e.preventDefault();
                 const userDanhSo = $('#user-danhso').value.trim();
@@ -713,24 +717,20 @@
                     }
                     loginBtn.textContent = 'Đang đăng nhập...';
                     try {
-                        const { signInWithEmailAndPassword } = window.firebase; // Bỏ ref, set
-                        // Bỏ phần xóa presence RTDB
+                        const { signInWithEmailAndPassword } = window.firebase;
                         await signInWithEmailAndPassword(state.auth, adminEmail, adminPassword);
-                        // Bỏ setupPresence
+                        // Đăng nhập thành công, onAuthStateChanged sẽ xử lý việc hiển thị nút admin
+                        // Chỉ cần quay về màn hình selector ở đây
                         this.showScreen('selector');
+
                     } catch (error) {
                         alert("Đăng nhập Admin thất bại. Sai Email hoặc Password.");
                         console.error("Admin Login Error:", error);
-                        try {
-                             const { signInAnonymously } = window.firebase;
-                             await signInAnonymously(state.auth);
-                             // Bỏ setupPresence
-                        } catch (anonError) {
-                             console.error("Failed anonymous re-sign in:", anonError);
-                        }
+                        // Không cần đăng nhập ẩn danh lại, onAuthStateChanged sẽ kiểm tra
                     } finally {
                         loginBtn.disabled = false;
-                        loginBtn.textContent = 'Đăng nhập Admin';
+                        // Reset text nút sau khi xử lý xong (dù thành công hay thất bại)
+                        this.checkDanhSoForAdmin($('#user-danhso').value);
                     }
                 } else { // Thí sinh làm bài
                     if (!userDanhSo) {
@@ -739,19 +739,29 @@
                     }
                     loginBtn.textContent = 'Đang vào thi...';
                     try {
-                        if (!state.auth.currentUser) throw new Error("Chưa xác thực.");
-                        // Bỏ setupPresence
+                        // Đảm bảo người dùng hiện tại là ẩn danh
+                        if (!state.auth.currentUser || !state.auth.currentUser.isAnonymous) {
+                            // Nếu không phải ẩn danh (có thể là admin cũ?), thử đăng nhập lại ẩn danh
+                             console.warn("User is not anonymous, attempting anonymous sign-in again.");
+                             const { signInAnonymously } = window.firebase;
+                             await signInAnonymously(state.auth);
+                             if (!state.auth.currentUser) throw new Error("Không thể đăng nhập ẩn danh.");
+                        }
+
+                        // Lưu thông tin và bắt đầu thi
                         state.userName = userDanhSo;
                         state.userDanhSo = userDanhSo;
                         this.startQuiz('test');
+
                     } catch (error) {
-                         alert("Lỗi bắt đầu: " + error.message);
+                         alert("Lỗi bắt đầu bài thi: " + error.message);
                          console.error("Error starting test:", error);
                          this.showScreen('selector');
                     }
-                    // Bỏ finally
+                    // Bỏ finally vì đã chuyển màn hình hoặc báo lỗi
                 }
             },
+
 
             showScreen(screenName) {
                 const isLegacy = ['login', 'selector', 'quiz', 'admin'].includes(screenName);
@@ -762,28 +772,36 @@
                 topPanel.style.display = isLegacy ? 'block' : 'none';
 
                 if (screenName === 'selector') {
-                    if (state.firebaseReady) this.checkAdminAndShowButton();
-                    else console.log("Deferring admin check.");
+                    // Gọi checkAdmin ngay lập tức nếu firebase đã sẵn sàng
+                    if (state.firebaseReady) {
+                        this.checkAdminAndShowButton();
+                    } else {
+                         // Nếu chưa sẵn sàng, đợi onAuthStateChanged gọi nó
+                         console.log("Deferring admin check until Firebase is ready.");
+                    }
                 }
             },
+
 
             // === HÀM CẬP NHẬT: Bỏ RTDB ===
             async checkAdminAndShowButton() {
                  if (!state.firebaseReady || !state.auth || !state.db) return;
 
                 const adminBtnContainer = $('#admin-button-container');
-                adminBtnContainer.innerHTML = '';
+                adminBtnContainer.innerHTML = ''; // Luôn xóa nút cũ trước khi kiểm tra
 
                 try {
                     const { doc, getDoc } = window.firebase;
                     const user = state.auth.currentUser;
+
+                    console.log("Checking admin status for user:", user?.uid, "Anonymous:", user?.isAnonymous); // Debug log
 
                     if (user && !user.isAnonymous) {
                         const adminDocRef = doc(state.db, 'admins', user.uid);
                         const adminDocSnap = await getDoc(adminDocRef);
 
                         if (adminDocSnap.exists()) { // LÀ ADMIN
-                            console.log("User IS admin.");
+                            console.log("User IS admin. Adding buttons.");
                             // Bỏ setupPresence
                             const adminBtn = document.createElement('button');
                             adminBtn.textContent = 'Xem Bảng Điểm (Admin)';
@@ -804,14 +822,14 @@
                             logoutBtn.addEventListener('click', () => this.handleAdminLogout());
                             adminBtnContainer.appendChild(logoutBtn);
                         } else { // User thật nhưng không phải admin
-                             console.log("User NOT admin.");
+                             console.log("User logged in but NOT admin.");
                              // Bỏ presence, bỏ ẩn counter
                         }
                     } else if (user && user.isAnonymous) { // User ẩn danh
-                         console.log("User anonymous.");
+                         console.log("User anonymous. Hiding admin buttons.");
                          // Bỏ setupPresence
                     } else { // Chưa đăng nhập
-                         console.log("No user.");
+                         console.log("No user logged in yet.");
                          // Bỏ ẩn counter
                     }
                 } catch (error) {
@@ -819,6 +837,7 @@
                      // Bỏ ẩn counter
                 }
             },
+
 
             // === HÀM CẬP NHẬT: Bỏ RTDB ===
             goHome() {
