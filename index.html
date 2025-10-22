@@ -245,8 +245,11 @@
     <script type="module">
         // Import các hàm cần thiết
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // === THÊM `deleteDoc` VÀ `doc` ===
+        // === THÊM `signInWithEmailAndPassword` ===
+        import { 
+            getAuth, signInAnonymously, onAuthStateChanged,
+            signInWithEmailAndPassword 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, addDoc, collection, serverTimestamp, 
             setLogLevel, getDocs, query, orderBy,
@@ -254,12 +257,13 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Gán các hàm vào window để script ở dưới có thể dùng
-        // Điều này là cần thiết vì chúng ta đang dùng 2 script block khác nhau
         window.firebase = {
             initializeApp,
             getAuth,
             signInAnonymously,
             onAuthStateChanged,
+            // === THÊM HÀM MỚI ===
+            signInWithEmailAndPassword,
             getFirestore,
             addDoc,
             collection,
@@ -268,7 +272,6 @@
             getDocs,
             query,
             orderBy,
-            // === THÊM HÀM MỚI VÀO WINDOW ===
             deleteDoc, 
             doc         
         };
@@ -289,7 +292,7 @@
     </div>
 
     <div id="app" class="p-4 sm:p-6 md:p-8 flex-grow">
-        <!-- MÀN HÌNH MỚI: Đăng nhập (bị ẩn ban đầu) -->
+        <!-- MÀN HÌNH Đăng nhập (bị ẩn ban đầu) -->
         <div id="login-screen" class="max-w-4xl mx-auto hidden">
              <table align="center" style="margin-top: 40px; border: 1px solid #999; width: 100%; max-width: 600px;">
                  <tr style="background-color: #f0f0f0;">
@@ -298,11 +301,23 @@
                 <tr>
                     <td style="padding: 20px;">
                         <form id="login-form">
-                            <label for="user-danhso" style="font-family: Arial, sans-serif; font-size: 14px;">Danh số:</label>
-                            <input type="text" id="user-danhso" class="legacy-login-input" required>
+                            <!-- Trường Danh số -->
+                            <div id="danhso-group">
+                                <label for="user-danhso" style="font-family: Arial, sans-serif; font-size: 14px;">Danh số (Nhập 'admin' để đăng nhập):</label>
+                                <input type="text" id="user-danhso" class="legacy-login-input">
+                            </div>
+
+                            <!-- === CÁC TRƯỜNG ADMIN MỚI (ẨN) === -->
+                            <div id="admin-login-group" class="hidden" style="margin-top: 15px;">
+                                <label for="admin-email" style="font-family: Arial, sans-serif; font-size: 14px;">Admin Email:</label>
+                                <input type="email" id="admin-email" class="legacy-login-input">
+                                
+                                <label for="admin-password" style="font-family: Arial, sans-serif; font-size: 14px;">Admin Password:</label>
+                                <input type="password" id="admin-password" class="legacy-login-input">
+                            </div>
+                            <!-- === KẾT THÚC TRƯỜNG MỚI === -->
                             
-                            <button type="submit" id="login-btn" class="legacy-login-btn">Vào làm bài / Admin</button>
-                            <!-- === THÊM NÚT TRỞ LẠI === -->
+                            <button type="submit" id="login-btn" class="legacy-login-btn">Vào làm bài</button>
                             <button type="button" id="login-back-btn" class="legacy-login-btn" style="background-color: #6c757d; border-color: #6c757d; margin-top: 10px;">Trở lại</button>
                         </form>
                     </td>
@@ -319,8 +334,8 @@
                 <tr>
                     <td style="padding: 20px;">
                         <div id="subject-list" class="flex flex-col items-center"></div>
-                        
-                        <!-- Nút Admin đã bị xóa khỏi đây -->
+                        <!-- === NÚT ADMIN SẼ ĐƯỢC THÊM VÀO ĐÂY BẰNG JS === -->
+                        <div id="admin-button-container" class="mt-4"></div>
                     </td>
                 </tr>
             </table>
@@ -328,7 +343,7 @@
 
         <!-- Màn hình làm bài -->
         <div id="quiz-screen" class="hidden">
-             <!-- ... (Nội dung màn hình quiz không đổi) ... -->
+             <!-- ... (Nội dung màn hình quiz không đổi, CÓ THÊM #timer) ... -->
              <div id="quiz-layout-container" class="max-w-7xl mx-auto">
                  <div class="question-list-container">
                     <h2 class="text-xl font-bold mb-4">Danh sách câu</h2>
@@ -459,7 +474,7 @@
             db: null,
             auth: null,
             firebaseReady: false, // Sẽ thành true sau khi kết nối
-            adminPass: "999999", // <-- "MẬT KHẨU" ADMIN
+            // === MẬT KHẨU ADMIN ĐÃ BỊ XÓA ===
             isFinished: false // Cờ hiệu cho biết bài thi đã nộp hay chưa
         };
         
@@ -473,13 +488,15 @@
                 this.renderSubjectList();
                 this.attachEventListeners();
                 // Bắt đầu bằng màn hình chọn môn
-                this.showScreen('selector'); 
+                this.showScreen('selector');
             },
 
             // Hàm initFirebase sẽ được gọi khi cần
-            async initFirebase() {
+            async initFirebase(isForAdmin = false) {
                 // Nếu đã sẵn sàng, không cần làm gì
-                if (state.firebaseReady) return true;
+                // Trừ khi admin đang đăng nhập, chúng ta cần đảm bảo
+                // auth object được trả về là mới nhất
+                if (state.firebaseReady && !isForAdmin) return true;
 
                 try {
                     // Chờ cho `window.firebase` được import (từ script module)
@@ -516,38 +533,14 @@
                     state.auth = getAuth(app);
                     setLogLevel('Debug');
 
-                    // Trả về một Promise sẽ resolve khi đăng nhập thành công
-                    return new Promise((resolve, reject) => {
-                        onAuthStateChanged(state.auth, (user) => {
-                            if (user) {
-                                console.log("Firebase Auth user signed in:", user.uid);
-                                if (!state.firebaseReady) { // Chỉ resolve lần đầu tiên
-                                    state.firebaseReady = true;
-                                    resolve(true); // Báo hiệu đã sẵn sàng
-                                }
-                            } else {
-                                console.log("Firebase Auth user signed out.");
-                                state.firebaseReady = false;
-                                // Đăng nhập lại nếu bị đăng xuất
-                                signInAnonymously(state.auth).catch(authError => {
-                                    console.error("Anonymous sign-in failed on re-auth:", authError);
-                                    reject(authError);
-                                });
-                            }
-                        });
-
-                        // Thử đăng nhập ẩn danh (chỉ chạy nếu chưa có user)
-                        if (!state.auth.currentUser) {
-                             signInAnonymously(state.auth).catch(authError => {
-                                console.error("Anonymous sign-in failed:", authError);
-                                reject(authError);
-                            });
-                        } else {
-                             // Nếu đã có user từ lần trước, resolve ngay
-                             state.firebaseReady = true;
-                             resolve(true);
-                        }
-                    });
+                    // === LOGIC MỚI: KHÔNG TỰ ĐỘNG ĐĂNG NHẬP ẨN DANH ===
+                    // Chỉ khởi tạo và báo sẵn sàng
+                    state.firebaseReady = true;
+                    
+                    // Thêm nút Admin nếu đã đăng nhập admin từ trước
+                    this.checkAdminAndShowButton();
+                    
+                    return true;
 
                 } catch (error) {
                     console.error("Error initializing Firebase:", error);
@@ -576,7 +569,6 @@
                 $('#login-back-btn').addEventListener('click', () => this.showScreen('selector'));
                 $('#mode-back-btn').addEventListener('click', () => $('#mode-modal').classList.add('hidden'));
 
-
                 // Cập nhật listener cho các nút chọn chế độ
                 $('#mode-review').addEventListener('click', () => this.startQuiz('review'));
                 $('#mode-test').addEventListener('click', () => this.handleTestModeClick()); // Thay đổi
@@ -594,6 +586,22 @@
                 
                 // === YÊU CẦU 3: LƯU KHI TẮT TRANG ===
                 window.addEventListener('beforeunload', () => this.handleWindowClose());
+                
+                // === SỰ KIỆN MỚI: Thay đổi ô danh số ===
+                $('#user-danhso').addEventListener('input', (e) => this.checkDanhSoForAdmin(e.target.value));
+            },
+
+            // === HÀM MỚI: Kiểm tra danh số để hiện/ẩn form admin ===
+            checkDanhSoForAdmin(danhSo) {
+                const adminGroup = $('#admin-login-group');
+                const loginBtn = $('#login-btn');
+                if (danhSo.toLowerCase() === 'admin') {
+                    adminGroup.classList.remove('hidden');
+                    loginBtn.textContent = 'Đăng nhập Admin';
+                } else {
+                    adminGroup.classList.add('hidden');
+                    loginBtn.textContent = 'Vào làm bài';
+                }
             },
 
             // HÀM MỚI: Xử lý khi bấm "Làm bài thi"
@@ -605,13 +613,15 @@
 
                 try {
                     // Gọi hàm initFirebase VÀ CHỜ nó hoàn thành
-                    const success = await this.initFirebase(); 
+                    const success = await this.initFirebase(false); 
                     
                     $('#connecting-modal').classList.add('hidden'); // Ẩn modal
 
                     if (success) {
                         // Nếu kết nối thành công, hiển thị màn hình đăng nhập
                         this.showScreen('login');
+                        // Reset form admin
+                        this.checkDanhSoForAdmin($('#user-danhso').value);
                     } else {
                         alert("Kết nối máy chủ thất bại. Vui lòng thử lại.");
                     }
@@ -622,24 +632,66 @@
                 }
             },
 
-            // HÀM CẬP NHẬT: Xử lý đăng nhập
-            handleLogin(e) {
+            // === HÀM CẬP NHẬT: Xử lý đăng nhập ===
+            async handleLogin(e) {
                 e.preventDefault();
                 const userDanhSo = $('#user-danhso').value.trim();
+                const adminEmail = $('#admin-email').value.trim();
+                const adminPassword = $('#admin-password').value.trim();
                 
-                if (userDanhSo) {
-                    state.userName = userDanhSo; // Dùng danh số làm tên
-                    state.userDanhSo = userDanhSo;
-                    
-                    // KIỂM TRA ADMIN
-                    if (state.userDanhSo === state.adminPass) {
-                        this.loadAdminResults(); // Tải và hiển thị trang admin
-                    } else {
-                        // Nếu là người dùng thường, bắt đầu bài thi
-                        this.startQuiz('test');
+                const loginBtn = $('#login-btn');
+                loginBtn.disabled = true;
+                
+                // TRƯỜNG HỢP 1: Đăng nhập ADMIN
+                if (userDanhSo.toLowerCase() === 'admin') {
+                    if (!adminEmail || !adminPassword) {
+                        alert("Vui lòng nhập Email và Password của Admin.");
+                        loginBtn.disabled = false;
+                        return;
                     }
+                    
+                    loginBtn.textContent = 'Đang đăng nhập...';
+                    try {
+                        const { signInWithEmailAndPassword } = window.firebase;
+                        await signInWithEmailAndPassword(state.auth, adminEmail, adminPassword);
+                        
+                        // Đăng nhập thành công, tải bảng điểm
+                        await this.loadAdminResults();
+                        
+                    } catch (error) {
+                        alert("Đăng nhập Admin thất bại. Sai Email hoặc Password.");
+                        console.error("Admin Login Error:", error);
+                    } finally {
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Đăng nhập Admin';
+                    }
+                    
+                // TRƯỜNG HỢP 2: Thí sinh làm bài
                 } else {
-                    alert("Vui lòng nhập Danh số.");
+                    if (!userDanhSo) {
+                        alert("Vui lòng nhập Danh số.");
+                        loginBtn.disabled = false;
+                        return;
+                    }
+                    
+                    loginBtn.textContent = 'Đang vào thi...';
+                    try {
+                        // Đăng nhập ẩn danh
+                        const { signInAnonymously } = window.firebase;
+                        await signInAnonymously(state.auth);
+                        
+                        // Lưu thông tin và bắt đầu thi
+                        state.userName = userDanhSo;
+                        state.userDanhSo = userDanhSo;
+                        this.startQuiz('test');
+                        
+                    } catch (error) {
+                         alert("Không thể bắt đầu phiên làm bài. Vui lòng thử lại.");
+                         console.error("Anonymous login error:", error);
+                    } finally {
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Vào làm bài';
+                    }
                 }
             },
 
@@ -653,6 +705,46 @@
                 
                 const topPanel = $('#id_toppanel');
                 topPanel.style.display = isLegacy ? 'block' : 'none';
+                
+                // === KIỂM TRA VÀ HIỂN THỊ NÚT ADMIN ===
+                if (screenName === 'selector') {
+                    this.checkAdminAndShowButton();
+                }
+            },
+            
+            // === HÀM MỚI: KIỂM TRA VÀ HIỆN NÚT ADMIN ===
+            async checkAdminAndShowButton() {
+                // Khởi tạo firebase nếu chưa
+                if (!state.firebaseReady) {
+                    await this.initFirebase(true); // Khởi tạo cho admin
+                }
+                
+                const adminBtnContainer = $('#admin-button-container');
+                adminBtnContainer.innerHTML = ''; // Xóa nút cũ
+
+                try {
+                    // Thử tải kết quả (với quyền admin)
+                    // Đây là cách duy nhất để kiểm tra quyền mà không cần lộ mật khẩu
+                    // Rules sẽ tự động chặn nếu không phải admin
+                    const { collection, query, getDocs, orderBy } = window.firebase;
+                    const resultsCol = collection(state.db, 'quiz_results');
+                    const q = query(resultsCol, orderBy('timestamp', 'desc')); 
+                    await getDocs(q); // Thử đọc dữ liệu
+                    
+                    // Nếu không bị lỗi, nghĩa là BẠN LÀ ADMIN
+                    const adminBtn = document.createElement('button');
+                    adminBtn.textContent = 'Xem Bảng Điểm (Admin)';
+                    adminBtn.className = 'legacy-btn'; // Dùng style cũ
+                    adminBtn.style.backgroundColor = '#f97316'; // Màu cam
+                    adminBtn.style.color = 'white';
+                    adminBtn.style.width = '100%';
+                    adminBtn.addEventListener('click', () => this.loadAdminResults());
+                    adminBtnContainer.appendChild(adminBtn);
+
+                } catch (error) {
+                    // Lỗi: PERMISSION_DENIED. Đây là người dùng thường, không làm gì cả.
+                    console.log("User is not admin. Hiding admin button.");
+                }
             },
             
             goHome() {
@@ -730,9 +822,10 @@
                     });
                     
                 } catch (error) {
+                    // LỖI NÀY SẼ XẢY RA NẾU ADMIN ĐĂNG XUẤT
                     console.error("Error loading admin results:", error);
                     resultsBody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center; padding: 20px;">
-                                                Lỗi tải kết quả. (Lỗi: ${error.message})
+                                                Lỗi tải kết quả. Bạn có phải là Admin? (Lỗi: ${error.message})
                                            </td></tr>`;
                 }
             },
@@ -1192,6 +1285,11 @@
                 timerEl.textContent = `⏳ ${String(state.testConfig.durationMinutes).padStart(2, '0')}:00`;
 
                 state.timerId = setInterval(() => {
+                    if (state.isFinished) { // Nếu đã nộp bài thì dừng
+                        clearInterval(state.timerId);
+                        return;
+                    }
+                    
                     state.secondsLeft--;
                     const minutes = Math.floor(state.secondsLeft / 60);
                     const seconds = state.secondsLeft % 60;
