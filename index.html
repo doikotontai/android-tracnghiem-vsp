@@ -255,6 +255,12 @@
             setLogLevel, getDocs, query, orderBy,
             deleteDoc, doc 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // === THÊM REALTIME DATABASE (RTDB) SDK ===
+        import {
+            getDatabase, ref, onValue, onDisconnect, set
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
 
         // Gán các hàm vào window để script ở dưới có thể dùng
         window.firebase = {
@@ -262,9 +268,8 @@
             getAuth,
             signInAnonymously,
             onAuthStateChanged,
-            // === THÊM HÀM MỚI ===
             signInWithEmailAndPassword,
-            signOut, // <-- THÊM MỚI `signOut`
+            signOut,
             getFirestore,
             addDoc,
             collection,
@@ -274,15 +279,22 @@
             query,
             orderBy,
             deleteDoc, 
-            doc         
+            doc,
+            // === THÊM HÀM MỚI CỦA RTDB ===
+            getDatabase,
+            ref,
+            onValue,
+            onDisconnect,
+            set
         };
     </script>
 </head>
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
     <!-- Top Panel similar to index1.html -->
-    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0;">
-        <!-- === YÊU CẦU 2: Thêm ID và cursor: pointer === -->
+    <!-- === CẬP NHẬT STYLE CHO TOP PANEL VÀ THÊM BỘ ĐẾM === -->
+    <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; position: relative;">
+        
         <div id="logo-container" style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem; cursor: pointer;">
             <!-- IMPORTANT: Replace "logo.png" with the actual path to your logo file -->
             <img src="logo.png" alt="Vietsovpetro" style="height: 50px; width: auto; flex-shrink: 0;" />
@@ -290,6 +302,12 @@
                 © 2025<br>
                 XL1709-NDT-BCH
             </div>
+        </div>
+        
+        <!-- === BỘ ĐẾM SỐ NGƯỜI TRUY CẬP === -->
+        <div id="presence-counter" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-family: Arial, sans-serif; font-size: 14px; color: #333; display: none;">
+            <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%;"></span>
+            Đang truy cập: <span id="presence-count" style="font-weight: bold;">1</span>
         </div>
     </div>
 
@@ -474,6 +492,7 @@
             userName: null,
             userDanhSo: null,
             db: null,
+            rtdb: null, // === THÊM RTDB ===
             auth: null,
             firebaseReady: false, // Sẽ thành true sau khi kết nối
             isFinished: false // Cờ hiệu cho biết bài thi đã nộp hay chưa
@@ -512,7 +531,8 @@
 
                     const {
                         initializeApp, getAuth, signInAnonymously,
-                        onAuthStateChanged, getFirestore, setLogLevel
+                        onAuthStateChanged, getFirestore, setLogLevel,
+                        getDatabase // === THÊM HÀM RTDB ===
                     } = window.firebase;
                     
                     const firebaseConfig = {
@@ -531,6 +551,7 @@
 
                     const app = initializeApp(firebaseConfig);
                     state.db = getFirestore(app);
+                    state.rtdb = getDatabase(app); // === KHỞI TẠO RTDB ===
                     state.auth = getAuth(app);
                     setLogLevel('Debug');
 
@@ -595,6 +616,37 @@
                 $('#user-danhso').addEventListener('input', (e) => this.checkDanhSoForAdmin(e.target.value));
             },
 
+            // === HÀM MỚI: THIẾT LẬP HIỆN DIỆN (PRESENCE) ===
+            setupPresence() {
+                const { ref, onValue, onDisconnect, set } = window.firebase;
+                const rtdb = state.rtdb; // Lấy rtdb từ state
+                const uid = state.auth.currentUser?.uid;
+                
+                if (!rtdb || !uid) {
+                    console.error("RTDB or UID not available for presence.");
+                    return;
+                }
+
+                const presenceListRef = ref(rtdb, 'presence');
+                const userPresenceRef = ref(rtdb, 'presence/' + uid);
+
+                // Hiển thị bộ đếm
+                const counterEl = $('#presence-counter');
+                const countEl = $('#presence-count');
+                counterEl.style.display = 'block';
+
+                // Lắng nghe thay đổi
+                onValue(presenceListRef, (snapshot) => {
+                    const count = snapshot.numChildren();
+                    countEl.textContent = count;
+                });
+
+                // Đặt trạng thái online
+                set(userPresenceRef, true);
+                // Xóa trạng thái khi ngắt kết nối
+                onDisconnect(userPresenceRef).remove();
+            },
+
             // === HÀM MỚI: ĐĂNG XUẤT ADMIN ===
             async handleAdminLogout() {
                 if (!state.auth) {
@@ -603,8 +655,20 @@
                 }
                 
                 try {
-                    const { signOut } = window.firebase;
+                    const { signOut, ref, set } = window.firebase;
+                    const rtdb = state.rtdb;
+                    const uid = state.auth.currentUser?.uid;
+
+                    // Xóa trạng thái online trên RTDB
+                    if (rtdb && uid) {
+                        const userPresenceRef = ref(rtdb, 'presence/' + uid);
+                        set(userPresenceRef, null); // Xóa
+                    }
+                    
                     await signOut(state.auth);
+                    
+                    // Ẩn bộ đếm
+                    $('#presence-counter').style.display = 'none';
                     
                     // Xóa các nút admin khỏi UI
                     $('#admin-button-container').innerHTML = '';
@@ -684,6 +748,8 @@
                         // Đăng nhập, Firebase sẽ tự động nhớ phiên đăng nhập
                         await signInWithEmailAndPassword(state.auth, adminEmail, adminPassword);
                         
+                        this.setupPresence(); // === THÊM MỚI: Bật presence cho admin ===
+                        
                         // Đăng nhập thành công, tải bảng điểm
                         // Sửa: không tải ở đây, chỉ quay về selector
                         this.showScreen('selector'); 
@@ -709,6 +775,8 @@
                         // Đăng nhập ẩn danh
                         const { signInAnonymously } = window.firebase;
                         await signInAnonymously(state.auth);
+                        
+                        this.setupPresence(); // === THÊM MỚI: Bật presence cho thí sinh ===
                         
                         // Lưu thông tin và bắt đầu thi
                         state.userName = userDanhSo;
@@ -762,6 +830,12 @@
                     await getDocs(q); // Thử đọc dữ liệu
                     
                     // Nếu không bị lỗi, nghĩa là BẠN LÀ ADMIN
+                    
+                    // === THÊM MỚI: Bật presence nếu admin đã đăng nhập từ trước ===
+                    if (state.auth.currentUser) {
+                        this.setupPresence();
+                    }
+                    
                     const adminBtn = document.createElement('button');
                     adminBtn.textContent = 'Xem Bảng Điểm (Admin)';
                     adminBtn.className = 'legacy-btn'; // Dùng style cũ
@@ -786,12 +860,27 @@
                 } catch (error) {
                     // Lỗi: PERMISSION_DENIED. Đây là người dùng thường, không làm gì cả.
                     console.log("User is not admin. Hiding admin button.");
+                    // Ẩn bộ đếm nếu không phải admin
+                    $('#presence-counter').style.display = 'none';
                 }
             },
             
             goHome() {
                 clearInterval(state.timerId);
                 state.isFinished = true; // Đánh dấu là đã xong, ngăn 'beforeunload'
+                
+                // === THÊM MỚI: Ngắt kết nối presence thủ công khi về home ===
+                // (Vì người dùng có thể vẫn đăng nhập)
+                const { ref, set } = window.firebase;
+                const rtdb = state.rtdb;
+                const uid = state.auth?.currentUser?.uid;
+                if (rtdb && uid) {
+                    const userPresenceRef = ref(rtdb, 'presence/' + uid);
+                    set(userPresenceRef, null); // Xóa
+                }
+                // Ẩn bộ đếm
+                $('#presence-counter').style.display = 'none';
+                
                 // Quay về màn hình chọn môn
                 $('#results-modal').classList.add('hidden'); // Đảm bảo modal kết quả đã đóng
                 this.showScreen('selector'); 
