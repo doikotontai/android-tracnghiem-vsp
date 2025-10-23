@@ -870,7 +870,6 @@ const data_rt = {
       {
         "question": "87.Mối hàn ống công nghệ OD114x17.12 được chụp với các kết quả như sau:\n- Đoạn chụp 0-12, 12-24, 24-0\n- Độ đen đo được từ 2.2 ~2.5\n- IQI 6FEDIN đặt phía phim nhìn thấy dây số 9\n- Chụp theo kỹ thuật DWSI\nHãy đánh giá phim chụp trên có cần chụp lại hay không và lý do:",
         "options": [
-          "Hãy đánh giá phim chụp trên có cần chụp lại hay không và lý do:",
           "a.Mối hàn cần chụp lại với 04 phim",
           "b.Phim cần chụp lại do độ nhạy IQI không đạt, cần phải thấy được dây số 11",
           "c.Phim được chấp nhận",
@@ -1171,3 +1170,4 @@ const data_rt = {
       }
     ]
 };
+
