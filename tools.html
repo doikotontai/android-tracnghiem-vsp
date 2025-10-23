@@ -18,15 +18,20 @@
             --mau-chu-phu: #555;
         }
         .tool-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            /* Thêm viền (border) và đổi transition */
+            border: 1px solid #e5e7eb; /* tương đương border-gray-200 */
+            transition: all 0.2s ease-in-out;
         }
         .tool-card:hover {
             transform: translateY(-5px);
+            /* Tăng shadow một chút */
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* Làm nổi bật viền khi hover */
+            border-color: var(--mau-chinh);
         }
     </style>
 </head>
-<body class="bg-[var(--mau-nen)] min-h-screen flex items-center justify-center p-4">
+<body class="bg-[var(--mau-nen)] min-h-screen flex justify-center px-4 pt-16 pb-4">
 
     <div class="w-full max-w-2xl">
         <!-- TIÊU ĐỀ -->
@@ -40,14 +45,21 @@
         <!-- DANH SÁCH CÔNG CỤ -->
         <div class="space-y-4">
             
-            <!-- Công cụ 1: Tính thời gian RT -->
-            <a href="./rt_calculator.html" class="tool-card block w-full bg-[var(--mau-card)] rounded-xl shadow-lg p-6 text-left hover:no-underline">
-                <h2 class="text-xl font-bold text-[var(--mau-chinh)]">
-                    Tính thời gian chụp RT
-                </h2>
-                <p class="text-md text-[var(--mau-chu-phu)] mt-1">
-                    Ước tính thời gian chiếu cho nguồn Ir-192 / Film D7.
-                </p>
+            <!-- Công cụ 1: Tính thời gian RT (Đã cập nhật layout) -->
+            <a href="./rt_calculator.html" class="tool-card flex items-center w-full bg-[var(--mau-card)] rounded-xl shadow-md p-5 text-left hover:no-underline">
+                <!-- Vùng Icon -->
+                <div class="flex-shrink-0 p-3 bg-blue-50 rounded-full">
+                    <svg class="w-6 h-6 text-[var(--mau-chinh)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 0v6m0-6l-6 6m6-6l-6 6M9 13h6m-3-3v6m-9 4h18a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                </div>
+                <!-- Vùng Nội dung -->
+                <div class="ml-4">
+                    <h2 class="text-xl font-bold text-[var(--mau-chinh)]">
+                        Tính thời gian chụp RT
+                    </h2>
+                    <p class="text-md text-[var(--mau-chu-phu)] mt-1">
+                        Ước tính thời gian chiếu cho nguồn Ir-192 / Film D7.
+                    </p>
+                </div>
             </a>
 
             <!-- Thêm các công cụ khác ở đây -->
@@ -67,3 +79,5 @@
 
 </body>
 </html>
+
+
