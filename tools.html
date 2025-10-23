@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Công Cụ</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        :root {
+            --mau-nen: #f4f7f6;
+            --mau-card: #ffffff;
+            --mau-chinh: #005a9c;
+            --mau-chu: #333;
+            --mau-chu-phu: #555;
+        }
+        .tool-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-[var(--mau-nen)] min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl">
+        <!-- TIÊU ĐỀ -->
+        <div class="mb-6 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-[var(--mau-chinh)]">
+                Công Cụ
+            </h1>
+            <p class="text-md text-[var(--mau-chu-phu)] mt-2">Danh sách các công cụ hỗ trợ</p>
+        </div>
+
+        <!-- DANH SÁCH CÔNG CỤ -->
+        <div class="space-y-4">
+            
+            <!-- Công cụ 1: Tính thời gian RT -->
+            <a href="./rt_calculator.html" class="tool-card block w-full bg-[var(--mau-card)] rounded-xl shadow-lg p-6 text-left hover:no-underline">
+                <h2 class="text-xl font-bold text-[var(--mau-chinh)]">
+                    Tính thời gian chụp RT
+                </h2>
+                <p class="text-md text-[var(--mau-chu-phu)] mt-1">
+                    Ước tính thời gian chiếu cho nguồn Ir-192 / Film D7.
+                </p>
+            </a>
+
+            <!-- Thêm các công cụ khác ở đây -->
+            <!-- 
+            <a href="#" class="tool-card block w-full bg-[var(--mau-card)] rounded-xl shadow-lg p-6 text-left hover:no-underline">
+                <h2 class="text-xl font-bold text-[var(--mau-chinh)]">
+                    Công cụ khác
+                </h2>
+                <p class="text-md text-[var(--mau-chu-phu)] mt-1">
+                    Mô tả ngắn về công cụ này.
+                </p>
+            </a>
+            -->
+
+        </div>
+    </div>
+
+</body>
+</html>
