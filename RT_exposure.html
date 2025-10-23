@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy Tính RT (Ir-192)</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Sử dụng font Inter cho toàn bộ trang */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* Tùy chỉnh màu sắc */
+        :root {
+            --mau-nen: #f4f7f6;
+            --mau-card: #ffffff;
+            --mau-chinh: #005a9c;
+            --mau-chu: #333;
+            --mau-chu-phu: #555;
+            --mau-ket-qua: #0c4a6e;
+        }
+        /* Tùy chỉnh kiểu cho input số */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-[var(--mau-nen)] min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-[var(--mau-card)] rounded-xl shadow-lg p-6 md:p-8">
+        
+        <!-- TIÊU ĐỀ -->
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-[var(--mau-chinh)]">
+                Máy Tính Thời Gian Chiếu RT
+            </h1>
+            <p class="text-sm text-[var(--mau-chu-phu)] mt-1">Nguồn Ir-192 / Film D7</p>
+        </div>
+
+        <!-- KHỐI NHẬP LIỆU -->
+        <div class="space-y-4">
+            
+            <!-- Bố cục 2 cột cho máy tính, 1 cột cho mobile -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Cột Hoạt độ -->
+                <div>
+                    <label for="activity" class="block text-sm font-medium text-[var(--mau-chu)] mb-1">
+                        Hoạt độ (Ci)
+                    </label>
+                    <input type="number" id="activity" placeholder="Ví dụ: 15"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--mau-chinh)] focus:border-transparent">
+                </div>
+
+                <!-- Cột SFD -->
+                <div>
+                    <label for="sfd" class="block text-sm font-medium text-[var(--mau-chu)] mb-1">
+                        Khoảng cách SFD (mm)
+                    </label>
+                    <input type="number" id="sfd" placeholder="Ví dụ: 250"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--mau-chinh)] focus:border-transparent">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Cột Độ dày & Hệ số K -->
+                <div>
+                    <label for="thickness" class="block text-sm font-medium text-[var(--mau-chu)] mb-1">
+                        Độ dày (mm)
+                    </label>
+                    <div class="relative flex items-center">
+                        <input type="number" id="thickness" placeholder="Ví dụ: 28"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--mau-chinh)] focus:border-transparent">
+                        <!-- Nơi hiển thị Hệ số K nhỏ gọn -->
+                        <span id="k-factor-display" class="absolute right-3 text-sm text-[var(--mau-chu-phu)] font-medium"></span>
+                    </div>
+                </div>
+
+                <!-- Cột Độ đen (THAY THẾ CỘT HỆ SỐ) -->
+                <div>
+                    <label for="densityFactor" class="block text-sm font-medium text-[var(--mau-chu)] mb-1">
+                        Độ đen
+                    </label>
+                    <select id="densityFactor"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--mau-chinh)] focus:border-transparent bg-white">
+                        <option value="1.0">2.5</option>
+                        <option value="1.2" selected>3.0</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- KHỐI KẾT QUẢ -->
+        <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+            <p class="text-sm font-medium text-[var(--mau-chu-phu)] mb-2">THỜI GIAN CHIẾU (ƯỚC TÍNH)</p>
+            <div id="result" class="text-3xl md:text-4xl font-bold text-[var(--mau-ket-qua)] h-12 flex items-center justify-center">
+                ---
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DỮ LIỆU HỆ SỐ K (từ file HesoK.csv) ---
+        // Định dạng: [ [độ dày (mm), hệ số K], ... ]
+        const kData = [
+            [6, 1.15], [8, 1.22], [10, 1.32], [12, 1.4], [14, 1.5], [16, 1.6],
+            [18, 1.7], [20, 1.82], [22, 2], [24, 2.2], [26, 2.45], [28, 2.7],
+            [30, 2.96], [32, 3.3], [34, 3.6], [36, 4], [38, 4.4], [40, 4.85],
+            [42, 5.35], [44, 5.9], [46, 6.5], [48, 7.2], [50, 7.95], [52, 8.8],
+            [54, 9.7], [56, 10.7], [58, 11.8], [60, 13], [62, 14.4], [64, 15.9],
+            [66, 17.5], [68, 19.3], [70, 21.3], [72, 23.5], [74, 24.8], [76, 28.6],
+            [78, 34.7]
+        ];
+
+        // --- LẤY CÁC THÀNH PHẦN DOM ---
+        const activityEl = document.getElementById('activity');
+        const sfdEl = document.getElementById('sfd');
+        const thicknessEl = document.getElementById('thickness');
+        const densityFactorEl = document.getElementById('densityFactor'); // Đổi tên biến
+        const resultEl = document.getElementById('result');
+        const kFactorDisplayEl = document.getElementById('k-factor-display');
+
+        // --- GẮN SỰ KIỆN ---
+        // Thêm sự kiện 'input' cho các ô nhập số
+        [activityEl, sfdEl, thicknessEl].forEach(el => {
+            el.addEventListener('input', calculate);
+        });
+        
+        // Thêm sự kiện 'change' cho ô chọn Độ đen
+        densityFactorEl.addEventListener('change', calculate);
+        
+        // Cập nhật K-Factor ngay khi gõ độ dày
+        thicknessEl.addEventListener('input', updateKFactorDisplay);
+
+        // --- HÀM NỘI SUY HỆ SỐ K ---
+        function getKFactor(thickness) {
+            if (isNaN(thickness) || thickness <= 0) return null;
+
+            // 1. Tìm kiếm chính xác
+            for (const [t, k] of kData) {
+                if (t === thickness) return k;
+            }
+
+            // 2. Xử lý trường hợp ngoài khoảng
+            if (thickness < kData[0][0]) return kData[0][1]; // Dùng K nhỏ nhất
+            if (thickness > kData[kData.length - 1][0]) return kData[kData.length - 1][1]; // Dùng K lớn nhất
+
+            // 3. Nội suy tuyến tính
+            for (let i = 0; i < kData.length - 1; i++) {
+                const [t1, k1] = kData[i];
+                const [t2, k2] = kData[i + 1];
+
+                if (thickness > t1 && thickness < t2) {
+                    // (y - y1) / (x - x1) = (y2 - y1) / (x2 - x1)
+                    // y = k1 + (x - x1) * (k2 - k1) / (t2 - t1)
+                    const k = k1 + (thickness - t1) * (k2 - k1) / (t2 - t1);
+                    return k;
+                }
+            }
+            return null; // Trường hợp dự phòng
+        }
+        
+        // --- HÀM CẬP NHẬT HIỂN THỊ K ---
+        function updateKFactorDisplay() {
+            const thickness = parseFloat(thicknessEl.value);
+            const kFactor = getKFactor(thickness);
+            
+            if (kFactor !== null) {
+                // Hiển thị K nhỏ gọn bên phải
+                kFactorDisplayEl.textContent = `K = ${kFactor.toFixed(2)}`;
+            } else {
+                kFactorDisplayEl.textContent = "";
+            }
+        }
+
+        // --- HÀM TÍNH TOÁN CHÍNH ---
+        function calculate() {
+            const activity = parseFloat(activityEl.value);
+            const sfd = parseFloat(sfdEl.value);
+            const thickness = parseFloat(thicknessEl.value);
+            let safetyFactor = parseFloat(densityFactorEl.value); // Lấy giá trị từ ô chọn
+
+            // Kiểm tra Hệ số (từ <select>), nếu rỗng hoặc không hợp lệ thì mặc định là 1
+            if (isNaN(safetyFactor) || safetyFactor <= 0) {
+                safetyFactor = 1.0;
+            }
+
+            const kFactor = getKFactor(thickness);
+
+            // Kiểm tra nếu tất cả giá trị đều hợp lệ
+            if (activity > 0 && sfd > 0 && kFactor !== null) {
+                // Chuyển SFD từ mm sang cm
+                const sfd_cm = sfd / 10;
+                
+                // CÔNG THỨC: (SFD_cm^2 * K) / Hoạt độ = Thời gian (GIÂY)
+                const base_time_seconds = (sfd_cm * sfd_cm * kFactor) / activity;
+                
+                // Áp dụng hệ số an toàn
+                const final_time_seconds = base_time_seconds * safetyFactor;
+
+                // Hiển thị kết quả đã định dạng
+                resultEl.textContent = formatTime(final_time_seconds);
+                
+            } else {
+                // Nếu thiếu thông tin
+                resultEl.textContent = "---";
+            }
+        }
+
+        // --- HÀM ĐỊNH DẠNG THỜI GIAN ---
+        function formatTime(totalSeconds) {
+            if (isNaN(totalSeconds)) return "---";
+
+            const roundedSeconds = Math.round(totalSeconds);
+            
+            const minutes = Math.floor(roundedSeconds / 60);
+            const seconds = roundedSeconds % 60;
+
+            let result = "";
+            if (minutes > 0) {
+                result += `${minutes} phút `;
+            }
+            
+            if (seconds > 0 || minutes === 0) {
+                result += `${seconds} giây`;
+            }
+            
+            return result.trim();
+        }
+        
+        // Chạy tính toán K-Factor khi tải trang (nếu có giá trị sẵn)
+        updateKFactorDisplay();
+    </script>
+</body>
+</html>
+
+
