@@ -876,7 +876,7 @@ const data_rt = {
           "d.Phim cần chụp lại do độ nhạy IQI không đạt, cần phải thấy được dây số 10",
           "e.Chỉ a và b đúng"
         ],
-        "answer": [5]
+        "answer": [4]
       },
       {
         "question": "88.Mối hàn ống công nghệ OD219x18.3 được chụp bằng nguồn gamma với kích thước nguồn 3mm theo phương pháp Panoramic, sử dụng IQI 6FEEN đặt ở phía nguồn thấy được dây số 10, mối hàn được chụp lên 04 phim 10x24 Fuji IX100, hãy nhận xét về phim chụp với các điều kiện trên:",
@@ -1170,4 +1170,5 @@ const data_rt = {
       }
     ]
 };
+
 
