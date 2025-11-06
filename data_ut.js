@@ -918,7 +918,7 @@ const data_ut = {
         ]
     },
     {
-        "question": "77) Khi quét siêu âm mối hàn tee dày 16 mm bằng đầu dò 70°, phát hiện tín hiệu phản xạ có biên độ cao từ vùng đáy mối hàn và nghi ngờ do cấu hình mối hàn. Bước tiếp theo là:",
+        "question": "77) Khi quét siêu âm mối hàn tee dày 16 mm bằng đầu dò 70°, mối hàn chỉ tiếp xúc được một mặt, phát hiện tín hiệu phản xạ có biên độ cao từ vùng đáy mối hàn và nghi ngờ do cấu hình mối hàn. Bước tiếp theo là",
         "options": [
             "a. Vẽ biên dạng mối hàn thực tế và áp biên dạng chùm để giải đoán",
             "b. Dò lại bằng đầu dò 0º",
@@ -926,7 +926,9 @@ const data_ut = {
             "d. a và c được áp dụng",
             "e. a, b, c được áp dụng"
         ],
-        "answer": []
+        "answer": [
+            3
+        ]
     },
     {
         "question": "78) Khi đánh giá khuyết tật nghi ngờ nhưng không chắc chắn về loại khuyết tật (crack, porosity, slag), bước tiếp theo là:",
