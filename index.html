@@ -239,6 +239,9 @@
     <script src="data_ut.js"></script>
     <script src="data_rt.js"></script>
     <script src="data_paut.js"></script>
+    <!-- === THÊM MÔN HỌC MỚI === -->
+    <script src="data_acfm.js"></script>
+    <script src="data_et.js"></script>
     
     <!-- Tải Firebase SDK (THÊM CÁC HÀM MỚI) -->
     <!-- Script này sẽ chỉ được sử dụng khi cần, không load ngay từ đầu -->
@@ -551,6 +554,7 @@
                 }
             },
             
+            // === HÀM ĐÃ CẬP NHẬT ===
             loadDataFromFiles() {
                 window.questionData = {};
                 if (typeof data_antoan !== 'undefined') window.questionData['antoan'] = data_antoan;
@@ -559,6 +563,10 @@
                 if (typeof data_ut !== 'undefined') window.questionData['ut'] = data_ut;
                 if (typeof data_rt !== 'undefined') window.questionData['rt'] = data_rt;
                 if (typeof data_paut !== 'undefined') window.questionData['paut'] = data_paut;
+                // === THÊM MÔN HỌC MỚI ===
+                // Giả định biến trong ACFM.js là data_acfm và ET.js là data_et
+                if (typeof data_acfm !== 'undefined') window.questionData['acfm'] = data_acfm;
+                if (typeof data_et !== 'undefined') window.questionData['et'] = data_et;
             },
 
             attachEventListeners() {
@@ -814,7 +822,9 @@
                     const count = data.questions.length;
                     const card = document.createElement('div');
                     card.className = 'subject-item-legacy';
-                    card.innerHTML = `<h3>${data.name}</h3><p>${count} câu hỏi</p>`;
+                    // Sử dụng data.name (từ trong file JS) nếu có, nếu không thì dùng key
+                    const displayName = data.name || key.toUpperCase();
+                    card.innerHTML = `<h3>${displayName}</h3><p>${count} câu hỏi</p>`;
                     card.addEventListener('click', () => this.selectSubject(key));
                     listEl.appendChild(card);
                 });
@@ -916,6 +926,8 @@
                 state.currentSubjectKey = subjectKey;
 
                 // Yêu cầu 2: Môn 'antoan' (An Toàn Lao Động) chỉ có "Ôn tập"
+                // === CẬP NHẬT: Áp dụng logic tương tự cho ACFM và ET nếu cần ===
+                // Hiện tại, ACFM và ET sẽ có cả 2 chế độ
                 if (subjectKey === 'antoan') {
                     // Chỉ hiển thị "Ôn tập", ẩn "Làm bài thi"
                     $('#mode-review').style.display = 'block';
@@ -1406,4 +1418,3 @@
     </script>
 </body>
 </html>
-
