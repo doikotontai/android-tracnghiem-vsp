@@ -59,7 +59,7 @@ const data_rt = {
           "Chứng chỉ SNT-TC-1A RT cấp 2 hết hạn vừa hết hạn hôm qua và đang thực hiện bài thi gia hạn chứng chỉ",
           "Chứng chỉ SNT-TC-1A RT cấp 2 không đạt bài thi gia hạn chứng chỉ"
         ],
-        "answer": [0]
+        "answer": [1]
       },
       {
         "question": "7.Đối với các dự án VSP tham gia, nhân sự phù hợp thực hiện chụp RT và đọc giải đoán phim RT?",
@@ -1170,6 +1170,7 @@ const data_rt = {
       }
     ]
 };
+
 
 
 
