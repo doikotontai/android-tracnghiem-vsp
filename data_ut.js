@@ -1,5 +1,5 @@
 const data_ut = {
-    name: "Kỹ thuật UT",
+    name: "UT",
     questions: [
     {
         "question": "1) Quy trình siêu âm P6/QA/19 được áp dụng cho dạng mối hàn chế tạo từ loại vật liệu nào?",
@@ -1220,3 +1220,4 @@ const data_ut = {
     }
 ]
 };
+
