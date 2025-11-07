@@ -1,5 +1,5 @@
 const data_rt = {
-    name: "Kỹ thuật RT",
+    name: "RT",
     questions: [
       {
         "question": "1.Theo quy trình P6/QA/20 rev.4, phương pháp RT được sử dụng để:",
@@ -1170,5 +1170,6 @@ const data_rt = {
       }
     ]
 };
+
 
 
