@@ -1,5 +1,5 @@
 const data_paut = {
-    name: "Kỹ thuật PAUT",
+    name: "PAUT",
     questions: [
       {
         "question": "1.Phát biểu nào sau đây là đúng?",
@@ -1197,3 +1197,4 @@ const data_paut = {
       }
     ]
 }
+
