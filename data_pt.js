@@ -1,5 +1,5 @@
 const data_pt = {
-    name: "Kỹ thuật PT",
+    name: "PT",
     questions: [
       {
         "question": "1.Tất cả các bộ phận sau đây có thể kiểm tra được bằng phương pháp thấm lỏng, ngoại trừ :",
@@ -1187,4 +1187,5 @@ const data_pt = {
       }
     ]
 }
+
 
