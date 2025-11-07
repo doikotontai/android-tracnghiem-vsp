@@ -1,5 +1,5 @@
 const data_mt = {
-    name: "Kỹ thuật MT",
+    name: "MT",
     questions: [
       {
         "question": "1.Phát biểu nào sau đây là đúng về quy trình kiểm tra bột từ?",
