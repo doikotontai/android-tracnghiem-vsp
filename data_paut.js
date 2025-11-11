@@ -80,7 +80,7 @@ const data_paut = {
           "Olympus Omniscan MX2 module 16:64",
           "Tất cả thiết bị trên đều có thể được sử dụng"
         ],
-        "answer": [0]
+        "answer": [3]
       },
       {
         "question": "9.Theo quy trình P6/QA/33 thiết bị PAUT được sử dụng là:",
@@ -1197,4 +1197,5 @@ const data_paut = {
       }
     ]
 }
+
 
