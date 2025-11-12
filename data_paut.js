@@ -1022,7 +1022,7 @@ const data_paut = {
           "ASME B31.8 2022 - Rej",
           "ASME B31.8 2022 - Acc"
         ],
-        "answer": [0]
+        "answer": [1]
       },
       {
         "question": "103.Theo quy trình P6/QA/33, ghi nhận 03 chỉ thị không ngấu vách với thông tin ghi nhận như dưới khi kiểm tra PAUT cho mối hàn riser với kích thước OD219x12.7mm. Đánh giá 03 chỉ thị theo tiêu chuẩn áp dụng?\nChỉ thị 1: Không ngấu – \tBiên độ 82% FSH\n\tVị trí: 42mm\n\tChiều dài: 28mm\n\tĐộ sâu: 2-5mm\nChỉ thị 2: Không ngấu -\tBiên độ 80% FSH\n\tVị trí: 197mm\n\tChiều dài: 25mm\n\tĐộ sâu: 4-7mm\nChỉ thị 3: Không ngấu -\tBiên độ 95% FSH\n\tVị trí: 526mm\n\tChiều dài: 20mm\n\tĐộ sâu: 9-12mm",
@@ -1106,7 +1106,7 @@ const data_paut = {
         "answer": [1]
       },
       {
-        "question": "111.\tTrong khi kiểm tra PAUT, kỹ thuật viên phát hiện tín hiệu nhiễu cao bất thường, nguyên nhân thường gặp nhất là gì?",
+        "question": "111.Trong khi kiểm tra PAUT, kỹ thuật viên phát hiện tín hiệu nhiễu cao bất thường, nguyên nhân thường gặp nhất là gì?",
         "options": [
           "Bề mặt quét vị mài lõm/ ăn mòn quá mức",
           "Dây đầu dò có thể bị đứt",
@@ -1116,7 +1116,7 @@ const data_paut = {
         "answer": [0]
       },
       {
-        "question": "112.\tTrong quá trình quét, thông số “Scan Offset” được áp dụng khi:",
+        "question": "112.Trong quá trình quét, thông số “Scan Offset” được áp dụng khi:",
         "options": [
           "Khi quét encoder được gắn phía sau đầu dò PAUT",
           "Khi quét cùng lúc 2 đầu dò PAUT ở 2 skew",
@@ -1197,5 +1197,6 @@ const data_paut = {
       }
     ]
 }
+
 
 
