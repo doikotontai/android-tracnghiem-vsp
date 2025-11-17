@@ -231,6 +231,48 @@
             background-color: #b91c1c;
         }
         /* === KẾT THÚC STYLE MỚI === */
+
+        /* === STYLES CHO DROPDOWN TIỆN ÍCH === */
+        .dropdown-container {
+            position: relative; /* Quan trọng để định vị menu con */
+            display: inline-block; /* Để nó nằm trên thanh ngang */
+        }
+
+        .dropdown-menu {
+            display: none; /* Ẩn ban đầu */
+            position: absolute;
+            background-color: #f9f9f9; /* Màu nền menu */
+            min-width: 200px; /* Độ rộng tối thiểu */
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 10; /* Nổi lên trên */
+            border-radius: 6px; /* Bo góc */
+            margin-top: 4px; /* Khoảng cách nhỏ với nút cha */
+            padding: 4px 0; /* Padding trên dưới cho menu */
+            border: 1px solid #ddd;
+        }
+
+        /* Hiển thị menu khi hover vào container */
+        .dropdown-container:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Style cho các link con trong menu */
+        .dropdown-menu a {
+            color: #333; /* Màu chữ đen */
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            white-space: nowrap; /* Không xuống dòng */
+        }
+
+        /* Hiệu ứng hover cho link con */
+        .dropdown-menu a:hover {
+            background-color: #1E40AF; /* Nền xanh đậm giống nút cha */
+            color: white; /* Chữ màu trắng */
+        }
+        /* === KẾT THÚC STYLES DROPDOWN === */
     </style>
     <!-- Tải dữ liệu câu hỏi -->
     <script src="data_antoan.js"></script>
@@ -283,7 +325,40 @@
 </head>
 <body class="antialiased text-slate-800 flex flex-col min-h-screen">
 
-    <!-- Top Panel similar to index1.html -->
+    <!-- === THANH ĐIỀU HƯỚNG MỚI (THÊM VÀO) === -->
+    <!-- Dựa trên hình ảnh được cung cấp, sử dụng màu #085A9C -->
+    <div id="id_topbar_new" style="background-color: #085A9C; color: white; padding: 0.5rem 1rem; font-family: Arial, sans-serif; font-size: 14px; width: 100%;">
+        <!-- Sử dụng padding ngang tương tự như các thanh khác (px-4 sm:px-6 lg:px-8) và mx-auto -->
+        <div style="display: flex; align-items: center; gap: 1.5rem; max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem;">
+            <!-- Link Tiện ích (với dropdown) -->
+            <div class="dropdown-container">
+                <!-- Đây là nút bấm, style giống thẻ <a> cũ -->
+                <button style="color: white; background-color: transparent; border: none; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 14px; font-family: Arial, sans-serif;" onmouseover="this.style.backgroundColor='#1E40AF'" onmouseout="this.style.backgroundColor='transparent'">
+                    <span>Tiện ích</span>
+                    <!-- Mũi tên SVG nhỏ -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-top: 2px;">
+                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </button>
+                
+                <!-- Menu con (ẩn) -->
+                <div class="dropdown-menu">
+                    <!-- !!! QUAN TRỌNG: THAY THẾ # BẰNG LINK GOOGLE SHEET CỦA BẠN !!! -->
+                    <a href="https://docs.google.com/spreadsheets/d/1gYAUnKbIS6n6HksrOSal9No6uEmyjOek/edit?rtpof=true&sd=true" target="_blank">VTTB gửi lại giàn ca cuối</a>
+                    <a href="https://drive.google.com/drive/u/1/folders/1FSh13BOHokfBTYMKVbLFSXzXOjMZWuMW" target="_blank">Form đi biển (NDT-BCH)</a>
+                    <a href="https://docs.google.com/spreadsheets/d/157kr1BC1Puw3yVHd56usZHtheD6ARXg5/edit?gid=309777224#gid=309777224" target="_blank">IF-110 & 111</a>
+					<a href="https://khaibaoyte.vietsov.com.vn/" target="_blank">Khai báo y tế</a>
+					<a href="https://stopcard.vietsov.com.vn/login" target="_blank">Stopcard</a>
+                </div>
+            </div>
+
+            <a href="#" style="color: white; text-decoration: none; padding: 0.25rem 0.5rem; border-radius: 4px;" onmouseover="this.style.backgroundColor='#1E40AF'" onmouseout="this.style.backgroundColor='transparent'">Công cụ</a>
+            <a href="#" style="color: white; text-decoration: none; padding: 0.25rem 0.5rem; border-radius: 4px;" onmouseover="this.style.backgroundColor='#1E40AF'" onmouseout="this.style.backgroundColor='transparent'">Lịch Bay (Ví dụ)</a>
+        </div>
+    </div>
+    <!-- === KẾT THÚC THANH MỚI === -->
+
+    <!-- Top Panel similar to index1.html (PHẦN CÓ SẴN - GIỮ NGUYÊN) -->
     <div id="id_toppanel" style="padding: 10px; border-bottom: 1px solid #ccc; background-color: #f0f0f0;">
         <div style="display: flex; align-items: center; justify-content: center; text-align: left; gap: 1rem;">
             <!-- YÊU CẦU 1: Bọc logo trong thẻ <a> để về trang chủ -->
@@ -599,7 +674,21 @@
                 $('#next-btn').addEventListener('click', () => this.navigateQuestion(1));
                 $('#submit-btn').addEventListener('click', () => this.submitAnswer());
                 $('#hint-btn').addEventListener('click', () => this.showHint());
-                $('#stop-btn').addEventListener('click', () => this.goHome()); // Sẽ quay về selector
+                
+                // === THAY ĐỔI: Cập nhật sự kiện cho nút "stop-btn" ===
+                $('#stop-btn').addEventListener('click', () => {
+                    if (state.mode === 'test' && !state.isFinished) {
+                        // Nếu là "Đình chỉ thi", gọi finishQuiz() để LƯU KẾT QUẢ
+                        // isAuto = false (vì người dùng chủ động bấm)
+                        // finishQuiz() sẽ tính điểm, lưu, và MỞ BẢNG KẾT QUẢ
+                        // Người dùng sẽ bấm "Đóng" trên bảng kết quả để gọi goHome()
+                        this.finishQuiz(false); 
+                    } else {
+                        // Nếu là "Dừng làm bài" (ôn tập), chỉ cần về trang chủ
+                        this.goHome();
+                    }
+                }); // Sẽ quay về selector
+                // === KẾT THÚC THAY ĐỔI ===
 
                 // === SỬA LỖI NÚT ĐÓNG ===
                 $('#close-results-btn').addEventListener('click', () => this.goHome());
@@ -743,6 +832,7 @@
                 }
             },
 
+            // === HÀM ĐÃ ĐƯỢC CẬP NHẬT ===
             showScreen(screenName) {
                 // Cập nhật danh sách màn hình
                 const isLegacy = ['login', 'selector', 'quiz', 'admin'].includes(screenName);
@@ -752,7 +842,24 @@
                 $(`#${screenName}-screen`).classList.remove('hidden');
                 
                 const topPanel = $('#id_toppanel');
-                topPanel.style.display = isLegacy ? 'block' : 'none';
+                // PHẦN THANH MỚI CŨNG PHẢI ĐƯỢC ẨN/HIỆN
+                const newTopBar = $('#id_topbar_new');
+                
+                if (isLegacy) {
+                    // Thanh logo (màu xám) luôn hiển thị
+                    topPanel.style.display = 'block';
+                    
+                    // Thanh tiện ích (màu xanh) CHỈ hiển thị ở màn hình chọn môn
+                    if (screenName === 'selector') {
+                        newTopBar.style.display = 'block';
+                    } else {
+                        newTopBar.style.display = 'none';
+                    }
+                    
+                } else {
+                    topPanel.style.display = 'none';
+                    newTopBar.style.display = 'none'; 
+                }
                 
                 // === KIỂM TRA VÀ HIỂN THỊ NÚT ADMIN ===
                 if (screenName === 'selector') {
@@ -993,7 +1100,16 @@
                 // Ẩn/hiện nút dựa trên chế độ
                 if (mode === 'test') {
                     $('#hint-btn').style.display = 'none'; // Ẩn gợi ý khi thi
-                    $('#stop-btn').style.display = 'none'; // Yêu cầu 2: Ẩn "Dừng làm bài"
+                    
+                    // === THAY ĐỔI THEO YÊU CẦU: Hiển thị nút "Đình chỉ thi" ===
+                    $('#stop-btn').style.display = 'inline-flex'; // Hiển thị nút
+                    $('#stop-btn').textContent = 'Đình chỉ thi'; // Đổi tên nút
+                    // Thêm style màu đỏ cho nút
+                    $('#stop-btn').style.backgroundColor = '#dc2626'; // Màu đỏ
+                    $('#stop-btn').style.color = 'white';
+                    $('#stop-btn').style.borderColor = '#b91c1c';
+                    // === KẾT THÚC THAY ĐỔI ===
+                    
                     this.startTimer(); // Yêu cầu 1: Bắt đầu tính giờ
                     
                     const pickCount = Math.min(state.testConfig.questionCount, total);
@@ -1001,6 +1117,14 @@
                 } else { // 'review' or 'review-wrong'
                     $('#hint-btn').style.display = 'inline-flex';
                     $('#stop-btn').style.display = 'inline-flex'; // Hiển thị "Dừng làm bài"
+                    
+                    // === THAY ĐỔI THEO YÊU CẦU: Reset style cho nút "Dừng làm bài" ===
+                    $('#stop-btn').textContent = 'Dừng làm bài';
+                    $('#stop-btn').style.backgroundColor = ''; // Trả về style mặc định
+                    $('#stop-btn').style.color = '';
+                    $('#stop-btn').style.borderColor = '';
+                    // === KẾT THÚC THAY ĐỔI ===
+
                     $('#timer').classList.add('hidden'); // Ẩn đồng hồ
                     
                     if (mode === 'review') { // Chỉ xáo trộn khi ôn tập
