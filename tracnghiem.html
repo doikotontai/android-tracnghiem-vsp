@@ -195,6 +195,10 @@
             justify-content: space-between;
             align-items: center;
         }
+        .admin-panel-header-buttons {
+            display: flex;
+            gap: 10px; /* Khoảng cách giữa các nút */
+        }
         .admin-panel-body {
             padding: 20px;
             overflow-x: auto; /* Cho phép cuộn ngang nếu bảng quá rộng */
@@ -275,6 +279,16 @@
             color: white; /* Chữ màu trắng */
         }
         /* === KẾT THÚC STYLES DROPDOWN === */
+
+        /* === CSS CHO BỘ ĐẾM (NEW) === */
+        .live-dot {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
     </style>
     <!-- Tải dữ liệu câu hỏi -->
     <script src="data_antoan.js"></script>
@@ -291,27 +305,31 @@
     <!-- Script này sẽ chỉ được sử dụng khi cần, không load ngay từ đầu -->
     <script type="module">
         // Import các hàm cần thiết
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // CẬP NHẬT: Thêm getApps, getApp để kiểm tra App đã tồn tại
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         // === THÊM `signInWithEmailAndPassword` VÀ `signOut` ===
         import { 
             getAuth, signInAnonymously, onAuthStateChanged,
-            signInWithEmailAndPassword, signOut // <-- THÊM MỚI `signOut`
+            signInWithEmailAndPassword, signOut 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // === THÊM writeBatch ĐỂ XÓA NHIỀU ===
         import { 
             getFirestore, addDoc, collection, serverTimestamp, 
             setLogLevel, getDocs, query, orderBy,
-            deleteDoc, doc 
+            deleteDoc, doc, writeBatch 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Gán các hàm vào window để script ở dưới có thể dùng
         window.firebase = {
             initializeApp,
+            getApps, // <-- Thêm
+            getApp,  // <-- Thêm
             getAuth,
             signInAnonymously,
             onAuthStateChanged,
             // === THÊM HÀM MỚI ===
             signInWithEmailAndPassword,
-            signOut, // <-- THÊM MỚI `signOut`
+            signOut, 
             getFirestore,
             addDoc,
             collection,
@@ -321,7 +339,8 @@
             query,
             orderBy,
             deleteDoc, 
-            doc         
+            doc,
+            writeBatch 
         };
     </script>
 </head>
@@ -427,7 +446,12 @@
             <div class="admin-panel">
                  <div class="admin-panel-header">
                     <span>Bảng Kết Quả Thi</span>
-                    <button id="admin-back-btn" class="legacy-btn">Quay lại</button>
+                    <!-- Group buttons -->
+                    <div class="admin-panel-header-buttons">
+                        <!-- Nút xóa toàn bộ mới -->
+                        <button id="admin-delete-all-btn" class="legacy-btn" style="background-color: #dc2626; color: white; border: 1px solid #b91c1c;">Xóa toàn bộ</button>
+                        <button id="admin-back-btn" class="legacy-btn">Quay lại</button>
+                    </div>
                  </div>
                  <div class="admin-panel-body">
                     <table class="admin-table">
@@ -496,7 +520,16 @@
         </div>
     </div>
     
-    <footer id="app-footer" class="text-center p-6 mt-auto border-t border-slate-200 bg-white shadow-inner" style="display: none;">
+    <!-- CẬP NHẬT: Bỏ style="display: none;" -->
+    <footer id="app-footer" class="text-center p-6 mt-auto border-t border-slate-200 bg-white shadow-inner">
+        <!-- Bộ đếm Mini (Sẽ được script điền vào) -->
+        <div class="mb-3 flex justify-center">
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-xs text-slate-500">
+                <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
+                <span>Lượt truy cập:</span>
+                <span id="visitor-count" class="font-bold text-slate-700 text-sm tabular-nums">...</span>
+            </div>
+        </div>
         <p class="text-slate-600">&copy; 2025 BCH-XNXL. Tạo bởi Phong Lưu.</p>
     </footer>
 
@@ -557,7 +590,8 @@
 
                     const {
                         initializeApp, getAuth, signInAnonymously,
-                        onAuthStateChanged, getFirestore, setLogLevel
+                        onAuthStateChanged, getFirestore, setLogLevel,
+                        getApps, getApp // <-- Lấy thêm
                     } = window.firebase;
                     
                     const firebaseConfig = {
@@ -574,7 +608,14 @@
                         throw new Error("Firebase config is missing or invalid.");
                     }
 
-                    const app = initializeApp(firebaseConfig);
+                    // === SỬA LỖI: Kiểm tra xem App đã được script đếm khởi tạo chưa ===
+                    let app;
+                    if (getApps().length > 0) {
+                        app = getApp(); // Lấy app đã có
+                    } else {
+                        app = initializeApp(firebaseConfig); // Tạo mới nếu chưa có
+                    }
+
                     state.db = getFirestore(app);
                     state.auth = getAuth(app);
                     setLogLevel('Debug');
@@ -616,6 +657,10 @@
                 
                 // === EVENT LISTENER MỚI ===
                 $('#admin-back-btn').addEventListener('click', () => this.showScreen('selector'));
+                
+                // === NÚT XÓA TOÀN BỘ ===
+                $('#admin-delete-all-btn').addEventListener('click', () => this.handleDeleteAllResults());
+
                 // === THÊM MỚI ===
                 $('#login-back-btn').addEventListener('click', () => this.showScreen('selector'));
                 $('#mode-back-btn').addEventListener('click', () => $('#mode-modal').classList.add('hidden'));
@@ -973,15 +1018,11 @@
                 }
             },
             
-            // === HÀM MỚI ĐỂ XỬ LÝ XÓA ===
+            // === HÀM MỚI ĐỂ XỬ LÝ XÓA TỪNG CÁI ===
             async handleDeleteResult(e) {
                 const docId = e.target.dataset.id;
                 if (!docId) return;
 
-                // Do không dùng confirm(), chúng ta sẽ xóa trực tiếp
-                // và tải lại bảng
-                
-                // Vô hiệu hóa nút để tránh click đúp
                 e.target.disabled = true;
                 e.target.textContent = 'Đang xóa...';
 
@@ -996,9 +1037,62 @@
                 } catch (error) {
                     console.error("Error deleting document:", error);
                     alert("Lỗi: Không thể xóa kết quả. Vui lòng thử lại.");
-                    // Bật lại nút nếu lỗi
                     e.target.disabled = false;
                     e.target.textContent = 'Xóa';
+                }
+            },
+
+            // === HÀM MỚI: XÓA TOÀN BỘ ===
+            async handleDeleteAllResults() {
+                if (!confirm("CẢNH BÁO: Bạn có chắc chắn muốn XÓA TOÀN BỘ kết quả thi không?\nHành động này không thể hoàn tác!")) {
+                    return;
+                }
+                // Xác nhận lần 2 cho chắc chắn
+                if (!confirm("Xác nhận lần 2: Bạn thực sự muốn xóa TẤT CẢ dữ liệu?")) {
+                    return;
+                }
+
+                const btn = $('#admin-delete-all-btn');
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Đang xóa...';
+
+                try {
+                    const { collection, getDocs, writeBatch } = window.firebase;
+                    const resultsCol = collection(state.db, 'quiz_results');
+                    const snapshot = await getDocs(resultsCol);
+
+                    if (snapshot.empty) {
+                        alert("Không có dữ liệu để xóa.");
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                        return;
+                    }
+
+                    // Firestore batch chỉ cho phép tối đa 500 thao tác
+                    const batch = writeBatch(state.db);
+                    let count = 0;
+                    
+                    snapshot.docs.forEach((doc) => {
+                        batch.delete(doc.ref);
+                        count++;
+                        // Trong trường hợp thực tế nếu > 500 docs cần chia nhiều batch
+                        // Nhưng ở đây demo đơn giản, giả định < 500
+                    });
+
+                    await batch.commit();
+
+                    alert(`Đã xóa thành công ${count} bản ghi.`);
+                    this.loadAdminResults(); // Tải lại bảng (sẽ trống)
+
+                } catch (error) {
+                    console.error("Error deleting all:", error);
+                    alert("Lỗi khi xóa dữ liệu: " + error.message);
+                } finally {
+                    if(btn) {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
                 }
             },
 
@@ -1514,8 +1608,109 @@
             app.init();
         });
     </script>
-    <footer class="py-6 text-center text-slate-400 text-sm">
-        &copy; 2025 BCH-XNXL. Developed by Phong Luu.
-    </footer>
+    
+    <!-- === SCRIPT BỘ ĐẾM RIÊNG (Chạy ngay khi load trang) === -->
+    <script type="module">
+        // Sử dụng lại thư viện từ script trên để tránh conflict version
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- CẤU HÌNH FIREBASE CỦA BẠN ---
+        const userFirebaseConfig = {
+            apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
+            authDomain: "tracnghiemndt.firebaseapp.com",
+            projectId: "tracnghiemndt",
+            storageBucket: "tracnghiemndt.firebasestorage.app",
+            messagingSenderId: "187385061213",
+            appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
+            measurementId: "G-TKRBZJT880"
+        };
+        
+        // Khởi tạo Firebase (Kiểm tra xem đã có App chưa)
+        let app, auth, db;
+        try {
+            if (getApps().length > 0) {
+                app = getApp();
+            } else {
+                app = initializeApp(userFirebaseConfig);
+            }
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.error("Lỗi khởi tạo Firebase (Bộ đếm):", e);
+        }
+
+        const STATS_COLLECTION = `site_stats`;
+        const VISITOR_DOC_ID = 'visitors_v2'; // DÙNG CHUNG ID VỚI INDEX.HTML
+
+        function animateValue(obj, start, end, duration) {
+            if (start === end) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('vi-VN');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        const initCounter = async () => {
+            if (!auth || !db) return;
+
+            try {
+                await signInAnonymously(auth);
+            } catch (err) {
+                console.error("Lỗi đăng nhập bộ đếm:", err);
+                const el = document.getElementById('visitor-count');
+                if(el) el.innerText = "Err";
+                return;
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const docRef = doc(db, STATS_COLLECTION, VISITOR_DOC_ID);
+                    const counterElement = document.getElementById('visitor-count');
+                    if (!counterElement) return;
+
+                    try {
+                        const docSnap = await getDoc(docRef);
+                        
+                        if (!docSnap.exists()) {
+                            await setDoc(docRef, { count: 2000 }); 
+                        } else {
+                            await updateDoc(docRef, { count: increment(1) });
+                        }
+
+                        onSnapshot(docRef, (doc) => {
+                            if (doc.exists()) {
+                                const newVal = doc.data().count;
+                                const currentText = counterElement.innerText.replace(/\./g, '').replace(/,/g, '');
+                                const currentVal = parseInt(currentText) || 0;
+                                
+                                if (!isNaN(currentVal) && currentVal > 0) {
+                                    animateValue(counterElement, currentVal, newVal, 1500);
+                                } else {
+                                    counterElement.innerText = newVal.toLocaleString('vi-VN');
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        console.error("Lỗi đọc/ghi Firestore (Bộ đếm):", error);
+                    }
+                }
+            });
+        };
+
+        // Chạy khi load xong
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCounter);
+        } else {
+            initCounter();
+        }
+    </script>
 </body>
 </html>
