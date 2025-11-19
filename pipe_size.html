@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra cứu Pipe Schedule Metric (Final)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: "Inter", sans-serif; background-color: #f4f7f6; }
+        :root {
+            --mau-chinh: #005a9c;
+            --mau-phu: #e0f2fe;
+        }
+        .soft-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .soft-card:hover {
+            border-color: var(--mau-chinh);
+            box-shadow: 0 4px 12px rgba(0, 90, 156, 0.1);
+        }
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .pipe-ring { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .highlight-row { background-color: #eff6ff; border-left: 4px solid #005a9c; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <i class="fas fa-ruler-combined text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Pipe Data Pro</h1>
+                    <p class="text-gray-500 text-sm">ASME B36.10M & B36.19M (Metric)</p>
+                </div>
+            </div>
+            <div class="hidden md:block text-right">
+                <span class="text-xs font-mono text-gray-400 block">Version 2.0 (Final)</span>
+                <span class="text-xs text-green-600 font-bold"><i class="fas fa-check-circle mr-1"></i>Verified Data</span>
+            </div>
+        </div>
+
+        <!-- Main Tool Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Column: Input & Visual (4 cols) -->
+            <div class="lg:col-span-4 space-y-4">
+                <!-- Size Selector -->
+                <div class="soft-card p-5 shadow-sm border-l-4 border-l-blue-600">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wider">Kích thước ống (NPS / DN)</label>
+                    <div class="relative">
+                        <select id="pipeSizeSelect" class="w-full p-3 pl-4 pr-10 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none font-mono text-sm text-gray-700 font-semibold cursor-pointer">
+                            <!-- Options populated via JS -->
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-blue-600">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Grid -->
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <div class="p-3 bg-blue-50 rounded border border-blue-100">
+                            <span class="block text-[10px] text-blue-500 uppercase font-bold">Đường kính OD</span>
+                            <span class="block text-2xl font-bold text-blue-900 mt-1" id="displayOD">--</span>
+                            <span class="text-[10px] text-blue-400">mm</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded border border-gray-200">
+                            <span class="block text-[10px] text-gray-500 uppercase font-bold">Hệ NPS</span>
+                            <span class="block text-2xl font-bold text-gray-700 mt-1" id="displayNPS">--</span>
+                            <span class="text-[10px] text-gray-400">inch</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualizer -->
+                <div class="soft-card p-6 flex flex-col items-center justify-center bg-slate-800 text-white relative overflow-hidden shadow-inner min-h-[260px]">
+                    <div class="absolute top-3 left-4 text-[10px] text-slate-400 font-mono uppercase tracking-widest">Mô phỏng mặt cắt</div>
+                    
+                    <!-- Pipe Graphic -->
+                    <div class="relative w-48 h-48 flex items-center justify-center mt-2">
+                        <!-- Outer Diameter -->
+                        <div class="absolute inset-0 rounded-full border-2 border-slate-500 bg-slate-700 flex items-center justify-center shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
+                            <!-- Inner Diameter (Hole) -->
+                            <div id="pipeInner" class="bg-slate-800 rounded-full pipe-ring flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.8)] border border-slate-900" style="width: 85%; height: 85%;">
+                                <div class="text-center z-10">
+                                    <div id="visualSch" class="text-sm font-bold text-blue-400">--</div>
+                                    <div id="visualID" class="text-[10px] text-slate-500 font-mono mt-1">ID: --</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dimension Lines (Visual Only) -->
+                        <!-- Wall Thickness Indicator -->
+                        <div class="absolute -right-4 w-8 h-[1px] bg-slate-500 opacity-50"></div>
+                        <div class="absolute -right-16 top-1/2 -translate-y-1/2 text-xs font-mono bg-slate-900 border border-slate-600 px-2 py-1 rounded text-yellow-400 shadow-lg z-20">
+                            WT: <span id="visualWT">--</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Note -->
+                <div class="text-[10px] text-gray-400 italic px-2 text-center">
+                    * Chọn dòng bên phải để xem mô phỏng.
+                </div>
+            </div>
+
+            <!-- Right Column: Data Table (8 cols) -->
+            <div class="lg:col-span-8">
+                <div class="soft-card h-full flex flex-col shadow-sm overflow-hidden bg-white">
+                    <div class="p-4 border-b border-gray-100 bg-white flex justify-between items-center sticky top-0 z-10">
+                        <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide flex items-center">
+                            <i class="fas fa-list-ul mr-2 text-blue-600"></i>Bảng tra độ dày & Khối lượng
+                        </h3>
+                        <div class="flex gap-2">
+                             <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold border border-blue-100">Metric System</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-auto custom-scroll flex-1 relative" style="max-height: 500px;">
+                        <table class="w-full text-sm text-left border-collapse">
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-50 sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th class="px-6 py-3 font-semibold border-b w-1/4">Schedule</th>
+                                    <th class="px-6 py-3 font-semibold border-b text-right w-1/4">Dày (mm)</th>
+                                    <th class="px-6 py-3 font-semibold border-b text-right w-1/4">Nặng (kg/m)</th>
+                                    <th class="px-6 py-3 font-semibold border-b text-center w-1/4">Xem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleTableBody" class="divide-y divide-gray-100 text-gray-600">
+                                <!-- Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DỮ LIỆU CHUẨN ASME B36.10M & B36.19M (Cập nhật Full Range)
+        const pipeDatabase = [
+            { nps: "1/8", dn: 6, od: 10.3, schedules: { "10S": [1.24, 0.28], "10": [1.24, 0.28], "40": [1.73, 0.37], "STD": [1.73, 0.37], "80": [2.41, 0.47], "XS": [2.41, 0.47] } },
+            { nps: "1/4", dn: 8, od: 13.7, schedules: { "10S": [1.65, 0.51], "40": [2.24, 0.63], "STD": [2.24, 0.63], "80": [3.02, 0.80], "XS": [3.02, 0.80] } },
+            { nps: "3/8", dn: 10, od: 17.1, schedules: { "10S": [1.65, 0.64], "40": [2.31, 0.84], "STD": [2.31, 0.84], "80": [3.20, 1.10], "XS": [3.20, 1.10] } },
+            { nps: "1/2", dn: 15, od: 21.3, schedules: { "5S": [1.65, 0.80], "10S": [2.11, 1.00], "40": [2.77, 1.27], "STD": [2.77, 1.27], "80": [3.73, 1.62], "XS": [3.73, 1.62], "160": [4.78, 1.95], "XXS": [7.47, 2.55] } },
+            { nps: "3/4", dn: 20, od: 26.7, schedules: { "5S": [1.65, 1.03], "10S": [2.11, 1.28], "40": [2.87, 1.69], "STD": [2.87, 1.69], "80": [3.91, 2.20], "XS": [3.91, 2.20], "160": [5.56, 2.90], "XXS": [7.82, 3.64] } },
+            { nps: "1", dn: 25, od: 33.4, schedules: { "5S": [1.65, 1.29], "10S": [2.77, 2.09], "40": [3.38, 2.50], "STD": [3.38, 2.50], "80": [4.55, 3.24], "XS": [4.55, 3.24], "160": [6.35, 4.24], "XXS": [9.09, 5.45] } },
+            { nps: "1 1/2", dn: 40, od: 48.3, schedules: { "5S": [1.65, 1.90], "10S": [2.77, 3.11], "40": [3.68, 4.05], "STD": [3.68, 4.05], "80": [5.08, 5.41], "XS": [5.08, 5.41], "160": [7.14, 7.25], "XXS": [10.15, 9.56] } },
+            { nps: "2", dn: 50, od: 60.3, schedules: { "5S": [1.65, 2.39], "10S": [2.77, 3.93], "40": [3.91, 5.44], "STD": [3.91, 5.44], "80": [5.54, 7.48], "XS": [5.54, 7.48], "160": [8.74, 11.11], "XXS": [11.07, 13.44] } },
+            { nps: "3", dn: 80, od: 88.9, schedules: { "5S": [2.11, 4.52], "10S": [3.05, 6.46], "40": [5.49, 11.29], "STD": [5.49, 11.29], "80": [7.62, 15.27], "XS": [7.62, 15.27], "160": [11.13, 21.35], "XXS": [15.24, 27.68] } },
+            { nps: "4", dn: 100, od: 114.3, schedules: { "5S": [2.11, 5.84], "10S": [3.05, 8.37], "40": [6.02, 16.07], "STD": [6.02, 16.07], "80": [8.56, 22.32], "XS": [8.56, 22.32], "120": [11.13, 28.32], "160": [13.49, 33.54], "XXS": [17.12, 41.03] } },
+            { nps: "6", dn: 150, od: 168.3, schedules: { "5S": [2.77, 11.30], "10S": [3.40, 13.83], "40": [7.11, 28.26], "STD": [7.11, 28.26], "80": [10.97, 42.56], "XS": [10.97, 42.56], "120": [14.27, 54.20], "160": [18.26, 67.56], "XXS": [21.95, 79.20] } },
+            { nps: "8", dn: 200, od: 219.1, schedules: { "5S": [2.77, 14.79], "10S": [3.76, 19.97], "40": [8.18, 42.55], "STD": [8.18, 42.55], "80": [12.70, 64.64], "XS": [12.70, 64.64], "100": [15.09, 75.92], "120": [18.26, 90.44], "140": [20.62, 100.92], "160": [23.01, 111.27], "XXS": [22.23, 107.92] } },
+            { nps: "10", dn: 250, od: 273.1, schedules: { "5S": [3.40, 22.63], "10S": [4.19, 27.78], "20": [6.35, 41.77], "40": [9.27, 60.31], "STD": [9.27, 60.31], "60": [12.70, 81.55], "80": [15.09, 95.97], "XS": [12.70, 81.55], "100": [18.26, 114.75], "120": [21.44, 132.96], "140": [25.40, 155.15], "160": [28.58, 172.26] } },
+            { nps: "12", dn: 300, od: 323.9, schedules: { "5S": [3.96, 31.25], "10S": [4.57, 36.00], "20": [6.35, 49.73], "STD": [9.53, 73.88], "40": [10.31, 79.73], "XS": [12.70, 97.46], "80": [17.48, 132.08], "100": [21.44, 159.91], "120": [25.40, 186.97], "160": [33.32, 238.76] } },
+            { nps: "14", dn: 350, od: 355.6, schedules: { "10": [6.35, 54.69], "STD": [9.53, 81.33], "40": [11.13, 94.55], "XS": [12.70, 107.39], "80": [19.05, 158.10], "160": [35.71, 281.70] } },
+            { nps: "16", dn: 400, od: 406.4, schedules: { "10": [6.35, 62.64], "STD": [9.53, 93.27], "40": [12.70, 123.30], "XS": [12.70, 123.30], "80": [21.44, 203.53], "160": [40.49, 365.36] } },
+            { nps: "18", dn: 450, od: 457.0, schedules: { "10": [6.35, 70.57], "STD": [9.53, 105.16], "40": [14.27, 155.80], "XS": [12.70, 139.15], "80": [23.83, 254.55], "160": [45.24, 459.47] } },
+            { nps: "20", dn: 500, od: 508.0, schedules: { "10": [6.35, 78.55], "STD": [9.53, 117.15], "20": [9.53, 117.15], "40": [15.09, 183.42], "XS": [12.70, 155.12], "80": [26.19, 311.17], "160": [50.01, 564.81] } },
+            { nps: "24", dn: 600, od: 609.6, schedules: { "10": [6.35, 94.53], "STD": [9.53, 141.12], "XS": [12.70, 187.06], "40": [17.48, 255.41], "80": [30.96, 442.08], "100": [38.89, 547.71], "120": [46.02, 640.03], "160": [59.54, 808.22] } }
+        ];
+
+        // DOM Elements
+        const els = {
+            select: document.getElementById('pipeSizeSelect'),
+            table: document.getElementById('scheduleTableBody'),
+            od: document.getElementById('displayOD'),
+            nps: document.getElementById('displayNPS'),
+            visualInner: document.getElementById('pipeInner'),
+            vSch: document.getElementById('visualSch'),
+            vWT: document.getElementById('visualWT'),
+            vID: document.getElementById('visualID')
+        };
+
+        function init() {
+            pipeDatabase.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.dn;
+                opt.text = `DN ${p.dn} - ${p.nps}"`;
+                els.select.appendChild(opt);
+            });
+
+            els.select.addEventListener('change', render);
+            // Mặc định chọn DN15 (1/2 inch)
+            els.select.selectedIndex = 3; 
+            render();
+        }
+
+        function render() {
+            const dn = parseInt(els.select.value);
+            const data = pipeDatabase.find(p => p.dn === dn);
+            if (!data) return;
+
+            els.od.innerText = data.od;
+            els.nps.innerText = data.nps;
+            
+            // Reset visual
+            updateVisual(data.od, 0, "--");
+
+            // Build Table
+            els.table.innerHTML = '';
+            const schedules = Object.entries(data.schedules); 
+
+            schedules.forEach(([sch, [wall, weight]]) => {
+                if (!wall) return;
+                
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-50 hover:bg-blue-50 cursor-pointer transition-colors group h-10";
+                
+                // Style common schedules for easy reading
+                const isCommon = ['STD', '40', '80', 'XS'].includes(sch);
+                const schStyle = isCommon ? "font-bold text-blue-800" : "text-gray-700";
+                const bgCommon = isCommon ? "bg-blue-50/30" : "";
+
+                tr.innerHTML = `
+                    <td class="px-6 py-2 whitespace-nowrap ${schStyle} ${bgCommon}">${sch}</td>
+                    <td class="px-6 py-2 text-right font-mono text-slate-700 font-medium">${wall.toFixed(2)}</td>
+                    <td class="px-6 py-2 text-right font-mono text-slate-500 text-xs">${weight ? weight.toFixed(2) : '-'}</td>
+                    <td class="px-6 py-2 text-center">
+                        <i class="fas fa-eye text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs"></i>
+                    </td>
+                `;
+                
+                tr.onclick = () => {
+                    // Remove highlight from all rows
+                    Array.from(els.table.children).forEach(r => {
+                        r.classList.remove('highlight-row');
+                        r.classList.remove('bg-blue-100');
+                    });
+                    // Add highlight to this row
+                    tr.classList.add('highlight-row');
+                    tr.classList.add('bg-blue-100');
+                    
+                    updateVisual(data.od, wall, sch);
+                };
+                
+                els.table.appendChild(tr);
+            });
+        }
+
+        function updateVisual(od, wall, schName) {
+            let ratio = 0.85; // Tỷ lệ mặc định khi chưa chọn
+            let idDisplay = "--";
+
+            if (wall > 0) {
+                const id = od - (2 * wall);
+                ratio = id / od;
+                if (ratio < 0.15) ratio = 0.15; // Giới hạn để không bị mất hình
+                idDisplay = id.toFixed(2) + "mm";
+            }
+
+            els.visualInner.style.width = `${ratio * 100}%`;
+            els.visualInner.style.height = `${ratio * 100}%`;
+            els.vSch.innerText = schName === "--" ? "Chọn Sch" : schName;
+            els.vWT.innerText = wall > 0 ? wall.toFixed(2) + "mm" : "--";
+            els.vID.innerText = "ID: " + idDisplay;
+        }
+
+        // Khởi chạy
+        init();
+    </script>
+</body>
+</html>
