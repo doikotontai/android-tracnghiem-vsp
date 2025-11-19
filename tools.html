@@ -3,81 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Công Cụ</title>
-    <!-- Tải Tailwind CSS -->
+    <title>Kho phần mềm NDT</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: "Inter", sans-serif;
-        }
+        body { font-family: "Inter", sans-serif; }
         :root {
             --mau-nen: #f4f7f6;
             --mau-card: #ffffff;
             --mau-chinh: #005a9c;
             --mau-chu: #333;
-            --mau-chu-phu: #555;
         }
-        .tool-card {
-            /* Thêm viền (border) và đổi transition */
-            border: 1px solid #e5e7eb; /* tương đương border-gray-200 */
+        .soft-card {
+            border: 1px solid #e5e7eb;
             transition: all 0.2s ease-in-out;
         }
-        .tool-card:hover {
-            transform: translateY(-5px);
-            /* Tăng shadow một chút */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            /* Làm nổi bật viền khi hover */
+        .soft-card:hover {
+            transform: translateY(-3px);
             border-color: var(--mau-chinh);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Class cho mũi tên xoay khi bấm */
+        .rotate-180 {
+            transform: rotate(180deg);
         }
     </style>
 </head>
-<body class="bg-[var(--mau-nen)] min-h-screen flex justify-center px-4 pt-16 pb-4">
+<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-8">
 
-    <div class="w-full max-w-2xl">
-        <!-- TIÊU ĐỀ -->
-        <div class="mb-6 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-[var(--mau-chinh)]">
-                Công Cụ
-            </h1>
-            <p class="text-md text-[var(--mau-chu-phu)] mt-2">Danh sách các công cụ hỗ trợ</p>
+    <div class="max-w-3xl mx-auto">
+        <!-- THANH ĐIỀU HƯỚNG -->
+        <div class="mb-6">
+            <a href="./tools.html" class="inline-flex items-center text-gray-600 hover:text-[var(--mau-chinh)] transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Quay lại Trang chủ
+            </a>
         </div>
 
-        <!-- DANH SÁCH CÔNG CỤ -->
-        <div class="space-y-4">
-            
-            <!-- Công cụ 1: Tính thời gian RT (Đã cập nhật layout) -->
-            <a href="./rt_calculator.html" class="tool-card flex items-center w-full bg-[var(--mau-card)] rounded-xl shadow-md p-5 text-left hover:no-underline">
-                <!-- Vùng Icon -->
-                <div class="flex-shrink-0 p-3 bg-blue-50 rounded-full">
-                    <svg class="w-6 h-6 text-[var(--mau-chinh)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 0v6m0-6l-6 6m6-6l-6 6M9 13h6m-3-3v6m-9 4h18a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                </div>
-                <!-- Vùng Nội dung -->
-                <div class="ml-4">
-                    <h2 class="text-xl font-bold text-[var(--mau-chinh)]">
-                        Tính thời gian chụp RT
-                    </h2>
-                    <p class="text-md text-[var(--mau-chu-phu)] mt-1">
-                        Ước tính thời gian chiếu cho nguồn Ir-192 / Film D7.
-                    </p>
-                </div>
-            </a>
+        <!-- TIÊU ĐỀ -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-[var(--mau-chinh)]">Kho Phần Mềm & Công Cụ NDT</h1>
+            <p class="text-gray-600 mt-2">Tổng hợp các công cụ hỗ trợ kỹ thuật viên</p>
+        </div>
 
-            <!-- Thêm các công cụ khác ở đây -->
-            <!-- 
-            <a href="#" class="tool-card block w-full bg-[var(--mau-card)] rounded-xl shadow-lg p-6 text-left hover:no-underline">
-                <h2 class="text-xl font-bold text-[var(--mau-chinh)]">
-                    Công cụ khác
-                </h2>
-                <p class="text-md text-[var(--mau-chu-phu)] mt-1">
-                    Mô tả ngắn về công cụ này.
-                </p>
-            </a>
-            -->
+        <!-- DANH SÁCH PHẦN MỀM -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- ==============================================================
+                 1. NHÓM PAUT (DẠNG THƯ MỤC - BẤM ĐỂ XỔ RA)
+            ============================================================== -->
+            <!-- Thẻ cha 1(Chiếm trọn 2 cột trên PC để khi xổ ra nhìn đẹp hơn, hoặc để 1 cột cũng được) -->
+            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden">
+                
+                <!-- NÚT BẤM (Header của nhóm) -->
+                <div onclick="toggleSection('paut-group', 'arrow-paut')" class="p-4 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <!-- Icon Folder -->
+                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
+                        <i class="fas fa-folder-open text-xl"></i>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h3 class="font-bold text-blue-900 text-lg">BỘ PHẦN MỀM PAUT</h3>
+                        <p class="text-sm text-blue-700 mt-0.5">Gồm BeamTool, OmniPC, TomoView...</p>
+                    </div>
+                    <!-- Mũi tên chỉ xuống -->
+                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-paut">
+                        <i class="fas fa-chevron-down text-xl"></i>
+                    </div>
+                </div>
+
+                <!-- DANH SÁCH CON (Mặc định ẩn - hidden) -->
+                <div id="paut-group" class="hidden border-t border-blue-100 bg-white p-4 space-y-3">
+                    
+                    <!-- Con 1: BeamTool -->
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES BeamTool 10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Con 2: MentorPC (Ví dụ) -->
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-laptop-medical"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">MentorUT-PC_3.11.03000.002</h4>
+                            <a href="https://drive.google.com/file/d/1i9-7N7XbS_7hMDHL4trDGNYuIUHkjTuw/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-laptop-medical"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">MentorUT (bộ files Apps.iwp)</h4>
+                            <a href="https://drive.google.com/file/d/1X0n6YZ39PTJMfgh2_VjtHpufm9yotrTv/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					
+                    <!-- Con 3: OMNIPC (Ví dụ) -->
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">OmniPC-6.1.1</h4>
+                            <a href="https://drive.google.com/file/d/1mXdDiR5muNOo7A50KeybD5h3yrTCjfCZ/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">VEO3 - UTview_4.5.8.0</h4>
+                            <a href="https://sonatestap.com/SoftwareUpdates/UTstudioPlus/4.5.8/UTview%204.5.8.0%20Win64.exe" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Link gốc) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Files setup quét PAUT (ups;ops;utcfg)</h4>
+                            <a href="https://shopee.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                MentorUT <i class="fas fa-download ml-1"></i>
+                            </a>
+                            <a href="https://shopee.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Omniscan MX2 <i class="fas fa-download ml-1"></i>
+							</a>
+                            <a href="https://shopee.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Sonatest VEO3 <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Backup SD-Card Omniscan MX2 - 2025</h4>
+                            <a href="https://drive.google.com/file/d/1g4SzC6U20zZU6PNKHBqJ8eYDS4bZhsPd/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                MX2-SDCARD <i class="fas fa-download ml-1"></i>
+							</a>
+                            <a href="https://drive.google.com/file/d/1aYtdawvy_fkv9RWgrgELxqp95JoyMXEa/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                MX2DD_EN-19143A <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Thẻ cha 2 (Chiếm trọn 2 cột trên PC để khi xổ ra nhìn đẹp hơn, hoặc để 1 cột cũng được) -->
+            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden">
+                
+                <!-- NÚT BẤM (Header của nhóm) -->
+                <div onclick="toggleSection('linktruycap-group', 'arrow-linktruycap')" class="p-4 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <!-- Icon Folder -->
+                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
+                        <i class="fas fa-folder-open text-xl"></i>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h3 class="font-bold text-blue-900 text-lg">LINK TRUY CẬP PHỤC VỤ CÔNG VIỆC NHÓM NDT</h3>
+                        <p class="text-sm text-blue-700 mt-0.5">Tổng hợp tất cả các đường link truy cập phục vụ cho công việc NDT...</p>
+                    </div>
+                    <!-- Mũi tên chỉ xuống -->
+                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-linktruycap">
+                        <i class="fas fa-chevron-down text-xl"></i>
+                    </div>
+                </div>
+
+                <!-- DANH SÁCH CON (Mặc định ẩn - hidden) -->
+                <div id="linktruycap-group" class="hidden border-t border-blue-100 bg-white p-4 space-y-3">
+                    
+                    <!-- Con 1: BeamTool -->
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ádsadsadasdsadsadas</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<!-- Con 2: BeamTool -->
+                    <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+					<div class="flex items-center p-3 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-10 h-10 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES ASDBSBTS10 (full cracked)</h4>
+                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold mt-1 inline-block">
+                                Tải về (Google Drive) <i class="fas fa-download ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KẾT THÚC NHÓM PAUT -->
+
+
+            <!-- 2. CÁC PHẦN MỀM KHÁC (GIỮ NGUYÊN) -->
+
+            <!-- Unit Converter -->
+            <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
+                    <i class="fas fa-exchange-alt text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-800">Unit Converter</h3>
+                    <p class="text-sm text-gray-500 mt-1">Đổi đơn vị độ dài, áp suất.</p>
+                    <a href="https://www.unitconverters.net/" target="_blank" class="inline-block mt-3 text-sm text-[var(--mau-chinh)] font-semibold hover:underline">
+                        Mở công cụ <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Excel NDT -->
+            <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-green-600">
+                    <i class="fas fa-table text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-800">Bảng tính NDT</h3>
+                    <p class="text-sm text-gray-500 mt-1">File Excel tính toán liều, thời gian.</p>
+                    <a href="./files/NDT_Calc_v1.xlsx" download class="inline-block mt-3 text-sm text-blue-600 font-semibold hover:underline">
+                        Tải Excel <i class="fas fa-download ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- DWG Viewer -->
+            <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-600">
+                    <i class="fas fa-drafting-compass text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-800">DWG FastView</h3>
+                    <p class="text-sm text-gray-500 mt-1">Xem bản vẽ CAD miễn phí.</p>
+                    <a href="https://en.dwgfastview.com/" target="_blank" class="inline-block mt-3 text-sm text-[var(--mau-chinh)] font-semibold hover:underline">
+                        Truy cập <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+             <!-- 7-Zip -->
+             <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 text-yellow-600">
+                    <i class="fas fa-box-open text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-800">7-Zip</h3>
+                    <p class="text-sm text-gray-500 mt-1">Giải nén file miễn phí.</p>
+                    <a href="https://www.7-zip.org/" target="_blank" class="inline-block mt-3 text-sm text-[var(--mau-chinh)] font-semibold hover:underline">
+                        Tải về <i class="fas fa-download ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- La bàn -->
+            <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600">
+                    <i class="fas fa-compass text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-800">La bàn số</h3>
+                    <p class="text-sm text-gray-500 mt-1">Xác định hướng chụp phim.</p>
+                    <span class="inline-block mt-3 text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">App Mobile</span>
+                </div>
+            </div>
+
+            <!-- ShareX -->
+            <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
+                    <i class="fas fa-camera text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-800">ShareX</h3>
+                    <p class="text-sm text-gray-500 mt-1">Chụp/Quay màn hình làm báo cáo.</p>
+                    <a href="https://getsharex.com/" target="_blank" class="inline-block mt-3 text-sm text-[var(--mau-chinh)] font-semibold hover:underline">
+                        Tải về <i class="fas fa-download ml-1"></i>
+                    </a>
+                </div>
+            </div>
 
         </div>
     </div>
 
+    <!-- SCRIPT ĐỂ XỬ LÝ BẤM XỔ XUỐNG -->
+    <script>
+        function toggleSection(elementId, arrowId) {
+            var content = document.getElementById(elementId);
+            var arrow = document.getElementById(arrowId);
+            
+            // Kiểm tra trạng thái ẩn/hiện
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden'); // Hiện ra
+                arrow.classList.add('rotate-180');  // Xoay mũi tên lên
+            } else {
+                content.classList.add('hidden');    // Ẩn đi
+                arrow.classList.remove('rotate-180'); // Xoay mũi tên về cũ
+            }
+        }
+    </script>
+
 </body>
 </html>
-
-
