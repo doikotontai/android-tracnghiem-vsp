@@ -17,11 +17,20 @@
             transform: translateY(-5px);
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
+        /* Hiệu ứng chấm xanh nhấp nháy */
+        .live-dot {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Header đơn giản -->
+    <!-- Header -->
     <header class="bg-white shadow-sm py-4">
         <div class="container mx-auto px-4 flex justify-center">
             <div class="flex items-center gap-3">
@@ -35,9 +44,9 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow flex items-center justify-center p-6">
+    <main class="flex-grow flex flex-col items-center justify-center p-6 gap-8">
+        
         <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-            
             <!-- Card 1: Ôn tập trắc nghiệm -->
             <a href="tracnghiem.html" class="block group">
                 <div class="bg-white rounded-2xl p-8 h-full border border-slate-100 shadow-lg hover-card transition-all duration-300 flex flex-col items-center text-center cursor-pointer">
@@ -65,14 +74,134 @@
                     </div>
                 </div>
             </a>
-
         </div>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="py-6 text-center text-slate-400 text-sm">
-        &copy; 2025 BCH-XNXL. Developed by Phong Luu.
+    <!-- Footer & Counter -->
+    <footer class="pb-6 text-center mt-auto">
+        <!-- Bộ đếm Mini -->
+        <div class="mb-3 flex justify-center">
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-xs text-slate-500">
+                <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
+                <span>Lượt truy cập:</span>
+                <span id="visitor-count" class="font-bold text-slate-700 text-sm tabular-nums">...</span>
+            </div>
+        </div>
+
+        <div class="text-slate-400 text-sm">
+            &copy; 2025 BCH-XNXL. Developed by Phong Luu.
+        </div>
     </footer>
+
+    <!-- Script xử lý đếm số (Đã tích hợp Config CHÍNH THỨC của bạn) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // --- CẤU HÌNH FIREBASE CỦA BẠN (Đã điền sẵn) ---
+        const userFirebaseConfig = {
+            apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
+            authDomain: "tracnghiemndt.firebaseapp.com",
+            databaseURL: "https://tracnghiemndt-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tracnghiemndt",
+            storageBucket: "tracnghiemndt.firebasestorage.app",
+            messagingSenderId: "187385061213",
+            appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
+            measurementId: "G-TKRBZJT880"
+        };
+        
+        // Kiểm tra môi trường để chọn config phù hợp (Local máy bạn dùng userFirebaseConfig)
+        const finalConfig = (typeof __firebase_config !== 'undefined') ? JSON.parse(__firebase_config) : userFirebaseConfig;
+        
+        // Khởi tạo Firebase
+        let app, auth, db;
+        try {
+            app = initializeApp(finalConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.error("Lỗi khởi tạo Firebase:", e);
+        }
+
+        // Cấu hình Database
+        // ID này sẽ tạo một mục đếm mới bắt đầu từ 2000
+        const STATS_COLLECTION = `site_stats`;
+        const VISITOR_DOC_ID = 'visitors_v2'; 
+
+        // Hàm hiệu ứng số chạy
+        function animateValue(obj, start, end, duration) {
+            if (start === end) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('vi-VN');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Logic chính
+        const initCounter = async () => {
+            if (!auth || !db) return;
+
+            // Đăng nhập ẩn danh (Bạn đã xác nhận đã bật Enabled)
+            try {
+                await signInAnonymously(auth);
+            } catch (err) {
+                console.error("Lỗi đăng nhập:", err);
+                document.getElementById('visitor-count').innerText = "Auth Error";
+                return;
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const docRef = doc(db, STATS_COLLECTION, VISITOR_DOC_ID);
+                    const counterElement = document.getElementById('visitor-count');
+
+                    try {
+                        const docSnap = await getDoc(docRef);
+                        
+                        if (!docSnap.exists()) {
+                            // Nếu chưa có thì tạo mới = 2000
+                            await setDoc(docRef, { count: 2000 }); 
+                        } else {
+                            // Nếu có rồi thì TĂNG 1
+                            await updateDoc(docRef, { count: increment(1) });
+                        }
+
+                        // Lắng nghe thay đổi
+                        onSnapshot(docRef, (doc) => {
+                            if (doc.exists()) {
+                                const newVal = doc.data().count;
+                                const currentText = counterElement.innerText.replace(/\./g, '').replace(/,/g, '');
+                                const currentVal = parseInt(currentText) || 0;
+                                
+                                if (!isNaN(currentVal) && currentVal > 0) {
+                                    animateValue(counterElement, currentVal, newVal, 1500);
+                                } else {
+                                    counterElement.innerText = newVal.toLocaleString('vi-VN');
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        console.error("Lỗi đọc/ghi Firestore:", error);
+                        if (error.code === 'permission-denied') {
+                             document.getElementById('visitor-count').innerText = "Permisson Error";
+                             console.warn("Nếu thấy lỗi này, hãy vào Firestore -> Rules và đổi 'allow read, write: if false' thành 'if true'");
+                        }
+                    }
+                }
+            });
+        };
+
+        // Chạy ngay đi
+        initCounter();
+    </script>
 
 </body>
 </html>
