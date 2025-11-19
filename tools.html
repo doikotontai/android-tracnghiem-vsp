@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -28,11 +27,20 @@
         .rotate-180 {
             transform: rotate(180deg);
         }
+        /* Hiệu ứng chấm xanh nhấp nháy (Cho bộ đếm) */
+        .live-dot {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
     </style>
 </head>
-<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-8">
+<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-8 flex flex-col">
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto flex-grow">
         <!-- THANH ĐIỀU HƯỚNG -->
         <div id="home-nav" class="max-w-4xl mx-auto mb-6">
             <a href="./index.html" class="inline-flex items-center px-5 py-2.5 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline">
@@ -411,6 +419,18 @@
         </div>
     </div>
 
+    <footer class="py-6 text-center text-slate-400 text-sm mt-auto border-t border-slate-200">
+         <!-- Bộ đếm Mini (Sẽ được script điền vào) -->
+         <div class="mb-3 flex justify-center">
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-xs text-slate-500">
+                <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
+                <span>Lượt truy cập:</span>
+                <span id="visitor-count" class="font-bold text-slate-700 text-sm tabular-nums">...</span>
+            </div>
+        </div>
+        <p>&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
+    </footer>
+
     <!-- SCRIPT ĐỂ XỬ LÝ BẤM XỔ XUỐNG -->
     <script>
         function toggleSection(elementId, arrowId) {
@@ -427,8 +447,102 @@
             }
         }
     </script>
-    <footer class="py-6 text-center text-slate-400 text-sm">
-        &copy; 2025 BCH-XNXL. Developed by Phong Luu.
-    </footer>
+
+    <!-- === SCRIPT BỘ ĐẾM RIÊNG (Chạy ngay khi load trang) === -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const userFirebaseConfig = {
+            apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
+            authDomain: "tracnghiemndt.firebaseapp.com",
+            projectId: "tracnghiemndt",
+            storageBucket: "tracnghiemndt.firebasestorage.app",
+            messagingSenderId: "187385061213",
+            appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
+            measurementId: "G-TKRBZJT880"
+        };
+        
+        // Khởi tạo Firebase
+        let app, auth, db;
+        try {
+            app = initializeApp(userFirebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.error("Lỗi khởi tạo Firebase (Bộ đếm):", e);
+        }
+
+        const STATS_COLLECTION = `site_stats`;
+        const VISITOR_DOC_ID = 'visitors_v2'; // DÙNG CHUNG ID VỚI INDEX.HTML
+
+        function animateValue(obj, start, end, duration) {
+            if (start === end) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('vi-VN');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        const initCounter = async () => {
+            if (!auth || !db) return;
+
+            try {
+                await signInAnonymously(auth);
+            } catch (err) {
+                console.error("Lỗi đăng nhập bộ đếm:", err);
+                const el = document.getElementById('visitor-count');
+                if(el) el.innerText = "Err";
+                return;
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const docRef = doc(db, STATS_COLLECTION, VISITOR_DOC_ID);
+                    const counterElement = document.getElementById('visitor-count');
+                    if (!counterElement) return;
+
+                    try {
+                        const docSnap = await getDoc(docRef);
+                        
+                        if (!docSnap.exists()) {
+                            await setDoc(docRef, { count: 2000 }); 
+                        } else {
+                            await updateDoc(docRef, { count: increment(1) });
+                        }
+
+                        onSnapshot(docRef, (doc) => {
+                            if (doc.exists()) {
+                                const newVal = doc.data().count;
+                                const currentText = counterElement.innerText.replace(/\./g, '').replace(/,/g, '');
+                                const currentVal = parseInt(currentText) || 0;
+                                
+                                if (!isNaN(currentVal) && currentVal > 0) {
+                                    animateValue(counterElement, currentVal, newVal, 1500);
+                                } else {
+                                    counterElement.innerText = newVal.toLocaleString('vi-VN');
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        console.error("Lỗi đọc/ghi Firestore (Bộ đếm):", error);
+                    }
+                }
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCounter);
+        } else {
+            initCounter();
+        }
+    </script>
 </body>
 </html>
