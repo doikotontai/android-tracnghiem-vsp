@@ -79,7 +79,7 @@
             background: rgba(255, 255, 255, 0.8);
             border: 1px solid #e2e8f0;
             border-radius: 50%;
-            width: 40px; /* Nhỏ lại chút */
+            width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
@@ -102,7 +102,7 @@
         }
     </style>
 </head>
-<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-6 flex flex-col"> <!-- Padding body giảm chút -->
+<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-6 flex flex-col">
 
     <button id="theme-toggle" class="theme-toggle" title="Chuyển chế độ Sáng/Tối">
         <i class="fas fa-moon text-lg text-slate-600" id="theme-icon"></i>
@@ -124,26 +124,24 @@
         </div>
 
         <!-- DANH SÁCH -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3"> <!-- Giảm gap từ 4 xuống 3 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-            <!-- 1. NHÓM PAUT -->
+            <!-- 1. NHÓM PAUT (FULL DATA) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden">
-                <!-- Header nhỏ lại (p-3) -->
                 <div onclick="toggleSection('paut-group', 'arrow-paut')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
-                    <!-- Icon nhỏ lại (w-10 h-10) -->
                     <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
                         <i class="fas fa-folder-open text-lg"></i>
                     </div>
                     <div class="ml-3 flex-1">
                         <h3 class="font-bold text-blue-900 text-base">BỘ PHẦN MỀM PAUT</h3>
-                        <p class="text-xs text-blue-700 mt-0.5">Gồm BeamTool, OmniPC, TomoView...</p>
+                        <p class="text-xs text-blue-700 mt-0.5">Gồm BeamTool, OmniPC, Mentor, VEO3...</p>
                     </div>
                     <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-paut">
                         <i class="fas fa-chevron-down text-base"></i>
                     </div>
                 </div>
-                <!-- List con nhỏ lại (p-3) -->
                 <div id="paut-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
+                    <!-- Item 1 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
                         <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
                         <div class="flex-1">
@@ -151,6 +149,23 @@
                             <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
                         </div>
                     </div>
+                    <!-- Item 2 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">MentorUT-PC_3.11.03000.002</h4>
+                            <a href="https://drive.google.com/file/d/1i9-7N7XbS_7hMDHL4trDGNYuIUHkjTuw/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
+                        </div>
+                    </div>
+                    <!-- Item 3 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">MentorUT (bộ files Apps.iwp)</h4>
+                            <a href="https://drive.google.com/file/d/1X0n6YZ39PTJMfgh2_VjtHpufm9yotrTv/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
+                        </div>
+                    </div>
+                    <!-- Item 4 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
                         <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
                         <div class="flex-1">
@@ -158,10 +173,41 @@
                             <a href="https://drive.google.com/file/d/1mXdDiR5muNOo7A50KeybD5h3yrTCjfCZ/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
                         </div>
                     </div>
+                    <!-- Item 5 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">VEO3 - UTview_4.5.8.0</h4>
+                            <a href="https://sonatestap.com/SoftwareUpdates/UTstudioPlus/4.5.8/UTview%204.5.8.0%20Win64.exe" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Link gốc <i class="fas fa-download ml-1"></i></a>
+                        </div>
+                    </div>
+                    <!-- Item 6 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Files setup quét PAUT (ups;ops;utcfg)</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1Pd0LQD8oxQPnblmj4AbDl70-u31iUZsB/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MentorUT</a>
+                                <a href="https://drive.google.com/file/d/1Ykry3CChrsufNQnucDoCJZMAaw-uBmZz/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Omniscan MX2</a>
+                                <a href="https://drive.google.com/file/d/1tBtvaijOk1p_LxdRTyRBK_GzCEXRDh6L/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Sonatest VEO3</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Item 7 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Backup SD-Card Omniscan MX2</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1g4SzC6U20zZU6PNKHBqJ8eYDS4bZhsPd/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2-SDCARD</a>
+                                <a href="https://drive.google.com/file/d/1aYtdawvy_fkv9RWgrgELxqp95JoyMXEa/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2DD_EN</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 2. NHÓM LINK TRUY CẬP -->
+            <!-- 2. NHÓM LINK TRUY CẬP (FULL DATA) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden">
                 <div onclick="toggleSection('linktruycap-group', 'arrow-linktruycap')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
@@ -177,27 +223,120 @@
                 </div>
 
                 <div id="linktruycap-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
+                     <!-- 1 -->
                      <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i> <!-- Icon nhỏ hơn xíu -->
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">1. Link viết stopcard</h4>
                             <a href="https://stopcard.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
                         </div>
                     </div>
+                    <!-- 2 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">2. Link cập nhật stopcard đã ghi nhận</h4>
+                            <a href="https://docs.google.com/spreadsheets/d/1PEBwmbvPQLYliSx08NddV7pgAK_x0CpUMGPuCji7yZ8/edit?gid=946661187#gid=946661187" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 3 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">3. Link các form đi biển</h4>
+                            <a href="https://drive.google.com/drive/u/1/folders/1FSh13BOHokfBTYMKVbLFSXzXOjMZWuMW" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 4 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">4. Link cập nhật vật tư cuối ca biển</h4>
+                            <a href="https://docs.google.com/spreadsheets/d/1gYAUnKbIS6n6HksrOSal9No6uEmyjOek/edit?usp=sharing&ouid=117439100652630854980&rtpof=true&sd=true" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 5 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">5. Link đăng ký nghỉ phép</h4>
+                            <a href="https://phep.vietsov.com.vn/login" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 6 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">6. Link cập nhật thông tin nhân sự</h4>
+                            <a href="http://nhansu.vietsov.com.vn/login.aspx" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 7 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">7. Link khai báo y tế ra biển</h4>
+                            <a href="https://khaibaoyte.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 8 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">8. Link kiểm tra AT trên máy tính</h4>
+                            <a href="https://ktat.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 9 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">9. Link JSA (mạng nội bộ)</h4>
+                            <a href="http://svodka.vsp/Apps/Account/Login.aspx?returnUrl=%2fapps%2fadmin%2fantoan%2fjsa%2fJSA_CheckLists.aspx" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 10 -->
                     <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
                         <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">10. Link theo dõi lịch bay</h4>
-                            <a href="http://svodka.vsp/LichBayMoi.aspx" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Mạng nội bộ</a>
+                            <div class="flex gap-2 mt-1">
+                                <a href="http://svodka.vsp/LichBayMoi.aspx" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Mạng nội bộ</a>
+                                <a href="https://www.vietsov.com.vn/pages/flight.aspx" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Mạng ngoài</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 11 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">11. Link đăng ký khám sức khỏe</h4>
+                            <a href="https://khamsuckhoe.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 12 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">12. Link cập nhật nhân sự đi biển</h4>
+                            <a href="https://docs.google.com/spreadsheets/d/1HAxY9pCiU_LgeeXsQ80_fCpvoyOfD2MwXXIu4gZrFS8/edit?gid=843793476#gid=843793476" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                        </div>
+                    </div>
+                    <!-- 13 -->
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">13. Link thông tin cá nhân BCH</h4>
+                            <a href="https://docs.google.com/spreadsheets/d/1SYpUGIhyGyRsJ24cHY4998kEo7I61RnOHikTFbcK4bg/edit?gid=616099589#gid=616099589" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. CÁC CÔNG CỤ KHÁC -->
+            <!-- 3. CÁC CÔNG CỤ KHÁC (FULL DATA) -->
 
-            <!-- Unit Converter -->
-            <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+            <!-- Unit Converter (ĐÃ THU NHỎ) -->
+            <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3 max-w-sm">
                 <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
                     <i class="fa-solid fa-ruler-combined text-lg"></i>
                 </div>
