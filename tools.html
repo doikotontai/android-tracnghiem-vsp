@@ -129,7 +129,7 @@
         <!-- DANH SÁCH CHÍNH -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-            <!-- 1. NHÓM LINK TRUY CẬP (VỊ TRÍ ĐẦU) -->
+            <!-- 1. NHÓM LINK TRUY CẬP (VỊ TRÍ ĐẦU - ORDER 1) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden order-1">
                 <div onclick="toggleSection('linktruycap-group', 'arrow-linktruycap')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
@@ -255,7 +255,7 @@
                 </div>
             </div>
 
-            <!-- 2. NHÓM BỘ TIÊU CHUẨN NDT (VỊ TRÍ 2) -->
+            <!-- 2. NHÓM BỘ TIÊU CHUẨN NDT (VỊ TRÍ 2 - ORDER 2) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden order-2">
                 <div onclick="toggleSection('tieuchuan-group', 'arrow-tieuchuan')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
@@ -271,7 +271,7 @@
                 </div>
                 <div id="tieuchuan-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
                     
-                    <!-- Item Matrix NDT (Vẫn giữ nguyên vì là 1 file tổng hợp) -->
+                    <!-- Item Matrix NDT -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
                         <div class="w-8 h-8 rounded bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3"><i class="fas fa-file-alt text-sm"></i></div>
                         <div class="flex-1">
@@ -283,11 +283,10 @@
                         </div>
                     </div>
 
-                    <!-- 8 Tiêu chuẩn (Đã thêm target="_blank") -->
-                    
+                    <!-- 8 Tiêu chuẩn -->
                     <!-- 1. ABS-2020 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">ABS-2020</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -300,7 +299,7 @@
                     
                     <!-- 2. API 1104-2021 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">API 1104-2021</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -314,7 +313,7 @@
                     
                     <!-- 3. ASME B31.1 - 2022 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">ASME B31.1 - 2022</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -328,7 +327,7 @@
                     
                     <!-- 4. ASME B31.3 - 2022 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">ASME B31.3 - 2022</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -341,7 +340,7 @@
                     
                     <!-- 5. ASME IX - 2023 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">ASME IX - 2023</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -354,7 +353,7 @@
                     
                     <!-- 6. ASME VIII DIV I - 2023 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">ASME VIII DIV I - 2023</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -367,7 +366,7 @@
                     
                     <!-- 7. ASME VIII DIV II - 2023 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">ASME VIII DIV II - 2023</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -381,7 +380,7 @@
                     
                     <!-- 8. AWS D1.1-2020 -->
                     <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-gray-800">AWS D1.1-2020</h4>
                             <div class="flex gap-2 flex-wrap mt-1">
@@ -395,8 +394,96 @@
                 </div>
             </div>
 
-            <!-- 3. NHÓM PAUT (GIỮ NGUYÊN - VỊ TRÍ 3) -->
+            <!-- 3. BỘ QUY TRÌNH NDT (MỚI - ORDER 3) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden order-3">
+                <div onclick="toggleSection('quytrinh-group', 'arrow-quytrinh')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
+                        <!-- Icon folder-tree nhìn giống cây thư mục/quy trình -->
+                        <i class="fas fa-folder-tree text-lg"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="font-bold text-blue-900 text-base">BỘ QUY TRÌNH NDT</h3>
+                        <p class="text-xs text-blue-700 mt-0.5">ASME, API, ISO, ATBX...</p>
+                    </div>
+                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-quytrinh">
+                        <i class="fas fa-chevron-down text-base"></i>
+                    </div>
+                </div>
+                <div id="quytrinh-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
+                    
+                    <!-- 1. ASME -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ASME</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PAUT Procedure</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PT Procedure</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT Procedure</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT Thickness</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT Procedure</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT Procedure</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. API -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">API</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PAUT (Fab Steel Pipe)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT Procedure</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT Procedure</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT Procedure</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Welding Procedure</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. ISO -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ISO</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">ACFM</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Pipe Wizard AUT</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PT (Thẩm thấu)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT (Bột từ)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT (Phóng xạ)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT (Siêu âm)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT (Tách lớp)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PAUT</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">ET (Eddy Current)</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ATBX -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fa-regular fa-file-pdf"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ATBX (An Toàn Bức Xạ)</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Vận chuyển (VN)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Vận chuyển (EN)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Ứng phó khẩn cấp (VN)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Emergency Plan (EN)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">An toàn (VN)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Safety (EN)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">An ninh nguồn (VN)</a>
+                                <a href="#" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">Source Security (EN)</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 4. NHÓM PAUT (GIỮ NGUYÊN - VỊ TRÍ 4 - ORDER 4) -->
+            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden order-4">
                 <div onclick="toggleSection('paut-group', 'arrow-paut')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
                         <i class="fas fa-folder-open text-lg"></i>
@@ -487,8 +574,8 @@
                 </div>
             </div>
 
-            <!-- 4. CÁC CÔNG CỤ KHÁC (VỊ TRÍ 4) -->
-            <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 order-4">
+            <!-- 5. CÁC CÔNG CỤ KHÁC (VỊ TRÍ 5 - ORDER 5) -->
+            <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 order-5">
                 
                 <!-- Unit Converter -->
                 <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
@@ -521,12 +608,14 @@
                 <!-- La bàn -->
                 <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
                     <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600">
-                        <i class="fas fa-compass text-lg"></i>
+                        <i class="fa-solid fa-ship"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-bold text-gray-800 text-sm">La bàn số</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Xác định hướng chụp phim.</p>
-                        <span class="inline-block mt-2 text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600 dark:bg-gray-700 dark:text-gray-300">App Mobile</span>
+                        <h3 class="font-bold text-gray-800 text-sm">Form VSP-Express</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Form đi biển bằng tàu VSP-Express / Tàu dịch vụ</p>
+                        <a href="https://docs.google.com/spreadsheets/d/1Jw6cGeQIFe4vicqtbxGTJbgX3py-QAxZ/edit?usp=drive_link&ouid=111307509650960561054&rtpof=true&sd=true" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
+                            Tải về <i class="fas fa-download ml-1"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -538,7 +627,7 @@
                     <div class="flex-1">
                         <h3 class="font-bold text-gray-800 text-sm">ShareX</h3>
                         <p class="text-xs text-gray-500 mt-0.5">Chụp/Quay màn hình.</p>
-                        <a href="https://getsharex.com/" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
+                        <a href="https://docs.google.com/spreadsheets/d/1Jw6cGeQIFe4vicqtbxGTJbgX3py-QAxZ/edit?usp=drive_link&ouid=111307509650960561054&rtpof=true&sd=true" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
                             Tải về <i class="fas fa-download ml-1"></i>
                         </a>
                     </div>
