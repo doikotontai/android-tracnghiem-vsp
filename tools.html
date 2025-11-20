@@ -48,6 +48,7 @@
         body.dark-mode .text-green-600 { color: #4ade80 !important; } 
         body.dark-mode .text-purple-600 { color: #c084fc !important; }
         body.dark-mode .text-indigo-600 { color: #818cf8 !important; }
+        body.dark-mode .text-red-600 { color: #f87171 !important; }
         
         body.dark-mode .bg-blue-100 { background-color: #172554 !important; }
         body.dark-mode .bg-green-100 { background-color: #064e3b !important; }
@@ -55,6 +56,8 @@
         body.dark-mode .bg-indigo-100 { background-color: #312e81 !important; }
         body.dark-mode .bg-yellow-100 { background-color: #451a03 !important; }
         body.dark-mode .bg-orange-100 { background-color: #7c2d12 !important; }
+        body.dark-mode .bg-red-100 { background-color: #7f1d1d !important; }
+        body.dark-mode .bg-gray-100 { background-color: #334155 !important; } 
         
         body.dark-mode .border-blue-200 { border-color: #1e40af !important; }
         body.dark-mode .hover\:bg-gray-50:hover { background-color: #334155 !important; }
@@ -123,92 +126,11 @@
             <p class="text-gray-600 mt-1 text-sm">Link truy cập, biểu mẫu và công cụ tính toán</p>
         </div>
 
-        <!-- DANH SÁCH -->
+        <!-- DANH SÁCH CHÍNH -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-            <!-- 1. NHÓM PAUT (FULL DATA) -->
-            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden">
-                <div onclick="toggleSection('paut-group', 'arrow-paut')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
-                        <i class="fas fa-folder-open text-lg"></i>
-                    </div>
-                    <div class="ml-3 flex-1">
-                        <h3 class="font-bold text-blue-900 text-base">BỘ PHẦN MỀM PAUT</h3>
-                        <p class="text-xs text-blue-700 mt-0.5">Gồm BeamTool, OmniPC, Mentor, VEO3...</p>
-                    </div>
-                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-paut">
-                        <i class="fas fa-chevron-down text-base"></i>
-                    </div>
-                </div>
-                <div id="paut-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
-                    <!-- Item 1 -->
-                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">ES BeamTool 10 (full cracked)</h4>
-                            <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
-                        </div>
-                    </div>
-                    <!-- Item 2 -->
-                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">MentorUT-PC_3.11.03000.002</h4>
-                            <a href="https://drive.google.com/file/d/1i9-7N7XbS_7hMDHL4trDGNYuIUHkjTuw/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
-                        </div>
-                    </div>
-                    <!-- Item 3 -->
-                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">MentorUT (bộ files Apps.iwp)</h4>
-                            <a href="https://drive.google.com/file/d/1X0n6YZ39PTJMfgh2_VjtHpufm9yotrTv/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
-                        </div>
-                    </div>
-                    <!-- Item 4 -->
-                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">OmniPC-6.1.1</h4>
-                            <a href="https://drive.google.com/file/d/1mXdDiR5muNOo7A50KeybD5h3yrTCjfCZ/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
-                        </div>
-                    </div>
-                    <!-- Item 5 -->
-                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">VEO3 - UTview_4.5.8.0</h4>
-                            <a href="https://sonatestap.com/SoftwareUpdates/UTstudioPlus/4.5.8/UTview%204.5.8.0%20Win64.exe" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Link gốc <i class="fas fa-download ml-1"></i></a>
-                        </div>
-                    </div>
-                    <!-- Item 6 -->
-                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">Files setup quét PAUT (ups;ops;utcfg)</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1Pd0LQD8oxQPnblmj4AbDl70-u31iUZsB/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MentorUT</a>
-                                <a href="https://drive.google.com/file/d/1Ykry3CChrsufNQnucDoCJZMAaw-uBmZz/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Omniscan MX2</a>
-                                <a href="https://drive.google.com/file/d/1tBtvaijOk1p_LxdRTyRBK_GzCEXRDh6L/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Sonatest VEO3</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Item 7 -->
-                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">Backup SD-Card Omniscan MX2</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1g4SzC6U20zZU6PNKHBqJ8eYDS4bZhsPd/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2-SDCARD</a>
-                                <a href="https://drive.google.com/file/d/1aYtdawvy_fkv9RWgrgELxqp95JoyMXEa/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2DD_EN</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. NHÓM LINK TRUY CẬP (FULL DATA) -->
-            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden">
+            <!-- 1. NHÓM LINK TRUY CẬP (VỊ TRÍ ĐẦU) -->
+            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden order-1">
                 <div onclick="toggleSection('linktruycap-group', 'arrow-linktruycap')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
                         <i class="fas fa-link text-lg"></i>
@@ -333,76 +255,297 @@
                 </div>
             </div>
 
-            <!-- 3. CÁC CÔNG CỤ KHÁC (FULL DATA) -->
-
-            <!-- Unit Converter (ĐÃ THU NHỎ) -->
-            <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3 max-w-sm">
-                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
-                    <i class="fa-solid fa-ruler-combined text-lg"></i>
+            <!-- 2. NHÓM BỘ TIÊU CHUẨN NDT (VỊ TRÍ 2) -->
+            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden order-2">
+                <div onclick="toggleSection('tieuchuan-group', 'arrow-tieuchuan')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
+                        <i class="fas fa-book-open text-lg"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="font-bold text-blue-900 text-base">BỘ TIÊU CHUẨN NDT</h3>
+                        <p class="text-xs text-blue-700 mt-0.5">Các tiêu chuẩn kỹ thuật, Matrix NDT...</p>
+                    </div>
+                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-tieuchuan">
+                        <i class="fas fa-chevron-down text-base"></i>
+                    </div>
                 </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-gray-800 text-sm">Pipe Schedule Metric</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Tra cứu kích thước ống</p>
-                    <a href="./pipe_size.html" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                        Mở công cụ <i class="fas fa-external-link-alt ml-1"></i>
-                    </a>
+                <div id="tieuchuan-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
+                    
+                    <!-- Item Matrix NDT (Vẫn giữ nguyên vì là 1 file tổng hợp) -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3"><i class="fas fa-file-alt text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Matrix NDT và List tiêu chuẩn áp dụng</h4>
+                            <div class="flex gap-2 mt-1">
+                                <a href="https://drive.google.com/file/d/12fRE4Jr7p-opKsEIQF8vAtPsfevup3xf/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Matrix NDT (2021)</a>
+                                <a href="https://docs.google.com/spreadsheets/d/1P749fEEwIIVhKpOBEP7rel4D7TpNpgvH/edit?usp=drive_link&ouid=117668423906904167846&rtpof=true&sd=true" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">List tiêu chuẩn áp dụng và so sánh</a>
+							</div>
+                        </div>
+                    </div>
+
+                    <!-- 8 Tiêu chuẩn (Đã cập nhật 3 nút UT, MT/PT, RT cho tất cả) -->
+                    
+                    <!-- 1. ABS-2020 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <!-- Đã đổi màu sang ĐỎ -->
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ABS-2020</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1fBXdckmomt1wsiBClijBNNy6VvsfzJPf/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/1n0xIC6PHf8O91eQFOxaqTOsXDlL5VuI5/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
+                                <a href="https://drive.google.com/file/d/1uaGoIDzxRZwm9LVzpEyfVQy7AXZ23UwE/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. API 1104-2021 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">API 1104-2021</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1piIzaevD51CM-oidGxaWFDfadlu-jALG/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/1mb7iL_tSCuZY36EQfA_Dwi_B0p_F0DEq/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT & Visual</a>
+                                <a href="https://drive.google.com/file/d/1fFeXBPpvlSdce_6oZzMo3EnqYRGR2_kr/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PT</a>
+								<a href="https://drive.google.com/file/d/1ZPWevU6P-Yjz_wphJDXfKQ-0Q1S7MquG/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 3. ASME B31.1 - 2022 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ASME B31.1 - 2022</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1ZCTslBbPhA4RGaxs463U5ui86hNnxibJ/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/1Z-TMvaF2i0djCSJvXLz6YyVYvt-7SQnj/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT</a>
+								<a href="https://drive.google.com/file/d/1w7WgvKGJ5mgVYO2p4_pjC0ErcZ1RpQcw/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PT</a>
+                                <a href="https://drive.google.com/file/d/1fzuTCbDGr5wrgtVTWvlFG-ZnqiH5Q6Ap/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 4. ASME B31.3 - 2022 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ASME B31.3 - 2022</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1OVOG7gJE1z94pVJMDEEIIeUqCbE5oo8n/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/148NzAQWPSOj9HLl0BeuiQYELaxKdsk7P/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
+                                <a href="https://drive.google.com/file/d/1Zt5HgQzjoPdftxx-l5_Hc2_VvjfCH0d9/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 5. ASME IX - 2023 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ASME IX - 2023</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1AEWrzh0l8_JblGqllHocwp7Fqpo5IBfF/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/1qBmOa9MsdF_CuOwnGf78NHQP3V6iNKp1/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
+                                <a href="https://drive.google.com/file/d/1MqE9R7uYPZajuZ9gDlRPq-eOmyhrtVlK/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 6. ASME VIII DIV I - 2023 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ASME VIII DIV I - 2023</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1abaLRH6KPq042ptKgIjguylVEh1gwPyP/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/18wNGagtJomqCJguNoFDvHpEpIiyx4XL2/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
+                                <a href="https://drive.google.com/file/d/1KRd50B2Wvm0ALpNfo_d_aAtRZxnZp4Rc/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 7. ASME VIII DIV II - 2023 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ASME VIII DIV II - 2023</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/10Yup0Fo2eUg7CW1cB8egfxsLLDHj0UCy/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/1GFVkHcl7BZMGLCpYXeP-sbE-nnucDQqT/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PAUT</a>
+								<a href="https://drive.google.com/file/d/1cQyWL19tFbyWwJmAwMntxb_I-iYDtnaL/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
+                                <a href="https://drive.google.com/file/d/107EGLEFmrELc-TlpYIJ0AjFjS7_gQyia/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 8. AWS D1.1-2020 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-folder text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">AWS D1.1-2020</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1XCx7flifejQWQ0UhZV3DFplkIT-rw7Mi/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
+                                <a href="https://drive.google.com/file/d/1g-fpBBXDISkRSl2hRchtPTxFgwTkFDeV/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
+                                <a href="https://drive.google.com/file/d/1EnW_MkdCUX1J9-YwSjdUA7Gkhv0M8TV-/view?usp=drive_link" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Excel NDT -->
-            <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-                    <i class="fa-solid fa-circle-radiation text-lg"></i>
+            <!-- 3. NHÓM PAUT (GIỮ NGUYÊN - VỊ TRÍ 3) -->
+            <div class="col-span-1 md:col-span-2 bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden order-3">
+                <div onclick="toggleSection('paut-group', 'arrow-paut')" class="p-3 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white">
+                        <i class="fas fa-folder-open text-lg"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="font-bold text-blue-900 text-base">BỘ PHẦN MỀM PAUT</h3>
+                        <p class="text-xs text-blue-700 mt-0.5">Gồm BeamTool, OmniPC, Mentor, VEO3...</p>
+                    </div>
+                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-paut">
+                        <i class="fas fa-chevron-down text-base"></i>
+                    </div>
                 </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-gray-800 text-sm">RT Exposure calc</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Tính thời gian chụp RT</p>
-                    <a href="./rt_calculator.html" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                        Mở công cụ <i class="fas fa-external-link-alt ml-1"></i>
-                    </a>
-                </div>
-            </div>
-            
-            <!-- 7-Zip -->
-             <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 text-yellow-600">
-                    <i class="fas fa-box-open text-lg"></i>
-                </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-gray-800 text-sm">7-Zip</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Giải nén file miễn phí.</p>
-                    <a href="https://www.7-zip.org/" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                        Tải về <i class="fas fa-download ml-1"></i>
-                    </a>
+                <div id="paut-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
+                    <!-- Item 1 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">ES BeamTool</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">ES BeamTool 10</a>
+    							<a href="https://drive.google.com/file/d/1PM-Fr8yKyHd6m42ElqI88p_9hy6us2Au/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">ES BeamTool 2</a>
+                            </div>
+						</div>
+                    </div>
+                    <!-- Item 2 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Mentor PC</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1i9-7N7XbS_7hMDHL4trDGNYuIUHkjTuw/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MentorUT-PC_3.11</a>
+                                <a href="https://drive.google.com/file/d/1DqOPR1h4GUcmT4L_06IbKnEEz7O9JZEz/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MentorUT-PC_3.10</a>
+    							<a href="https://drive.google.com/file/d/1X0n6YZ39PTJMfgh2_VjtHpufm9yotrTv/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Apps.iwp</a>
+                                <a href="https://drive.google.com/file/d/1qt0Bmqrt24AEn6B-JPb6cUFVuOVbe-BL/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Mentor UT 3.3</a>
+                            </div>
+						</div>
+                    </div>
+                    <!-- Item 3 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">chưa biết cho gì vô</h4>
+                            <a href="https://drive.google.com/file/d/1X0n6YZ39PTJMfgh2_VjtHpufm9yotrTv/view?usp=sharing" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Tải về (Drive) <i class="fas fa-download ml-1"></i></a>
+                        </div>
+                    </div>
+                    <!-- Item 4 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">OmniScan</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1mXdDiR5muNOo7A50KeybD5h3yrTCjfCZ/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">OmniPC-6.1.1</a>
+                                <a href="https://drive.google.com/file/d/1QCY5ZoYBF2iTTcoHulF925Z3m0giTg5C/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Tomoview-2.10R25</a>
+                            </div>
+						</div>
+                    </div>
+                    <!-- Item 5 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-laptop-medical text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">SONATEST - VEO3</h4>
+                            <a href="https://sonatestap.com/SoftwareUpdates/UTstudioPlus/4.5.8/UTview%204.5.8.0%20Win64.exe" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">UTview_4.5.8.0</a>
+                        </div>
+                    </div>
+                    <!-- Item 6 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Files setup quét PAUT (ups;ops;utcfg)</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1Pd0LQD8oxQPnblmj4AbDl70-u31iUZsB/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MentorUT</a>
+                                <a href="https://drive.google.com/file/d/1Ykry3CChrsufNQnucDoCJZMAaw-uBmZz/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Omniscan MX2</a>
+                                <a href="https://drive.google.com/file/d/1tBtvaijOk1p_LxdRTyRBK_GzCEXRDh6L/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Sonatest VEO3</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Item 7 -->
+                    <div class="flex items-center p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                        <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fa-solid fa-file-zipper text-sm"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800">Backup SD-Card Omniscan MX2</h4>
+                            <div class="flex gap-2 flex-wrap mt-1">
+                                <a href="https://drive.google.com/file/d/1g4SzC6U20zZU6PNKHBqJ8eYDS4bZhsPd/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2-SDCARD</a>
+                                <a href="https://drive.google.com/file/d/1aYtdawvy_fkv9RWgrgELxqp95JoyMXEa/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2DD_EN</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- La bàn -->
-            <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600">
-                    <i class="fas fa-compass text-lg"></i>
+            <!-- 4. CÁC CÔNG CỤ KHÁC (VỊ TRÍ 4) -->
+            <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 order-4">
+                
+                <!-- Unit Converter -->
+                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
+                        <i class="fa-solid fa-ruler-combined text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 text-sm">Pipe Schedule Metric</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Tra cứu kích thước ống</p>
+                        <a href="./pipe_size.html" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
+                            Mở công cụ <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-gray-800 text-sm">La bàn số</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Xác định hướng chụp phim.</p>
-                    <span class="inline-block mt-2 text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600 dark:bg-gray-700 dark:text-gray-300">App Mobile</span>
-                </div>
-            </div>
 
-            <!-- ShareX -->
-            <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-                    <i class="fas fa-camera text-lg"></i>
+                <!-- Excel NDT -->
+                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
+                        <i class="fa-solid fa-circle-radiation text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 text-sm">RT Exposure calc</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Tính thời gian chụp RT</p>
+                        <a href="./rt_calculator.html" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
+                            Mở công cụ <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-gray-800 text-sm">ShareX</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Chụp/Quay màn hình.</p>
-                    <a href="https://getsharex.com/" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                        Tải về <i class="fas fa-download ml-1"></i>
-                    </a>
-                </div>
-            </div>
 
+                <!-- La bàn -->
+                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600">
+                        <i class="fas fa-compass text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 text-sm">La bàn số</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Xác định hướng chụp phim.</p>
+                        <span class="inline-block mt-2 text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600 dark:bg-gray-700 dark:text-gray-300">App Mobile</span>
+                    </div>
+                </div>
+
+                <!-- ShareX -->
+                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
+                        <i class="fas fa-camera text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 text-sm">ShareX</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Chụp/Quay màn hình.</p>
+                        <a href="https://getsharex.com/" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
+                            Tải về <i class="fas fa-download ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
