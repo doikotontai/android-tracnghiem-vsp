@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Đi Tàu VSP Express (V16 - Priority Fix)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- ExcelJS & FileSaver -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        .input-cell { 
+            width: 100%; 
+            border: 1px solid transparent; 
+            background: transparent; 
+            outline: none; 
+            padding: 10px 12px;
+            transition: all 0.2s; 
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .input-cell:focus { 
+            background: #ffffff; 
+            border-color: #3b82f6; 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); 
+        }
+        .input-cell::placeholder {
+            color: #94a3b8;
+            font-style: italic;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+
+        .loader { 
+            border: 3px solid rgba(255,255,255,0.3); 
+            border-radius: 50%; 
+            border-top: 3px solid #ffffff; 
+            width: 20px; 
+            height: 20px; 
+            animation: spin 1s linear infinite; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        input::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .combobox-wrapper { position: relative; width: 100%; height: 100%; }
+        
+        .combobox-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+        .combobox-wrapper:hover .combobox-icon { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useRef, useEffect, useMemo } = React;
+
+        // --- SVG ICONS ---
+        const SvgIcon = ({ children, size = 20, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+        );
+
+        const IconSave = ({size}) => <SvgIcon size={size}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></SvgIcon>;
+        const IconUserPlus = ({size}) => <SvgIcon size={size}><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></SvgIcon>;
+        const IconTrash2 = ({size}) => <SvgIcon size={size}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></SvgIcon>;
+        const IconShip = ({size, className}) => <SvgIcon size={size} className={className}><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.9 5.8 2.2 8"/><path d="M5 10l7-4 7 4"/><path d="M12 2v8"/></SvgIcon>;
+        const IconChevronDown = ({size}) => <SvgIcon size={size}><polyline points="6 9 12 15 18 9"/></SvgIcon>;
+
+        // --- CẤU HÌNH NGUỒN FILE MẪU (Thứ tự: Local -> Github -> GDrive) ---
+        const TEMPLATE_SOURCES = [
+            // 1. Local File (Ưu tiên cao nhất)
+            { type: 'Local', url: './formditau.xlsx' },
+            // 2. Github Raw Link (Link bạn cung cấp)
+            { type: 'Github', url: 'https://raw.githubusercontent.com/doikotontai/android-tracnghiem-vsp/57d1ea9f5b1fe9f436196616185f60175f2566fe/formditau.xlsx' },
+            // 3. Google Drive (Backup cuối cùng)
+            { type: 'GDrive', url: 'https://corsproxy.io/?https://docs.google.com/spreadsheets/d/1Jw6cGeQIFe4vicqtbxGTJbgX3py-QAxZ/export?format=xlsx' }
+        ];
+        const DEFAULT_UNIT = "BCH - XNXL"; 
+
+        // --- DATABASE CHÍNH THỨC (42 NHÂN SỰ) ---
+        const HARDCODED_STAFF_DB = {
+            "14598": { name: "ĐÀO ĐỨC ĐÔNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "15805": { name: "NGUYỄN VĂN MINH", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "20492": { name: "TRẦN NGỌC THẾ", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL104": { name: "TRẦN VĂN ĐOÀN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL128": { name: "BÙI VĂN DŨNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL204": { name: "NGUYỄN NGỌC LONG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL239": { name: "BÙI HỒNG SÁNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL246": { name: "VÕ QUỐC TUẤN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL260": { name: "VŨ XUÂN CHÍNH", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL291": { name: "VŨ QUANG DƯƠNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL354": { name: "NGUYỄN VĂN THỦY", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL419": { name: "ĐINH VĂN THIỆN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL420": { name: "PHẠM NGỌC ĐIỀU", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL431": { name: "PHẠM VĂN CHINH", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL432": { name: "LÊ VĂN DŨNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL451": { name: "ĐÀO VĂN KHÔI", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL453": { name: "VÕ HOÀNG TIẾN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL454": { name: "NGUYỄN ANH KIỆT", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL627": { name: "NGUYỄN HÀM CHUNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL628": { name: "TRẦN VĂN TOÁN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL641": { name: "LÊ HUY", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL742": { name: "NGUYỄN TRỌNG TUYẾN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL780": { name: "VŨ TUẤN ANH", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL781": { name: "NGUYỄN ĐỨC HẢO", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL831": { name: "TRẦN HỒNG THÀNH", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL853": { name: "CÙ CHÍ CÔNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1123": { name: "NGUYỄN VĂN LỘC", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1124": { name: "NGÔ ĐỨC THUẬN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1164": { name: "PHẠM HỒNG VŨ", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1375": { name: "NGUYỄN ANH TIẾN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL248": { name: "NGUYỄN MẠNH HÙNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1709": { name: "NGUYỄN VIẾT PHONG LƯU", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1802": { name: "NGUYỄN ĐĂNG THÀNH", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2066": { name: "NGUYỄN QUANG VINH", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2067": { name: "TRẦN TIẾN TRƯỜNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2247": { name: "TRẦN QUỐC THIỆN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2464": { name: "BÙI VĂN VƯỢNG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2465": { name: "ĐỖ VĂN NAM", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2466": { name: "NGUYỄN THANH NGÂN", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2467": { name: "TRẦN THANH QUANG", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2491": { name: "NGHIÊM TRÌNH NHẬT", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL2619": { name: "NGUYỄN TUẤN ĐẠT", title: "Thợ NDT", unit: "BCH - XNXL" }
+        };
+
+        function App() {
+            const [staffDB, setStaffDB] = useState(HARDCODED_STAFF_DB);
+            const [rows, setRows] = useState([]);
+            const [isProcessing, setIsProcessing] = useState(false);
+            const [status, setStatus] = useState(null);
+
+            const idOptions = useMemo(() => Object.keys(staffDB).sort(), [staffDB]);
+            const nameOptions = useMemo(() => Object.values(staffDB).map(s => s.name).sort(), [staffDB]);
+
+            // Load Data
+            useEffect(() => {
+                const savedDB = localStorage.getItem('ndt_staff_db_v16');
+                if (savedDB) {
+                    try { 
+                        const parsed = JSON.parse(savedDB);
+                        setStaffDB({ ...HARDCODED_STAFF_DB, ...parsed }); 
+                    } catch(e) {}
+                } else {
+                    setStaffDB(HARDCODED_STAFF_DB);
+                }
+
+                const savedRows = localStorage.getItem('ndt_boat_rows');
+                if (savedRows) {
+                    try { 
+                        setRows(JSON.parse(savedRows)); 
+                    } catch(e) {
+                        setRows([{ id: 1, danhSo: '', hoTen: '', chucDanh: '', donVi: DEFAULT_UNIT, nvsx: '', gian: '' }]);
+                    }
+                } else {
+                    setRows([{ id: 1, danhSo: '', hoTen: '', chucDanh: '', donVi: DEFAULT_UNIT, nvsx: '', gian: '' }]);
+                }
+            }, []);
+
+            useEffect(() => { localStorage.setItem('ndt_staff_db_v16', JSON.stringify(staffDB)); }, [staffDB]);
+            useEffect(() => { localStorage.setItem('ndt_boat_rows', JSON.stringify(rows)); }, [rows]);
+
+            // Xử lý logic bảng
+            const handleRowChange = (id, field, value) => {
+                const newRows = rows.map(row => {
+                    if (row.id === id) {
+                        const updatedRow = { ...row, [field]: value };
+                        
+                        if (field === 'danhSo') {
+                            const code = value.trim().toUpperCase().replace(/\s/g, ''); 
+                            const staff = staffDB[code];
+                            if (staff) {
+                                updatedRow.hoTen = staff.name;
+                                updatedRow.chucDanh = staff.title;
+                                updatedRow.donVi = staff.unit || DEFAULT_UNIT;
+                            }
+                        }
+                        
+                        if (field === 'hoTen') {
+                            const inputName = value.trim().toUpperCase();
+                            const foundEntry = Object.entries(staffDB).find(([key, val]) => val.name.toUpperCase() === inputName);
+                            if (foundEntry) {
+                                const [foundId, foundData] = foundEntry;
+                                updatedRow.danhSo = foundId;
+                                updatedRow.chucDanh = foundData.title;
+                                updatedRow.donVi = foundData.unit || DEFAULT_UNIT;
+                            }
+                        }
+                        return updatedRow;
+                    }
+                    return row;
+                });
+                setRows(newRows);
+            };
+
+            const addRow = () => {
+                const newId = rows.length > 0 ? Math.max(...rows.map(r => r.id)) + 1 : 1;
+                setRows([...rows, { id: newId, danhSo: '', hoTen: '', chucDanh: '', donVi: DEFAULT_UNIT, nvsx: '', gian: '' }]);
+            };
+
+            const removeRow = (id) => {
+                const newRows = rows.filter(r => r.id !== id);
+                setRows(newRows.length === 0 ? [{ id: 1, danhSo: '', hoTen: '', chucDanh: '', donVi: DEFAULT_UNIT, nvsx: '', gian: '' }] : newRows);
+            };
+
+            // --- HÀM TẢI FILE THÔNG MINH ---
+            const fetchFileWithFallback = async () => {
+                let lastError = null;
+                let successSource = null;
+                let buffer = null;
+                
+                for (const source of TEMPLATE_SOURCES) {
+                    try {
+                        console.log(`Đang thử tải từ: ${source.type} (${source.url})`);
+                        // Thêm timestamp để tránh cache
+                        const urlWithCacheBuster = source.url + (source.url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+                        const response = await fetch(source.url); // Dùng URL gốc cho Local, URL cache-bust cho mạng
+                        
+                        if (response.ok) {
+                            buffer = await response.arrayBuffer();
+                            successSource = source.type;
+                            break; // Thành công thì thoát vòng lặp
+                        }
+                    } catch (err) {
+                        console.warn(`Lỗi nguồn ${source.type}:`, err);
+                        lastError = err;
+                    }
+                }
+
+                if (buffer) return { buffer, source: successSource };
+                throw lastError || new Error("Không thể tải file mẫu từ bất kỳ nguồn nào.");
+            };
+
+            // --- HÀM XUẤT FILE EXCEL ---
+            const handleExport = async () => {
+                setIsProcessing(true);
+                setStatus({ type: 'info', msg: 'Đang tìm kiếm và tải file mẫu...' });
+
+                try {
+                    // 1. Tự động tìm file (Local -> Github -> GDrive)
+                    const { buffer, source } = await fetchFileWithFallback();
+                    console.log("Đã tải thành công từ:", source);
+
+                    const workbook = new ExcelJS.Workbook();
+                    await workbook.xlsx.load(buffer);
+
+                    const START_ROW = 5;
+
+                    // Loop qua tất cả các sheet (Đi và Về)
+                    workbook.worksheets.forEach(worksheet => {
+                        rows.forEach((data, index) => {
+                            const currentRow = START_ROW + index;
+                            const row = worksheet.getRow(currentRow);
+
+                            // 1. Ghi dữ liệu
+                            row.getCell('A').value = index + 1;
+                            row.getCell('B').value = data.danhSo;
+                            row.getCell('C').value = data.hoTen;
+                            row.getCell('D').value = data.chucDanh;
+                            row.getCell('E').value = data.donVi;
+                            row.getCell('J').value = data.nvsx;
+                            row.getCell('K').value = data.gian;
+
+                            // 2. Style
+                            ['A','B','C','D','E','F','G','H','I','J','K','L'].forEach(colChar => {
+                                const cell = row.getCell(colChar);
+                                cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                                cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                                if(colChar === 'C') {
+                                    cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, indent: 1 };
+                                }
+                            });
+
+                            // 3. Tăng chiều cao hàng
+                            row.height = 45;
+                            row.commit();
+                        });
+                    });
+
+                    const outBuffer = await workbook.xlsx.writeBuffer();
+                    const blob = new Blob([outBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                    saveAs(blob, "DS_Di_Tau_VSP_Express.xlsx");
+                    setStatus({ type: 'success', msg: `Thành công! (Nguồn: ${source})` });
+                } catch (err) {
+                    setStatus({ type: 'error', msg: 'Lỗi: Không tìm thấy file mẫu (Local, GitHub, GDrive đều lỗi).' });
+                } finally {
+                    setIsProcessing(false);
+                }
+            };
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto font-sans">
+                    
+                    <datalist id="list-danhso">
+                        {idOptions.map(id => <option key={id} value={id} />)}
+                    </datalist>
+                    <datalist id="list-hoten">
+                        {nameOptions.map((name, idx) => <option key={idx} value={name} />)}
+                    </datalist>
+
+                    {/* HEADER */}
+                    <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-l-4 border-blue-600 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                <IconShip className="text-blue-600" size={32} />
+                                Tool Đi Tàu VSP Express
+                            </h1>
+                            <p className="text-slate-500 text-sm mt-1">
+                                Tự động tìm file mẫu (Ưu tiên Local) • Điền 2 Sheet
+                            </p>
+                        </div>
+                        <div className="text-right">
+                             <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full border border-blue-100">
+                                Data: {Object.keys(staffDB).length} nhân sự
+                             </span>
+                        </div>
+                    </div>
+
+                    {/* TABLE */}
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[500px]">
+                        <div className="p-4 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-20 shadow-sm">
+                            <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                                Danh sách đăng ký
+                                <span className="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{rows.length}</span>
+                            </h3>
+                            <button onClick={addRow} className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-sm transition active:scale-95">
+                                <IconUserPlus size={16} /> Thêm dòng
+                            </button>
+                        </div>
+                        
+                        <div className="overflow-x-auto flex-1 p-0 relative">
+                            <table className="w-full text-sm text-left border-collapse">
+                                <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-xs sticky top-0 z-10 shadow-sm">
+                                    <tr>
+                                        <th className="p-3 w-12 text-center border-r border-slate-200">STT</th>
+                                        <th className="p-3 w-32 border-r border-slate-200">Danh Số</th>
+                                        <th className="p-3 w-64 border-r border-slate-200">Họ và Tên</th>
+                                        <th className="p-3 w-32 border-r border-slate-200">Chức Danh</th>
+                                        <th className="p-3 w-32 border-r border-slate-200">Đơn Vị</th>
+                                        <th className="p-3 w-28 border-r border-slate-200">NVSX</th>
+                                        <th className="p-3 w-28 border-r border-slate-200">Giàn</th>
+                                        <th className="p-3 w-12 text-center">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {rows.map((row, idx) => (
+                                        <tr key={row.id} className="hover:bg-blue-50 transition group bg-white">
+                                            <td className="p-2 text-center text-slate-400 border-r">{idx + 1}</td>
+                                            
+                                            {/* DANH SỐ */}
+                                            <td className="p-1 border-r relative">
+                                                <div className="combobox-wrapper h-full">
+                                                    <input 
+                                                        className="input-cell font-bold text-blue-700 placeholder-slate-300 uppercase h-full" 
+                                                        placeholder="Chọn..." 
+                                                        value={row.danhSo} 
+                                                        list="list-danhso"
+                                                        onChange={(e) => handleRowChange(row.id, 'danhSo', e.target.value)} 
+                                                    />
+                                                    <span className="combobox-icon"><IconChevronDown size={14} /></span>
+                                                </div>
+                                            </td>
+
+                                            {/* HỌ TÊN */}
+                                            <td className="p-1 border-r relative">
+                                                <div className="combobox-wrapper h-full">
+                                                    <input 
+                                                        className="input-cell text-slate-700 font-medium h-full" 
+                                                        value={row.hoTen} 
+                                                        list="list-hoten"
+                                                        onChange={(e) => handleRowChange(row.id, 'hoTen', e.target.value)}
+                                                        placeholder="Hoặc nhập tên..." 
+                                                    />
+                                                    <span className="combobox-icon"><IconChevronDown size={14} /></span>
+                                                </div>
+                                            </td>
+
+                                            <td className="p-1 border-r bg-slate-50/30"><input className="input-cell text-slate-500" value={row.chucDanh} readOnly tabIndex="-1" /></td>
+                                            <td className="p-1 border-r bg-slate-50/30"><input className="input-cell text-slate-500" value={row.donVi} onChange={(e) => handleRowChange(row.id, 'donVi', e.target.value)} /></td>
+                                            
+                                            <td className="p-1 border-r"><input className="input-cell text-center font-medium" value={row.nvsx} onChange={(e) => handleRowChange(row.id, 'nvsx', e.target.value)} placeholder="Nhập NVSX" /></td>
+                                            <td className="p-1 border-r"><input className="input-cell text-center font-medium" value={row.gian} onChange={(e) => handleRowChange(row.id, 'gian', e.target.value)} placeholder="Tên giàn" /></td>
+                                            
+                                            <td className="p-1 text-center">
+                                                <button onClick={() => removeRow(row.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded transition"><IconTrash2 size={16} /></button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* FOOTER ACTION */}
+                    <div className="mt-8 flex flex-col items-center justify-center gap-4 pb-8">
+                        <button 
+                            onClick={handleExport} 
+                            disabled={isProcessing} 
+                            className={`w-full max-w-md font-bold py-4 rounded-xl shadow-lg transition flex items-center justify-center gap-3 text-white text-lg transform active:scale-95
+                                ${isProcessing ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30'}`}
+                        >
+                            {isProcessing ? <><div className="loader"></div> <span>ĐANG TỰ ĐỘNG TẢI...</span></> : <><IconSave size={24} /> <span>XUẤT FILE EXCEL (.xlsx)</span></>}
+                        </button>
+                        
+                        {status && (
+                            <div className={`px-6 py-3 rounded-lg text-sm font-medium flex items-center gap-3 animate-pulse 
+                                ${status.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 
+                                  status.type === 'warning' ? 'bg-orange-100 text-orange-800 border border-orange-200' :
+                                  'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {status.msg}
+                            </div>
+                        )}
+                        
+                        <p className="text-xs text-slate-400 italic">Hệ thống tự động tìm file mẫu: Local &gt; Github &gt; GDrive</p>
+                    </div>
+
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
