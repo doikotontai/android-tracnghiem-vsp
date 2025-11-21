@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tạo form VSP Express</title>
+    <title>Tool Đi Tàu VSP Express (V17 - Mobile Ready)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -120,7 +120,7 @@
             "XL853": { name: "CÙ CHÍ CÔNG", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1123": { name: "NGUYỄN VĂN LỘC", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1124": { name: "NGÔ ĐỨC THUẬN", title: "Thợ NDT", unit: "BCH - XNXL" },
-            "XL1665": { name: "PHẠM HỒNG VŨ", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1164": { name: "PHẠM HỒNG VŨ", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1375": { name: "NGUYỄN ANH TIẾN", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL248": { name: "NGUYỄN MẠNH HÙNG", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1709": { name: "NGUYỄN VIẾT PHONG LƯU", title: "Thợ NDT", unit: "BCH - XNXL" },
@@ -176,6 +176,7 @@
                 const newRows = rows.map(row => {
                     if (row.id === id) {
                         const updatedRow = { ...row, [field]: value };
+                        
                         if (field === 'danhSo') {
                             const code = value.trim().toUpperCase().replace(/\s/g, ''); 
                             const staff = staffDB[code];
@@ -185,6 +186,7 @@
                                 updatedRow.donVi = staff.unit || DEFAULT_UNIT;
                             }
                         }
+                        
                         if (field === 'hoTen') {
                             const inputName = value.trim().toUpperCase();
                             const foundEntry = Object.entries(staffDB).find(([key, val]) => val.name.toUpperCase() === inputName);
@@ -300,10 +302,10 @@
                         <div>
                             <h1 className="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
                                 <IconShip className="text-blue-600" size={28} />
-                                Tạo form đi/về bằng tàu VSP Express / Tàu dịch vụ
+                                Tool Đi Tàu (Mobile)
                             </h1>
                             <p className="text-slate-500 text-sm mt-1">
-                                42 Nhân Sự • Tự động điền •
+                                42 Nhân Sự • Tự động điền • Giao diện thẻ
                             </p>
                         </div>
                         <div className="text-right">
