@@ -13,49 +13,57 @@
             --mau-chinh: #005a9c;
         }
 
-        /* --- DARK MODE DESIGN (MIDNIGHT THEME) --- */
+        /* --- DARK MODE DESIGN (DEEP NIGHT / GALAXY THEME) --- */
         body.dark-mode {
-            background-color: #0f172a;
+            background-color: #020617; /* Slate 950 - Nền đen sâu */
             color: #e2e8f0;
             --mau-chinh: #38bdf8;
         }
 
+        /* Card nền tối hơn để tiệp màu với background đen */
         body.dark-mode .bg-white, 
         body.dark-mode .soft-card {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
+            background-color: #0f172a !important; /* Slate 900 */
+            border-color: #1e293b !important; /* Slate 800 - Viền tối hơn */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); /* Shadow đậm hơn */
         }
 
+        /* Các vùng con bên trong card (như thanh tiêu đề group) */
         body.dark-mode .bg-blue-50 {
-            background-color: #172554 !important;
+            background-color: #1e293b !important; /* Slate 800 */
         }
+        
         body.dark-mode .hover\:bg-blue-100:hover {
-            background-color: #1e3a8a !important;
+            background-color: #334155 !important; /* Slate 700 - Hover sáng hơn chút */
         }
-        /* Dark mode hover for white cards */
+
+        /* Dark mode hover for white cards inside groups */
         body.dark-mode .hover\:border-blue-400:hover {
             border-color: #38bdf8 !important;
+            background-color: #1e293b !important;
         }
 
-        /* Màu chữ đồng bộ Index */
+        /* Màu chữ đồng bộ */
         body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4,
         body.dark-mode .text-gray-800, body.dark-mode .text-blue-900,
         body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { 
-            color: #f1f5f9 !important; 
+            color: #f8fafc !important; /* Trắng sáng hơn để nổi trên nền đen */
         }
 
         body.dark-mode p, body.dark-mode .text-gray-500, body.dark-mode .text-gray-600, 
         body.dark-mode .text-slate-500, body.dark-mode .text-blue-700 { 
-            color: #94a3b8 !important; 
+            color: #94a3b8 !important; /* Xám sáng */
         }
         
-        body.dark-mode .text-blue-600 { color: #38bdf8 !important; }
+        /* Màu text đặc biệt */
+        body.dark-mode .text-blue-600 { color: #60a5fa !important; }
         body.dark-mode .text-green-600 { color: #4ade80 !important; } 
         body.dark-mode .text-purple-600 { color: #c084fc !important; }
         body.dark-mode .text-indigo-600 { color: #818cf8 !important; }
         body.dark-mode .text-red-600 { color: #f87171 !important; }
         
-        body.dark-mode .bg-blue-100 { background-color: #172554 !important; }
+        /* Icon backgrounds - Cần tối đi để không bị chói */
+        body.dark-mode .bg-blue-100 { background-color: #172554 !important; } /* Blue 950 */
         body.dark-mode .bg-green-100 { background-color: #064e3b !important; }
         body.dark-mode .bg-purple-100 { background-color: #581c87 !important; }
         body.dark-mode .bg-indigo-100 { background-color: #312e81 !important; }
@@ -64,7 +72,7 @@
         body.dark-mode .bg-red-100 { background-color: #7f1d1d !important; }
         body.dark-mode .bg-gray-100 { background-color: #334155 !important; } 
         
-        body.dark-mode .border-blue-200, body.dark-mode .border-slate-200 { border-color: #334155 !important; }
+        body.dark-mode .border-blue-200, body.dark-mode .border-slate-200 { border-color: #1e293b !important; }
         body.dark-mode .hover\:bg-gray-50:hover { background-color: #334155 !important; }
         
         /* Light Mode Default */
@@ -98,8 +106,9 @@
         }
         body.dark-mode .theme-toggle {
             background: #1e293b;
-            border-color: #475569;
+            border-color: #334155;
             color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); /* Glow nhẹ cho nút sun */
         }
         .theme-toggle:hover { transform: scale(1.1); }
         .live-dot { animation: pulse-green 2s infinite; }
@@ -119,7 +128,7 @@
     <div class="max-w-3xl mx-auto flex-grow w-full">
         <!-- THANH ĐIỀU HƯỚNG -->
         <div id="home-nav" class="max-w-4xl mx-auto mb-6">
-            <a href="./index.html" class="inline-flex items-center px-4 py-2 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 text-sm">
+            <a href="./index.html" class="inline-flex items-center px-4 py-2 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline dark:bg-[#0f172a] dark:text-gray-200 dark:border-gray-800 dark:hover:bg-gray-800 text-sm">
                 <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-300"></i>
                 <span class="font-semibold">Quay về trang chủ</span>
             </a>
@@ -701,7 +710,7 @@
         </div>
     </div>
 
-    <footer class="py-4 text-center text-slate-400 text-xs mt-auto border-t border-slate-200 dark:border-slate-700">
+    <footer class="py-4 text-center text-slate-400 text-xs mt-auto border-t border-slate-200 dark:border-slate-800">
          <div class="mb-2 flex justify-center">
             <div class="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-full shadow-sm border border-slate-200 text-[10px] text-slate-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
                 <span class="w-1.5 h-1.5 bg-green-500 rounded-full live-dot"></span>
