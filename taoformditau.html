@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Đi Tàu VSP Express (V16 - Priority Fix)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tool Đi Tàu VSP Express (V17 - Mobile Ready)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,62 +21,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         
+        /* Custom Input Styles */
         .input-cell { 
             width: 100%; 
-            border: 1px solid transparent; 
-            background: transparent; 
+            border: 1px solid #e2e8f0; /* Thêm viền mờ cho dễ nhìn trên mobile */
+            background: #ffffff; 
             outline: none; 
             padding: 10px 12px;
             transition: all 0.2s; 
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 16px; /* Font size 16px để tránh zoom tự động trên iOS */
         }
         .input-cell:focus { 
-            background: #ffffff; 
             border-color: #3b82f6; 
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
         }
-        .input-cell::placeholder {
-            color: #94a3b8;
-            font-style: italic;
-            font-weight: 400;
-            opacity: 0.7;
-        }
+        .input-cell::placeholder { color: #94a3b8; font-style: italic; font-weight: 400; }
+        .input-readonly { background-color: #f1f5f9; color: #64748b; border-color: transparent; }
 
-        .loader { 
-            border: 3px solid rgba(255,255,255,0.3); 
-            border-radius: 50%; 
-            border-top: 3px solid #ffffff; 
-            width: 20px; 
-            height: 20px; 
-            animation: spin 1s linear infinite; 
-        }
+        /* Loader */
+        .loader { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #ffffff; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        input::-webkit-calendar-picker-indicator {
-            opacity: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
+        /* Custom Datalist Arrow */
+        input::-webkit-calendar-picker-indicator { opacity: 0; position: absolute; right: 0; top: 0; width: 100%; height: 100%; cursor: pointer; }
+        .combobox-wrapper { position: relative; width: 100%; }
+        .combobox-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #94a3b8; }
         
-        .combobox-wrapper { position: relative; width: 100%; height: 100%; }
-        
-        .combobox-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #94a3b8;
-            transition: color 0.2s;
+        /* Mobile specific tweaks */
+        @media (max-width: 768px) {
+            .container-custom { padding: 10px; }
+            .card-mobile { 
+                background: white; 
+                border-radius: 12px; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+                padding: 16px; 
+                margin-bottom: 12px; 
+                border: 1px solid #e2e8f0;
+            }
+            .input-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 4px; display: block; }
         }
-        .combobox-wrapper:hover .combobox-icon { color: #3b82f6; }
     </style>
 </head>
 <body>
@@ -96,13 +82,10 @@
         const IconShip = ({size, className}) => <SvgIcon size={size} className={className}><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.9 5.8 2.2 8"/><path d="M5 10l7-4 7 4"/><path d="M12 2v8"/></SvgIcon>;
         const IconChevronDown = ({size}) => <SvgIcon size={size}><polyline points="6 9 12 15 18 9"/></SvgIcon>;
 
-        // --- CẤU HÌNH NGUỒN FILE MẪU (Thứ tự: Local -> Github -> GDrive) ---
+        // --- CẤU HÌNH ---
         const TEMPLATE_SOURCES = [
-            // 1. Local File (Ưu tiên cao nhất)
             { type: 'Local', url: './formditau.xlsx' },
-            // 2. Github Raw Link (Link bạn cung cấp)
             { type: 'Github', url: 'https://raw.githubusercontent.com/doikotontai/android-tracnghiem-vsp/57d1ea9f5b1fe9f436196616185f60175f2566fe/formditau.xlsx' },
-            // 3. Google Drive (Backup cuối cùng)
             { type: 'GDrive', url: 'https://corsproxy.io/?https://docs.google.com/spreadsheets/d/1Jw6cGeQIFe4vicqtbxGTJbgX3py-QAxZ/export?format=xlsx' }
         ];
         const DEFAULT_UNIT = "BCH - XNXL"; 
@@ -137,7 +120,7 @@
             "XL853": { name: "CÙ CHÍ CÔNG", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1123": { name: "NGUYỄN VĂN LỘC", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1124": { name: "NGÔ ĐỨC THUẬN", title: "Thợ NDT", unit: "BCH - XNXL" },
-            "XL1164": { name: "PHẠM HỒNG VŨ", title: "Thợ NDT", unit: "BCH - XNXL" },
+            "XL1165": { name: "PHẠM HỒNG VŨ", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1375": { name: "NGUYỄN ANH TIẾN", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL248": { name: "NGUYỄN MẠNH HÙNG", title: "Thợ NDT", unit: "BCH - XNXL" },
             "XL1709": { name: "NGUYỄN VIẾT PHONG LƯU", title: "Thợ NDT", unit: "BCH - XNXL" },
@@ -164,7 +147,7 @@
 
             // Load Data
             useEffect(() => {
-                const savedDB = localStorage.getItem('ndt_staff_db_v16');
+                const savedDB = localStorage.getItem('ndt_staff_db_v17');
                 if (savedDB) {
                     try { 
                         const parsed = JSON.parse(savedDB);
@@ -186,15 +169,13 @@
                 }
             }, []);
 
-            useEffect(() => { localStorage.setItem('ndt_staff_db_v16', JSON.stringify(staffDB)); }, [staffDB]);
+            useEffect(() => { localStorage.setItem('ndt_staff_db_v17', JSON.stringify(staffDB)); }, [staffDB]);
             useEffect(() => { localStorage.setItem('ndt_boat_rows', JSON.stringify(rows)); }, [rows]);
 
-            // Xử lý logic bảng
             const handleRowChange = (id, field, value) => {
                 const newRows = rows.map(row => {
                     if (row.id === id) {
                         const updatedRow = { ...row, [field]: value };
-                        
                         if (field === 'danhSo') {
                             const code = value.trim().toUpperCase().replace(/\s/g, ''); 
                             const staff = staffDB[code];
@@ -204,7 +185,6 @@
                                 updatedRow.donVi = staff.unit || DEFAULT_UNIT;
                             }
                         }
-                        
                         if (field === 'hoTen') {
                             const inputName = value.trim().toUpperCase();
                             const foundEntry = Object.entries(staffDB).find(([key, val]) => val.name.toUpperCase() === inputName);
@@ -240,48 +220,39 @@
                 
                 for (const source of TEMPLATE_SOURCES) {
                     try {
-                        console.log(`Đang thử tải từ: ${source.type} (${source.url})`);
                         // Thêm timestamp để tránh cache
                         const urlWithCacheBuster = source.url + (source.url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-                        const response = await fetch(source.url); // Dùng URL gốc cho Local, URL cache-bust cho mạng
-                        
+                        const response = await fetch(source.url); 
                         if (response.ok) {
                             buffer = await response.arrayBuffer();
                             successSource = source.type;
-                            break; // Thành công thì thoát vòng lặp
+                            break;
                         }
                     } catch (err) {
-                        console.warn(`Lỗi nguồn ${source.type}:`, err);
                         lastError = err;
                     }
                 }
-
                 if (buffer) return { buffer, source: successSource };
-                throw lastError || new Error("Không thể tải file mẫu từ bất kỳ nguồn nào.");
+                throw lastError || new Error("Không thể tải file mẫu.");
             };
 
             // --- HÀM XUẤT FILE EXCEL ---
             const handleExport = async () => {
                 setIsProcessing(true);
-                setStatus({ type: 'info', msg: 'Đang tìm kiếm và tải file mẫu...' });
+                setStatus({ type: 'info', msg: 'Đang xử lý...' });
 
                 try {
-                    // 1. Tự động tìm file (Local -> Github -> GDrive)
                     const { buffer, source } = await fetchFileWithFallback();
-                    console.log("Đã tải thành công từ:", source);
-
                     const workbook = new ExcelJS.Workbook();
                     await workbook.xlsx.load(buffer);
 
                     const START_ROW = 5;
 
-                    // Loop qua tất cả các sheet (Đi và Về)
                     workbook.worksheets.forEach(worksheet => {
                         rows.forEach((data, index) => {
                             const currentRow = START_ROW + index;
                             const row = worksheet.getRow(currentRow);
 
-                            // 1. Ghi dữ liệu
                             row.getCell('A').value = index + 1;
                             row.getCell('B').value = data.danhSo;
                             row.getCell('C').value = data.hoTen;
@@ -290,17 +261,13 @@
                             row.getCell('J').value = data.nvsx;
                             row.getCell('K').value = data.gian;
 
-                            // 2. Style
                             ['A','B','C','D','E','F','G','H','I','J','K','L'].forEach(colChar => {
                                 const cell = row.getCell(colChar);
                                 cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
                                 cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-                                if(colChar === 'C') {
-                                    cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, indent: 1 };
-                                }
+                                if(colChar === 'C') cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true, indent: 1 };
                             });
 
-                            // 3. Tăng chiều cao hàng
                             row.height = 45;
                             row.commit();
                         });
@@ -309,16 +276,17 @@
                     const outBuffer = await workbook.xlsx.writeBuffer();
                     const blob = new Blob([outBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
                     saveAs(blob, "DS_Di_Tau_VSP_Express.xlsx");
-                    setStatus({ type: 'success', msg: `Thành công! (Nguồn: ${source})` });
+                    setStatus({ type: 'success', msg: `Thành công! (${source})` });
                 } catch (err) {
-                    setStatus({ type: 'error', msg: 'Lỗi: Không tìm thấy file mẫu (Local, GitHub, GDrive đều lỗi).' });
+                    setStatus({ type: 'error', msg: 'Lỗi: Không tải được file mẫu.' });
                 } finally {
                     setIsProcessing(false);
                 }
             };
 
+            // --- RENDER ---
             return (
-                <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto font-sans">
+                <div className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto font-sans container-custom">
                     
                     <datalist id="list-danhso">
                         {idOptions.map(id => <option key={id} value={id} />)}
@@ -330,40 +298,30 @@
                     {/* HEADER */}
                     <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-l-4 border-blue-600 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                                <IconShip className="text-blue-600" size={32} />
-                                Tool Đi Tàu VSP Express
+                            <h1 className="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                <IconShip className="text-blue-600" size={28} />
+                                Tool Đi Tàu (Mobile)
                             </h1>
                             <p className="text-slate-500 text-sm mt-1">
-                                Tự động tìm file mẫu (Ưu tiên Local) • Điền 2 Sheet
+                                42 Nhân Sự • Tự động điền • Giao diện thẻ
                             </p>
                         </div>
                         <div className="text-right">
-                             <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full border border-blue-100">
-                                Data: {Object.keys(staffDB).length} nhân sự
-                             </span>
+                             <button onClick={addRow} className="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md flex items-center gap-2 transition active:scale-95 w-full md:w-auto justify-center">
+                                <IconUserPlus size={18} /> Thêm Người
+                            </button>
                         </div>
                     </div>
 
-                    {/* TABLE */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[500px]">
-                        <div className="p-4 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-20 shadow-sm">
-                            <h3 className="font-bold text-slate-700 flex items-center gap-2">
-                                Danh sách đăng ký
-                                <span className="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{rows.length}</span>
-                            </h3>
-                            <button onClick={addRow} className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-sm transition active:scale-95">
-                                <IconUserPlus size={16} /> Thêm dòng
-                            </button>
-                        </div>
-                        
+                    {/* TABLE VIEW (DESKTOP) */}
+                    <div className="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[300px]">
                         <div className="overflow-x-auto flex-1 p-0 relative">
                             <table className="w-full text-sm text-left border-collapse">
                                 <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-xs sticky top-0 z-10 shadow-sm">
                                     <tr>
-                                        <th className="p-3 w-12 text-center border-r border-slate-200">STT</th>
+                                        <th className="p-3 w-12 text-center border-r border-slate-200">#</th>
                                         <th className="p-3 w-32 border-r border-slate-200">Danh Số</th>
-                                        <th className="p-3 w-64 border-r border-slate-200">Họ và Tên</th>
+                                        <th className="p-3 w-56 border-r border-slate-200">Họ và Tên</th>
                                         <th className="p-3 w-32 border-r border-slate-200">Chức Danh</th>
                                         <th className="p-3 w-32 border-r border-slate-200">Đơn Vị</th>
                                         <th className="p-3 w-28 border-r border-slate-200">NVSX</th>
@@ -375,41 +333,22 @@
                                     {rows.map((row, idx) => (
                                         <tr key={row.id} className="hover:bg-blue-50 transition group bg-white">
                                             <td className="p-2 text-center text-slate-400 border-r">{idx + 1}</td>
-                                            
-                                            {/* DANH SỐ */}
                                             <td className="p-1 border-r relative">
-                                                <div className="combobox-wrapper h-full">
-                                                    <input 
-                                                        className="input-cell font-bold text-blue-700 placeholder-slate-300 uppercase h-full" 
-                                                        placeholder="Chọn..." 
-                                                        value={row.danhSo} 
-                                                        list="list-danhso"
-                                                        onChange={(e) => handleRowChange(row.id, 'danhSo', e.target.value)} 
-                                                    />
+                                                <div className="combobox-wrapper">
+                                                    <input className="input-cell font-bold text-blue-700 uppercase" placeholder="Chọn..." value={row.danhSo} list="list-danhso" onChange={(e) => handleRowChange(row.id, 'danhSo', e.target.value)} />
                                                     <span className="combobox-icon"><IconChevronDown size={14} /></span>
                                                 </div>
                                             </td>
-
-                                            {/* HỌ TÊN */}
                                             <td className="p-1 border-r relative">
-                                                <div className="combobox-wrapper h-full">
-                                                    <input 
-                                                        className="input-cell text-slate-700 font-medium h-full" 
-                                                        value={row.hoTen} 
-                                                        list="list-hoten"
-                                                        onChange={(e) => handleRowChange(row.id, 'hoTen', e.target.value)}
-                                                        placeholder="Hoặc nhập tên..." 
-                                                    />
+                                                <div className="combobox-wrapper">
+                                                    <input className="input-cell text-slate-700 font-medium" value={row.hoTen} list="list-hoten" onChange={(e) => handleRowChange(row.id, 'hoTen', e.target.value)} placeholder="Tên..." />
                                                     <span className="combobox-icon"><IconChevronDown size={14} /></span>
                                                 </div>
                                             </td>
-
-                                            <td className="p-1 border-r bg-slate-50/30"><input className="input-cell text-slate-500" value={row.chucDanh} readOnly tabIndex="-1" /></td>
-                                            <td className="p-1 border-r bg-slate-50/30"><input className="input-cell text-slate-500" value={row.donVi} onChange={(e) => handleRowChange(row.id, 'donVi', e.target.value)} /></td>
-                                            
+                                            <td className="p-1 border-r bg-slate-50/30"><input className="input-cell text-slate-500 input-readonly" value={row.chucDanh} readOnly /></td>
+                                            <td className="p-1 border-r bg-slate-50/30"><input className="input-cell text-slate-500 input-readonly" value={row.donVi} onChange={(e) => handleRowChange(row.id, 'donVi', e.target.value)} /></td>
                                             <td className="p-1 border-r"><input className="input-cell text-center font-medium" value={row.nvsx} onChange={(e) => handleRowChange(row.id, 'nvsx', e.target.value)} placeholder="Nhập NVSX" /></td>
                                             <td className="p-1 border-r"><input className="input-cell text-center font-medium" value={row.gian} onChange={(e) => handleRowChange(row.id, 'gian', e.target.value)} placeholder="Tên giàn" /></td>
-                                            
                                             <td className="p-1 text-center">
                                                 <button onClick={() => removeRow(row.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded transition"><IconTrash2 size={16} /></button>
                                             </td>
@@ -420,27 +359,76 @@
                         </div>
                     </div>
 
+                    {/* CARD VIEW (MOBILE) */}
+                    <div className="md:hidden space-y-4">
+                        {rows.map((row, idx) => (
+                            <div key={row.id} className="card-mobile">
+                                <div className="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+                                    <span className="font-bold text-blue-600 text-lg">#{idx + 1}</span>
+                                    <button onClick={() => removeRow(row.id)} className="text-red-400 p-1 hover:text-red-600"><IconTrash2 size={20} /></button>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="input-label">Danh Số</label>
+                                        <div className="combobox-wrapper">
+                                            <input className="input-cell font-bold text-blue-700 uppercase border border-slate-200" placeholder="Chọn Danh Số..." value={row.danhSo} list="list-danhso" onChange={(e) => handleRowChange(row.id, 'danhSo', e.target.value)} />
+                                            <span className="combobox-icon"><IconChevronDown size={16} /></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="input-label">Họ và Tên</label>
+                                        <div className="combobox-wrapper">
+                                            <input className="input-cell font-medium text-slate-800 border border-slate-200" placeholder="Chọn Tên..." value={row.hoTen} list="list-hoten" onChange={(e) => handleRowChange(row.id, 'hoTen', e.target.value)} />
+                                            <span className="combobox-icon"><IconChevronDown size={16} /></span>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="input-label">Chức Danh</label>
+                                            <input className="input-cell input-readonly" value={row.chucDanh} readOnly />
+                                        </div>
+                                        <div>
+                                            <label className="input-label">Đơn Vị</label>
+                                            <input className="input-cell input-readonly" value={row.donVi} readOnly />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="input-label">NVSX</label>
+                                            <input className="input-cell font-medium text-center border border-slate-200" value={row.nvsx} onChange={(e) => handleRowChange(row.id, 'nvsx', e.target.value)} placeholder="Nhập..." />
+                                        </div>
+                                        <div>
+                                            <label className="input-label">Giàn</label>
+                                            <input className="input-cell font-medium text-center border border-slate-200" value={row.gian} onChange={(e) => handleRowChange(row.id, 'gian', e.target.value)} placeholder="Nhập..." />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        
+                        {/* Nút Thêm dòng ở dưới cùng cho Mobile */}
+                        <button onClick={addRow} className="w-full bg-green-50 border-2 border-dashed border-green-300 text-green-700 font-bold py-3 rounded-xl flex items-center justify-center gap-2 active:bg-green-100 transition">
+                            <IconUserPlus size={20} /> Thêm người khác
+                        </button>
+                    </div>
+
                     {/* FOOTER ACTION */}
-                    <div className="mt-8 flex flex-col items-center justify-center gap-4 pb-8">
+                    <div className="mt-8 flex flex-col items-center justify-center gap-4 pb-8 safe-area-bottom">
                         <button 
                             onClick={handleExport} 
                             disabled={isProcessing} 
                             className={`w-full max-w-md font-bold py-4 rounded-xl shadow-lg transition flex items-center justify-center gap-3 text-white text-lg transform active:scale-95
                                 ${isProcessing ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30'}`}
                         >
-                            {isProcessing ? <><div className="loader"></div> <span>ĐANG TỰ ĐỘNG TẢI...</span></> : <><IconSave size={24} /> <span>XUẤT FILE EXCEL (.xlsx)</span></>}
+                            {isProcessing ? <><div className="loader"></div> <span>ĐANG XỬ LÝ...</span></> : <><IconSave size={24} /> <span>XUẤT FILE EXCEL</span></>}
                         </button>
                         
                         {status && (
-                            <div className={`px-6 py-3 rounded-lg text-sm font-medium flex items-center gap-3 animate-pulse 
-                                ${status.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 
-                                  status.type === 'warning' ? 'bg-orange-100 text-orange-800 border border-orange-200' :
-                                  'bg-red-100 text-red-800 border border-red-200'}`}>
+                            <div className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-3 w-full md:w-auto justify-center ${status.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
                                 {status.msg}
                             </div>
                         )}
-                        
-                        <p className="text-xs text-slate-400 italic">Hệ thống tự động tìm file mẫu: Local &gt; Github &gt; GDrive</p>
                     </div>
 
                 </div>
