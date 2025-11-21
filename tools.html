@@ -32,10 +32,15 @@
         body.dark-mode .hover\:bg-blue-100:hover {
             background-color: #1e3a8a !important;
         }
+        /* Dark mode hover for white cards */
+        body.dark-mode .hover\:border-blue-400:hover {
+            border-color: #38bdf8 !important;
+        }
 
         /* Màu chữ đồng bộ Index */
         body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4,
-        body.dark-mode .text-gray-800, body.dark-mode .text-blue-900 { 
+        body.dark-mode .text-gray-800, body.dark-mode .text-blue-900,
+        body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { 
             color: #f1f5f9 !important; 
         }
 
@@ -59,7 +64,7 @@
         body.dark-mode .bg-red-100 { background-color: #7f1d1d !important; }
         body.dark-mode .bg-gray-100 { background-color: #334155 !important; } 
         
-        body.dark-mode .border-blue-200 { border-color: #1e40af !important; }
+        body.dark-mode .border-blue-200, body.dark-mode .border-slate-200 { border-color: #334155 !important; }
         body.dark-mode .hover\:bg-gray-50:hover { background-color: #334155 !important; }
         
         /* Light Mode Default */
@@ -144,114 +149,177 @@
                     </div>
                 </div>
 
-                <div id="linktruycap-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
+                <!-- Thay đổi: Sử dụng Grid 2 cột - Trả lại toàn bộ tên gốc -->
+                <div id="linktruycap-group" class="hidden border-t border-blue-100 bg-white p-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                     
                      <!-- 1 -->
-                     <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">1. Link viết stopcard</h4>
-                            <a href="https://stopcard.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 2 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">2. Link cập nhật stopcard đã ghi nhận</h4>
-                            <a href="https://docs.google.com/spreadsheets/d/1PEBwmbvPQLYliSx08NddV7pgAK_x0CpUMGPuCji7yZ8/edit?gid=946661187#gid=946661187" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 3 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">3. Link các form đi biển</h4>
-                            <a href="https://drive.google.com/drive/u/1/folders/1FSh13BOHokfBTYMKVbLFSXzXOjMZWuMW" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 4 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">4. Link cập nhật vật tư cuối ca biển</h4>
-                            <a href="https://docs.google.com/spreadsheets/d/1gYAUnKbIS6n6HksrOSal9No6uEmyjOek/edit?usp=sharing&ouid=117439100652630854980&rtpof=true&sd=true" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 5 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">5. Link đăng ký nghỉ phép</h4>
-                            <a href="https://phep.vietsov.com.vn/login" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 6 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">6. Link cập nhật thông tin nhân sự</h4>
-                            <a href="http://nhansu.vietsov.com.vn/login.aspx" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 7 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">7. Link khai báo y tế ra biển</h4>
-                            <a href="https://khaibaoyte.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 8 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">8. Link kiểm tra AT trên máy tính</h4>
-                            <a href="https://ktat.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 9 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">9. Link JSA (mạng nội bộ)</h4>
-                            <a href="http://svodka.vsp/Apps/Account/Login.aspx?returnUrl=%2fapps%2fadmin%2fantoan%2fjsa%2fJSA_CheckLists.aspx" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
-                        </div>
-                    </div>
-                    <!-- 10 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">10. Link theo dõi lịch bay</h4>
-                            <div class="flex gap-2 mt-1">
-                                <a href="http://svodka.vsp/LichBayMoi.aspx" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Mạng nội bộ</a>
-                                <a href="https://www.vietsov.com.vn/pages/flight.aspx" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Mạng ngoài</a>
+                     <a href="https://stopcard.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-ban"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">1. Viết stopcard</h4>
                             </div>
                         </div>
-                    </div>
+                    </a>
+
+                    <!-- 2 -->
+                    <a href="https://docs.google.com/spreadsheets/d/1PEBwmbvPQLYliSx08NddV7pgAK_x0CpUMGPuCji7yZ8/edit?gid=946661187#gid=946661187" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-list-check text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">2. Cập nhật stopcard đã ghi nhận</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 3 -->
+                    <a href="https://drive.google.com/drive/u/1/folders/1FSh13BOHokfBTYMKVbLFSXzXOjMZWuMW" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-folder-open text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">3. Các form đi biển</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 4 -->
+                    <a href="https://docs.google.com/spreadsheets/d/1gYAUnKbIS6n6HksrOSal9No6uEmyjOek/edit?usp=sharing&ouid=117439100652630854980&rtpof=true&sd=true" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-cart-arrow-down"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">4. Cập nhật vật tư cuối ca biển</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 5 -->
+                    <a href="https://phep.vietsov.com.vn/login" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-plane-departure"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">5. Đăng ký nghỉ phép</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 6 -->
+                    <a href="http://nhansu.vietsov.com.vn/login.aspx" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-regular fa-address-card"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">6. Cập nhật thông tin nhân sự</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 7 -->
+                    <a href="https://khaibaoyte.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-notes-medical text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">7. Khai báo y tế ra biển</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 8 -->
+                    <a href="https://ktat.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-laptop-medical text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">8. Kiểm tra AT trên máy tính (TTAT)</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 9 -->
+                    <a href="http://svodka.vsp/Apps/Account/Login.aspx?returnUrl=%2fapps%2fadmin%2fantoan%2fjsa%2fJSA_CheckLists.aspx" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-clipboard-check text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">9. JSA (mạng nội bộ)</h4>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 10A (Nội bộ) -->
+                    <a href="http://svodka.vsp/LichBayMoi.aspx" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-helicopter text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">10.1. Theo dõi lịch bay (Nội bộ)</h4>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 10B (Mạng ngoài) -->
+                    <a href="https://www.vietsov.com.vn/pages/flight.aspx" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-helicopter text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">10.2. Theo dõi lịch bay (Ngoài)</h4>
+                            </div>
+                        </div>
+                    </a>
+
                     <!-- 11 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">11. Link đăng ký khám sức khỏe</h4>
-                            <a href="https://khamsuckhoe.vietsov.com.vn/" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                    <a href="https://khamsuckhoe.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-solid fa-heart-pulse text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">11. Đăng ký khám sức khỏe</h4>
+                            </div>
                         </div>
-                    </div>
+                    </a>
+
                     <!-- 12 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">12. Link cập nhật nhân sự đi biển</h4>
-                            <a href="https://docs.google.com/spreadsheets/d/1HAxY9pCiU_LgeeXsQ80_fCpvoyOfD2MwXXIu4gZrFS8/edit?gid=843793476#gid=843793476" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                    <a href="https://docs.google.com/spreadsheets/d/1HAxY9pCiU_LgeeXsQ80_fCpvoyOfD2MwXXIu4gZrFS8/edit?gid=843793476#gid=843793476" target="_blank" class="block group no-underline h-full">
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i class="fa-regular fa-address-card"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">12. Cập nhật thông tin đi biển</h4>
+								<p class="text-xs text-blue-700 mt-0.5">Hành lý, cân nặng, ...</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
+
                     <!-- 13 -->
-                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                        <i class="fa-solid fa-file-excel text-green-600 text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800">13. Chưa biết cho gì vô</h4>
-                            <a href="###" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-block">Truy cập</a>
+                    <a href="###" target="_blank" class="block group no-underline h-full opacity-50 pointer-events-none">
+                         <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center border border-gray-200 mr-3 flex-shrink-0">
+                                <i class="fa-solid fa-question text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm text-slate-700 uppercase">13. Chưa biết cho gì vô</h4>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
@@ -577,61 +645,57 @@
             <!-- 5. CÁC CÔNG CỤ KHÁC (VỊ TRÍ 5 - ORDER 5) -->
             <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 order-5">
                 
-                <!-- Unit Converter -->
-                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
-                        <i class="fa-solid fa-ruler-combined text-lg"></i>
+                <!-- Pipe Schedule -->
+                <a href="./pipe_size.html" target="_blank" class="block group no-underline h-full">
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-ship"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">Pipe Schedule</h3>
+                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Tra cứu kích thước ống</p>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-800 text-sm">Pipe Schedule Metric</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Tra cứu kích thước ống</p>
-                        <a href="./pipe_size.html" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                            Mở công cụ <i class="fas fa-external-link-alt ml-1"></i>
-                        </a>
-                    </div>
-                </div>
+                </a>
 
-                <!-- Excel NDT -->
-                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-                        <i class="fa-solid fa-circle-radiation text-lg"></i>
+                <!-- RT exposure -->
+                <a href="./rt_calculator.html" target="_blank" class="block group no-underline h-full">
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-ship"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">RT Exposure</h3>
+                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Tính thời gian chụp RT</p>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-800 text-sm">RT Exposure calc</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Tính thời gian chụp RT</p>
-                        <a href="./rt_calculator.html" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                            Mở công cụ <i class="fas fa-external-link-alt ml-1"></i>
-                        </a>
-                    </div>
-                </div>
+                </a>
 
-                <!-- La bàn -->
-                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600">
-                        <i class="fa-solid fa-ship"></i>
+                <!-- VSPEXPRESS -->
+                <a href="https://docs.google.com/spreadsheets/d/1Jw6cGeQIFe4vicqtbxGTJbgX3py-QAxZ/edit?usp=drive_link&ouid=111307509650960561054&rtpof=true&sd=true" target="_blank" class="block group no-underline h-full">
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-ship"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">Form VSP-Express</h3>
+                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Form đi biển bằng tàu VSP-Express / Tàu dịch vụ</p>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-800 text-sm">Form VSP-Express</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Form đi biển bằng tàu VSP-Express / Tàu dịch vụ</p>
-                        <a href="https://docs.google.com/spreadsheets/d/1Jw6cGeQIFe4vicqtbxGTJbgX3py-QAxZ/edit?usp=drive_link&ouid=111307509650960561054&rtpof=true&sd=true" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                            Tải về <i class="fas fa-download ml-1"></i>
-                        </a>
-                    </div>
-                </div>
+                </a>
 
-                <!-- ShareX -->
-                <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-                        <i class="fas fa-camera text-lg"></i>
+                <!-- Quizz Offline Tool -->
+                <a href="https://drive.google.com/file/d/1qvUOMOoabbMIf3wy_an_36wxw0Xc-MBM/view?usp=sharing" target="_blank" class="block group no-underline h-full">
+                    <div class="soft-card bg-white p-3 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-ship"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">Trắc Nghiệm Offline</h3>
+                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Phần mềm học chuyên môn NDT offline trên Windows</p>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-800 text-sm">Trắc Nghiệm NDT Offline</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Phần mềm học chuyên môn NDT offline trên Windows</p>
-                        <a href="https://drive.google.com/file/d/1qvUOMOoabbMIf3wy_an_36wxw0Xc-MBM/view?usp=sharing" target="_blank" class="inline-block mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                            Tải về <i class="fas fa-download ml-1"></i>
-                        </a>
-                    </div>
-                </div>
+                </a>
 
             </div>
         </div>
