@@ -3,52 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phần mềm máy tính - NDT</title>
+    <title>Phần mềm máy tính - NDT Glass</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: "Inter", sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: "Inter", sans-serif; transition: all 0.3s ease; }
         :root {
             --mau-nen: #f4f7f6;
-            --mau-card: #ffffff;
             --mau-chinh: #005a9c;
-            --mau-chu: #333;
         }
         
-        /* --- DARK MODE DESIGN (MIDNIGHT THEME) --- */
-        body.dark-mode {
-            background-color: #0f172a; /* Nền xanh than đậm */
-            color: #e2e8f0;
-            --mau-chinh: #38bdf8;
-        }
-
-        body.dark-mode .bg-white, 
-        body.dark-mode .soft-card {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-
-        /* Màu chữ */
-        body.dark-mode .text-gray-800 { color: #f1f5f9 !important; }
-        body.dark-mode .text-gray-600, 
-        body.dark-mode .text-gray-500,
-        body.dark-mode .text-slate-500 { color: #94a3b8 !important; }
-        
-        body.dark-mode .text-blue-900 { color: #e0f2fe !important; }
-        body.dark-mode .text-blue-700 { color: #bae6fd !important; }
-        
-        /* Nền Icon & Tag */
-        body.dark-mode .bg-blue-50 { background-color: #172554 !important; }
-        body.dark-mode .bg-purple-100 { background-color: #581c87 !important; }
-        body.dark-mode .bg-gray-100 { background-color: #334155 !important; }
-        body.dark-mode .text-gray-600.text-xs { color: #cbd5e1 !important; } /* Text trong tag */
-        
-        body.dark-mode .border-blue-200 { border-color: #1e40af !important; }
-        body.dark-mode .hover\:bg-gray-50:hover { background-color: #334155 !important; }
-        body.dark-mode .hover\:bg-blue-100:hover { background-color: #1e3a8a !important; }
-        
-        /* Light Mode Default */
+        /* --- LIGHT MODE --- */
         .soft-card {
             background: white;
             border: 1px solid #e5e7eb;
@@ -59,6 +25,72 @@
             border-color: var(--mau-chinh);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
+        /* --- DARK MODE: GLASSMORPHISM & AURORA --- */
+        body.dark-mode {
+            background: radial-gradient(circle at 50% -20%, #1e3a8a 0%, #020617 50%, #000000 100%) !important;
+            background-attachment: fixed;
+            color: #e2e8f0;
+            --mau-chinh: #38bdf8;
+        }
+
+        /* Glass Cards */
+        body.dark-mode .bg-white, 
+        body.dark-mode .soft-card {
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Hover Effect in Dark Mode */
+        body.dark-mode .soft-card:hover {
+            border-color: rgba(168, 85, 247, 0.5) !important; /* Viền tím sáng */
+            background-color: rgba(30, 41, 59, 0.7) !important;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        /* Typography & Colors in Dark Mode */
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
+            color: #f1f5f9 !important;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        body.dark-mode .text-gray-800 { color: #f1f5f9 !important; }
+        body.dark-mode .text-gray-600, 
+        body.dark-mode .text-gray-500,
+        body.dark-mode .text-slate-500 { color: #94a3b8 !important; }
+        
+        body.dark-mode .text-blue-900 { color: #e0f2fe !important; }
+        body.dark-mode .text-blue-700 { color: #bae6fd !important; }
+        
+        /* Icon & Tag Backgrounds */
+        body.dark-mode .bg-blue-50 { background-color: rgba(30, 58, 138, 0.3) !important; }
+        body.dark-mode .bg-purple-100 { background-color: rgba(88, 28, 135, 0.3) !important; box-shadow: 0 0 10px rgba(147, 51, 234, 0.1); }
+        body.dark-mode .text-purple-600 { color: #c084fc !important; text-shadow: 0 0 5px rgba(192, 132, 252, 0.4); }
+        
+        body.dark-mode .bg-gray-100 { 
+            background-color: rgba(255, 255, 255, 0.1) !important; 
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .text-gray-600.text-xs { color: #e2e8f0 !important; } 
+        
+        body.dark-mode .border-blue-200 { border-color: rgba(255,255,255,0.1) !important; }
+        body.dark-mode .hover\:bg-gray-50:hover { background-color: rgba(255,255,255,0.05) !important; }
+        body.dark-mode .hover\:bg-blue-100:hover { background-color: rgba(59, 130, 246, 0.1) !important; }
+
+        /* Home Button */
+        body.dark-mode #home-nav a {
+            background-color: rgba(30, 41, 59, 0.6) !important;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+        body.dark-mode #home-nav a:hover {
+            background-color: rgba(168, 85, 247, 0.2) !important;
+            border-color: #a855f7;
+        }
+        
         .rotate-180 { transform: rotate(180deg); }
         
         /* Nút Dark Mode */
@@ -67,7 +99,7 @@
             top: 20px;
             right: 20px;
             z-index: 50;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border: 1px solid #e2e8f0;
             border-radius: 50%;
             width: 40px;
@@ -80,24 +112,27 @@
             transition: all 0.3s;
         }
         body.dark-mode .theme-toggle {
-            background: #1e293b;
-            border-color: #475569;
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
             color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
         }
         .theme-toggle:hover { transform: scale(1.1); }
     </style>
 </head>
-<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-6 flex flex-col">
+<!-- MẶC ĐỊNH DARK MODE -->
+<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-6 flex flex-col dark-mode">
 
     <!-- Dark Mode Toggle -->
     <button id="theme-toggle" class="theme-toggle" title="Chuyển chế độ Sáng/Tối">
-        <i class="fas fa-moon text-lg text-slate-600" id="theme-icon"></i>
+        <i class="fas fa-sun text-lg text-slate-600" id="theme-icon"></i>
     </button>
 
     <div class="max-w-3xl mx-auto flex-grow w-full">
         <!-- THANH ĐIỀU HƯỚNG -->
         <div id="home-nav" class="max-w-4xl mx-auto mb-6">
-            <a href="./index.html" class="inline-flex items-center px-4 py-2 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 text-sm">
+            <a href="./index.html" class="inline-flex items-center px-4 py-2 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline text-sm">
                 <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-300"></i>
                 <span class="font-semibold">Quay về trang chủ</span>
             </a>
@@ -105,28 +140,28 @@
 
         <!-- TIÊU ĐỀ -->
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-[var(--mau-chinh)]">Phần Mềm & Tiện Ích</h1>
-            <p class="text-gray-600 mt-1 text-sm">Tool cài đặt hệ thống và ứng dụng văn phòng</p>
+            <h1 class="text-2xl font-bold text-[var(--mau-chinh)] drop-shadow-sm">Phần Mềm & Tiện Ích</h1>
+            <p class="text-gray-600 mt-1 text-sm opacity-90">Tool cài đặt hệ thống và ứng dụng văn phòng</p>
         </div>
 
         <!-- DANH SÁCH -->
         <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
 
-            <!-- ITEM DUY NHẤT: TOOL CÀI WINDOWS -->
-            <div class="soft-card bg-white p-5 rounded-xl flex flex-col md:flex-row items-center md:items-start gap-5 shadow-md border-l-4 border-l-purple-600"> <!-- Giảm padding từ p-6 -> p-5, gap-6 -> gap-5 -->
-                <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600"> <!-- Giảm icon từ w-20 h-20 -> w-16 h-16 -->
-                    <i class="fab fa-windows text-3xl"></i> <!-- Text icon nhỏ lại -->
+            <!-- ITEM 1: TOOL CÀI WINDOWS -->
+            <div class="soft-card bg-white p-5 rounded-xl flex flex-col md:flex-row items-center md:items-start gap-5 shadow-md border-l-4 border-l-purple-600">
+                <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
+                    <i class="fab fa-windows text-3xl"></i>
                 </div>
                 <div class="flex-1 text-center md:text-left">
-                    <h3 class="font-bold text-gray-800 text-lg">Tiện ích cài Windows - Office - Apps</h3> <!-- Text title nhỏ lại text-xl -> text-lg -->
-                    <p class="text-gray-500 mt-1.5 leading-relaxed text-sm"> <!-- Text desc nhỏ lại -->
+                    <h3 class="font-bold text-gray-800 text-lg">Tiện ích cài Windows - Office - Apps</h3>
+                    <p class="text-gray-500 mt-1.5 leading-relaxed text-sm">
                         Bộ công cụ AIO hỗ trợ cài đặt lại hệ điều hành Windows, kích hoạt bản quyền, cài đặt bộ Office văn phòng và các phần mềm thiết yếu khác chỉ với 1 click.
                     </p>
                     
                     <div class="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
-                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium dark:bg-gray-700 dark:text-gray-300">Windows 10/11</span>
-                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium dark:bg-gray-700 dark:text-gray-300">Office 365</span>
-                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium dark:bg-gray-700 dark:text-gray-300">Auto Driver</span>
+                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium">Windows 10/11</span>
+                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium">Office 365</span>
+                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium">Auto Driver</span>
                     </div>
 
                     <div class="mt-5">
@@ -136,29 +171,30 @@
                     </div>
                 </div>
             </div>
+            
             <!-- ITEM 2: KHO ISO WINDOWS -->
-            <div class="soft-card bg-white p-5 rounded-xl flex flex-col md:flex-row items-center md:items-start gap-5 shadow-md border-l-4 border-l-purple-600"> <!-- Giảm padding từ p-6 -> p-5, gap-6 -> gap-5 -->
-                <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600"> <!-- Giảm icon từ w-20 h-20 -> w-16 h-16 -->
-                    <i class="fab fa-windows text-3xl"></i> <!-- Text icon nhỏ lại -->
+            <div class="soft-card bg-white p-5 rounded-xl flex flex-col md:flex-row items-center md:items-start gap-5 shadow-md border-l-4 border-l-purple-600">
+                <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 text-purple-600">
+                    <i class="fab fa-windows text-3xl"></i>
                 </div>
                 <div class="flex-1 text-center md:text-left">
-                    <h3 class="font-bold text-gray-800 text-lg">Kho ISO Windows</h3> <!-- Text title nhỏ lại text-xl -> text-lg -->
-                    <p class="text-gray-500 mt-1.5 leading-relaxed text-sm"> <!-- Text desc nhỏ lại -->
+                    <h3 class="font-bold text-gray-800 text-lg">Kho ISO Windows</h3>
+                    <p class="text-gray-500 mt-1.5 leading-relaxed text-sm">
                         Tổng hợp các bộ cài ISO Windows.
                     </p>
                     
                     <div class="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
-                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium dark:bg-gray-700 dark:text-gray-300">Windows 7/10/11</span>
-                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium dark:bg-gray-700 dark:text-gray-300">Stock</span>
-                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium dark:bg-gray-700 dark:text-gray-300">Auto Driver</span>
+                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium">Windows 7/10/11</span>
+                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium">Stock</span>
+                         <span class="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-[11px] rounded-full font-medium">Auto Driver</span>
                     </div>
 
                     <div class="mt-5">
-                        <a href="https://drive.google.com/file/d/19vnAfUBM2r63jYVsJhMMpKSVP7PwjvTG/view?usp=drive_link" target="_blank" class="inline-flex items-center px-5 py-2.5 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 transition-all transform hover:-translate-y-1 text-sm">
-                            <i class="fas fa-download mr-2"></i> Win-10-Pro-22H2-FS-64-v23.1
+                        <a href="https://drive.google.com/file/d/19vnAfUBM2r63jYVsJhMMpKSVP7PwjvTG/view?usp=drive_link" target="_blank" class="inline-flex items-center px-5 py-2.5 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 transition-all transform hover:-translate-y-1 text-sm mb-2 sm:mb-0 sm:mr-2">
+                            <i class="fas fa-download mr-2"></i> Win-10-Pro-22H2-FS-64
                         </a>
                         <a href="https://drive.google.com/file/d/1ZZaye4sO-qdhABZif8Wwa3PSBoy5ayu3/view?usp=sharing" target="_blank" class="inline-flex items-center px-5 py-2.5 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 transition-all transform hover:-translate-y-1 text-sm">
-                            <i class="fas fa-download mr-2"></i> Win-10-Pro-22H2-NS-64-v23.1
+                            <i class="fas fa-download mr-2"></i> Win-10-Pro-22H2-NS-64
                         </a>
                     </div>
                 </div>
@@ -173,15 +209,17 @@
     </footer>
 
     <script>
-        // Dark Mode logic
         const toggleBtn = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const body = document.body;
 
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
+        // Mặc định Dark Mode
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.remove('dark-mode');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        } else {
+            localStorage.setItem('theme', 'dark');
         }
 
         toggleBtn.addEventListener('click', () => {
