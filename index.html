@@ -6,81 +6,101 @@
     <title>Cổng thông tin NDT</title>
     
     <!-- === CẤU HÌNH LOGO KHI LƯU VỀ MÀN HÌNH CHÍNH (QUAN TRỌNG) === -->
-    <!-- Icon cho trình duyệt (Favicon) -->
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="shortcut icon" href="logo.png" type="image/png">
-    
-    <!-- Icon cho iPhone/iPad (Add to Home Screen) -->
     <link rel="apple-touch-icon" href="logo.png">
-    
-    <!-- Biến web thành giao diện giống App (ẩn thanh địa chỉ khi mở từ Home Screen) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NDT Portal">
-    <!-- ============================================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f0f4f8; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f0f4f8; transition: all 0.3s ease; }
+        
+        /* Light Mode Default Hover */
         .hover-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
+        
         /* Hiệu ứng chấm xanh nhấp nháy */
-        .live-dot {
-            animation: pulse-green 2s infinite;
-        }
+        .live-dot { animation: pulse-green 2s infinite; }
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
 
-        /* --- DARK MODE STYLES --- */
+        /* --- DARK MODE: GLASSMORPHISM & AURORA STYLE --- */
         body.dark-mode {
-            background-color: #111827; /* Dark bg */
+            background: radial-gradient(circle at 50% -20%, #1e3a8a 0%, #020617 50%, #000000 100%) !important;
+            background-attachment: fixed;
             color: #f3f4f6;
         }
+
+        /* Header Glass */
         body.dark-mode header {
-            background-color: #1f2937; /* Dark header */
-            border-bottom: 1px solid #374151;
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
+
+        /* Card Glass Effect */
         body.dark-mode .bg-white {
-            background-color: #1f2937; /* Dark cards */
-            border-color: #374151;
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
+
+        /* Card Hover in Dark Mode */
+        body.dark-mode .hover-card:hover {
+            border-color: rgba(56, 189, 248, 0.5) !important;
+            background-color: rgba(30, 41, 59, 0.7) !important;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        /* Typography Neon Style */
         body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
-            color: #f9fafb;
+            color: #f1f5f9 !important;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         body.dark-mode p, body.dark-mode .text-slate-500, body.dark-mode .text-slate-600, body.dark-mode .text-slate-800 {
-            color: #9ca3af;
+            color: #94a3b8 !important;
         }
-        body.dark-mode .bg-slate-50 {
-            background-color: #374151; /* Button bg in dark */
-            color: #e5e7eb;
-        }
-        /* Điều chỉnh màu icon trong card khi dark mode */
-        body.dark-mode .bg-blue-100 { background-color: #1e3a8a; }
-        body.dark-mode .bg-amber-100 { background-color: #78350f; }
-        body.dark-mode .bg-purple-100 { background-color: #581c87; }
-        
-        body.dark-mode .text-blue-600 { color: #60a5fa; }
-        body.dark-mode .text-amber-600 { color: #fbbf24; }
-        body.dark-mode .text-purple-600 { color: #c084fc; }
 
-        /* Nút Dark Mode */
+        /* Buttons inside Cards */
+        body.dark-mode .bg-slate-50 {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .group:hover .bg-slate-50 {
+            background-color: rgba(56, 189, 248, 0.2) !important;
+            color: #38bdf8 !important;
+        }
+
+        /* Icon Backgrounds */
+        body.dark-mode .bg-blue-100 { background-color: rgba(59, 130, 246, 0.2) !important; box-shadow: 0 0 10px rgba(59, 130, 246, 0.1); }
+        body.dark-mode .bg-amber-100 { background-color: rgba(245, 158, 11, 0.2) !important; box-shadow: 0 0 10px rgba(245, 158, 11, 0.1); }
+        body.dark-mode .bg-purple-100 { background-color: rgba(168, 85, 247, 0.2) !important; box-shadow: 0 0 10px rgba(168, 85, 247, 0.1); }
+        
+        /* Icon Text Colors */
+        body.dark-mode .text-blue-600 { color: #60a5fa !important; text-shadow: 0 0 8px rgba(96, 165, 250, 0.4); }
+        body.dark-mode .text-amber-600 { color: #fbbf24 !important; text-shadow: 0 0 8px rgba(251, 191, 36, 0.4); }
+        body.dark-mode .text-purple-600 { color: #c084fc !important; text-shadow: 0 0 8px rgba(192, 132, 252, 0.4); }
+
+        /* Theme Toggle Button */
         .theme-toggle {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 50;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border: 1px solid #e2e8f0;
             border-radius: 50%;
             width: 45px;
@@ -93,27 +113,27 @@
             transition: all 0.3s;
         }
         body.dark-mode .theme-toggle {
-            background: #374151;
-            border-color: #4b5563;
-            color: #fbbf24; /* Vàng cho mặt trăng/mặt trời */
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
         }
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
+        .theme-toggle:hover { transform: scale(1.1); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<!-- THÊM CLASS dark-mode VÀO BODY ĐỂ MẶC ĐỊNH LÀ TỐI -->
+<body class="min-h-screen flex flex-col dark-mode">
 
-    <!-- Nút chuyển Dark Mode -->
+    <!-- Nút chuyển Dark Mode - Mặc định icon Mặt trời (vì đang tối) -->
     <button id="theme-toggle" class="theme-toggle" title="Chuyển chế độ Sáng/Tối">
-        <i class="fas fa-moon text-xl text-slate-600" id="theme-icon"></i>
+        <i class="fas fa-sun text-xl text-slate-600" id="theme-icon"></i>
     </button>
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm py-4 transition-colors duration-300">
+    <header class="bg-white shadow-sm py-4 transition-colors duration-300 sticky top-0 z-40">
         <div class="container mx-auto px-4 flex justify-center relative">
             <div class="flex items-center gap-3">
-                <img src="logo.png" alt="Vietsovpetro" class="h-12 w-auto" onerror="this.style.display='none'">
+                <img src="logo.png" alt="Vietsovpetro" class="h-12 w-auto drop-shadow-sm" onerror="this.style.display='none'">
                 <div class="text-center md:text-left">
                     <h1 class="text-xl font-bold text-slate-800">NDT - Ban Chánh Hàn</h1>
                     <p class="text-xs text-slate-500">Cổng thông tin nội bộ</p>
@@ -122,63 +142,61 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow flex flex-col items-center justify-center p-6 gap-8">
+    <main class="flex-grow flex flex-col items-center justify-center p-6 gap-8 relative z-10">
         
-        <!-- Grid 3 cột (md:grid-cols-3) để các ô nhỏ hơn -->
         <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <!-- Card 1: Ôn tập trắc nghiệm -->
+            <!-- Card 1 -->
             <a href="tracnghiem.html" class="block group">
                 <div class="bg-white rounded-2xl p-6 h-full border border-slate-100 shadow-lg hover-card transition-all duration-300 flex flex-col items-center text-center cursor-pointer">
-                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors duration-300 shadow-inner">
                         <i class="fa-solid fa-pen-to-square text-2xl text-blue-600 group-hover:text-white transition-colors duration-300"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600">Ôn tập trắc nghiệm</h2>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">Ôn tập trắc nghiệm</h2>
                     <p class="text-sm text-slate-500 mb-4">Ngân hàng câu hỏi, ôn tập và làm bài thi thử các môn An toàn, MT, PT, UT, RT...</p>
-                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-700">
+                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-700 transition-all">
                         Bắt đầu &rarr;
                     </div>
                 </div>
             </a>
 
-            <!-- Card 2: Thư viện / Công cụ -->
+            <!-- Card 2 -->
             <a href="tools.html" class="block group">
                 <div class="bg-white rounded-2xl p-6 h-full border border-slate-100 shadow-lg hover-card transition-all duration-300 flex flex-col items-center text-center cursor-pointer">
-                    <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-4 group-hover:bg-amber-500 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-4 group-hover:bg-amber-500 transition-colors duration-300 shadow-inner">
                         <i class="fa-solid fa-toolbox text-2xl text-amber-600 group-hover:text-white transition-colors duration-300"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-amber-600">Thư viện NDT</h2>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-amber-600 transition-colors">Thư viện NDT</h2>
                     <p class="text-sm text-slate-500 mb-4">Công cụ tính toán, biểu mẫu, quy trình, tài liệu tham khảo và các link tiện ích.</p>
-                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-amber-50 group-hover:text-amber-700">
+                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-amber-50 group-hover:text-amber-700 transition-all">
                         Khám phá ngay &rarr;
                     </div>
                 </div>
             </a>
 
-            <!-- Card 3: Phần mềm máy tính (MỚI) -->
+            <!-- Card 3 -->
             <a href="software.html" class="block group">
                 <div class="bg-white rounded-2xl p-6 h-full border border-slate-100 shadow-lg hover-card transition-all duration-300 flex flex-col items-center text-center cursor-pointer">
-                    <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors duration-300 shadow-inner">
                         <i class="fa-brands fa-windows text-2xl text-purple-600 group-hover:text-white transition-colors duration-300"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-purple-600">Phần mềm máy tính</h2>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-purple-600 transition-colors">Phần mềm máy tính</h2>
                     <p class="text-sm text-slate-500 mb-4">Kho phần mềm chuyên ngành, tiện ích cài đặt máy tính, driver và tools hỗ trợ.</p>
-                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-purple-50 group-hover:text-purple-700">
+                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-purple-50 group-hover:text-purple-700 transition-all">
                         Truy cập &rarr;
                     </div>
                 </div>
             </a>
 			
-			<!-- Card 4: Ôn tập trắc nghiệm ver2 -->
+			<!-- Card 4 -->
             <a href="quiz_ver2.html" class="block group">
                 <div class="bg-white rounded-2xl p-6 h-full border border-slate-100 shadow-lg hover-card transition-all duration-300 flex flex-col items-center text-center cursor-pointer">
-                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors duration-300 shadow-inner">
                         <i class="fa-solid fa-pen-to-square text-2xl text-blue-600 group-hover:text-white transition-colors duration-300"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600">Trắc nghiệm version 2.0</h2>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">Trắc nghiệm version 2.0</h2>
                     <p class="text-sm text-slate-500 mb-4">Giao diện mới đẹp mắt cho Ôn tập trắc nghiệm NDT</p>
-                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-700">
+                    <div class="mt-auto px-5 py-2 bg-slate-50 rounded-full text-xs font-medium text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-700 transition-all">
                         Bắt đầu &rarr;
                     </div>
                 </div>
@@ -186,11 +204,9 @@
         </div>
     </main>
 
-    <!-- Footer & Counter -->
-    <footer class="pb-6 text-center mt-auto">
-        <!-- Bộ đếm Mini -->
+    <footer class="pb-6 text-center mt-auto relative z-10">
         <div class="mb-3 flex justify-center">
-            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-xs text-slate-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-xs text-slate-500 dark:bg-slate-800/50 dark:border-slate-700 dark:text-gray-400 backdrop-blur-sm">
                 <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
                 <span>Lượt truy cập:</span>
                 <span id="visitor-count" class="font-bold text-slate-700 dark:text-gray-300 text-sm tabular-nums">...</span>
@@ -203,17 +219,20 @@
         </div>
     </footer>
 
-    <!-- SCRIPT XỬ LÝ DARK MODE -->
     <script>
         const toggleBtn = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const body = document.body;
 
-        // Kiểm tra localStorage
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
+        // --- LOGIC MỚI: MẶC ĐỊNH LÀ DARK ---
+        // Kiểm tra nếu localStorage là 'light' thì mới chuyển về sáng
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.remove('dark-mode');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        } else {
+            // Ngược lại (null hoặc dark) thì giữ nguyên dark-mode (đã có trong HTML)
+            localStorage.setItem('theme', 'dark');
         }
 
         toggleBtn.addEventListener('click', () => {
@@ -230,31 +249,14 @@
             }
         });
 
-        // --- CODE CHẶN CLICK CHUỘT PHẢI VÀ F12 ---
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
         document.onkeydown = function(e) {
-            if (event.keyCode == 123) { // F12
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
-                return false;
-            }
-            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
-                return false;
-            }
+            if (event.keyCode == 123) return false;
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
         }
     </script>
 
-    <!-- Script xử lý đếm số (Giữ nguyên logic của bạn) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -271,13 +273,7 @@
         };
         
         let app, auth, db;
-        try {
-            app = initializeApp(userFirebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch (e) {
-            console.error("Firebase Error:", e);
-        }
+        try { app = initializeApp(userFirebaseConfig); auth = getAuth(app); db = getFirestore(app); } catch (e) { console.error("Firebase Error:", e); }
 
         const STATS_COLLECTION = `site_stats`;
         const VISITOR_DOC_ID = 'visitors_v2'; 
@@ -289,16 +285,14 @@
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('vi-VN');
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
+                if (progress < 1) { window.requestAnimationFrame(step); }
             };
             window.requestAnimationFrame(step);
         }
 
         const initCounter = async () => {
             if (!auth || !db) return;
-            try { await signInAnonymously(auth); } catch (err) { console.error(err); return; }
+            try { await signInAnonymously(auth); } catch (err) { return; }
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -316,11 +310,8 @@
                                 const newVal = doc.data().count;
                                 const currentText = counterElement.innerText.replace(/\./g, '').replace(/,/g, '');
                                 const currentVal = parseInt(currentText) || 0;
-                                if (!isNaN(currentVal) && currentVal > 0) {
-                                    animateValue(counterElement, currentVal, newVal, 1500);
-                                } else {
-                                    counterElement.innerText = newVal.toLocaleString('vi-VN');
-                                }
+                                if (!isNaN(currentVal) && currentVal > 0) { animateValue(counterElement, currentVal, newVal, 1500); } 
+                                else { counterElement.innerText = newVal.toLocaleString('vi-VN'); }
                             }
                         });
                     } catch (error) {}
@@ -329,6 +320,5 @@
         };
         initCounter();
     </script>
-
 </body>
 </html>
