@@ -20,6 +20,39 @@
         .btn-secondary { background-color: #e2e8f0; color: #1e293b; }
         .btn-secondary:hover { background-color: #cbd5e1; }
 
+        /* --- HEADER MỚI CHO MOBILE FIX --- */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            position: sticky; /* Giữ thanh này dính ở trên cùng */
+            top: 0;
+            z-index: 40;
+            padding: 10px 0;
+            /* Hiệu ứng mờ nền để nội dung trượt bên dưới trông đẹp mắt */
+            background-color: rgba(240, 244, 248, 0.85); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            /* Mở rộng margin âm để header phủ kín chiều ngang trong container có padding */
+            margin-left: -1rem; 
+            margin-right: -1rem; 
+            padding-left: 1rem; 
+            padding-right: 1rem;
+        }
+
+        .theme-toggle-btn {
+            /* Style mới: Không còn position fixed */
+            background: rgba(255, 255, 255, 0.9); 
+            border: 1px solid #e2e8f0;
+            border-radius: 50%; 
+            width: 40px; height: 40px; /* Kích thước gọn hơn */
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            transition: all 0.3s;
+        }
+
         /* --- STYLES CŨ (Legacy) --- */
         .legacy-body { font-family: Arial, sans-serif; background-color: #d7e6f7; }
         .legacy-body #app { padding: 0 10px; }
@@ -85,6 +118,12 @@
             background: radial-gradient(circle at 50% -20%, #1e3a8a 0%, #020617 50%, #000000 100%) !important;
             background-attachment: fixed;
             color: #e2e8f0;
+        }
+
+        /* Header trong suốt cho Dark Mode */
+        body.dark-mode .app-header {
+            background-color: rgba(15, 23, 42, 0.8); /* Nền tối mờ */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         /* Glass Cards */
@@ -184,7 +223,7 @@
         body.dark-mode .legacy-question-nav-item.current { background-color: rgba(255,255,255,0.2) !important; color: #fff !important; border-color: white !important; }
         body.dark-mode .legacy-question-list-container { border-top-color: rgba(255,255,255,0.2) !important; }
 
-        /* Home Nav Button */
+        /* Home Nav Button Styles in Dark Mode */
         body.dark-mode #home-nav a {
             background-color: rgba(30, 41, 59, 0.6) !important;
             backdrop-filter: blur(5px);
@@ -196,6 +235,14 @@
             border-color: #38bdf8;
         }
 
+        /* Toggle Button Styles in Dark Mode */
+        body.dark-mode .theme-toggle-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+
         /* Footer */
         body.dark-mode footer {
             background-color: rgba(15, 23, 42, 0.6) !important;
@@ -204,22 +251,6 @@
         body.dark-mode footer p, body.dark-mode footer span { color: #94a3b8 !important; }
         body.dark-mode footer .bg-white { background-color: rgba(255, 255, 255, 0.05) !important; border-color: rgba(255, 255, 255, 0.1) !important; }
 
-        /* Theme Toggle */
-        .theme-toggle {
-            position: fixed; top: 20px; right: 20px; z-index: 50;
-            background: rgba(255, 255, 255, 0.9); border: 1px solid #e2e8f0;
-            border-radius: 50%; width: 45px; height: 45px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: all 0.3s;
-        }
-        body.dark-mode .theme-toggle {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            color: #fbbf24;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-        }
-        .theme-toggle:hover { transform: scale(1.1); }
         .live-dot { animation: pulse-green 2s infinite; }
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
@@ -250,23 +281,28 @@
 <!-- MẶC ĐỊNH DARK MODE -->
 <body class="antialiased text-slate-800 flex flex-col min-h-screen dark-mode">
 
-    <button id="theme-toggle" class="theme-toggle" title="Chuyển chế độ Sáng/Tối">
-        <i class="fas fa-sun text-xl text-slate-600" id="theme-icon"></i>
-    </button>
-
     <div id="app" class="p-4 sm:p-6 md:p-8 flex-grow">
         
-        <!-- NÚT QUAY VỀ TRANG CHỦ -->
-        <div id="home-nav" class="max-w-4xl mx-auto mb-6">
-            <a href="./index.html" class="inline-flex items-center px-5 py-2.5 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline">
-                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-300 text-lg"></i>
-                <span class="font-semibold">Quay về trang chủ</span>
-            </a>
+        <!-- THANH HEADER CỐ ĐỊNH (STICKY) -->
+        <!-- Chứa cả nút Quay về và nút Theme Toggle -->
+        <div class="app-header">
+            <!-- Bên trái: Nút Quay về (id cũ #home-nav) -->
+            <div id="home-nav">
+                <a href="./index.html" class="inline-flex items-center px-4 py-2 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline text-sm">
+                    <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-300"></i>
+                    <span class="font-semibold">Quay về</span>
+                </a>
+            </div>
+
+            <!-- Bên phải: Nút Theme Toggle -->
+            <button id="theme-toggle" class="theme-toggle-btn" title="Chuyển chế độ Sáng/Tối">
+                <i class="fas fa-sun text-lg text-slate-600" id="theme-icon"></i>
+            </button>
         </div>
 
         <!-- MÀN HÌNH Đăng nhập -->
         <div id="login-screen" class="max-w-4xl mx-auto hidden">
-             <table align="center" class="quiz-card" style="margin-top: 40px; width: 100%; max-width: 600px; border: none; overflow: hidden;">
+             <table align="center" class="quiz-card" style="margin-top: 20px; width: 100%; max-width: 600px; border: none; overflow: hidden;">
                  <tr style="background-color: rgba(0,0,0,0.05);">
                     <td style="font-weight: bold; padding: 15px; font-family: Arial, sans-serif; text-align: center; font-size: 1.2rem;">Thông tin thí sinh</td>
                 </tr>
@@ -296,7 +332,7 @@
         
         <!-- Màn hình chọn môn học -->
         <div id="selector-screen" class="max-w-4xl mx-auto">
-            <div class="flex justify-center mt-10">
+            <div class="flex justify-center mt-4">
                 <div class="w-full max-w-2xl">
                     <div id="subject-list" class="flex flex-col items-center gap-4"></div>
                     <div id="admin-button-container" class="mt-6 w-full max-w-[400px] mx-auto"></div>
@@ -533,7 +569,15 @@
                 document.body.classList.toggle('legacy-body', isLegacy);
                 ['login', 'selector', 'quiz', 'admin'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
                 $(`#${screenName}-screen`).classList.remove('hidden');
-                const homeNav = $('#home-nav'); if(homeNav) { if (screenName === 'quiz') homeNav.classList.add('hidden'); else homeNav.classList.remove('hidden'); }
+                // LOGIC SỬA ĐỔI: ẨN nút home-nav khi đang ở quiz (vì đã có Header sticky), HIỆN khi ở màn hình khác
+                // Tuy nhiên, vì giờ ta đã đưa home-nav vào Header sticky luôn hiển thị, nên không cần ẩn nữa.
+                // Ngoại trừ việc khi đang thi (quiz), ta có thể muốn người dùng tập trung.
+                // Nhưng yêu cầu là "tránh che khuất", nên để header sticky là ổn nhất.
+                const homeNav = $('#home-nav'); 
+                /* NẾU MUỐN ẨN NÚT BACK KHI ĐANG THI:
+                   if(homeNav) { if (screenName === 'quiz') homeNav.classList.add('invisible'); else homeNav.classList.remove('invisible'); }
+                   NHƯNG ĐỂ TRÁNH PHỨC TẠP, CỨ ĐỂ NÓ HIỆN.
+                */
                 if (screenName === 'selector') this.checkAdminAndShowButton();
             },
             async checkAdminAndShowButton() {
