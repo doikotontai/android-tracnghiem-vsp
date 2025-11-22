@@ -26,30 +26,27 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
-            position: sticky; /* Giữ thanh này dính ở trên cùng */
+            position: sticky;
             top: 0;
             z-index: 40;
-            padding: 10px 0;
-            /* Hiệu ứng mờ nền để nội dung trượt bên dưới trông đẹp mắt */
-            background-color: rgba(240, 244, 248, 0.85); 
+            padding: 10px 15px;
+            border-radius: 0 0 12px 12px;
+            background-color: rgba(240, 244, 248, 0.9); 
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            /* Mở rộng margin âm để header phủ kín chiều ngang trong container có padding */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             margin-left: -1rem; 
             margin-right: -1rem; 
-            padding-left: 1rem; 
-            padding-right: 1rem;
         }
 
         .theme-toggle-btn {
-            /* Style mới: Không còn position fixed */
             background: rgba(255, 255, 255, 0.9); 
             border: 1px solid #e2e8f0;
             border-radius: 50%; 
-            width: 40px; height: 40px; /* Kích thước gọn hơn */
+            width: 40px; height: 40px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
             transition: all 0.3s;
         }
 
@@ -113,9 +110,22 @@
         .admin-delete-btn { background-color: #dc2626; color: white; padding: 4px 8px; border-radius: 4px; border: none; font-size: 12px; cursor: pointer; }
         .admin-delete-btn:hover { background-color: #b91c1c; }
 
-        /* --- DARK MODE GLASSMORPHISM STYLES (NEW) --- */
+        /* --- DARK MODE STYLES (3 NGUỒN SÁNG RÕ RỆT) --- */
         body.dark-mode {
-            background: radial-gradient(circle at 50% -20%, #1e3a8a 0%, #020617 50%, #000000 100%) !important;
+            background-color: #020617; /* Nền gốc tối (Slate 950) */
+            background-image: 
+                /* 1. NGUỒN SÁNG TRÁI (Deep Blue) */
+                radial-gradient(circle at 0% 30%, rgba(29, 78, 216, 0.5) 0%, transparent 50%),
+                
+                /* 2. NGUỒN SÁNG PHẢI (Deep Blue) */
+                radial-gradient(circle at 100% 30%, rgba(30, 58, 138, 0.5) 0%, transparent 50%),
+
+                /* 3. NGUỒN SÁNG GIỮA (Sky Blue - Chính giữa khung) */
+                radial-gradient(circle at 50% 55%, rgba(14, 165, 233, 0.25) 0%, transparent 50%),
+                
+                /* Ambient Fills (Nền phụ) */
+                radial-gradient(circle at 50% -20%, #172554 0%, transparent 70%), /* Đỉnh */
+                radial-gradient(circle at 50% 100%, #0f172a 0%, transparent 60%); /* Đáy */
             background-attachment: fixed;
             color: #e2e8f0;
         }
@@ -139,10 +149,13 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        /* Override Legacy Backgrounds */
+        /* Override Legacy Backgrounds cho Khung Câu Hỏi */
         body.dark-mode .legacy-body,
         body.dark-mode .legacy-quiz-layout {
-            background-color: transparent !important; /* Để nhìn thấy nền gradient */
+            /* Tạo một nền mờ rất nhẹ và bóng sáng bao quanh khung câu hỏi */
+            background-color: rgba(15, 23, 42, 0.2) !important; 
+            box-shadow: 0 0 60px -15px rgba(56, 189, 248, 0.15) !important; /* Hiệu ứng phát sáng nhẹ xung quanh */
+            backdrop-filter: blur(2px);
         }
 
         /* Subject Items Dark Mode */
@@ -440,10 +453,10 @@
     
     <footer id="app-footer" class="text-center p-6 mt-auto border-t border-slate-200 bg-white shadow-inner">
         <div class="mb-3 flex justify-center">
-            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-xs text-slate-500">
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-xs text-slate-500 dark:bg-slate-800/50 dark:border-slate-700 dark:text-gray-400 backdrop-blur-sm">
                 <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
                 <span>Lượt truy cập:</span>
-                <span id="visitor-count" class="font-bold text-slate-700 text-sm tabular-nums">...</span>
+                <span id="visitor-count" class="font-bold text-slate-700 dark:text-gray-300 text-sm tabular-nums">...</span>
             </div>
         </div>
         <p class="text-slate-600">&copy; 2025 BCH-XNXL. Tạo bởi Phong Lưu.</p>
@@ -569,10 +582,6 @@
                 document.body.classList.toggle('legacy-body', isLegacy);
                 ['login', 'selector', 'quiz', 'admin'].forEach(name => $(`#${name}-screen`).classList.add('hidden'));
                 $(`#${screenName}-screen`).classList.remove('hidden');
-                // LOGIC SỬA ĐỔI: ẨN nút home-nav khi đang ở quiz (vì đã có Header sticky), HIỆN khi ở màn hình khác
-                // Tuy nhiên, vì giờ ta đã đưa home-nav vào Header sticky luôn hiển thị, nên không cần ẩn nữa.
-                // Ngoại trừ việc khi đang thi (quiz), ta có thể muốn người dùng tập trung.
-                // Nhưng yêu cầu là "tránh che khuất", nên để header sticky là ổn nhất.
                 const homeNav = $('#home-nav'); 
                 /* NẾU MUỐN ẨN NÚT BACK KHI ĐANG THI:
                    if(homeNav) { if (screenName === 'quiz') homeNav.classList.add('invisible'); else homeNav.classList.remove('invisible'); }
