@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Trắc Nghiệm - NDT Modern</title>
+    <title>Hệ Thống Trắc Nghiệm - NDT Glass</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,15 +20,7 @@
                         display: ['"Inter"', 'sans-serif'],
                     },
                     colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
-                        },
-                        glass: 'rgba(255, 255, 255, 0.9)',
+                        primary: { 50:'#eff6ff', 100:'#dbeafe', 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8', 900:'#1e3a8a' }
                     },
                     boxShadow: {
                         'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
@@ -39,14 +31,8 @@
                         'slide-up': 'slideUp 0.5s ease-out',
                     },
                     keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        }
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     }
                 }
             }
@@ -56,62 +42,108 @@
     <style>
         body {
             background: #f3f4f6;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, hsla(253,16%,7%,0) 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, hsla(225,39%,30%,0) 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.1) 0, hsla(339,49%,30%,0) 50%);
-            background-attachment: fixed;
+            transition: all 0.3s ease;
         }
         
+        /* --- DARK MODE CONFIGURATION --- */
+        body.dark-mode {
+            /* Nền Aurora */
+            background: radial-gradient(circle at 50% -20%, #1e3a8a 0%, #020617 50%, #000000 100%) !important;
+            background-attachment: fixed;
+            color: #f1f5f9;
+        }
+
+        /* Glass Panel Styles */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        /* Dark Mode Glass Panel */
+        body.dark-mode .glass-panel,
+        body.dark-mode .bg-white {
+            background-color: rgba(15, 23, 42, 0.6) !important; /* Nền tối trong suốt */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #f1f5f9 !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Override Text Colors in Dark Mode (Quan trọng để chữ sáng lên) */
+        body.dark-mode .text-slate-900, 
+        body.dark-mode .text-slate-800, 
+        body.dark-mode .text-slate-700,
+        body.dark-mode .text-gray-800 {
+            color: #f1f5f9 !important;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        body.dark-mode .text-slate-600,
+        body.dark-mode .text-slate-500 {
+            color: #94a3b8 !important;
+        }
+
+        /* Components in Dark Mode */
+        body.dark-mode header {
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        body.dark-mode footer {
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            border-top-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Cards & Inputs */
+        body.dark-mode .option-card {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        body.dark-mode .option-card:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(56, 189, 248, 0.5) !important;
+        }
+        
+        body.dark-mode input {
+            background-color: rgba(30, 41, 59, 0.6) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+        }
+        body.dark-mode input::placeholder { color: #64748b; }
+
+        /* Buttons */
+        body.dark-mode #login-back-btn, 
+        body.dark-mode #mode-back-btn,
+        body.dark-mode #prev-btn,
+        body.dark-mode #next-btn,
+        body.dark-mode #stop-btn {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: #e2e8f0 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        body.dark-mode #login-back-btn:hover,
+        body.dark-mode #next-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .option-card {
-            transition: all 0.2s ease;
-        }
-        .option-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .option-card.selected {
-            background-color: #eff6ff;
-            border-color: #3b82f6;
-            color: #1e40af;
-        }
-
-        /* Animation Pulse cho nút ghi hình */
+        /* Animation */
         .live-dot { animation: pulse-green 2s infinite; }
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 3px solid #3b82f6;
-            width: 20px;
-            height: 20px;
-            -webkit-animation: spin 1s linear infinite; /* Safari */
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #3b82f6; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 
     <!-- LOAD DATA JS FILES -->
@@ -137,7 +169,8 @@
         };
     </script>
 </head>
-<body class="antialiased text-slate-800 min-h-screen flex flex-col selection:bg-primary-100 selection:text-primary-900">
+<!-- MẶC ĐỊNH DARK MODE -->
+<body class="antialiased text-slate-800 min-h-screen flex flex-col selection:bg-primary-100 selection:text-primary-900 dark-mode">
 
     <!-- HEADER -->
     <header class="glass-panel sticky top-0 z-50 shadow-sm border-b border-white/50">
@@ -150,9 +183,12 @@
             </div>
 
             <div id="header-actions" class="flex items-center gap-3">
-                <!-- Nút về trang chủ sẽ được JS điều khiển -->
                 <button id="home-nav-btn" onclick="window.location.href='index.html'" class="hidden text-sm font-medium text-slate-500 hover:text-primary-600 transition-colors flex items-center gap-2">
                     <i class="fas fa-arrow-left"></i> Trang chủ
+                </button>
+                <!-- Nút Toggle Theme -->
+                <button id="theme-toggle" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                    <i id="theme-icon" class="fas fa-sun"></i>
                 </button>
             </div>
         </div>
@@ -258,14 +294,14 @@
             </div>
         </div>
 
-        <!-- SCREEN: QUIZ (LAYOUT ĐÃ CHỈNH SỬA FULL WIDTH) -->
+        <!-- SCREEN: QUIZ -->
         <div id="quiz-screen" class="hidden w-full flex flex-col gap-6 animate-fade-in">
             
-            <!-- Main Question Area (Centered, Readable Width) -->
+            <!-- Main Question Area -->
             <div class="w-full max-w-4xl mx-auto">
                 <div class="glass-panel rounded-2xl shadow-soft p-6 sm:p-8 min-h-[400px] flex flex-col relative">
                     
-                    <!-- Timer (Absolute top right) -->
+                    <!-- Timer -->
                     <div id="timer" class="hidden absolute top-6 right-6 bg-red-50 text-red-600 px-4 py-2 rounded-full font-bold border border-red-100 shadow-sm flex items-center gap-2">
                         <i class="fas fa-clock"></i> <span id="timer-text">20:00</span>
                     </div>
@@ -317,15 +353,14 @@
                 </div>
             </div>
 
-            <!-- Question Navigator (Full Width & Small Boxes) -->
+            <!-- Question Navigator -->
             <div class="w-full">
                 <div class="glass-panel rounded-2xl shadow-soft p-6">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
                         <i class="fas fa-th"></i> Danh sách câu hỏi
                     </h3>
-                    <!-- Sử dụng flex wrap để tự co giãn và justify-center để canh giữa -->
                     <div id="question-list" class="flex flex-wrap gap-2 justify-center">
-                        <!-- Nav items injected via JS (Fixed size: w-10 h-10) -->
+                        <!-- Nav items injected via JS -->
                     </div>
                     <div class="mt-6 pt-4 border-t border-slate-200 flex flex-wrap gap-4 text-xs text-slate-500 justify-center">
                         <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-slate-200 border border-slate-300"></div> Chưa xem</div>
@@ -383,7 +418,6 @@
         <div id="results-modal" class="fixed inset-0 z-[70] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 hidden animate-fade-in">
             <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative">
                 <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 text-center relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                     <h2 id="results-title" class="text-3xl font-bold text-white mb-2 relative z-10">Hoàn thành!</h2>
                     <div class="text-6xl font-bold text-white mb-2 relative z-10 drop-shadow-md" id="results-score-display">--/--</div>
                     <p class="text-indigo-100 relative z-10">Điểm số của bạn</p>
@@ -429,18 +463,11 @@
         <p class="text-slate-500 text-sm">&copy; 2025 BCH-XNXL. Design by Phong Lưu.</p>
     </footer>
 
-    <!-- JAVASCRIPT LOGIC (GIỮ NGUYÊN LOGIC, UPDATE RENDER UI) -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         const state = {
-            currentSubjectKey: null,
-            mode: 'review',
-            questions: [],
-            pickedIndices: [],
-            currentIndex: 0,
-            userAnswers: {},
-            timerId: null,
-            secondsLeft: 0,
-            viewedIndices: new Set(),
+            currentSubjectKey: null, mode: 'review', questions: [], pickedIndices: [], currentIndex: 0,
+            userAnswers: {}, timerId: null, secondsLeft: 0, viewedIndices: new Set(),
             testConfig: { questionCount: 20, durationMinutes: 20 },
             userName: null, userDanhSo: null, db: null, auth: null,
             firebaseReady: false, isFinished: false
@@ -449,7 +476,6 @@
         const $ = (s) => document.querySelector(s);
         const $$ = (s) => document.querySelectorAll(s);
 
-        // Cấu hình Icon và màu sắc cho từng môn học để đẹp hơn
         const subjectConfig = {
             'antoan': { name: 'An toàn Lao động', icon: 'fa-hard-hat', color: 'text-yellow-600', bg: 'bg-yellow-100', border: 'border-yellow-200' },
             'mt': { name: 'Môi trường', icon: 'fa-leaf', color: 'text-green-600', bg: 'bg-green-100', border: 'border-green-200' },
@@ -491,7 +517,7 @@
                     let fbApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
                     state.db = getFirestore(fbApp);
                     state.auth = getAuth(fbApp);
-                    setLogLevel('Debug'); // Optional
+                    setLogLevel('Debug');
                     state.firebaseReady = true;
                     this.checkAdminAndShowButton();
                     return true;
@@ -500,8 +526,6 @@
 
             loadDataFromFiles() {
                 window.questionData = {};
-                // CẬP NHẬT: Kiểm tra trực tiếp tên biến để hỗ trợ cả 'const', 'let' và 'var'
-                // Không dùng vòng lặp string để tránh lỗi undefined với const
                 try { if (typeof data_antoan !== 'undefined') window.questionData['antoan'] = data_antoan; } catch(e){}
                 try { if (typeof data_mt !== 'undefined') window.questionData['mt'] = data_mt; } catch(e){}
                 try { if (typeof data_pt !== 'undefined') window.questionData['pt'] = data_pt; } catch(e){}
@@ -599,7 +623,6 @@
                 ['login', 'selector', 'quiz', 'admin'].forEach(n => $(`#${n}-screen`).classList.add('hidden'));
                 $(`#${name}-screen`).classList.remove('hidden');
                 
-                // Update Home Button visibility
                 const homeNavBtn = $('#home-nav-btn');
                 if(name === 'quiz' || name === 'admin' || name === 'login') homeNavBtn.classList.remove('hidden');
                 else homeNavBtn.classList.add('hidden');
@@ -615,7 +638,7 @@
                 try {
                     const { collection, query, getDocs, orderBy } = window.firebase;
                     const q = query(collection(state.db, 'quiz_results'), orderBy('timestamp', 'desc')); 
-                    await getDocs(q); // Test permission
+                    await getDocs(q); 
                     
                     const wrapper = document.createElement('div');
                     wrapper.className = 'flex flex-col gap-3 w-full max-w-xs';
@@ -646,10 +669,8 @@
             renderSubjectList() {
                 const grid = $('#subject-grid');
                 grid.innerHTML = '';
-                
                 const subjects = Object.entries(window.questionData);
                 
-                // THÊM: Hiển thị thông báo nếu không tìm thấy file dữ liệu nào
                 if (subjects.length === 0) {
                     grid.innerHTML = `
                         <div class="col-span-1 sm:col-span-2 lg:col-span-3 text-center p-10 glass-panel rounded-2xl border-2 border-dashed border-slate-300">
@@ -657,12 +678,7 @@
                                 <i class="fas fa-folder-open text-3xl text-slate-400"></i>
                             </div>
                             <h3 class="text-xl font-bold text-slate-700">Chưa tải được dữ liệu môn học</h3>
-                            <p class="text-slate-500 mt-2 mb-4">Hệ thống không tìm thấy các biến dữ liệu (ví dụ: <code>data_antoan</code>, <code>data_mt</code>...).</p>
-                            <div class="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg inline-block text-left">
-                                <strong>Cách khắc phục:</strong><br>
-                                1. Đảm bảo các file <code>data_*.js</code> nằm cùng thư mục với file .html này.<br>
-                                2. Mở các file .js và kiểm tra tên biến (ví dụ: <code>const data_antoan = ...</code>).
-                            </div>
+                            <p class="text-slate-500 mt-2 mb-4">Hệ thống không tìm thấy các biến dữ liệu.</p>
                         </div>
                     `;
                     return;
@@ -778,7 +794,6 @@
                 $('#mode-modal').classList.add('hidden');
                 this.showScreen('quiz');
                 
-                // Update UI elements based on mode
                 const stopBtn = $('#stop-btn');
                 const hintBtn = $('#hint-btn');
                 const submitBtn = $('#submit-btn');
@@ -823,8 +838,6 @@
                 state.isFinished = true;
                 clearInterval(state.timerId);
                 $('#timer').classList.add('hidden');
-
-                // CẬP NHẬT: Gọi hàm này để "lật bài" - hiển thị đúng sai trên thanh điều hướng sau khi nộp
                 this.updateQuestionListStatus();
 
                 const total = state.pickedIndices.length;
@@ -868,8 +881,6 @@
                 el.innerHTML = '';
                 state.pickedIndices.forEach((idx, i) => {
                     const div = document.createElement('div');
-                    // Thêm class nav-item vào đây để hàm update tìm thấy
-                    // CẬP NHẬT: Dùng kích thước cố định w-10 h-10 (40px)
                     div.className = 'w-10 h-10 flex items-center justify-center rounded-lg text-sm font-semibold cursor-pointer bg-slate-100 text-slate-500 hover:bg-primary-100 hover:text-primary-600 transition-colors nav-item';
                     div.textContent = i + 1;
                     div.onclick = () => { state.currentIndex = i; this.renderQuestion(); };
@@ -882,16 +893,12 @@
                 const items = $$('.nav-item');
                 items.forEach((item, i) => {
                     const qIdx = state.pickedIndices[i];
-                    // Reset base classes (CẬP NHẬT: w-10 h-10)
                     item.className = 'w-10 h-10 flex items-center justify-center rounded-lg text-sm font-semibold cursor-pointer transition-colors border nav-item ';
                     
                     if (qIdx in state.userAnswers) {
-                        // LOGIC MỚI:
-                        // Nếu đang THI (test) và CHƯA nộp bài (isFinished = false) -> Chỉ hiện màu xanh dương (Đã làm)
                         if (state.mode === 'test' && !state.isFinished) {
                             item.className += 'bg-blue-500 text-white border-blue-600 shadow-sm';
                         } else {
-                            // Nếu là ÔN TẬP hoặc ĐÃ NỘP BÀI -> Hiện màu Đúng/Sai
                             const isCorrect = this.checkCorrectness(qIdx, state.userAnswers[qIdx]);
                             if(isCorrect) item.className += 'bg-green-500 text-white border-green-600 shadow-sm';
                             else item.className += 'bg-red-500 text-white border-red-600 shadow-sm';
@@ -937,10 +944,9 @@
             },
 
             toggleOption(el) {
-                if ($('#submit-btn').disabled) return; // Đã trả lời rồi thì ko click đc
+                if ($('#submit-btn').disabled) return;
                 const input = el.querySelector('.check-mark');
                 const isSelected = el.classList.contains('selected');
-                
                 if (isSelected) {
                     el.classList.remove('selected', 'bg-primary-50', 'border-primary-500');
                     input.classList.add('opacity-0');
@@ -974,29 +980,20 @@
                 });
 
                 if (isAns) {
-                    const userAns = state.userAnswers[qIdx]; // Array
-                    const correct = q.answer; // Array
-
-                    // Highlight user answers
+                    const userAns = state.userAnswers[qIdx];
+                    const correct = q.answer;
                     userAns.forEach(ai => {
                         const el = opts[ai];
                         if (el) {
                             el.querySelector('.check-mark').classList.remove('opacity-0');
-                            if (correct.includes(ai)) {
-                                el.classList.add('bg-green-50', 'border-green-500');
-                            } else {
-                                el.classList.add('bg-red-50', 'border-red-500');
-                            }
+                            if (correct.includes(ai)) el.classList.add('bg-green-50', 'border-green-500');
+                            else el.classList.add('bg-red-50', 'border-red-500');
                         }
                     });
-
-                    // Always show correct answers if wrong or review
                     if (state.mode === 'review-wrong' || !this.checkCorrectness(qIdx, userAns)) {
                          correct.forEach(ci => {
                              const el = opts[ci];
-                             if(el && !userAns.includes(ci)) {
-                                 el.classList.add('bg-green-50', 'border-green-500', 'ring-2', 'ring-green-200');
-                             }
+                             if(el && !userAns.includes(ci)) el.classList.add('bg-green-50', 'border-green-500', 'ring-2', 'ring-green-200');
                          });
                     }
                 }
@@ -1005,46 +1002,26 @@
             submitAnswer() {
                 const qIdx = state.pickedIndices[state.currentIndex];
                 if (qIdx in state.userAnswers) return;
-
                 const selected = [];
-                $$('.option-card').forEach((el, i) => {
-                    if (el.classList.contains('selected')) selected.push(i);
-                });
-
+                $$('.option-card').forEach((el, i) => { if (el.classList.contains('selected')) selected.push(i); });
                 if (selected.length === 0) { alert("Chọn ít nhất 1 đáp án."); return; }
                 state.userAnswers[qIdx] = selected;
-                
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
-                
-                // Auto next logic
                 const total = state.pickedIndices.length;
-                if (Object.keys(state.userAnswers).length === total) {
-                    setTimeout(() => this.finishQuiz(false), 500);
-                } else {
-                    setTimeout(() => {
-                        const next = this.findNextUnansweredQuestionIndex();
-                        if(next !== -1) { state.currentIndex = next; this.renderQuestion(); }
-                    }, 800);
-                }
+                if (Object.keys(state.userAnswers).length === total) { setTimeout(() => this.finishQuiz(false), 500); } 
+                else { setTimeout(() => { const next = this.findNextUnansweredQuestionIndex(); if(next !== -1) { state.currentIndex = next; this.renderQuestion(); } }, 800); }
             },
 
             findNextUnansweredQuestionIndex() {
-                for (let i = state.currentIndex + 1; i < state.pickedIndices.length; i++) {
-                    if (!(state.pickedIndices[i] in state.userAnswers)) return i;
-                }
-                for (let i = 0; i < state.currentIndex; i++) {
-                    if (!(state.pickedIndices[i] in state.userAnswers)) return i;
-                }
+                for (let i = state.currentIndex + 1; i < state.pickedIndices.length; i++) { if (!(state.pickedIndices[i] in state.userAnswers)) return i; }
+                for (let i = 0; i < state.currentIndex; i++) { if (!(state.pickedIndices[i] in state.userAnswers)) return i; }
                 return -1;
             },
 
             navigateQuestion(dir) {
                 const newIdx = state.currentIndex + dir;
-                if (newIdx >= 0 && newIdx < state.pickedIndices.length) {
-                    state.currentIndex = newIdx;
-                    this.renderQuestion();
-                }
+                if (newIdx >= 0 && newIdx < state.pickedIndices.length) { state.currentIndex = newIdx; this.renderQuestion(); }
             },
 
             checkCorrectness(qIdx, uAns) {
@@ -1059,7 +1036,6 @@
                 const qIdx = state.pickedIndices[state.currentIndex];
                 const q = state.questions[qIdx];
                 const txt = q.answer.map(i => q.options[i]).join('; ');
-                
                 const fb = $('#feedback-container');
                 const fbTxt = $('#feedback-text');
                 fb.classList.remove('hidden');
@@ -1070,53 +1046,59 @@
                 const el = $('#timer-text');
                 clearInterval(state.timerId);
                 el.textContent = `${String(state.testConfig.durationMinutes).padStart(2,'0')}:00`;
-                
                 state.timerId = setInterval(() => {
                     if(state.isFinished) { clearInterval(state.timerId); return; }
                     state.secondsLeft--;
                     const m = Math.floor(state.secondsLeft/60);
                     const s = state.secondsLeft%60;
                     el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-                    if(state.secondsLeft <= 0) {
-                        clearInterval(state.timerId);
-                        alert("Hết giờ!");
-                        this.finishQuiz(true);
-                    }
+                    if(state.secondsLeft <= 0) { clearInterval(state.timerId); alert("Hết giờ!"); this.finishQuiz(true); }
                 }, 1000);
             },
 
-            handleWindowClose() {
-                if (state.mode === 'test' && !state.isFinished) this.finishQuiz(true);
-            },
+            handleWindowClose() { if (state.mode === 'test' && !state.isFinished) this.finishQuiz(true); },
 
             reviewWrongAnswers() {
                 const wrongs = state.pickedIndices.filter(idx => idx in state.userAnswers && !this.checkCorrectness(idx, state.userAnswers[idx]));
                 if (wrongs.length === 0) { alert("Không có câu sai."); return; }
-                
-                state.pickedIndices = wrongs;
-                state.currentIndex = 0;
-                state.mode = 'review-wrong';
-                state.viewedIndices.clear();
-                state.isFinished = true;
-                
+                state.pickedIndices = wrongs; state.currentIndex = 0; state.mode = 'review-wrong'; state.viewedIndices.clear(); state.isFinished = true;
                 $('#results-modal').classList.add('hidden');
                 this.showScreen('quiz');
-                $('#submit-btn').classList.add('hidden');
-                $('#hint-btn').classList.add('hidden');
-                $('#stop-btn').classList.remove('hidden');
-                
-                this.renderQuestionList();
-                this.renderQuestion();
+                $('#submit-btn').classList.add('hidden'); $('#hint-btn').classList.add('hidden'); $('#stop-btn').classList.remove('hidden');
+                this.renderQuestionList(); this.renderQuestion();
             }
         };
 
         document.addEventListener('DOMContentLoaded', () => app.init());
         
-        // Anti-copy protection
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.onkeydown = e => {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
+        // Theme Toggle
+        const toggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.remove('dark-mode');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        } else {
+            localStorage.setItem('theme', 'dark');
         }
+
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        });
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = e => { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; }
     </script>
 
     <!-- VISITOR COUNTER SCRIPT -->
@@ -1125,23 +1107,13 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const cfg = {
-            apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
-            authDomain: "tracnghiemndt.firebaseapp.com",
-            projectId: "tracnghiemndt",
-            storageBucket: "tracnghiemndt.firebasestorage.app",
-            messagingSenderId: "187385061213",
-            appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
-            measurementId: "G-TKRBZJT880"
-        };
-
+        const cfg = { apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84", authDomain: "tracnghiemndt.firebaseapp.com", projectId: "tracnghiemndt", storageBucket: "tracnghiemndt.firebasestorage.app", messagingSenderId: "187385061213", appId: "1:187385061213:web:fe7977f62aaaeec60f52b4", measurementId: "G-TKRBZJT880" };
         let app, auth, db;
         try { app = getApps().length > 0 ? getApp() : initializeApp(cfg); auth = getAuth(app); db = getFirestore(app); } catch(e){}
 
         const runCounter = async () => {
             if(!auth || !db) return;
             try { await signInAnonymously(auth); } catch(e){ return; }
-            
             onAuthStateChanged(auth, async (u) => {
                 if(u) {
                     const ref = doc(db, 'site_stats', 'visitors_v2');
@@ -1151,17 +1123,12 @@
                         const snap = await getDoc(ref);
                         if(!snap.exists()) await setDoc(ref, {count: 2000});
                         else await updateDoc(ref, {count: increment(1)});
-                        
-                        onSnapshot(ref, d => {
-                            if(d.exists()) el.innerText = d.data().count.toLocaleString('vi-VN');
-                        });
+                        onSnapshot(ref, d => { if(d.exists()) el.innerText = d.data().count.toLocaleString('vi-VN'); });
                     } catch(e){}
                 }
             });
         };
-        
-        if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runCounter);
-        else runCounter();
+        if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runCounter); else runCounter();
     </script>
 </body>
 </html>
