@@ -641,8 +641,7 @@
             const pass = prompt("Nhập mật khẩu để xem tài liệu:");
             if (!pass) return;
 
-            // Hash của "kkk" (SHA-256)
-            // Thay vì lưu "kkk", ta lưu mã hash này
+            // Hash đúng của "kkk" (SHA-256)
             const targetHash = "96efbc43a462ab9d9c6a8173e5b322e17f218b56eb3a05a4bbc53221adebc7b3";
 
             const msgBuffer = new TextEncoder().encode(pass);
@@ -651,7 +650,8 @@
             const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
             if (hashHex === targetHash) {
-                window.open('./pipelines.pdf', '_blank');
+                // Mở file ngay tại tab hiện tại (không mở tab mới)
+                window.location.href = './pipelines.pdf';
             } else {
                 alert("Mật khẩu không đúng! Vui lòng thử lại.");
             }
