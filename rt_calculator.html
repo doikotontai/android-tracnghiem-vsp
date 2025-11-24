@@ -1,138 +1,161 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RT Exposure Mobile</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
         /* Tùy chỉnh thanh cuộn cho select */
         select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            /* Icon mũi tên mặc định (màu tối cho nền sáng) */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 0.5rem center;
             background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
+            background-size: 1.2em 1.2em;
             appearance: none;
         }
+        /* Icon mũi tên cho dark mode (màu sáng) */
+        .dark select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        }
+
         /* Ẩn mũi tên input number */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Glass Panel: Light Mode Default */
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        /* Glass Panel: Dark Mode Override */
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center p-4">
+<!-- Body: Thêm transition và các class màu cho 2 chế độ -->
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-white min-h-screen flex flex-col items-center p-2 transition-colors duration-300">
 
     <!-- Header -->
-    <header class="w-full max-w-md mb-6 flex items-center justify-between">
+    <header class="w-full max-w-md mb-2 flex items-center justify-between px-1">
         <div>
-            <h1 class="text-xl font-bold text-blue-400">RT Calculator</h1>
-            <p class="text-xs text-slate-400">Ir-192 Exposure Calculation</p>
+            <h1 class="text-lg font-bold text-blue-600 dark:text-blue-400">RT Calculator</h1>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400">Ir-192 Exposure Calculation</p>
         </div>
-        <div class="h-8 w-8 bg-slate-800 rounded-full flex items-center justify-center text-blue-400">
-            <i class="fa-solid fa-radiation"></i>
-        </div>
+        <!-- Nút chuyển đổi Theme (Icon Phóng Xạ) -->
+        <button onclick="toggleTheme()" class="h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 bg-white shadow-sm border border-slate-200 text-yellow-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-blue-400 dark:hover:bg-slate-700 focus:outline-none active:scale-95">
+            <i class="fa-solid fa-radiation fa-lg animate-spin-slow"></i>
+        </button>
     </header>
 
-    <main class="w-full max-w-md space-y-4 mb-24">
+    <!-- Main -->
+    <main class="w-full max-w-md space-y-2 mb-4">
         
-        <!-- SECTION 1: HOẠT ĐỘ NGUỒN (Main Input) -->
-        <div class="glass-panel rounded-2xl p-4 shadow-xl">
-            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
+        <!-- SECTION 1: HOẠT ĐỘ NGUỒN -->
+        <div class="glass-panel rounded-xl p-3 shadow-xl">
+            <label class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 block">
                 Hoạt độ nguồn (Source Activity)
             </label>
             <div class="relative">
                 <input type="number" id="activity" value="15" step="0.1" inputmode="decimal"
-                    class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-2xl font-bold text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors placeholder-slate-600">
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Ci</span>
+                    class="w-full bg-white text-slate-900 border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700 border rounded-lg px-3 py-2 text-xl font-bold focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors placeholder-slate-400 dark:placeholder-slate-600">
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm font-medium">Ci</span>
             </div>
         </div>
 
         <!-- SECTION 2: THÔNG SỐ CHỤP -->
-        <div class="glass-panel rounded-2xl p-4 shadow-xl space-y-4">
+        <div class="glass-panel rounded-xl p-3 shadow-xl space-y-2">
             
             <!-- Hàng 1: Loại Film -->
             <div>
-                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Loại Film</label>
+                <label class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 block">Loại Film</label>
                 <div class="grid grid-cols-3 gap-2">
                     <button type="button" onclick="selectFilm('100')" id="btn-film-100" 
-                        class="film-btn bg-blue-600 text-white py-2 rounded-lg font-medium text-sm transition-all border border-transparent shadow-lg shadow-blue-900/50">
+                        class="film-btn transition-all duration-200">
                         Fuji 100
                     </button>
                     <button type="button" onclick="selectFilm('80')" id="btn-film-80" 
-                        class="film-btn bg-slate-800 text-slate-300 py-2 rounded-lg font-medium text-sm transition-all border border-slate-700 hover:bg-slate-750">
+                        class="film-btn transition-all duration-200">
                         Fuji 80
                     </button>
                     <button type="button" onclick="selectFilm('50')" id="btn-film-50" 
-                        class="film-btn bg-slate-800 text-slate-300 py-2 rounded-lg font-medium text-sm transition-all border border-slate-700 hover:bg-slate-750">
+                        class="film-btn transition-all duration-200">
                         Fuji 50
                     </button>
                 </div>
             </div>
 
             <!-- Hàng 2: SFD và Độ dày -->
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-2">
                 <!-- SFD -->
                 <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">SFD (mm)</label>
+                    <label class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 block">SFD (mm)</label>
                     <input type="number" id="sfd" value="250" inputmode="decimal"
-                        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-lg font-semibold text-white focus:outline-none focus:border-blue-500 transition-colors">
+                        class="w-full bg-white text-slate-900 border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700 border rounded-lg px-2 py-2 text-base font-semibold focus:outline-none focus:border-blue-500 transition-colors">
                 </div>
                 <!-- Độ dày -->
                 <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Độ dày (mm)</label>
+                    <label class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 block">Độ dày (mm)</label>
                     <div class="relative">
                         <input type="number" id="thickness" value="20" inputmode="decimal"
-                            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-lg font-semibold text-white focus:outline-none focus:border-blue-500 transition-colors">
-                        <div id="k-display" class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-blue-400 font-mono bg-blue-900/30 px-1.5 py-0.5 rounded">K=1.82</div>
+                            class="w-full bg-white text-slate-900 border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700 border rounded-lg px-2 py-2 text-base font-semibold focus:outline-none focus:border-blue-500 transition-colors">
+                        <div id="k-display" class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30 px-1 py-0.5 rounded font-mono font-bold">K=1.82</div>
                     </div>
                 </div>
             </div>
 
             <!-- Hàng 3: Độ đen (Density) -->
             <div>
-                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
+                <label class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 block">
                     Độ đen (Target Density)
                 </label>
-                <select id="density" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white text-lg font-medium focus:outline-none focus:border-blue-500">
-                    <!-- Javascript sẽ điền options từ 2.0 đến 4.0 -->
+                <select id="density" class="w-full bg-white text-slate-900 border-slate-200 dark:bg-slate-800 dark:text-white dark:border-slate-700 border rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-blue-500 transition-colors">
+                    <!-- Javascript sẽ điền options -->
                 </select>
             </div>
         </div>
 
         <!-- SECTION 3: KẾT QUẢ -->
-        <div class="bg-gradient-to-r from-blue-900 to-slate-900 rounded-2xl p-1 shadow-lg border border-blue-800/50">
-            <div class="bg-slate-900/80 rounded-xl p-5 text-center backdrop-blur-sm">
-                <p class="text-blue-300 text-xs font-medium uppercase tracking-widest mb-1">Thời gian chụp (Exposure Time)</p>
-                <!-- Đã chỉnh sửa font chữ bằng nhau -->
-                <div id="result-time" class="text-3xl font-bold text-white tracking-tight py-2 flex justify-center gap-2">---</div>
-                <div id="result-details" class="text-xs text-slate-500 font-mono">Đang chờ dữ liệu...</div>
+        <div class="bg-gradient-to-r from-blue-600 to-slate-700 dark:from-blue-900 dark:to-slate-900 rounded-xl p-1 shadow-lg border border-blue-400/30 dark:border-blue-800/50 transition-colors">
+            <div class="bg-slate-50/90 dark:bg-slate-900/80 rounded-lg p-3 text-center backdrop-blur-sm transition-colors">
+                <p class="text-blue-600 dark:text-blue-300 text-[10px] font-medium uppercase tracking-widest mb-0.5">Thời gian chụp</p>
+                <div id="result-time" class="text-2xl font-bold text-slate-800 dark:text-white tracking-tight py-1 flex justify-center gap-1 transition-colors">---</div>
+                <div id="result-details" class="text-[10px] text-slate-500 dark:text-slate-500 font-mono">Đang chờ...</div>
             </div>
         </div>
 
         <!-- SECTION 4: TIMER TOOLBOX -->
-        <div class="glass-panel rounded-2xl p-4 shadow-xl border-t-2 border-t-emerald-500/50">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-emerald-400 font-semibold flex items-center gap-2">
+        <div class="glass-panel rounded-xl p-3 shadow-xl border-t-2 border-t-emerald-500/50">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5 text-sm transition-colors">
                     <i class="fa-regular fa-clock"></i> Count Down
                 </span>
-                <span id="timer-display" class="font-mono text-3xl font-bold text-white tracking-widest">00:00.00</span>
+                <span id="timer-display" class="font-mono text-2xl font-bold text-slate-800 dark:text-white tracking-wider transition-colors">00:00.00</span>
             </div>
             <div class="grid grid-cols-3 gap-2">
-                <button id="btn-start" onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold transition-colors shadow-lg shadow-emerald-900/20">
+                <button id="btn-start" onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg font-bold text-sm transition-colors shadow-lg shadow-emerald-900/20">
                     Start
                 </button>
-                <button id="btn-pause" onclick="pauseTimer()" class="bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-lg font-bold transition-colors disabled:opacity-50" disabled>
+                <button id="btn-pause" onclick="pauseTimer()" class="bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600 hover:bg-slate-300 py-2 rounded-lg font-bold text-sm transition-colors disabled:opacity-50" disabled>
                     Pause
                 </button>
-                <button id="btn-reset" onclick="resetTimer()" class="bg-rose-900/80 hover:bg-rose-800 text-rose-200 py-3 rounded-lg font-bold transition-colors">
+                <button id="btn-reset" onclick="resetTimer()" class="bg-rose-100 text-rose-600 hover:bg-rose-200 dark:bg-rose-900/80 dark:text-rose-200 dark:hover:bg-rose-800 py-2 rounded-lg font-bold text-sm transition-colors">
                     Reset
                 </button>
             </div>
@@ -142,8 +165,6 @@
 
     <script>
         // --- DỮ LIỆU & CẤU HÌNH ---
-        
-        // Hệ số K theo độ dày (Ir-192 / Film D7 chuẩn)
         const kData = [
             [6, 1.15], [8, 1.22], [10, 1.32], [12, 1.4], [14, 1.5], [16, 1.6],
             [18, 1.7], [20, 1.82], [22, 2], [24, 2.2], [26, 2.45], [28, 2.7],
@@ -154,15 +175,8 @@
             [78, 34.7]
         ];
 
-        // Hệ số Film (Ước lượng tương đối so với D7/Fuji 100)
-        const filmFactors = {
-            '100': 1.0,
-            '80': 1.4,
-            '50': 2.4
-        };
+        const filmFactors = { '100': 1.0, '80': 1.4, '50': 2.4 };
         let currentFilm = '100';
-
-        // Biến toàn cục lưu thời gian chính xác (số thực)
         window.calculatedTimeRaw = 0;
 
         // --- KHỞI TẠO DOM ---
@@ -176,9 +190,20 @@
             kDisplay: document.getElementById('k-display')
         };
 
+        // --- HÀM TOGGLE THEME ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+            } else {
+                html.classList.add('dark');
+            }
+            // Gọi lại selectFilm để cập nhật màu sắc nút bấm đúng chế độ
+            selectFilm(currentFilm);
+        }
+
         // --- HÀM KHỞI TẠO ---
         function init() {
-            // 1. Tạo Options cho Độ đen
             let densityHTML = '';
             for (let d = 2.0; d <= 4.05; d += 0.1) {
                 let val = Math.round(d * 10) / 10;
@@ -187,27 +212,35 @@
             }
             els.density.innerHTML = densityHTML;
 
-            // 2. Gán sự kiện
             [els.activity, els.sfd, els.thickness].forEach(el => el.addEventListener('input', calculate));
             els.density.addEventListener('change', calculate);
 
-            // 3. Tính toán lần đầu
+            // Mặc định chọn film 100
+            selectFilm('100'); 
             calculate();
         }
 
-        // --- XỬ LÝ CHỌN FILM ---
+        // --- XỬ LÝ CHỌN FILM (Cập nhật màu Dark/Light) ---
         window.selectFilm = function(type) {
             currentFilm = type;
-            document.querySelectorAll('.film-btn').forEach(btn => {
-                btn.className = 'film-btn bg-slate-800 text-slate-300 py-2 rounded-lg font-medium text-sm transition-all border border-slate-700 hover:bg-slate-750';
+            
+            // Định nghĩa style cho 2 trạng thái Active và Inactive hỗ trợ cả Dark/Light
+            // Inactive: Nền trắng/xám (Light) hoặc Xám đậm (Dark)
+            const inactiveClass = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-750 border py-1.5 rounded-md font-medium text-xs shadow-sm';
+            
+            // Active: Màu xanh nổi bật (chung cho cả 2 mode)
+            const activeClass = 'bg-blue-600 text-white border-transparent shadow-lg shadow-blue-500/30 dark:shadow-blue-900/50 py-1.5 rounded-md font-medium text-xs';
+
+            ['100', '80', '50'].forEach(f => {
+                const btn = document.getElementById(`btn-film-${f}`);
+                // Xóa hết class cũ để gán mới (đảm bảo không bị trùng lặp style)
+                btn.className = `film-btn transition-all duration-200 ${f === type ? activeClass : inactiveClass}`;
             });
-            const activeBtn = document.getElementById(`btn-film-${type}`);
-            activeBtn.className = 'film-btn bg-blue-600 text-white py-2 rounded-lg font-medium text-sm transition-all border border-transparent shadow-lg shadow-blue-900/50';
             
             calculate();
         }
 
-        // --- HÀM TÍNH TOÁN K (Nội suy) ---
+        // --- CÁC HÀM TÍNH TOÁN (Giữ nguyên) ---
         function getKFactor(thickness) {
             if (isNaN(thickness) || thickness <= 0) return null;
             if (thickness < kData[0][0]) return kData[0][1];
@@ -223,7 +256,6 @@
             return null;
         }
 
-        // --- HÀM TÍNH TOÁN CHÍNH ---
         function calculate() {
             const act = parseFloat(els.activity.value);
             const sfd = parseFloat(els.sfd.value);
@@ -233,14 +265,15 @@
             const k = getKFactor(thick);
             if (k !== null) {
                 els.kDisplay.textContent = `K=${k.toFixed(2)}`;
-                els.kDisplay.classList.remove('hidden');
+                els.kDisplay.parentElement.classList.remove('opacity-50');
             } else {
                 els.kDisplay.textContent = 'K=?';
+                els.kDisplay.parentElement.classList.add('opacity-50');
             }
 
             if (!act || !sfd || !thick || !k) {
                 els.resultTime.textContent = "---";
-                els.resultDetails.textContent = "Vui lòng nhập đủ thông tin";
+                els.resultDetails.textContent = "Nhập đủ thông tin";
                 window.calculatedTimeRaw = 0;
                 return;
             }
@@ -251,20 +284,16 @@
             const densityFactor = den * 0.4;
             const finalTime = baseTime * densityFactor;
 
-            // Lưu thời gian tính toán (số thực) để dùng cho Timer
             window.calculatedTimeRaw = finalTime;
 
-            // Hiển thị kết quả
             els.resultTime.innerHTML = formatTime(finalTime);
-            els.resultDetails.textContent = `${finalTime.toFixed(1)} giây (Fuji ${currentFilm} @ D${den.toFixed(1)})`;
+            els.resultDetails.textContent = `${finalTime.toFixed(1)}s (Fuji ${currentFilm} @ D${den.toFixed(1)})`;
             
-            // Nếu timer chưa chạy, reset timer về giá trị mới
             if (!isRunning && !isPaused) {
                 resetTimer();
             }
         }
 
-        // Đã sửa: Font chữ bằng nhau, không dùng class nhỏ hơn cho đơn vị
         function formatTime(seconds) {
             if (seconds < 60) return `${Math.round(seconds)} giây`;
             const m = Math.floor(seconds / 60);
@@ -272,9 +301,9 @@
             return `${m} phút ${s} giây`;
         }
 
-        // --- LOGIC TIMER (ĐẾM NGƯỢC + THẬP PHÂN) ---
+        // --- LOGIC TIMER (Giữ nguyên logic) ---
         let timerInterval;
-        let timeLeft = 0; // Thời gian còn lại (seconds float)
+        let timeLeft = 0;
         let isRunning = false;
         let isPaused = false;
         
@@ -283,51 +312,40 @@
         const timerDisplay = document.getElementById('timer-display');
 
         function updateTimerDisplay() {
-            // Xử lý hiển thị phút:giây.phần_trăm_giây
             let displayTime = timeLeft > 0 ? timeLeft : 0;
-            
             const m = Math.floor(displayTime / 60).toString().padStart(2, '0');
             const s = Math.floor(displayTime % 60).toString().padStart(2, '0');
-            // Lấy 2 số sau dấu phẩy cho phần trăm giây
             const ms = Math.floor((displayTime % 1) * 100).toString().padStart(2, '0');
             
             timerDisplay.textContent = `${m}:${s}.${ms}`;
             
-            // Đổi màu khi hết giờ
             if (timeLeft <= 0) {
                 timerDisplay.classList.add('text-red-500');
-                timerDisplay.classList.remove('text-white');
+                timerDisplay.classList.remove('text-slate-800', 'dark:text-white');
             } else {
                 timerDisplay.classList.remove('text-red-500');
-                timerDisplay.classList.add('text-white');
+                timerDisplay.classList.add('text-slate-800', 'dark:text-white');
             }
         }
 
         function startTimer() {
             if (isRunning) return;
-            
-            // Nếu đang ở trạng thái reset (chưa pause), lấy giá trị mới nhất từ tính toán
             if (!isPaused) {
                 if (window.calculatedTimeRaw <= 0) return;
                 timeLeft = window.calculatedTimeRaw;
             }
-
             isRunning = true;
             isPaused = false;
-            
             btnStart.disabled = true;
             btnStart.classList.add('opacity-50');
             btnPause.disabled = false;
             btnPause.classList.remove('opacity-50');
-            
-            // Update mỗi 10ms
             const step = 0.01; 
             timerInterval = setInterval(() => {
                 timeLeft -= step;
                 if (timeLeft <= 0) {
                     timeLeft = 0;
-                    pauseTimer(); // Dừng khi về 0
-                    // Có thể thêm âm thanh báo hiệu ở đây
+                    pauseTimer();
                 }
                 updateTimerDisplay();
             }, 10);
@@ -338,47 +356,35 @@
             isRunning = false;
             isPaused = true;
             clearInterval(timerInterval);
-            
             btnStart.disabled = false;
             btnStart.classList.remove('opacity-50');
             btnPause.disabled = true;
             btnPause.classList.add('opacity-50');
-            
-            if (timeLeft > 0) {
-                btnStart.textContent = "Resume";
-            } else {
+            if (timeLeft > 0) btnStart.textContent = "Resume";
+            else {
                 btnStart.textContent = "Start";
-                isPaused = false; // Reset trạng thái pause nếu đã hết giờ
+                isPaused = false;
             }
         }
 
         function resetTimer() {
-            // Dừng timer nếu đang chạy
             if (isRunning) {
                 clearInterval(timerInterval);
                 isRunning = false;
             }
             isPaused = false;
-            
-            // Lấy lại giá trị từ kết quả tính toán
             timeLeft = window.calculatedTimeRaw || 0;
-            
             updateTimerDisplay();
-            
             btnStart.disabled = false;
             btnStart.classList.remove('opacity-50');
             btnStart.textContent = "Start";
-            
             btnPause.disabled = true;
             btnPause.classList.add('opacity-50');
-            
             timerDisplay.classList.remove('text-red-500');
-            timerDisplay.classList.add('text-white');
+            timerDisplay.classList.add('text-slate-800', 'dark:text-white');
         }
 
-        // Chạy khởi tạo
         init();
-
     </script>
 </body>
 </html>
