@@ -2,6 +2,17 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    
+    <!-- === TỰ ĐỘNG CHUYỂN HƯỚNG SANG TÊN MIỀN MỚI === -->
+    <script>
+        // Kiểm tra nếu đang ở link cũ (pages.dev)
+        if (window.location.hostname.includes('pages.dev')) {
+            // Chuyển hướng ngay lập tức sang tên miền xịn ndt.io.vn
+            // Giữ nguyên đường dẫn con (ví dụ: /quiz_ver2.html vẫn sang đúng trang đó)
+            window.location.replace("https://ndt.io.vn" + window.location.pathname + window.location.search);
+        }
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cổng thông tin NDT</title>
     
