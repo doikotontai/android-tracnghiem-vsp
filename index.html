@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
     <script>
@@ -32,14 +32,13 @@
                     },
                     colors: {
                         slate: {
-                            850: '#151e2e',
+                            850: '#1e293b',
                             900: '#0f172a',
                             950: '#020617',
                         }
                     },
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-out forwards',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         fadeIn: {
@@ -53,17 +52,20 @@
     </script>
 
     <style>
-        body {
-            background-color: #0f172a; /* Slate 900 */
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        
+        /* Light Mode */
+        body { background-color: #f8fafc; color: #334155; }
+        
+        /* Dark Mode */
+        html.dark body { background-color: #0f172a; color: #e2e8f0; }
 
-        /* Nền Background Dynamic */
+        /* Nền Background Dynamic (Chỉ hiện ở Dark Mode) */
         .bg-gradient-mesh {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
+            opacity: 0; transition: opacity 0.5s ease;
             background: 
                 radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
@@ -71,81 +73,97 @@
                 radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
             background-color: #0f172a;
         }
+        html.dark .bg-gradient-mesh { opacity: 1; }
 
         /* Glassmorphism Classes */
         .glass-panel {
-            background: rgba(30, 41, 59, 0.4);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        html.dark .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .glass-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        html.dark .glass-card {
             background: rgba(30, 41, 59, 0.4);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        html.dark .glass-card:hover {
             background: rgba(51, 65, 85, 0.6);
             border-color: rgba(56, 189, 248, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        html.dark ::-webkit-scrollbar-thumb { background: #334155; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Animation delay helper */
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-sky-500/30">
+<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-blue-100 dark:selection:bg-sky-500/30">
     
     <!-- Background -->
     <div class="bg-gradient-mesh"></div>
 
     <!-- Header / Navbar -->
-    <header class="sticky top-0 z-50 glass-panel border-b-0 border-b-white/5">
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/50 backdrop-blur-md border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo Area -->
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <!-- Fallback Text Logo if Image fails, or img tag here -->
                          <img src="logo.png" alt="NDT" class="w-8 h-8 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
                          <span class="font-bold text-white text-lg hidden">N</span>
                     </div>
                     <div class="flex flex-col">
-                        <h1 class="font-bold text-white leading-tight tracking-tight">NDT Portal</h1>
-                        <span class="text-[10px] text-blue-200 uppercase tracking-wider font-semibold">Ban Chánh Hàn</span>
+                        <h1 class="font-bold text-slate-800 dark:text-white leading-tight tracking-tight">NDT Portal</h1>
+                        <span class="text-[10px] text-slate-500 dark:text-blue-200 uppercase tracking-wider font-semibold">Ban Chánh Hàn</span>
                     </div>
                 </div>
 
                 <!-- Right Actions -->
                 <div class="flex items-center gap-4">
-                    <!-- Date Widget (Hidden on mobile) -->
-                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-white/5 text-xs text-slate-400">
+                    <!-- Date Widget -->
+                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-white/5 text-xs text-slate-500 dark:text-slate-400">
                         <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                         <span id="current-date">...</span>
                     </div>
 
-                    <!-- Theme Toggle (Simplified for Dark Mode default) -->
-                    <button class="w-9 h-9 rounded-full bg-slate-800/50 hover:bg-slate-700 flex items-center justify-center text-slate-400 transition-colors border border-white/5">
-                        <i data-lucide="bell" class="w-4 h-4"></i>
+                    <!-- Theme Toggle (ĐÃ SỬA LẠI ĐÚNG ICON) -->
+                    <button id="theme-toggle" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-yellow-400 transition-colors border border-slate-200 dark:border-white/5 shadow-sm">
+                        <!-- Icon Sun (Hiện khi Dark Mode) -->
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                        <!-- Icon Moon (Hiện khi Light Mode) -->
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
                     </button>
                     
-                    <!-- User Avatar (Static) -->
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 p-[2px] cursor-pointer">
-                        <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
-                            <span class="font-bold text-xs text-sky-500">U</span>
+                    <!-- User Avatar -->
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 p-[2px] cursor-pointer shadow-md">
+                        <div class="w-full h-full rounded-full bg-white dark:bg-slate-900 flex items-center justify-center">
+                            <span class="font-bold text-xs text-blue-600 dark:text-sky-500">U</span>
                         </div>
                     </div>
                 </div>
@@ -158,26 +176,26 @@
         
         <!-- Welcome Section -->
         <div class="animate-fade-in">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">Xin chào, <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Đồng nghiệp</span> 👋</h2>
-            <p class="text-slate-400 text-lg">Chào mừng quay trở lại hệ thống thông tin nội bộ.</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white mb-2">Xin chào, <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-sky-400 dark:to-indigo-400">Đồng nghiệp</span> 👋</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-lg">Chào mừng quay trở lại hệ thống thông tin nội bộ.</p>
         </div>
 
-        <!-- Stats Grid (Dashboard Style) -->
+        <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in delay-100">
             <!-- Visitor Stat -->
             <div class="glass-card rounded-2xl p-5 flex items-center justify-between relative overflow-hidden group">
                 <div class="absolute right-0 top-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all group-hover:bg-blue-500/20"></div>
                 <div>
-                    <p class="text-slate-400 text-sm font-medium mb-1">Lượt truy cập</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Lượt truy cập</p>
                     <div class="flex items-end gap-2">
-                        <h3 id="visitor-count" class="text-3xl font-bold text-white tracking-tight">Loading...</h3>
+                        <h3 id="visitor-count" class="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Loading...</h3>
                         <span class="flex h-2.5 w-2.5 relative mb-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                         </span>
                     </div>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
                     <i data-lucide="users" class="w-6 h-6"></i>
                 </div>
             </div>
@@ -186,93 +204,93 @@
             <div class="glass-card rounded-2xl p-5 flex items-center justify-between relative overflow-hidden group">
                 <div class="absolute right-0 top-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all group-hover:bg-purple-500/20"></div>
                 <div>
-                    <p class="text-slate-400 text-sm font-medium mb-1">Trạng thái hệ thống</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Trạng thái hệ thống</p>
                     <div class="flex items-center gap-2">
-                        <h3 class="text-2xl font-bold text-white">Ổn định</h3>
+                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white">Ổn định</h3>
                         <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i>
                     </div>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
+                <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
                     <i data-lucide="activity" class="w-6 h-6"></i>
                 </div>
             </div>
 
-             <!-- Time/Quick Action Stat -->
+             <!-- Version Stat -->
              <div class="glass-card rounded-2xl p-5 flex items-center justify-between relative overflow-hidden group">
                 <div class="absolute right-0 top-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all group-hover:bg-amber-500/20"></div>
                 <div>
-                    <p class="text-slate-400 text-sm font-medium mb-1">Phiên bản</p>
-                    <h3 class="text-2xl font-bold text-white">Portal v2.1</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Phiên bản</p>
+                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white">Portal v2.1</h3>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                     <i data-lucide="zap" class="w-6 h-6"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Main Functions Grid (Bento Grid Style) -->
+        <!-- Main Functions Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in delay-200">
             
-            <!-- Card: Thư viện (Lớn) -->
+            <!-- Card: Thư viện -->
             <a href="tools.html" class="group col-span-1 lg:col-span-2 relative h-48 rounded-2xl overflow-hidden glass-card p-6 flex flex-col justify-between hover:ring-2 hover:ring-amber-500/50">
                 <div class="absolute right-0 bottom-0 w-48 h-48 bg-gradient-to-br from-amber-500/10 to-orange-600/10 rounded-full blur-3xl translate-x-12 translate-y-12 group-hover:translate-x-8 group-hover:translate-y-8 transition-transform"></div>
                 
                 <div class="flex justify-between items-start z-10">
-                    <div class="w-12 h-12 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 mb-4 group-hover:scale-110 transition-transform">
+                    <div class="w-12 h-12 rounded-lg bg-amber-50 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-4 group-hover:scale-110 transition-transform">
                         <i data-lucide="library" class="w-6 h-6"></i>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                    <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors text-slate-400">
                         <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
                     </div>
                 </div>
                 
                 <div class="z-10">
-                    <h3 class="text-xl font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">Thư viện NDT</h3>
-                    <p class="text-sm text-slate-400 line-clamp-2">Quy trình, biểu mẫu, tài liệu tham khảo và các công cụ tính toán kỹ thuật.</p>
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Thư viện NDT</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">Quy trình, biểu mẫu, tài liệu tham khảo và các công cụ tính toán kỹ thuật.</p>
                 </div>
             </a>
 
             <!-- Card: Trắc nghiệm V1 -->
             <a href="tracnghiem.html" class="group col-span-1 relative h-48 rounded-2xl overflow-hidden glass-card p-6 flex flex-col justify-between hover:ring-2 hover:ring-blue-500/50">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
-                <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-blue-600/5 rounded-full blur-2xl -mr-8 -mt-8"></div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                     <i data-lucide="book-open-check" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Ôn tập V1</h3>
-                    <p class="text-xs text-slate-400">Ngân hàng câu hỏi cơ bản RT, UT, MT, PT.</p>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Ôn tập V1</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Ngân hàng câu hỏi cơ bản RT, UT, MT, PT.</p>
                 </div>
             </a>
 
-            <!-- Card: Trắc nghiệm V2 (Nổi bật) -->
+            <!-- Card: Trắc nghiệm V2 -->
             <a href="quiz_ver2.html" class="group col-span-1 relative h-48 rounded-2xl overflow-hidden glass-card p-0 hover:ring-2 hover:ring-indigo-500/50">
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-violet-600/20 group-hover:opacity-100 opacity-50 transition-opacity"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-violet-600/10 dark:from-indigo-600/20 dark:to-violet-600/20 group-hover:opacity-100 opacity-50 transition-opacity"></div>
                 <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
                     <div class="flex justify-between items-start">
                         <div class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
                             <i data-lucide="sparkles" class="w-5 h-5"></i>
                         </div>
-                        <span class="px-2 py-1 rounded bg-indigo-500/30 border border-indigo-400/30 text-[10px] font-bold text-indigo-200 uppercase">Mới</span>
+                        <span class="px-2 py-1 rounded bg-white/50 dark:bg-indigo-500/30 border border-indigo-200 dark:border-indigo-400/30 text-[10px] font-bold text-indigo-700 dark:text-indigo-200 uppercase">Mới</span>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-white mb-1">Trắc nghiệm V2.0</h3>
-                        <p class="text-xs text-indigo-200/70">Giao diện mới, trải nghiệm mượt mà hơn.</p>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1">Trắc nghiệm V2.0</h3>
+                        <p class="text-xs text-slate-500 dark:text-indigo-200/70">Giao diện mới, trải nghiệm mượt mà hơn.</p>
                     </div>
                 </div>
             </a>
 
             <!-- Card: Phần mềm -->
-            <a href="software.html" class="group col-span-1 md:col-span-2 lg:col-span-4 h-24 rounded-2xl overflow-hidden glass-card px-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors relative">
+            <a href="software.html" class="group col-span-1 md:col-span-2 lg:col-span-4 h-24 rounded-2xl overflow-hidden glass-card px-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative">
                 <div class="flex items-center gap-4 z-10">
-                    <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
+                    <div class="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
                         <i data-lucide="monitor-down" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-white">Phần mềm & Tiện ích</h3>
-                        <p class="text-sm text-slate-400 hidden sm:block">Kho phần mềm chuyên ngành và drivers.</p>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Phần mềm & Tiện ích</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">Kho phần mềm chuyên ngành và drivers.</p>
                     </div>
                 </div>
-                <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 group-hover:border-purple-500 group-hover:text-purple-500 transition-all z-10 bg-slate-900/50">
+                <div class="w-10 h-10 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:border-purple-500 group-hover:text-purple-500 transition-all z-10 bg-white dark:bg-slate-900/50">
                     <i data-lucide="chevron-right" class="w-5 h-5"></i>
                 </div>
             </a>
@@ -282,15 +300,15 @@
     </main>
 
     <!-- Footer -->
-    <footer class="mt-auto border-t border-white/5 bg-slate-900/50 backdrop-blur-sm py-8">
+    <footer class="mt-auto border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm py-8">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <p class="text-slate-500 text-sm mb-2">&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
-            <div class="flex justify-center gap-4 text-xs text-slate-600">
-                <a href="#" class="hover:text-slate-400">Điều khoản</a>
-                <span class="w-px h-4 bg-slate-800"></span>
-                <a href="#" class="hover:text-slate-400">Bảo mật</a>
-                <span class="w-px h-4 bg-slate-800"></span>
-                <a href="mailto:luunvp.cd@vietsov.com.vn" class="hover:text-slate-400">Liên hệ</a>
+            <div class="flex justify-center gap-4 text-xs text-slate-600 dark:text-slate-400">
+                <a href="#" class="hover:text-slate-800 dark:hover:text-slate-200">Điều khoản</a>
+                <span class="w-px h-4 bg-slate-300 dark:bg-slate-800"></span>
+                <a href="#" class="hover:text-slate-800 dark:hover:text-slate-200">Bảo mật</a>
+                <span class="w-px h-4 bg-slate-300 dark:bg-slate-800"></span>
+                <a href="mailto:luunvp.cd@vietsov.com.vn" class="hover:text-slate-800 dark:hover:text-slate-200">Liên hệ</a>
             </div>
         </div>
     </footer>
@@ -304,7 +322,27 @@
         const dateOptions = { weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric' };
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('vi-VN', dateOptions);
 
-        // --- Giữ nguyên Logic Firebase & Bảo mật cũ của bạn ---
+        // --- Theme Switcher Logic ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Kiểm tra theme đã lưu
+        if (localStorage.getItem('theme') === 'light') {
+            html.classList.remove('dark');
+        } else {
+            html.classList.add('dark'); // Mặc định dark
+        }
+
+        themeBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // --- Block F12 ---
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
         document.onkeydown = function(e) {
             if (event.keyCode == 123) return false;
@@ -313,7 +351,7 @@
         }
     </script>
 
-    <!-- Firebase Script (Giữ nguyên logic của bạn, chỉ sửa ID hiển thị nếu cần) -->
+    <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -341,7 +379,6 @@
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                // Thêm toLocaleString để số đẹp hơn (ví dụ 12.450)
                 obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('vi-VN');
                 if (progress < 1) { window.requestAnimationFrame(step); }
             };
@@ -368,7 +405,6 @@
                                 const newVal = doc.data().count;
                                 const currentText = counterElement.innerText.replace(/\./g, '').replace(/,/g, '');
                                 const currentVal = parseInt(currentText) || 0;
-                                // Animation số chạy
                                 if (!isNaN(currentVal) && currentVal > 0) { animateValue(counterElement, currentVal, newVal, 1500); } 
                                 else { counterElement.innerText = newVal.toLocaleString('vi-VN'); }
                             }
