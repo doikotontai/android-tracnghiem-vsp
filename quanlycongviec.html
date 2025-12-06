@@ -41,8 +41,8 @@
         .status-Tạm-dừng, .status-Tạm-dừng-NVSX { background-color: #ffedd5; color: #9a3412; }
         .status-Xong---chưa-QF50, .status-Sắp-Hết-Hạn { background-color: #fef9c3; color: #854d0e; }
 
-        .detail-content { max-height: 0; overflow: hidden; transition: all 0.3s ease; opacity: 0; }
-        .detail-content.expanded { max-height: 2000px; opacity: 1; padding-top: 0.5rem; }
+        /* Detail content always visible */
+        .detail-content { display: block; opacity: 1; padding-top: 0.5rem; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -80,13 +80,9 @@
                     <option value="name_asc">Tên Giàn (A-Z)</option>
                     <option value="status">Trạng Thái</option>
                 </select>
-                <label class="flex items-center space-x-2 text-sm cursor-pointer select-none">
-                    <input type="checkbox" id="show-all-details" class="rounded text-blue-600 focus:ring-blue-500">
-                    <span>Hiện chi tiết</span>
-                </label>
             </div>
             <div class="text-xs text-slate-500 italic hidden md:block">
-                * Dữ liệu được đồng bộ thời gian thực cho mọi người dùng
+                * Dữ liệu tự động hiển thị đầy đủ
             </div>
         </div>
 
@@ -104,11 +100,9 @@
     <!-- Firebase Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // QUAN TRỌNG: Thêm module Auth để xử lý đăng nhập
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Config Firebase của bạn
         const firebaseConfig = {
             apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
             authDomain: "tracnghiemndt.firebaseapp.com",
@@ -120,13 +114,11 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app); // Khởi tạo Auth
+        const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        // Document lưu dữ liệu
         const DOC_REF = doc(db, 'app_data', 'quanlycongviec_live'); 
 
-        // Dữ liệu mẫu để khởi tạo nếu database rỗng
+        // Dữ liệu mẫu
         const SEED_DATA = {
             "items": {
                 "CTK3": { "Fullname": "Giàn CTK 3", "Owner": "Vietsovpetro", "Status": "Đang khai thác", "Inventory": { "Equipment": { "Available": "Còn", "Items": "1 Mentor No: 25A00AH9" }, "Materials": { "Available": "Còn", "Items": "PT: 1 bình" } }, "NVSX": { "593-25": { "Header": { "Title": "Cải hoán tuyến ống.", "Status": "Tạm dừng", "Date_finish": "05/12/2025" }, "Progress": { "08/11": { "Info": "Hoàn thiện sàn", "Total_Weld": 49 } } } } },
@@ -136,44 +128,29 @@
         };
 
         let currentData = {};
-        let showDetails = false;
 
         // --- CORE FUNCTIONS ---
 
         const initApp = async () => {
             const statusEl = document.getElementById('connection-status');
-            
-            // 1. Đăng nhập ẩn danh (Để khớp với rules request.auth != null)
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
+            try { await signInAnonymously(auth); } catch (error) {
                 console.error("Lỗi đăng nhập:", error);
                 statusEl.innerText = "Lỗi Đăng Nhập";
                 statusEl.className = "flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold";
                 return;
             }
 
-            // 2. Sau khi đăng nhập thành công mới kết nối dữ liệu
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // Lắng nghe thay đổi dữ liệu thời gian thực
                     onSnapshot(DOC_REF, async (snap) => {
                         if (snap.exists()) {
-                            // Có dữ liệu -> Hiển thị
                             currentData = snap.data();
                             renderDashboard();
                             statusEl.innerHTML = `<span class="relative flex h-2 w-2"><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
                             statusEl.className = "flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-bold border border-green-200 dark:border-green-800";
                         } else {
-                            // Chưa có dữ liệu -> Tạo mới (Seed)
                             statusEl.innerText = "Initializing Data...";
-                            try {
-                                await setDoc(DOC_REF, SEED_DATA);
-                            } catch (e) {
-                                console.error("Lỗi khởi tạo:", e);
-                                statusEl.innerText = "Lỗi Quyền (Check Rules)";
-                                statusEl.classList.add("text-red-500");
-                            }
+                            try { await setDoc(DOC_REF, SEED_DATA); } catch (e) { console.error("Lỗi khởi tạo:", e); }
                         }
                     }, (error) => {
                         console.error("Lỗi Firestore:", error);
@@ -184,21 +161,18 @@
             });
         };
 
-        // 3. Hàm Render Giao diện
         const renderDashboard = () => {
             const container = document.getElementById('dashboard-container');
             const sortBy = document.getElementById('sort-by').value;
             
             let rigs = Object.entries(currentData.items || {}).map(([k, v]) => ({ key: k, ...v }));
 
-            // Sort
             rigs.sort((a, b) => {
                 if (sortBy === 'name_asc') return a.Fullname.localeCompare(b.Fullname);
                 return a.Status.localeCompare(b.Status);
             });
 
             container.innerHTML = rigs.map(rig => {
-                const rigStatusColor = getStatusColor(rig.Status);
                 const nvsxHtml = Object.entries(rig.NVSX || {}).map(([nk, nv]) => {
                     const h = nv.Header;
                     const p = Object.values(nv.Progress || {})[0] || {}; 
@@ -220,7 +194,6 @@
                     `;
                 }).join('');
 
-                // Get Inventory Items (default to empty string if missing)
                 const eqItems = rig.Inventory.Equipment.Items || '';
                 const matItems = rig.Inventory.Materials.Items || '';
 
@@ -246,36 +219,34 @@
                                 <!-- Equipment -->
                                 <div>
                                     <div class="flex justify-between items-center mb-1">
-                                        <span class="font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
-                                            Thiết bị
-                                            <!-- Edit Icon for Equipment -->
-                                            <i data-lucide="edit-2" class="w-3 h-3 cursor-pointer hover:text-blue-500 transition-colors" 
+                                        <div class="flex items-center gap-1">
+                                            <span class="font-semibold text-slate-600 dark:text-slate-400">Thiết bị</span>
+                                            <i data-lucide="edit-2" class="w-3 h-3 cursor-pointer hover:text-blue-500 ml-1 text-slate-400" 
                                                onclick="window.editInventoryItems('${rig.key}', 'Equipment')" 
                                                title="Sửa chi tiết thiết bị"></i>
-                                        </span>
+                                        </div>
                                         <span class="status-tag status-${sanitize(rig.Inventory.Equipment.Available)} cursor-pointer" 
                                               onclick="window.toggleInventory('${rig.key}', 'Equipment')">${rig.Inventory.Equipment.Available}</span>
                                     </div>
-                                    <div class="detail-content ${showDetails ? 'expanded' : ''}">
-                                        <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-2 border-l-2 border-slate-200 dark:border-slate-700">${eqItems || 'Chưa có thông tin'}</p>
+                                    <div class="detail-content">
+                                        <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-3 border-l-2 border-slate-200 dark:border-slate-700 ml-1">${eqItems || 'Chưa có thông tin'}</p>
                                     </div>
                                 </div>
 
                                 <!-- Materials -->
                                 <div class="border-t border-slate-200 dark:border-slate-700 pt-2">
                                     <div class="flex justify-between items-center mb-1">
-                                        <span class="font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
-                                            Vật tư
-                                            <!-- Edit Icon for Materials -->
-                                            <i data-lucide="edit-2" class="w-3 h-3 cursor-pointer hover:text-blue-500 transition-colors" 
+                                        <div class="flex items-center gap-1">
+                                            <span class="font-semibold text-slate-600 dark:text-slate-400">Vật tư</span>
+                                            <i data-lucide="edit-2" class="w-3 h-3 cursor-pointer hover:text-blue-500 ml-1 text-slate-400" 
                                                onclick="window.editInventoryItems('${rig.key}', 'Materials')" 
                                                title="Sửa chi tiết vật tư"></i>
-                                        </span>
+                                        </div>
                                         <span class="status-tag status-${sanitize(rig.Inventory.Materials.Available)} cursor-pointer" 
                                               onclick="window.toggleInventory('${rig.key}', 'Materials')">${rig.Inventory.Materials.Available}</span>
                                     </div>
-                                    <div class="detail-content ${showDetails ? 'expanded' : ''}">
-                                        <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-2 border-l-2 border-slate-200 dark:border-slate-700">${matItems || 'Chưa có thông tin'}</p>
+                                    <div class="detail-content">
+                                        <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-3 border-l-2 border-slate-200 dark:border-slate-700 ml-1">${matItems || 'Chưa có thông tin'}</p>
                                     </div>
                                 </div>
 
@@ -293,8 +264,8 @@
             lucide.createIcons();
         };
 
-        // --- UPDATE ACTIONS (GHI LÊN FIREBASE) ---
-        
+        // --- GLOBAL ACTIONS ---
+
         window.updateRigStatus = async (key, oldStatus) => {
             const newStatus = prompt("Nhập trạng thái giàn mới (Đang khai thác / Dừng giàn / ...):", oldStatus);
             if (newStatus && newStatus !== oldStatus) {
@@ -318,13 +289,10 @@
             await updateDoc(DOC_REF, { [path]: next });
         };
 
-        // NEW: Hàm sửa nội dung chi tiết
         window.editInventoryItems = async (rigKey, type) => {
-            // Lấy giá trị hiện tại từ biến local (đã sync)
             const currentVal = currentData.items[rigKey].Inventory[type].Items || '';
             const typeName = type === 'Equipment' ? 'Thiết bị' : 'Vật tư';
             
-            // Hiển thị prompt
             const newVal = prompt(`Nhập chi tiết ${typeName} tại ${rigKey} (hỗ trợ xuống dòng):`, currentVal);
             
             if (newVal !== null && newVal !== currentVal) {
@@ -339,21 +307,13 @@
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme setup
             if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
             document.getElementById('theme-toggle').onclick = () => {
                 document.documentElement.classList.toggle('dark');
                 localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
             };
 
-            // Controls
             document.getElementById('sort-by').onchange = renderDashboard;
-            document.getElementById('show-all-details').onchange = (e) => {
-                showDetails = e.target.checked;
-                renderDashboard();
-            };
-
-            // Start App
             initApp();
         });
     </script>
