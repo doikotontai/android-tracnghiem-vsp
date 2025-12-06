@@ -118,7 +118,6 @@
         const db = getFirestore(app);
         const DOC_REF = doc(db, 'app_data', 'quanlycongviec_live'); 
 
-        // Dữ liệu mẫu
         const SEED_DATA = {
             "items": {
                 "CTK3": { "Fullname": "Giàn CTK 3", "Owner": "Vietsovpetro", "Status": "Đang khai thác", "Inventory": { "Equipment": { "Available": "Còn", "Items": "1 Mentor No: 25A00AH9" }, "Materials": { "Available": "Còn", "Items": "PT: 1 bình" } }, "NVSX": { "593-25": { "Header": { "Title": "Cải hoán tuyến ống.", "Status": "Tạm dừng", "Date_finish": "05/12/2025" }, "Progress": { "08/11": { "Info": "Hoàn thiện sàn", "Total_Weld": 49 } } } } },
@@ -228,7 +227,7 @@
                                         <span class="status-tag status-${sanitize(rig.Inventory.Equipment.Available)} cursor-pointer" 
                                               onclick="window.toggleInventory('${rig.key}', 'Equipment')">${rig.Inventory.Equipment.Available}</span>
                                     </div>
-                                    <div class="detail-content">
+                                    <div class="detail-content" id="detail-${rig.key}-Equipment">
                                         <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-3 border-l-2 border-slate-200 dark:border-slate-700 ml-1">${eqItems || 'Chưa có thông tin'}</p>
                                     </div>
                                 </div>
@@ -245,7 +244,7 @@
                                         <span class="status-tag status-${sanitize(rig.Inventory.Materials.Available)} cursor-pointer" 
                                               onclick="window.toggleInventory('${rig.key}', 'Materials')">${rig.Inventory.Materials.Available}</span>
                                     </div>
-                                    <div class="detail-content">
+                                    <div class="detail-content" id="detail-${rig.key}-Materials">
                                         <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-3 border-l-2 border-slate-200 dark:border-slate-700 ml-1">${matItems || 'Chưa có thông tin'}</p>
                                     </div>
                                 </div>
@@ -289,16 +288,62 @@
             await updateDoc(DOC_REF, { [path]: next });
         };
 
-        window.editInventoryItems = async (rigKey, type) => {
+        // NEW: Inline Edit Function (Replaces Prompt)
+        window.editInventoryItems = (rigKey, type) => {
+            const containerId = `detail-${rigKey}-${type}`;
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
             const currentVal = currentData.items[rigKey].Inventory[type].Items || '';
-            const typeName = type === 'Equipment' ? 'Thiết bị' : 'Vật tư';
+
+            // Render Inline Editor (Textarea + Buttons)
+            container.innerHTML = `
+                <div class="mt-2 animate-fade-in">
+                    <textarea id="input-${rigKey}-${type}" 
+                        class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none" 
+                        rows="3" placeholder="Nhập chi tiết...">${currentVal}</textarea>
+                    <div class="flex gap-2 mt-2 justify-end">
+                        <button onclick="cancelEdit()" 
+                            class="px-3 py-1 text-xs font-medium text-slate-600 bg-slate-200 rounded hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 transition">
+                            Hủy
+                        </button>
+                        <button onclick="saveInventoryItem('${rigKey}', '${type}')" 
+                            class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition shadow-sm">
+                            <i data-lucide="save" class="w-3 h-3 inline mr-1"></i>Lưu
+                        </button>
+                    </div>
+                </div>
+            `;
             
-            const newVal = prompt(`Nhập chi tiết ${typeName} tại ${rigKey} (hỗ trợ xuống dòng):`, currentVal);
+            // Auto focus
+            const textarea = document.getElementById(`input-${rigKey}-${type}`);
+            textarea.focus();
+            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
             
-            if (newVal !== null && newVal !== currentVal) {
-                const path = `items.${rigKey}.Inventory.${type}.Items`;
+            // Re-init icons inside the new HTML if needed (though lucide.createIcons is called after renderDashboard)
+            lucide.createIcons();
+        };
+
+        window.saveInventoryItem = async (rigKey, type) => {
+            const inputId = `input-${rigKey}-${type}`;
+            const newVal = document.getElementById(inputId).value;
+            const path = `items.${rigKey}.Inventory.${type}.Items`;
+            
+            // UI Feedback
+            const btn = document.querySelector(`#detail-${rigKey}-${type} button.bg-blue-600`);
+            if(btn) { btn.innerText = 'Đang lưu...'; btn.disabled = true; }
+
+            try {
                 await updateDoc(DOC_REF, { [path]: newVal });
+                // No need to manually revert UI, onSnapshot will fire and call renderDashboard
+            } catch (e) {
+                alert("Lỗi lưu dữ liệu: " + e.message);
+                renderDashboard(); // Revert UI
             }
+        };
+
+        window.cancelEdit = () => {
+            renderDashboard(); // Re-render to discard changes and close editor
         };
 
         // --- UTILS ---
