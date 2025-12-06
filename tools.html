@@ -2,702 +2,309 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thư viện NDT - BCH</title>
+    <script>
+        if (window.location.hostname.includes('pages.dev')) {
+            window.location.replace("https://ndt.io.vn" + window.location.pathname + window.location.search);
+        }
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cổng thông tin NDT - Dashboard</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Be Vietnam Pro', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: "Inter", sans-serif; transition: all 0.3s ease; }
-        :root {
-            --mau-nen: #f4f7f6;
-            --mau-chinh: #005a9c;
+        body {
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+            overflow-x: hidden;
         }
 
-        /* --- LIGHT MODE DEFAULT --- */
-        .soft-card {
-            border: 1px solid #e5e7eb;
-            transition: all 0.2s ease-in-out;
-            background-color: white;
+        /* Nền Background Dynamic */
+        .bg-gradient-mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+            background-color: #0f172a;
         }
-        .soft-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--mau-chinh);
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        /* --- DARK MODE: GLASSMORPHISM & 3 NGUỒN SÁNG --- */
-        body.dark-mode {
-            background-color: #020617; /* Nền gốc tối (Slate 950) */
-            background-image: 
-                /* 1. NGUỒN SÁNG TRÁI (Deep Blue) */
-                radial-gradient(circle at 0% 30%, rgba(29, 78, 216, 0.5) 0%, transparent 50%),
-                
-                /* 2. NGUỒN SÁNG PHẢI (Deep Blue) */
-                radial-gradient(circle at 100% 30%, rgba(30, 58, 138, 0.5) 0%, transparent 50%),
-
-                /* 3. NGUỒN SÁNG GIỮA (Sky Blue - Chính giữa khung) */
-                radial-gradient(circle at 50% 55%, rgba(14, 165, 233, 0.25) 0%, transparent 50%),
-                
-                /* Ambient Fills (Nền phụ) */
-                radial-gradient(circle at 50% -20%, #172554 0%, transparent 70%), /* Đỉnh */
-                radial-gradient(circle at 50% 100%, #0f172a 0%, transparent 60%); /* Đáy */
-            background-attachment: fixed;
-            color: #e2e8f0;
-            --mau-chinh: #38bdf8;
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        body.dark-mode .bg-white, 
-        body.dark-mode .soft-card {
-            background-color: rgba(15, 23, 42, 0.6) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        .glass-card:hover {
+            background: rgba(51, 65, 85, 0.6);
+            border-color: rgba(56, 189, 248, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
         }
 
-        body.dark-mode .soft-card:hover,
-        body.dark-mode .bg-white:hover {
-            border-color: rgba(56, 189, 248, 0.5) !important;
-            background-color: rgba(30, 41, 59, 0.7) !important;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        body.dark-mode #home-nav a {
-            background-color: rgba(30, 41, 59, 0.6) !important;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #e2e8f0;
-        }
-        body.dark-mode #home-nav a:hover {
-            background-color: rgba(56, 189, 248, 0.2) !important;
-            border-color: #38bdf8;
-        }
-
-        body.dark-mode .bg-blue-50 {
-            background-color: rgba(30, 41, 59, 0.4) !important;
-        }
-        body.dark-mode .hover\:bg-blue-100:hover {
-            background-color: rgba(56, 189, 248, 0.15) !important;
-        }
-
-        body.dark-mode .hidden a .bg-white {
-            background-color: rgba(255, 255, 255, 0.03) !important;
-            border-color: rgba(255, 255, 255, 0.05) !important;
-        }
-        body.dark-mode .hidden a:hover .bg-white {
-            background-color: rgba(56, 189, 248, 0.1) !important;
-            border-color: rgba(56, 189, 248, 0.4) !important;
-        }
-
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
-            color: #f1f5f9 !important;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-        body.dark-mode .text-gray-600, body.dark-mode .text-slate-500 {
-            color: #94a3b8 !important;
-        }
-        
-        body.dark-mode .text-blue-900 { color: #e0f2fe !important; }
-        body.dark-mode .text-blue-600 { color: #38bdf8 !important; text-shadow: 0 0 5px rgba(56, 189, 248, 0.3); }
-        
-        body.dark-mode .rounded-full {
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        }
-
-        .rotate-180 { transform: rotate(180deg); }
-        
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 50;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e2e8f0;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-        body.dark-mode .theme-toggle {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            color: #fbbf24;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-        }
-        .theme-toggle:hover { transform: scale(1.1); }
-        .live-dot { animation: pulse-green 2s infinite; }
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
+        /* Animation delay helper */
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
     </style>
 </head>
-<!-- THÊM CLASS dark-mode -->
-<body class="bg-[var(--mau-nen)] min-h-screen px-4 py-6 flex flex-col dark-mode">
+<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-sky-500/30">
+    
+    <!-- Background -->
+    <div class="bg-gradient-mesh"></div>
 
-    <button id="theme-toggle" class="theme-toggle" title="Chuyển chế độ Sáng/Tối">
-        <i class="fas fa-sun text-lg text-slate-600" id="theme-icon"></i>
-    </button>
-
-    <div class="max-w-3xl mx-auto flex-grow w-full">
-        <!-- THANH ĐIỀU HƯỚNG -->
-        <div id="home-nav" class="max-w-4xl mx-auto mb-6">
-            <a href="./index.html" class="inline-flex items-center px-4 py-2 bg-white text-slate-700 rounded-xl shadow-sm hover:shadow-md hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 border border-slate-200 group no-underline text-sm">
-                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-300"></i>
-                <span class="font-semibold">Quay về trang chủ</span>
-            </a>
-        </div>
-
-        <!-- TIÊU ĐỀ -->
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-[var(--mau-chinh)] drop-shadow-sm">Thư viện & Tài liệu NDT</h1>
-            <p class="text-gray-600 mt-1 text-sm opacity-90">Link truy cập, biểu mẫu và công cụ tính toán</p>
-        </div>
-
-        <!-- DANH SÁCH CHÍNH -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            <!-- 1. NHÓM LINK TRUY CẬP -->
-            <div class="col-span-1 md:col-span-2 bg-white rounded-2xl border border-blue-200 shadow-sm overflow-hidden order-1">
-                <div onclick="toggleSection('linktruycap-group', 'arrow-linktruycap')" class="p-4 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white shadow-md">
-                        <i class="fas fa-link text-lg"></i>
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 glass-panel border-b-0 border-b-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo Area -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <!-- Fallback Text Logo if Image fails, or img tag here -->
+                         <img src="logo.png" alt="NDT" class="w-8 h-8 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                         <span class="font-bold text-white text-lg hidden">N</span>
                     </div>
-                    <div class="ml-3 flex-1">
-                        <h3 class="font-bold text-blue-900 text-base">LINK TRUY CẬP PHỤC VỤ CÔNG VIỆC</h3>
-                        <p class="text-xs text-blue-700 mt-0.5">Stopcard, Lịch bay, Nhân sự, JSA...</p>
-                    </div>
-                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-linktruycap">
-                        <i class="fas fa-chevron-down text-base"></i>
+                    <div class="flex flex-col">
+                        <h1 class="font-bold text-white leading-tight tracking-tight">NDT Portal</h1>
+                        <span class="text-[10px] text-blue-200 uppercase tracking-wider font-semibold">Ban Chánh Hàn</span>
                     </div>
                 </div>
 
-                <div id="linktruycap-group" class="hidden border-t border-blue-100 bg-white p-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-                     <!-- Items 1-12 (Giữ nguyên nội dung) -->
-                     <a href="https://stopcard.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-ban"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">1. Viết stopcard</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://docs.google.com/spreadsheets/d/1PEBwmbvPQLYliSx08NddV7pgAK_x0CpUMGPuCji7yZ8/edit?gid=946661187#gid=946661187" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-list-check text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">2. Cập nhật stopcard</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://drive.google.com/drive/u/1/folders/1FSh13BOHokfBTYMKVbLFSXzXOjMZWuMW" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-folder-open text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">3. Các form đi biển</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://docs.google.com/spreadsheets/d/1gYAUnKbIS6n6HksrOSal9No6uEmyjOek/edit?usp=sharing&ouid=117439100652630854980&rtpof=true&sd=true" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-cart-arrow-down"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">4. Cập nhật vật tư</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://phep.vietsov.com.vn/login" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-plane-departure"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">5. Đăng ký nghỉ phép</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="http://nhansu.vietsov.com.vn/login.aspx" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-regular fa-address-card"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">6. Thông tin nhân sự</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://khaibaoyte.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-notes-medical text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">7. Khai báo y tế</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://ktat.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-laptop-medical text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">8. Kiểm tra AT (TTAT)</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="http://svodka.vsp/Apps/Account/Login.aspx?returnUrl=%2fapps%2fadmin%2fantoan%2fjsa%2fJSA_CheckLists.aspx" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-clipboard-check text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">9. JSA (mạng nội bộ)</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="http://svodka.vsp/LichBayMoi.aspx" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-helicopter text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">10.1. Lịch bay (Nội bộ)</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://www.vietsov.com.vn/pages/flight.aspx" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-helicopter text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">10.2. Lịch bay (Ngoài)</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://khamsuckhoe.vietsov.com.vn/" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-solid fa-heart-pulse text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">11. ĐK khám sức khỏe</h4>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://docs.google.com/spreadsheets/d/1HAxY9pCiU_LgeeXsQ80_fCpvoyOfD2MwXXIu4gZrFS8/edit?gid=843793476#gid=843793476" target="_blank" class="block group no-underline h-full">
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                                <i class="fa-regular fa-address-card"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-700">12. Cập nhật TT đi biển</h4>
-								<p class="text-[10px] text-blue-700 mt-0.5">Hành lý, cân nặng...</p>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="###" class="block group no-underline h-full opacity-50 pointer-events-none">
-                         <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center h-full">
-                            <div class="w-9 h-9 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center border border-gray-200 mr-3 flex-shrink-0">
-                                <i class="fa-solid fa-question text-lg"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm text-slate-700 uppercase">13. Trống</h4>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
+                <!-- Right Actions -->
+                <div class="flex items-center gap-4">
+                    <!-- Date Widget (Hidden on mobile) -->
+                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-white/5 text-xs text-slate-400">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                        <span id="current-date">...</span>
+                    </div>
 
-            <!-- 2. NHÓM BỘ TIÊU CHUẨN NDT -->
-            <div class="col-span-1 md:col-span-2 bg-white rounded-2xl border border-blue-200 shadow-sm overflow-hidden order-2">
-                <div onclick="toggleSection('tieuchuan-group', 'arrow-tieuchuan')" class="p-4 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white shadow-md">
-                        <i class="fas fa-book-open text-lg"></i>
-                    </div>
-                    <div class="ml-3 flex-1">
-                        <h3 class="font-bold text-blue-900 text-base">BỘ TIÊU CHUẨN NDT</h3>
-                        <p class="text-xs text-blue-700 mt-0.5">Các tiêu chuẩn kỹ thuật, Matrix NDT...</p>
-                    </div>
-                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-tieuchuan">
-                        <i class="fas fa-chevron-down text-base"></i>
-                    </div>
-                </div>
-                <div id="tieuchuan-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
+                    <!-- Theme Toggle (Simplified for Dark Mode default) -->
+                    <button class="w-9 h-9 rounded-full bg-slate-800/50 hover:bg-slate-700 flex items-center justify-center text-slate-400 transition-colors border border-white/5">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                    </button>
                     
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center border border-yellow-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fas fa-file-alt text-sm"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">Matrix NDT và List tiêu chuẩn áp dụng</h4>
-                            <div class="flex gap-2 mt-1">
-                                <a href="https://drive.google.com/file/d/12fRE4Jr7p-opKsEIQF8vAtPsfevup3xf/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Matrix NDT (2021)</a>
-                                <a href="https://docs.google.com/spreadsheets/d/1P749fEEwIIVhKpOBEP7rel4D7TpNpgvH/edit?usp=drive_link&ouid=117668423906904167846&rtpof=true&sd=true" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">List tiêu chuẩn & so sánh</a>
-							</div>
-                        </div>
-                    </div>
-
-                    <!-- Tiêu chuẩn items (tút gọn để code nhẹ hơn, nội dung y hệt) -->
-                    <!-- ABS -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">ABS-2020</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1fBXdckmomt1wsiBClijBNNy6VvsfzJPf/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/1n0xIC6PHf8O91eQFOxaqTOsXDlL5VuI5/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/1uaGoIDzxRZwm9LVzpEyfVQy7AXZ23UwE/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- API 1104 -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">API 1104-2021</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1piIzaevD51CM-oidGxaWFDfadlu-jALG/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/1mb7iL_tSCuZY36EQfA_Dwi_B0p_F0DEq/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT & Vis</a>
-                                <a href="https://drive.google.com/file/d/1fFeXBPpvlSdce_6oZzMo3EnqYRGR2_kr/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PT</a>
-								<a href="https://drive.google.com/file/d/1ZPWevU6P-Yjz_wphJDXfKQ-0Q1S7MquG/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ASME B31.1 -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">ASME B31.1 - 2022</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1ZCTslBbPhA4RGaxs463U5ui86hNnxibJ/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/1Z-TMvaF2i0djCSJvXLz6YyVYvt-7SQnj/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT</a>
-								<a href="https://drive.google.com/file/d/1w7WgvKGJ5mgVYO2p4_pjC0ErcZ1RpQcw/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PT</a>
-                                <a href="https://drive.google.com/file/d/1fzuTCbDGr5wrgtVTWvlFG-ZnqiH5Q6Ap/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ASME B31.3 -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">ASME B31.3 - 2022</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1OVOG7gJE1z94pVJMDEEIIeUqCbE5oo8n/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/148NzAQWPSOj9HLl0BeuiQYELaxKdsk7P/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/1Zt5HgQzjoPdftxx-l5_Hc2_VvjfCH0d9/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ASME IX -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">ASME IX - 2023</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1AEWrzh0l8_JblGqllHocwp7Fqpo5IBfF/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/1qBmOa9MsdF_CuOwnGf78NHQP3V6iNKp1/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/1MqE9R7uYPZajuZ9gDlRPq-eOmyhrtVlK/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ASME VIII I -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">ASME VIII DIV I - 2023</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1abaLRH6KPq042ptKgIjguylVEh1gwPyP/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/18wNGagtJomqCJguNoFDvHpEpIiyx4XL2/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/1KRd50B2Wvm0ALpNfo_d_aAtRZxnZp4Rc/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ASME VIII II -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">ASME VIII DIV II - 2023</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/10Yup0Fo2eUg7CW1cB8egfxsLLDHj0UCy/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/1GFVkHcl7BZMGLCpYXeP-sbE-nnucDQqT/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">PAUT</a>
-								<a href="https://drive.google.com/file/d/1cQyWL19tFbyWwJmAwMntxb_I-iYDtnaL/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/107EGLEFmrELc-TlpYIJ0AjFjS7_gQyia/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- AWS -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center border border-red-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-regular fa-file-pdf"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">AWS D1.1-2020</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1XCx7flifejQWQ0UhZV3DFplkIT-rw7Mi/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">UT</a>
-                                <a href="https://drive.google.com/file/d/1g-fpBBXDISkRSl2hRchtPTxFgwTkFDeV/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/1EnW_MkdCUX1J9-YwSjdUA7Gkhv0M8TV-/view?usp=drive_link" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100 font-semibold">RT</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. NHÓM PAUT -->
-            <div class="col-span-1 md:col-span-2 bg-white rounded-2xl border border-blue-200 shadow-sm overflow-hidden order-4">
-                <div onclick="toggleSection('paut-group', 'arrow-paut')" class="p-4 flex items-center cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 text-white shadow-md">
-                        <i class="fas fa-folder-open text-lg"></i>
-                    </div>
-                    <div class="ml-3 flex-1">
-                        <h3 class="font-bold text-blue-900 text-base">BỘ PHẦN MỀM PAUT</h3>
-                        <p class="text-xs text-blue-700 mt-0.5">Gồm BeamTool, OmniPC, Mentor, VEO3...</p>
-                    </div>
-                    <div class="mr-2 text-blue-600 transition-transform duration-300" id="arrow-paut">
-                        <i class="fas fa-chevron-down text-base"></i>
-                    </div>
-                </div>
-                <div id="paut-group" class="hidden border-t border-blue-100 bg-white p-3 space-y-2">
-                    <!-- Items (giữ nguyên) -->
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center border border-green-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fas fa-laptop-medical text-sm"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">ES BeamTool</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Ver 10</a>
-    							<a href="https://drive.google.com/file/d/1PM-Fr8yKyHd6m42ElqI88p_9hy6us2Au/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Ver 2</a>
-                            </div>
-						</div>
-                    </div>
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center border border-green-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fas fa-laptop-medical text-sm"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">Mentor PC</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1i9-7N7XbS_7hMDHL4trDGNYuIUHkjTuw/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">3.11</a>
-                                <a href="https://drive.google.com/file/d/1DqOPR1h4GUcmT4L_06IbKnEEz7O9JZEz/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">3.10</a>
-                                <a href="https://drive.google.com/file/d/1BSEhvIKGJt0pge3msRDuopPIDGXAp1VW/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">iwp setup</a>
-                            </div>
-						</div>
-                    </div>
-                    <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center border border-green-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fas fa-laptop-medical text-sm"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">OmniScan</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1mXdDiR5muNOo7A50KeybD5h3yrTCjfCZ/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">OmniPC-6.1.1</a>
-                                <a href="https://drive.google.com/file/d/1QCY5ZoYBF2iTTcoHulF925Z3m0giTg5C/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">Tomoview</a>
-                            </div>
-						</div>
-                    </div>
-                     <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center border border-green-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fas fa-laptop-medical text-sm"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">SONATEST - VEO3</h4>
-                            <a href="https://sonatestap.com/SoftwareUpdates/UTstudioPlus/4.5.8/UTview%204.5.8.0%20Win64.exe" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">UTview_4.5.8.0</a>
-                        </div>
-                    </div>
-                     <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center border border-green-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-solid fa-file-zipper text-sm"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">Files setup PAUT</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1Pd0LQD8oxQPnblmj4AbDl70-u31iUZsB/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MentorUT</a>
-                                <a href="https://drive.google.com/file/d/1Ykry3CChrsufNQnucDoCJZMAaw-uBmZz/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100">Omniscan</a>
-                                <a href="https://drive.google.com/file/d/1tBtvaijOk1p_LxdRTyRBK_GzCEXRDh6L/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100">VEO3</a>
-                            </div>
-                        </div>
-                    </div>
-                     <div class="group bg-white border border-slate-200 rounded-xl p-3 flex items-center hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center border border-green-100 mr-3 shadow-sm group-hover:scale-110 transition-transform flex-shrink-0">
-                            <i class="fa-solid fa-file-zipper text-sm"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-gray-800 group-hover:text-blue-700">Backup SD-Card MX2</h4>
-                            <div class="flex gap-2 flex-wrap mt-1">
-                                <a href="https://drive.google.com/file/d/1g4SzC6U20zZU6PNKHBqJ8eYDS4bZhsPd/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2-SDCARD</a>
-                                <a href="https://drive.google.com/file/d/1aYtdawvy_fkv9RWgrgELxqp95JoyMXEa/view?usp=sharing" target="_blank" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hover:bg-blue-100">MX2DD_EN</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. CÁC CÔNG CỤ KHÁC -->
-            <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 order-5">
-                <a href="./pipe_size.html" target="_blank" class="block group no-underline h-full">
-                    <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-ship"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">Pipe Schedule</h3>
-                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Tra cứu kích thước ống</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="./rt_calculator.html" target="_blank" class="block group no-underline h-full">
-                    <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-ship"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">RT Exposure</h3>
-                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Tính thời gian chụp RT</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="./taoformditau.html" target="_blank" class="block group no-underline h-full">
-                    <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-ship"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">Form VSP-Express</h3>
-                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Form đi biển tàu dịch vụ</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="https://drive.google.com/file/d/1qvUOMOoabbMIf3wy_an_36wxw0Xc-MBM/view?usp=sharing" target="_blank" class="block group no-underline h-full">
-                    <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-ship"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">Trắc Nghiệm Offline</h3>
-                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">Phần mềm ôn thi trên PC</p>
-                        </div>
-                    </div>
-                </a>
-				<div onclick="checkPipelinePass()" class="block group no-underline h-full cursor-pointer">
-                    <div class="soft-card bg-white p-4 rounded-xl flex items-start gap-3 h-full hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-orange-600 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-ship"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-700">Pipeline Offshore 2025</h3>
-                            <p class="text-xs text-gray-500 mt-0.5 group-hover:text-blue-600">SUBSEA PIPELINES</p>
+                    <!-- User Avatar (Static) -->
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 p-[2px] cursor-pointer">
+                        <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                            <span class="font-bold text-xs text-sky-500">U</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <footer class="py-4 text-center text-slate-400 text-xs mt-auto border-t border-slate-200 dark:border-slate-800/50">
-         <div class="mb-2 flex justify-center">
-            <div class="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-full shadow-sm border border-slate-200 text-[10px] text-slate-500 dark:bg-slate-800/50 dark:border-slate-700 dark:text-gray-400">
-                <span class="w-1.5 h-1.5 bg-green-500 rounded-full live-dot"></span>
-                <span>Lượt truy cập:</span>
-                <span id="visitor-count" class="font-bold text-slate-700 dark:text-gray-300 tabular-nums">...</span>
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Welcome Section -->
+        <div class="animate-fade-in">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">Xin chào, <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Đồng nghiệp</span> 👋</h2>
+            <p class="text-slate-400 text-lg">Chào mừng quay trở lại hệ thống thông tin nội bộ.</p>
+        </div>
+
+        <!-- Stats Grid (Dashboard Style) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in delay-100">
+            <!-- Visitor Stat -->
+            <div class="glass-card rounded-2xl p-5 flex items-center justify-between relative overflow-hidden group">
+                <div class="absolute right-0 top-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all group-hover:bg-blue-500/20"></div>
+                <div>
+                    <p class="text-slate-400 text-sm font-medium mb-1">Lượt truy cập</p>
+                    <div class="flex items-end gap-2">
+                        <h3 id="visitor-count" class="text-3xl font-bold text-white tracking-tight">Loading...</h3>
+                        <span class="flex h-2.5 w-2.5 relative mb-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                    <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+            <!-- Status Stat -->
+            <div class="glass-card rounded-2xl p-5 flex items-center justify-between relative overflow-hidden group">
+                <div class="absolute right-0 top-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all group-hover:bg-purple-500/20"></div>
+                <div>
+                    <p class="text-slate-400 text-sm font-medium mb-1">Trạng thái hệ thống</p>
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-2xl font-bold text-white">Ổn định</h3>
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i>
+                    </div>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
+                    <i data-lucide="activity" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+             <!-- Time/Quick Action Stat -->
+             <div class="glass-card rounded-2xl p-5 flex items-center justify-between relative overflow-hidden group">
+                <div class="absolute right-0 top-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all group-hover:bg-amber-500/20"></div>
+                <div>
+                    <p class="text-slate-400 text-sm font-medium mb-1">Phiên bản</p>
+                    <h3 class="text-2xl font-bold text-white">Portal v2.1</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                    <i data-lucide="zap" class="w-6 h-6"></i>
+                </div>
             </div>
         </div>
-        <p>&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
-		<p>E-mail: luunvp.cd@vietsov.com.vn</p>
+
+        <!-- Main Functions Grid (Bento Grid Style) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in delay-200">
+            
+            <!-- Card: Thư viện (Lớn) -->
+            <a href="tools.html" class="group col-span-1 lg:col-span-2 relative h-48 rounded-2xl overflow-hidden glass-card p-6 flex flex-col justify-between hover:ring-2 hover:ring-amber-500/50">
+                <div class="absolute right-0 bottom-0 w-48 h-48 bg-gradient-to-br from-amber-500/10 to-orange-600/10 rounded-full blur-3xl translate-x-12 translate-y-12 group-hover:translate-x-8 group-hover:translate-y-8 transition-transform"></div>
+                
+                <div class="flex justify-between items-start z-10">
+                    <div class="w-12 h-12 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 mb-4 group-hover:scale-110 transition-transform">
+                        <i data-lucide="library" class="w-6 h-6"></i>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                
+                <div class="z-10">
+                    <h3 class="text-xl font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">Thư viện NDT</h3>
+                    <p class="text-sm text-slate-400 line-clamp-2">Quy trình, biểu mẫu, tài liệu tham khảo và các công cụ tính toán kỹ thuật.</p>
+                </div>
+            </a>
+
+            <!-- Card: Trắc nghiệm V1 -->
+            <a href="tracnghiem.html" class="group col-span-1 relative h-48 rounded-2xl overflow-hidden glass-card p-6 flex flex-col justify-between hover:ring-2 hover:ring-blue-500/50">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
+                <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                    <i data-lucide="book-open-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Ôn tập V1</h3>
+                    <p class="text-xs text-slate-400">Ngân hàng câu hỏi cơ bản RT, UT, MT, PT.</p>
+                </div>
+            </a>
+
+            <!-- Card: Trắc nghiệm V2 (Nổi bật) -->
+            <a href="quiz_ver2.html" class="group col-span-1 relative h-48 rounded-2xl overflow-hidden glass-card p-0 hover:ring-2 hover:ring-indigo-500/50">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-violet-600/20 group-hover:opacity-100 opacity-50 transition-opacity"></div>
+                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        </div>
+                        <span class="px-2 py-1 rounded bg-indigo-500/30 border border-indigo-400/30 text-[10px] font-bold text-indigo-200 uppercase">Mới</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-1">Trắc nghiệm V2.0</h3>
+                        <p class="text-xs text-indigo-200/70">Giao diện mới, trải nghiệm mượt mà hơn.</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card: Phần mềm -->
+            <a href="software.html" class="group col-span-1 md:col-span-2 lg:col-span-4 h-24 rounded-2xl overflow-hidden glass-card px-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors relative">
+                <div class="flex items-center gap-4 z-10">
+                    <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
+                        <i data-lucide="monitor-down" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Phần mềm & Tiện ích</h3>
+                        <p class="text-sm text-slate-400 hidden sm:block">Kho phần mềm chuyên ngành và drivers.</p>
+                    </div>
+                </div>
+                <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 group-hover:border-purple-500 group-hover:text-purple-500 transition-all z-10 bg-slate-900/50">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </div>
+            </a>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-white/5 bg-slate-900/50 backdrop-blur-sm py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm mb-2">&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
+            <div class="flex justify-center gap-4 text-xs text-slate-600">
+                <a href="#" class="hover:text-slate-400">Điều khoản</a>
+                <span class="w-px h-4 bg-slate-800"></span>
+                <a href="#" class="hover:text-slate-400">Bảo mật</a>
+                <span class="w-px h-4 bg-slate-800"></span>
+                <a href="mailto:luunvp.cd@vietsov.com.vn" class="hover:text-slate-400">Liên hệ</a>
+            </div>
+        </div>
     </footer>
 
+    <!-- Init Scripts -->
     <script>
-        async function checkPipelinePass() {
-            const pass = prompt("Nhập mật khẩu để xem tài liệu:");
-            if (!pass) return;
+        // Initialize Lucide Icons
+        lucide.createIcons();
 
-            // Hash đúng của "kkk" (SHA-256)
-            const targetHash = "96efbc43a462ab9d9c6a8173e5b322e17f218b56eb3a05a4bbc53221adebc7b3";
+        // Set current date
+        const dateOptions = { weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric' };
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('vi-VN', dateOptions);
 
-            const msgBuffer = new TextEncoder().encode(pass);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-            if (hashHex === targetHash) {
-                // Mở file ngay tại tab hiện tại (không mở tab mới)
-                window.location.href = './pipelines.pdf';
-            } else {
-                alert("Mật khẩu không đúng! Vui lòng thử lại.");
-            }
-        }
-
-        function toggleSection(elementId, arrowId) {
-            var content = document.getElementById(elementId);
-            var arrow = document.getElementById(arrowId);
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                arrow.classList.add('rotate-180');
-            } else {
-                content.classList.add('hidden');
-                arrow.classList.remove('rotate-180');
-            }
-        }
-
-        const toggleBtn = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        const body = document.body;
-
-        // --- LOGIC MỚI: MẶC ĐỊNH LÀ DARK ---
-        // Kiểm tra nếu localStorage là 'light' thì mới chuyển về sáng
-        if (localStorage.getItem('theme') === 'light') {
-            body.classList.remove('dark-mode');
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-        } else {
-            // Ngược lại (null hoặc dark) thì giữ nguyên dark-mode (đã có trong HTML)
-            localStorage.setItem('theme', 'dark');
-        }
-
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
-            } else {
-                localStorage.setItem('theme', 'light');
-                themeIcon.classList.remove('fa-sun');
-                themeIcon.classList.add('fa-moon');
-            }
-        });
-
-        // --- Chặn chuột phải & F12 ---
+        // --- Giữ nguyên Logic Firebase & Bảo mật cũ của bạn ---
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
         document.onkeydown = function(e) {
             if (event.keyCode == 123) return false;
@@ -705,7 +312,8 @@
             if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
         }
     </script>
-    
+
+    <!-- Firebase Script (Giữ nguyên logic của bạn, chỉ sửa ID hiển thị nếu cần) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -722,11 +330,7 @@
         };
         
         let app, auth, db;
-        try {
-            app = initializeApp(userFirebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch (e) { console.error(e); }
+        try { app = initializeApp(userFirebaseConfig); auth = getAuth(app); db = getFirestore(app); } catch (e) { console.error("Firebase Error:", e); }
 
         const STATS_COLLECTION = `site_stats`;
         const VISITOR_DOC_ID = 'visitors_v2'; 
@@ -737,10 +341,9 @@
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // Thêm toLocaleString để số đẹp hơn (ví dụ 12.450)
                 obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('vi-VN');
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
+                if (progress < 1) { window.requestAnimationFrame(step); }
             };
             window.requestAnimationFrame(step);
         }
@@ -765,11 +368,9 @@
                                 const newVal = doc.data().count;
                                 const currentText = counterElement.innerText.replace(/\./g, '').replace(/,/g, '');
                                 const currentVal = parseInt(currentText) || 0;
-                                if (!isNaN(currentVal) && currentVal > 0) {
-                                    animateValue(counterElement, currentVal, newVal, 1500);
-                                } else {
-                                    counterElement.innerText = newVal.toLocaleString('vi-VN');
-                                }
+                                // Animation số chạy
+                                if (!isNaN(currentVal) && currentVal > 0) { animateValue(counterElement, currentVal, newVal, 1500); } 
+                                else { counterElement.innerText = newVal.toLocaleString('vi-VN'); }
                             }
                         });
                     } catch (error) {}
