@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quản Lý Chất Lượng Công Việc NDT (Online)</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { slate: { 850: '#1e293b', 900: '#0f172a' } },
+                    animation: { 'fade-in': 'fadeIn 0.5s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { transition: background-color 0.3s ease; background-color: #f8fafc; color: #334155; font-family: 'Inter', sans-serif; }
+        html.dark body { background-color: #0f172a; color: #e2e8f0; }
+        
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        html.dark .glass-panel { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .status-tag { padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; display: inline-block; white-space: nowrap; }
+        
+        /* Status Colors */
+        .status-Đang-khai-thác, .status-Còn, .status-Xong---có-QF-50 { background-color: #d1fae5; color: #065f46; }
+        .status-Dừng-giàn, .status-Hủy, .status-Quá-Hạn, .status-Hết { background-color: #fee2e2; color: #991b1b; }
+        .status-Đang-xây-dựng, .status-Đang-thi-công { background-color: #bfdbfe; color: #1e40af; }
+        .status-Ngừng-hoạt-động, .status-Chưa-thi-công { background-color: #e5e7eb; color: #4b5563; }
+        .status-Tạm-dừng, .status-Tạm-dừng-NVSX { background-color: #ffedd5; color: #9a3412; }
+        .status-Xong---chưa-QF50, .status-Sắp-Hết-Hạn { background-color: #fef9c3; color: #854d0e; }
+
+        .detail-content { max-height: 0; overflow: hidden; transition: all 0.3s ease; opacity: 0; }
+        .detail-content.expanded { max-height: 2000px; opacity: 1; padding-top: 0.5rem; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg">N</div>
+                <div>
+                    <h1 class="font-bold text-slate-800 dark:text-white">NDT Portal</h1>
+                    <span class="text-[10px] text-slate-500 uppercase font-bold">Quản Lý Công Việc Online</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div id="connection-status" class="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+                    </span>
+                    Connecting...
+                </div>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition"><i data-lucide="moon" class="w-5 h-5"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-8 space-y-6">
+        
+        <!-- Controls -->
+        <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-40">
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <select id="sort-by" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="name_asc">Tên Giàn (A-Z)</option>
+                    <option value="status">Trạng Thái</option>
+                </select>
+                <label class="flex items-center space-x-2 text-sm cursor-pointer select-none">
+                    <input type="checkbox" id="show-all-details" class="rounded text-blue-600 focus:ring-blue-500">
+                    <span>Hiện chi tiết</span>
+                </label>
+            </div>
+            <div class="text-xs text-slate-500 italic hidden md:block">
+                * Dữ liệu được đồng bộ thời gian thực cho mọi người dùng
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard-container" class="space-y-6 pb-20">
+            <!-- Loading Skeleton -->
+            <div class="animate-pulse space-y-4">
+                <div class="h-48 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+                <div class="h-48 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Firebase Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // QUAN TRỌNG: Thêm module Auth để xử lý đăng nhập
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Config Firebase của bạn
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
+            authDomain: "tracnghiemndt.firebaseapp.com",
+            projectId: "tracnghiemndt",
+            storageBucket: "tracnghiemndt.firebasestorage.app",
+            messagingSenderId: "187385061213",
+            appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
+            measurementId: "G-TKRBZJT880"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); // Khởi tạo Auth
+        const db = getFirestore(app);
+        
+        // Document lưu dữ liệu
+        const DOC_REF = doc(db, 'app_data', 'quanlycongviec_live'); 
+
+        // Dữ liệu mẫu để khởi tạo nếu database rỗng
+        const SEED_DATA = {
+            "items": {
+                "CTK3": { "Fullname": "Giàn CTK 3", "Owner": "Vietsovpetro", "Status": "Đang khai thác", "Inventory": { "Equipment": { "Available": "Còn", "Items": "1 Mentor No: 25A00AH9" }, "Materials": { "Available": "Còn", "Items": "PT: 1 bình" } }, "NVSX": { "593-25": { "Header": { "Title": "Cải hoán tuyến ống.", "Status": "Tạm dừng", "Date_finish": "05/12/2025" }, "Progress": { "08/11": { "Info": "Hoàn thiện sàn", "Total_Weld": 49 } } } } },
+                "CTP2": { "Fullname": "Giàn CTP 2", "Owner": "Vietsovpetro", "Status": "Ngừng hoạt động", "Inventory": { "Equipment": { "Available": "Còn", "Items": "UTM: 1 Visonic" }, "Materials": { "Available": "Hết", "Items": "" } }, "NVSX": { "801-25": { "Header": { "Title": "Cải hoán Gas Lift.", "Status": "Xong - chưa QF50", "Date_finish": "19/11/2025" } } } },
+                "BK_5": { "Fullname": "Giàn BK 5", "Owner": "Vietsovpetro", "Status": "Đang xây dựng", "Inventory": { "Equipment": { "Available": "Hết" }, "Materials": { "Available": "Còn" } }, "NVSX": { "205-25": { "Header": { "Title": "Thay thế chân đỡ.", "Status": "Đang thi công", "Date_finish": "20/11/2026" } } } }
+            }
+        };
+
+        let currentData = {};
+        let showDetails = false;
+
+        // --- CORE FUNCTIONS ---
+
+        const initApp = async () => {
+            const statusEl = document.getElementById('connection-status');
+            
+            // 1. Đăng nhập ẩn danh (Để khớp với rules request.auth != null)
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.error("Lỗi đăng nhập:", error);
+                statusEl.innerText = "Lỗi Đăng Nhập";
+                statusEl.className = "flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold";
+                return;
+            }
+
+            // 2. Sau khi đăng nhập thành công mới kết nối dữ liệu
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // Lắng nghe thay đổi dữ liệu thời gian thực
+                    onSnapshot(DOC_REF, async (snap) => {
+                        if (snap.exists()) {
+                            // Có dữ liệu -> Hiển thị
+                            currentData = snap.data();
+                            renderDashboard();
+                            statusEl.innerHTML = `<span class="relative flex h-2 w-2"><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
+                            statusEl.className = "flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-bold border border-green-200 dark:border-green-800";
+                        } else {
+                            // Chưa có dữ liệu -> Tạo mới (Seed)
+                            statusEl.innerText = "Initializing Data...";
+                            try {
+                                await setDoc(DOC_REF, SEED_DATA);
+                            } catch (e) {
+                                console.error("Lỗi khởi tạo:", e);
+                                statusEl.innerText = "Lỗi Quyền (Check Rules)";
+                                statusEl.classList.add("text-red-500");
+                            }
+                        }
+                    }, (error) => {
+                        console.error("Lỗi Firestore:", error);
+                        statusEl.innerText = "Mất kết nối / Lỗi quyền";
+                        statusEl.className = "flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold";
+                    });
+                }
+            });
+        };
+
+        // 3. Hàm Render Giao diện
+        const renderDashboard = () => {
+            const container = document.getElementById('dashboard-container');
+            const sortBy = document.getElementById('sort-by').value;
+            
+            let rigs = Object.entries(currentData.items || {}).map(([k, v]) => ({ key: k, ...v }));
+
+            // Sort
+            rigs.sort((a, b) => {
+                if (sortBy === 'name_asc') return a.Fullname.localeCompare(b.Fullname);
+                return a.Status.localeCompare(b.Status);
+            });
+
+            container.innerHTML = rigs.map(rig => {
+                const rigStatusColor = getStatusColor(rig.Status);
+                const nvsxHtml = Object.entries(rig.NVSX || {}).map(([nk, nv]) => {
+                    const h = nv.Header;
+                    const p = Object.values(nv.Progress || {})[0] || {}; 
+                    return `
+                        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition relative group">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-sm text-blue-600 dark:text-blue-400">${nk}</span>
+                                <span class="status-tag status-${sanitize(h.Status)} cursor-pointer hover:opacity-80" 
+                                      onclick="window.updateNVSXStatus('${rig.key}', '${nk}', '${h.Status}')" title="Bấm để đổi trạng thái">
+                                    ${h.Status}
+                                </span>
+                            </div>
+                            <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 line-clamp-2">${h.Title}</p>
+                            <div class="text-[10px] text-slate-500 space-y-1">
+                                <p>KT: ${h.Date_finish || 'N/A'}</p>
+                                <p>Tiến độ: <span class="text-slate-700 dark:text-slate-400">${p.Info || 'Chưa cập nhật'}</span></p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Get Inventory Items (default to empty string if missing)
+                const eqItems = rig.Inventory.Equipment.Items || '';
+                const matItems = rig.Inventory.Materials.Items || '';
+
+                return `
+                    <div class="glass-panel p-5 rounded-xl border-l-4 ${rig.Status === 'Đang khai thác' ? 'border-l-green-500' : 'border-l-slate-400'}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-slate-500">${rig.key.substring(0,2)}</div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 dark:text-white text-lg">${rig.Fullname}</h3>
+                                    <p class="text-xs text-slate-500">${rig.Owner}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="status-tag status-${sanitize(rig.Status)} cursor-pointer" onclick="window.updateRigStatus('${rig.key}', '${rig.Status}')">${rig.Status}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Inventory Section -->
+                            <div class="col-span-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg text-xs space-y-3">
+                                
+                                <!-- Equipment -->
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                                            Thiết bị
+                                            <!-- Edit Icon for Equipment -->
+                                            <i data-lucide="edit-2" class="w-3 h-3 cursor-pointer hover:text-blue-500 transition-colors" 
+                                               onclick="window.editInventoryItems('${rig.key}', 'Equipment')" 
+                                               title="Sửa chi tiết thiết bị"></i>
+                                        </span>
+                                        <span class="status-tag status-${sanitize(rig.Inventory.Equipment.Available)} cursor-pointer" 
+                                              onclick="window.toggleInventory('${rig.key}', 'Equipment')">${rig.Inventory.Equipment.Available}</span>
+                                    </div>
+                                    <div class="detail-content ${showDetails ? 'expanded' : ''}">
+                                        <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-2 border-l-2 border-slate-200 dark:border-slate-700">${eqItems || 'Chưa có thông tin'}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Materials -->
+                                <div class="border-t border-slate-200 dark:border-slate-700 pt-2">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                                            Vật tư
+                                            <!-- Edit Icon for Materials -->
+                                            <i data-lucide="edit-2" class="w-3 h-3 cursor-pointer hover:text-blue-500 transition-colors" 
+                                               onclick="window.editInventoryItems('${rig.key}', 'Materials')" 
+                                               title="Sửa chi tiết vật tư"></i>
+                                        </span>
+                                        <span class="status-tag status-${sanitize(rig.Inventory.Materials.Available)} cursor-pointer" 
+                                              onclick="window.toggleInventory('${rig.key}', 'Materials')">${rig.Inventory.Materials.Available}</span>
+                                    </div>
+                                    <div class="detail-content ${showDetails ? 'expanded' : ''}">
+                                        <p class="text-slate-500 dark:text-slate-500 italic whitespace-pre-wrap pl-2 border-l-2 border-slate-200 dark:border-slate-700">${matItems || 'Chưa có thông tin'}</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- NVSX List -->
+                            <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                ${nvsxHtml || '<p class="text-xs text-slate-400 italic p-2">Không có công việc.</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            lucide.createIcons();
+        };
+
+        // --- UPDATE ACTIONS (GHI LÊN FIREBASE) ---
+        
+        window.updateRigStatus = async (key, oldStatus) => {
+            const newStatus = prompt("Nhập trạng thái giàn mới (Đang khai thác / Dừng giàn / ...):", oldStatus);
+            if (newStatus && newStatus !== oldStatus) {
+                const path = `items.${key}.Status`;
+                await updateDoc(DOC_REF, { [path]: newStatus });
+            }
+        };
+
+        window.updateNVSXStatus = async (rigKey, nvsxKey, oldStatus) => {
+            const newStatus = prompt("Nhập trạng thái công việc mới:", oldStatus);
+            if (newStatus && newStatus !== oldStatus) {
+                const path = `items.${rigKey}.NVSX.${nvsxKey}.Header.Status`;
+                await updateDoc(DOC_REF, { [path]: newStatus });
+            }
+        };
+
+        window.toggleInventory = async (rigKey, type) => {
+            const current = currentData.items[rigKey].Inventory[type].Available;
+            const next = current === 'Còn' ? 'Hết' : 'Còn';
+            const path = `items.${rigKey}.Inventory.${type}.Available`;
+            await updateDoc(DOC_REF, { [path]: next });
+        };
+
+        // NEW: Hàm sửa nội dung chi tiết
+        window.editInventoryItems = async (rigKey, type) => {
+            // Lấy giá trị hiện tại từ biến local (đã sync)
+            const currentVal = currentData.items[rigKey].Inventory[type].Items || '';
+            const typeName = type === 'Equipment' ? 'Thiết bị' : 'Vật tư';
+            
+            // Hiển thị prompt
+            const newVal = prompt(`Nhập chi tiết ${typeName} tại ${rigKey} (hỗ trợ xuống dòng):`, currentVal);
+            
+            if (newVal !== null && newVal !== currentVal) {
+                const path = `items.${rigKey}.Inventory.${type}.Items`;
+                await updateDoc(DOC_REF, { [path]: newVal });
+            }
+        };
+
+        // --- UTILS ---
+        function sanitize(str) { return str ? str.replace(/ /g, '-').replace(/[^a-zA-Z0-9-\u00C0-\u1EF9]/g, '') : ''; }
+        function getStatusColor(status) { return status === 'Đang khai thác' ? 'green' : 'red'; }
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme setup
+            if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+            document.getElementById('theme-toggle').onclick = () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            };
+
+            // Controls
+            document.getElementById('sort-by').onchange = renderDashboard;
+            document.getElementById('show-all-details').onchange = (e) => {
+                showDetails = e.target.checked;
+                renderDashboard();
+            };
+
+            // Start App
+            initApp();
+        });
+    </script>
+</body>
+</html>
