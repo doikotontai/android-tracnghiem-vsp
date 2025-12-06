@@ -1,0 +1,368 @@
+{
+    "items": {
+        "CTK3": {
+            "Fullname": "Giàn CTK 3",
+            "Owner": "Vietsovpetro",
+            "Sheet_link": "https://www.google.com/search?q=https://abc.com/ctk3",
+            "Image_link": "https://www.google.com/search?q=https://placehold.co/150x80/004A99/FFFFFF%3Ftext%3DCTK3",
+            "Details": {
+                "builder": "OCD Vietsov",
+                "year_built": 2000
+            },
+            "Status": "Đang khai thác",
+            "Inventory": {
+                "Equipment": {
+                    "Available": "Còn",
+                    "Items": {
+                        "PAUT/UT": "1 Mentor No: 25A00AH9",
+                        "MT": "1 Gông: Y1 No.58",
+                        "UTM": ""
+                    },
+                    "Date": "20/12/2025"
+                },
+                "Materials": {
+                    "Available": "Còn",
+                    "Items": {
+                        "PT": "Chất làm sạch: 1 bình\n Chất thấm: 1 bình\nChất hiện:1 bình",
+                        "RT": ""
+                    },
+                    "Date": "20/12/2025"
+                }
+            },
+            "Note": "Cần kiểm tra bổ sung vào tháng tới.",
+            "NVSX": {
+                "593-25": {
+                    "Header": {
+                        "Title": "Cải hoán tuyến ống Công Nghệ hiện hữu.",
+                        "Detail": "Các công việc: 1. Chế tạo sàn phục vụ 2. Đấu nối tuyến 1 3. Đấu nối tuyến 2 4. Phóng PIG",
+                        "Status": "Tạm dừng",
+                        "Date_start": "01/01/2025",
+                        "Date_finish": "05/12/2025",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {
+                        "08/11/2025": {
+                            "Staff": "H.Tr. Linh: 8h",
+                            "Info": "- Hoàn thiện kết cấu các sàn thao tác",
+                            "Total_Weld": 49,
+                            "NDT": {
+                                "PAUT": 13,
+                                "PT": 3
+                            },
+                            "Materials": {}
+                        }
+                    }
+                },
+                "601-25": {
+                    "Header": {
+                        "Title": "Thay thế van điều khiển áp suất Gas Lift.",
+                        "Detail": "Đang chờ phụ tùng thay thế và thiết bị NDT.",
+                        "Status": "Đang thi công",
+                        "Date_start": "01/08/2025",
+                        "Date_finish": "20/10/2025",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {
+                        "01/09/2025": {
+                            "Staff": "Ng.V. Lộc: 8h",
+                            "Info": "Mở mặt bích van cũ.",
+                            "Total_Weld": 2,
+                            "NDT": {
+                                "MT": 2
+                            },
+                            "Materials": {}
+                        },
+                        "15/10/2025": {
+                            "Staff": "H.Tr. Linh: 8h, Ng.V. Lộc: 8h",
+                            "Info": "Chuẩn bị lắp đặt van mới (đã quá hạn)",
+                            "Total_Weld": 2,
+                            "NDT": {},
+                            "Materials": {}
+                        }
+                    }
+                },
+                "705-25": {
+                    "Header": {
+                        "Title": "Kiểm tra định kỳ cấu trúc chân giàn.",
+                        "Detail": "Đã hoàn tất kiểm tra UT và MT, đã có hồ sơ.",
+                        "Status": "Xong - có QF-50",
+                        "Date_start": "01/05/2025",
+                        "Date_finish": "01/08/2025",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {}
+                },
+                "999-26": {
+                    "Header": {
+                        "Title": "Lắp đặt hệ thống giám sát ăn mòn mới.",
+                        "Detail": "Chờ thiết kế chi tiết cuối cùng.",
+                        "Status": "Chưa thi công",
+                        "Date_start": "01/01/2026",
+                        "Date_finish": "30/01/2026",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {}
+                }
+            }
+        },
+        "CTP2": {
+            "Fullname": "Giàn CTP 2",
+            "Owner": "Vietsovpetro",
+            "Sheet_link": "https://www.google.com/search?q=https://abc.com/ctp2",
+            "Image_link": "https://www.google.com/search?q=https://placehold.co/150x80/CC6600/FFFFFF%3Ftext%3DCTP2",
+            "Details": {
+                "builder": "OCD Vietsov",
+                "year_built": 2005
+            },
+            "Status": "Ngừng hoạt động",
+            "Inventory": {
+                "Equipment": {
+                    "Available": "Còn",
+                    "Items": {
+                        "UTM": "1 Visonic"
+                    },
+                    "Date": "05/11/2025"
+                },
+                "Materials": {
+                    "Available": "Hết",
+                    "Items": {
+                        "RT Film": ""
+                    },
+                    "Date": "01/11/2025"
+                }
+            },
+            "Note": "Hết vật tư, đang chờ cấp lại.",
+            "NVSX": {
+                "801-25": {
+                    "Header": {
+                        "Title": "Cải hoán hệ thống Gas Lift tại giàn CTP2.",
+                        "Detail": "Các công việc: 1. Lắp đặt đường ống 6 inch 2. Thay thế van và phụ kiện 3. Thử áp và nghiệm thu",
+                        "Status": "Xong - chưa QF50",
+                        "Date_start": "01/03/2025",
+                        "Date_finish": "19/11/2025",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {
+                        "12/11/2025": {
+                            "Staff": "H.Tr. Linh: 8h, Ng.V. Lộc: 8h",
+                            "Info": "Lắp đặt van và phụ kiện",
+                            "Total_Weld": 15,
+                            "NDT": {
+                                "PAUT": 5,
+                                "PT": 3
+                            },
+                            "Materials": {}
+                        }
+                    }
+                }
+            }
+        },
+        "MSP3": {
+            "Fullname": "Giàn MSP 3",
+            "Owner": "Rosneft",
+            "Sheet_link": "https://www.google.com/search?q=https://abc.com/msp3",
+            "Image_link": "https://www.google.com/search?q=https://placehold.co/150x80/285F47/FFFFFF%3Ftext%3DMSP3",
+            "Details": {},
+            "Status": "Ngừng hoạt động",
+            "Inventory": {
+                "Equipment": {
+                    "Available": "Hết"
+                },
+                "Materials": {
+                    "Available": "Hết"
+                }
+            },
+            "Note": "Giàn đã ngừng hoạt động, chỉ theo dõi tồn kho.",
+            "NVSX": {}
+        },
+        "BK_5": {
+            "Fullname": "Giàn Bạch Hổ 5",
+            "Owner": "Vietsovpetro",
+            "Sheet_link": "https://www.google.com/search?q=https://abc.com/bk5",
+            "Image_link": "https://www.google.com/search?q=https://placehold.co/150x80/4B5563/FFFFFF%3Ftext%3DBH5",
+            "Details": {},
+            "Status": "Đang xây dựng",
+            "Inventory": {
+                "Equipment": {
+                    "Available": "Còn",
+                    "Items": {
+                        "Crane": "1 50-Ton Liebherr"
+                    },
+                    "Date": "20/01/2026"
+                },
+                "Materials": {
+                    "Available": "Còn"
+                }
+            },
+            "Note": "Đang trong quá trình lắp đặt.",
+            "NVSX": {
+                "205-25": {
+                    "Header": {
+                        "Title": "Thay thế chân đỡ tuyến ống 8 inch.",
+                        "Detail": "Gia cố và thay thế chân đỡ.",
+                        "Status": "Đang thi công",
+                        "Date_start": "01/01/2025",
+                        "Date_finish": "20/11/2026",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {
+                        "18/11/2025": {
+                            "Staff": "Linh: 8h",
+                            "Info": "- Lắp đặt chân đỡ mới.",
+                            "Total_Weld": 5,
+                            "NDT": {
+                                "UT": 5
+                            },
+                            "Materials": {}
+                        },
+                        "19/11/2025": {
+                            "Staff": "Linh: 8h, Lộc: 8h",
+                            "Info": "- Kiểm tra mối hàn hoàn thiện.",
+                            "Total_Weld": 10,
+                            "NDT": {
+                                "MT": 5,
+                                "UT": 5
+                            },
+                            "Materials": {}
+                        }
+                    }
+                }
+            }
+        },
+        "TBD": {
+            "Fullname": "Giàn Thăm Dò 1",
+            "Owner": "PVEP",
+            "Sheet_link": "https://www.google.com/search?q=https://abc.com/tbd",
+            "Image_link": "https://www.google.com/search?q=https://placehold.co/150x80/663399/FFFFFF%3Ftext%3DTBD",
+            "Details": {
+                "builder": "PTSP",
+                "year_built": 2022
+            },
+            "Status": "Tạm dừng",
+            "Inventory": {
+                "Equipment": {
+                    "Available": "Còn",
+                    "Items": {
+                        "RT": "1 máy X-ray: Y12 No. 001",
+                        "UT": "1 Máy Olympus"
+                    },
+                    "Date": "15/12/2025"
+                },
+                "Materials": {
+                    "Available": "Hết",
+                    "Items": {
+                        "RT Film": "Hết"
+                    },
+                    "Date": "10/11/2025"
+                }
+            },
+            "Note": "Đang chờ vật tư RT.",
+            "NVSX": {
+                "402-25": {
+                    "Header": {
+                        "Title": "Lắp đặt hệ thống định vị GPS.",
+                        "Detail": "Công việc đã bị hủy do thay đổi kế hoạch dự án.",
+                        "Status": "Hủy",
+                        "Date_start": "01/09/2025",
+                        "Date_finish": "30/09/2025",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {}
+                },
+                "501-25": {
+                    "Header": {
+                        "Title": "Kiểm tra mối hàn kết cấu thượng tầng.",
+                        "Detail": "Được gia hạn do thiếu nhân lực NDT.",
+                        "Status": "Gia hạn",
+                        "Date_start": "01/10/2025",
+                        "Date_finish": "30/11/2025",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {
+                        "01/11/2025": {
+                            "Staff": "H.Tr. Linh: 8h",
+                            "Info": "Kiểm tra 5 mối hàn bằng RT.",
+                            "Total_Weld": 10,
+                            "NDT": {
+                                "RT": 10
+                            },
+                            "Materials": {}
+                        }
+                    }
+                }
+            }
+        },
+        "VTD1": {
+            "Fullname": "Giàn Vũng Tàu Delta 1",
+            "Owner": "Chevron",
+            "Sheet_link": "https://www.google.com/search?q=https://abc.com/vtd1",
+            "Image_link": "https://www.google.com/search?q=https://placehold.co/150x80/5F4B8B/FFFFFF%3Ftext%3DVTD1",
+            "Details": {},
+            "Status": "Đang khai thác",
+            "Inventory": {
+                "Equipment": {
+                    "Available": "Hết"
+                },
+                "Materials": {
+                    "Available": "Hết"
+                }
+            },
+            "Note": "Không có thiết bị và vật tư NDT tại giàn.",
+            "NVSX": {
+                "301-25": {
+                    "Header": {
+                        "Title": "Sửa chữa đường ống nước làm mát.",
+                        "Detail": "Đã hoàn thành thi công, đang chờ chứng chỉ chất lượng QF-50.",
+                        "Status": "Xong - chưa QF50",
+                        "Date_start": "10/10/2025",
+                        "Date_finish": "05/11/2025",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {
+                        "05/11/2025": {
+                            "Staff": "Ng.V. Lộc: 8h",
+                            "Info": "Hoàn tất kiểm tra NDT 2 mối hàn cuối cùng.",
+                            "Total_Weld": 8,
+                            "NDT": {
+                                "MT": 2,
+                                "PT": 6
+                            },
+                            "Materials": {}
+                        }
+                    }
+                },
+                "110-26": {
+                    "Header": {
+                        "Title": "Lắp đặt mới bơm cứu hỏa.",
+                        "Detail": "Đang hàn các đường ống phụ trợ.",
+                        "Status": "Đang thi công",
+                        "Date_start": "01/12/2025",
+                        "Date_finish": "15/01/2026",
+                        "Docs_Link": "#",
+                        "QF50_Link": "#"
+                    },
+                    "Progress": {
+                        "19/11/2025": {
+                            "Staff": "H.Tr. Linh: 8h",
+                            "Info": "Kiểm tra 4 mối hàn đường ống DN50.",
+                            "Total_Weld": 4,
+                            "NDT": {
+                                "PT": 4
+                            },
+                            "Materials": {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
