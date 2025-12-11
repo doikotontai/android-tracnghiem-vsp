@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -39,6 +41,7 @@
         
         /* New NVSX Statuses */
         .status-Đang-làm { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; } 
+        .status-Đã-làm { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; } 
         .status-Đã-xong { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; } 
         .status-Tạm-dừng { background-color: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
 
@@ -107,10 +110,10 @@
     <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-6 space-y-6">
         
         <!-- Controls -->
-        <div class="glass-panel p-4 rounded-xl flex flex-col sm:flex-row gap-4 justify-between items-center sticky top-20 z-40">
-            <div class="flex items-center gap-4 w-full sm:w-auto flex-1">
+        <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-40">
+            <div class="flex items-center gap-4 w-full md:w-auto flex-1">
                 <div class="relative">
-                    <select id="sort-by" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-4 pr-10 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none w-full sm:w-auto cursor-pointer shadow-sm">
+                    <select id="sort-by" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-4 pr-10 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-auto cursor-pointer shadow-sm">
                         <option value="name_asc">Tên Giàn (A-Z)</option>
                         <option value="status">Trạng Thái NDT</option>
                     </select>
@@ -122,6 +125,16 @@
                     <input type="text" id="search-input" placeholder="Tìm kiếm giàn, số NVSX..." 
                         class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400 shadow-sm">
                 </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <button onclick="window.exportToExcel()" class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition transform active:scale-95 text-sm whitespace-nowrap">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Xuất Excel
+                </button>
+                <button onclick="window.addNewRig()" class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition transform active:scale-95 text-sm whitespace-nowrap">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Thêm Giàn Mới
+                </button>
             </div>
         </div>
 
@@ -137,16 +150,13 @@
 
     <!-- Code Protection Script (Anti-Debug) -->
     <script>
-        // Disable Right Click
         document.addEventListener('contextmenu', event => event.preventDefault());
-
-        // Disable Common DevTools Shortcuts
         document.onkeydown = function(e) {
-            if(e.keyCode == 123) { return false; } // F12
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } // Ctrl+Shift+I
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } // Ctrl+Shift+C
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } // Ctrl+Shift+J
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U
+            if(e.keyCode == 123) { return false; } 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } 
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
         }
     </script>
 
@@ -156,9 +166,9 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Obfuscated config (Basic encoding to hide plain text keys slightly)
+        // Obfuscated config 
         const _0x1a2b = {
-            k: atob("QUl6YVN5Q3QxNF9wa21XRTBNaEQwU2VIX01pc2ptSGpsWS1NdTg0"), // Decoded at runtime
+            k: atob("QUl6YVN5Q3QxNF9wa21XRTBNaEQwU2VIX01pc2ptSGpsWS1NdTg0"), 
             d: "tracnghiemndt.firebaseapp.com",
             p: "tracnghiemndt",
             b: "tracnghiemndt.firebasestorage.app",
@@ -185,18 +195,12 @@
         const SEED_DATA = {
             "items": {
                 "CTK3": { 
-                    "Fullname": "Giàn CTK 3", "Owner": "Vietsovpetro", "NDT_Status": "Đang có NDT", 
+                    "Fullname": "Giàn CTK 3", "NDT_Status": "Đang có NDT", 
                     "ShiftHistory": [
                         { "Staff": "Nguyễn Văn A", "Date": "01/12/2025 - Nay" }
                     ],
                     "Inventory": { "Equipment": { "Available": "Còn", "Items": "1 Mentor No: 25A00AH9" }, "Materials": { "Available": "Còn", "Items": "PT: 1 bình" } }, 
                     "NVSX": { "593-25": { "Header": { "Title": "Cải hoán tuyến ống.", "Status": "Tạm dừng", "Method": "PAUT/MT", "ProgressText": "50%" } } } 
-                },
-                "BK_5": { 
-                    "Fullname": "Giàn BK 5", "Owner": "Vietsovpetro", "NDT_Status": "Không có NDT", 
-                    "ShiftHistory": [],
-                    "Inventory": { "Equipment": { "Available": "Hết", "Items": "" }, "Materials": { "Available": "Còn", "Items": "" } }, 
-                    "NVSX": {} 
                 }
             }
         };
@@ -274,7 +278,6 @@
 
                 // --- NVSX HTML Generation ---
                 const allNVSX = Object.entries(rig.NVSX || {});
-                // Limit to 8 for default view
                 const visibleNVSX = isNVSXHistoryMode ? allNVSX : allNVSX.slice(0, 8); 
 
                 const nvsxContentHtml = visibleNVSX.map(([nk, nv]) => {
@@ -514,24 +517,25 @@
                     `;
                 }
 
-                // Final Card Layout
+                // Final Card Layout - CLEANER HEADER
                 return `
                     <div class="glass-panel p-6 rounded-2xl border-l-4 ${ndtStatus === 'Đang có NDT' ? 'border-l-green-500' : 'border-l-slate-400'} shadow-lg hover:shadow-xl transition-shadow duration-300">
                         
-                        <!-- Header -->
+                        <!-- Header (Removed Image and Owner) -->
                         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 border-b border-dashed border-slate-200 dark:border-slate-700/50 pb-6">
                             <div class="flex items-center gap-5 w-full lg:w-auto">
-                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center font-extrabold text-slate-500 text-2xl shadow-inner border border-slate-300 dark:border-slate-600 shrink-0">
-                                    ${rig.key.substring(0,2)}
-                                </div>
                                 <div class="flex-1">
-                                    <h3 class="font-extrabold text-slate-900 dark:text-white text-2xl flex flex-wrap items-center gap-3">
+                                    <h3 class="font-extrabold text-slate-900 dark:text-white text-3xl flex flex-wrap items-center gap-3">
                                         ${rig.Fullname}
-                                        <button onclick="window.updateRigName('${rig.key}', '${rig.Fullname}')" class="ml-2 text-slate-400 hover:text-blue-500 transition" title="Sửa tên giàn">
-                                            <i data-lucide="edit-3" class="w-5 h-5"></i>
-                                        </button>
+                                        <div class="flex items-center ml-2">
+                                            <button onclick="window.updateRigName('${rig.key}', '${rig.Fullname}')" class="text-slate-400 hover:text-blue-500 transition p-1" title="Sửa tên giàn">
+                                                <i data-lucide="edit-3" class="w-5 h-5"></i>
+                                            </button>
+                                            <button onclick="window.deleteRig('${rig.key}')" class="text-slate-400 hover:text-red-500 transition p-1" title="Xóa giàn">
+                                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                            </button>
+                                        </div>
                                     </h3>
-                                    <p class="text-sm font-medium text-slate-500 mt-1">${rig.Owner}</p>
                                 </div>
                             </div>
                             <div class="flex items-center">
@@ -791,6 +795,114 @@
                     await updateDoc(DOC_REF, { [`items.${key}.Fullname`]: newName });
                 }
             }
+        };
+
+        // NEW: Add New Rig
+        window.addNewRig = async () => {
+            const rigName = prompt("Nhập TÊN GIÀN (VD: BK-20):");
+            if (!rigName) return;
+            
+            // Create a clean key from the name (e.g., "BK-20" -> "BK-20")
+            // We can just use the name as the key if it's unique, or sanitize it.
+            // Let's sanitize to be safe for Firestore keys (remove spaces/slashes if any)
+            const rigKey = rigName.replace(/\s+/g, '_').replace(/\//g, '-');
+
+            if (currentData.items && currentData.items[rigKey]) {
+                alert("Tên giàn này đã tồn tại!");
+                return;
+            }
+
+            const newRigData = {
+                Fullname: rigName,
+                Owner: "", // Empty as requested
+                NDT_Status: "Không có NDT",
+                ShiftHistory: [],
+                Inventory: {
+                    Equipment: { Available: "Hết", Items: "" },
+                    Materials: { Available: "Hết", Items: "" }
+                },
+                NVSX: {}
+            };
+
+            await updateDoc(DOC_REF, { [`items.${rigKey}`]: newRigData });
+        };
+
+        // NEW: Delete Rig
+        window.deleteRig = async (rigKey) => {
+            if (confirm(`CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN giàn ${rigKey}? Hành động này không thể hoàn tác!`)) {
+                const promptCheck = prompt(`Nhập lại mã giàn "${rigKey}" để xác nhận xóa:`);
+                if (promptCheck === rigKey) {
+                    await updateDoc(DOC_REF, { [`items.${rigKey}`]: deleteField() });
+                } else {
+                    alert("Mã xác nhận không khớp. Hủy xóa.");
+                }
+            }
+        };
+        
+        // NEW: Export to Excel
+        window.exportToExcel = () => {
+            if (!currentData || !currentData.items) return alert("Không có dữ liệu để xuất!");
+
+            // 1. Prepare Data for "TongHop" Sheet
+            const overviewData = [];
+            
+            Object.entries(currentData.items).forEach(([key, rig]) => {
+                const eqStatus = rig.Inventory?.Equipment?.Available || 'N/A';
+                const matStatus = rig.Inventory?.Materials?.Available || 'N/A';
+                const eqItems = rig.Inventory?.Equipment?.Items || '';
+                const matItems = rig.Inventory?.Materials?.Items || '';
+                
+                // Get latest shift info
+                const shifts = rig.ShiftHistory || [];
+                const latestShift = shifts.length > 0 ? shifts[0] : {};
+                
+                overviewData.push({
+                    "Mã Giàn": key,
+                    "Tên Giàn": rig.Fullname,
+                    "Trạng Thái NDT": rig.NDT_Status,
+                    "Nhân Sự Ca Cuối": latestShift.Staff || '',
+                    "Ngày Ca Cuối": latestShift.Date || '',
+                    "Trạng Thái Thiết Bị": eqStatus,
+                    "Chi Tiết Thiết Bị": eqItems,
+                    "Trạng Thái Vật Tư": matStatus,
+                    "Chi Tiết Vật Tư": matItems
+                });
+            });
+
+            // 2. Prepare Data for "CongViec" Sheet
+            const tasksData = [];
+             Object.entries(currentData.items).forEach(([key, rig]) => {
+                const nvsx = rig.NVSX || {};
+                Object.entries(nvsx).forEach(([nvsxId, task]) => {
+                    const header = task.Header || {};
+                    tasksData.push({
+                         "Mã Giàn": key,
+                         "Tên Giàn": rig.Fullname,
+                         "Số NVSX": nvsxId,
+                         "Nội Dung Công Việc": header.Title || '',
+                         "Trạng Thái": header.Status || '',
+                         "Phương Pháp": header.Method || '',
+                         "Tiến Độ": header.ProgressText || ''
+                    });
+                });
+             });
+
+            // 3. Create Workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Add "TongHop" Sheet
+            const wsOverview = XLSX.utils.json_to_sheet(overviewData);
+            // Adjust column widths
+            wsOverview['!cols'] = [{wch: 10}, {wch: 20}, {wch: 15}, {wch: 20}, {wch: 20}, {wch: 15}, {wch: 40}, {wch: 15}, {wch: 40}];
+            XLSX.utils.book_append_sheet(wb, wsOverview, "TongHop");
+
+            // Add "CongViec" Sheet
+            const wsTasks = XLSX.utils.json_to_sheet(tasksData);
+            wsTasks['!cols'] = [{wch: 10}, {wch: 20}, {wch: 15}, {wch: 40}, {wch: 15}, {wch: 15}, {wch: 20}];
+            XLSX.utils.book_append_sheet(wb, wsTasks, "CongViec");
+
+            // 4. Download
+            XLSX.writeFile(wb, `QuanLyNDT_${new Date().toISOString().slice(0,10)}.xlsx`);
         };
 
 
