@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thư viện NDT - Resources</title>
+    <title>Thư viện NDT - Quản lý trực tuyến</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,434 +13,83 @@
             theme: { 
                 extend: { 
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        slate: { 850: '#1e293b', 900: '#0f172a' } 
-                    }
+                    colors: { slate: { 850: '#1e293b', 900: '#0f172a' } }
                 } 
             }
         }
     </script>
     <style>
-        body { transition: background-color 0.3s ease, color 0.3s ease; }
-        body { background-color: #f8fafc; color: #334155; }
+        body { transition: background-color 0.3s ease, color 0.3s ease; background-color: #f8fafc; color: #334155; }
         html.dark body { background-color: #0f172a; color: #e2e8f0; }
-
-        /* Background Mesh */
         .bg-gradient-mesh {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             opacity: 0; transition: opacity 0.5s ease;
             background: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
         }
         html.dark .bg-gradient-mesh { opacity: 1; }
-
-        /* Accordion Animation */
-        .accordion-content { 
-            display: grid; 
-            grid-template-rows: 0fr; 
-            transition: grid-template-rows 0.3s ease-out; 
-        }
-        .accordion-content.open { 
-            grid-template-rows: 1fr; 
-        }
-        .accordion-inner { 
-            overflow: hidden; 
-        }
-
-        /* Glass / Card Styles */
-        .glass-header {
-            background: rgba(255, 255, 255, 0.9);
-            border-bottom: 1px solid #e2e8f0;
-            backdrop-filter: blur(8px);
-        }
-        html.dark .glass-header {
-            background: rgba(15, 23, 42, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Card Style giống ảnh mẫu */
-        .custom-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem; /* rounded-2xl */
-            overflow: hidden;
-            transition: all 0.2s ease;
-        }
-        html.dark .custom-card {
-            background: #1e293b; /* Slate 800 - Màu nền thẻ tối */
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        .accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease-out; }
+        .accordion-content.open { grid-template-rows: 1fr; }
+        .accordion-inner { overflow: hidden; }
+        .glass-header { background: rgba(255, 255, 255, 0.9); border-bottom: 1px solid #e2e8f0; backdrop-filter: blur(8px); }
+        html.dark .glass-header { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .custom-card { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; transition: all 0.2s ease; }
+        html.dark .custom-card { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .icon-box { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         
-        /* Icon Box trong Card */
-        .icon-box {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
+        /* Tag Styles */
+        .tag-link { padding: 3px 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 10px; color: #475569; font-family: monospace; transition: all 0.2s; display: inline-block; }
+        html.dark .tag-link { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); color: #cbd5e1; }
+        .tag-link:hover { background: #e0f2fe; color: #0284c7; border-color: #7dd3fc; }
+        html.dark .tag-link:hover { background: rgba(245, 158, 11, 0.8); color: white; border-color: transparent; }
+
+        /* Edit Mode Styles */
+        .edit-mode .editable-item { border: 1px dashed #3b82f6; cursor: text; position: relative; }
+        .edit-mode input { min-width: 0; }
+        #loader { display: flex; }
+        .loaded #loader { display: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased selection:bg-blue-100 dark:selection:bg-sky-500/30">
     <div class="bg-gradient-mesh"></div>
 
+    <!-- Header -->
     <header class="sticky top-0 z-50 glass-header">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2 text-slate-500 hover:text-blue-600 dark:text-slate-300 dark:hover:text-white transition-colors">
-                <div class="p-2 rounded-lg bg-slate-100 dark:bg-white/5"><i data-lucide="arrow-left" class="w-5 h-5"></i></div>
-                <span class="font-medium text-sm hidden sm:block">Trang chủ</span>
-            </a>
-            <h1 class="font-bold text-lg text-slate-800 dark:text-white uppercase tracking-tight">Thư viện NDT</h1>
-            <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/5 dark:text-yellow-400 dark:hover:bg-white/10 transition-all">
-                <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
-            </button>
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="p-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-blue-50 text-slate-500 dark:text-slate-300 transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </a>
+                <h1 class="font-bold text-lg text-slate-800 dark:text-white uppercase tracking-tight hidden sm:block">Thư viện NDT</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="btn-toggle-edit" onclick="toggleEditMode()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-600 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-all text-sm font-medium">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    <span id="edit-text">Chỉnh sửa</span>
+                </button>
+                <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/5 dark:text-yellow-400 dark:hover:bg-white/10 transition-all">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-6 space-y-5">
-        
-        <!-- SECTION 1: LINK TRUY CẬP (Card Style Accordion) -->
-        <div class="custom-card">
-            <button onclick="toggleSection('sec-links', 'icon-links')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left group">
-                <div class="flex items-center gap-4">
-                    <!-- Icon Box -->
-                    <div class="icon-box bg-blue-100 text-blue-600 dark:bg-blue-600 dark:text-white">
-                        <i data-lucide="link" class="w-6 h-6"></i>
-                    </div>
-                    <!-- Title & Subtitle -->
-                    <div>
-                        <h2 class="font-bold text-slate-800 dark:text-white text-lg">Cổng liên kết nội bộ</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Stopcard, Nhân sự, Lịch bay...</p>
-                    </div>
-                </div>
-                <!-- Chevron -->
-                <div class="p-2 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-400 group-hover:text-blue-500 transition-colors">
-                    <i id="icon-links" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
-                </div>
-            </button>
-            
-            <!-- Content (Đã xóa class 'open' để thu gọn mặc định) -->
-            <div id="sec-links" class="accordion-content">
-                <div class="accordion-inner px-5 pb-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-transparent">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-4">
-                        <!-- Links -->
-                        <a href="https://stopcard.vietsov.com.vn/" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">1. Viết Stopcard</span>
-                        </a>
-                        <a href="https://docs.google.com/spreadsheets/d/1PEBwmbvPQLYliSx08NddV7pgAK_x0CpUMGPuCji7yZ8/edit?gid=946661187#gid=946661187" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="list-checks" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">2. Cập nhật Stopcard</span>
-                        </a>
-                        <a href="https://drive.google.com/drive/u/1/folders/1FSh13BOHokfBTYMKVbLFSXzXOjMZWuMW" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="folder-open" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">3. Các form đi biển</span>
-                        </a>
-                        <a href="https://docs.google.com/spreadsheets/d/1gYAUnKbIS6n6HksrOSal9No6uEmyjOek/edit?usp=sharing&ouid=117439100652630854980&rtpof=true&sd=true" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="shopping-cart" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">4. Cập nhật vật tư</span>
-                        </a>
-                        <a href="https://phep.vietsov.com.vn/login" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="plane" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">5. ĐK Nghỉ phép</span>
-                        </a>
-                        <a href="http://nhansu.vietsov.com.vn/login.aspx" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="contact" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">6. Thông tin nhân sự</span>
-                        </a>
-                        <a href="https://khaibaoyte.vietsov.com.vn/" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="stethoscope" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">7. Khai báo y tế</span>
-                        </a>
-                        <a href="https://ktat.vietsov.com.vn/" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">8. Kiểm tra AT</span>
-                        </a>
-                        <a href="http://svodka.vsp/Apps/Account/Login.aspx?returnUrl=%2fapps%2fadmin%2fantoan%2fjsa%2fJSA_CheckLists.aspx" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="clipboard-check" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">9. JSA (Nội bộ)</span>
-                        </a>
-                        <a href="http://svodka.vsp/LichBayMoi.aspx" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="calendar" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">10.1 Lịch bay (Trong)</span>
-                        </a>
-                        <a href="https://www.vietsov.com.vn/pages/flight.aspx" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="globe" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">10.2 Lịch bay (Ngoài)</span>
-                        </a>
-                        <a href="https://khamsuckhoe.vietsov.com.vn/" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="heart-pulse" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">11. ĐK Khám SK</span>
-                        </a>
-                        <a href="https://docs.google.com/spreadsheets/d/1HAxY9pCiU_LgeeXsQ80_fCpvoyOfD2MwXXIu4gZrFS8/edit?gid=843793476#gid=843793476" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md dark:bg-slate-800/50 dark:border-white/10 dark:hover:bg-slate-700 dark:hover:border-blue-500 transition-all group">
-                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"><i data-lucide="user-cog" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">12. Cập nhật TT đi biển</span>
-                        </a>
-                    </div>
-                </div>
+    <main class="flex-grow max-w-6xl mx-auto w-full px-4 py-6 space-y-6 relative">
+        <div id="loader" class="absolute inset-0 z-10 flex items-center justify-center bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl h-64">
+            <div class="flex flex-col items-center gap-3">
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-blue-500"></i>
+                <span class="text-sm font-medium text-slate-500">Đang tải dữ liệu...</span>
             </div>
         </div>
 
-        <!-- SECTION 2: TIÊU CHUẨN NDT (Card Style Accordion) -->
-        <div class="custom-card">
-            <button onclick="toggleSection('sec-standards', 'icon-standards')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left group">
-                <div class="flex items-center gap-4">
-                    <div class="icon-box bg-amber-100 text-amber-600 dark:bg-amber-600 dark:text-white">
-                        <i data-lucide="book-open" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-bold text-slate-800 dark:text-white text-lg">Bộ tiêu chuẩn đánh giá</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">ASME, API, AWS, ISO...</p>
-                    </div>
-                </div>
-                <div class="p-2 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-400 group-hover:text-amber-500 transition-colors">
-                    <i id="icon-standards" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
-                </div>
-            </button>
-            <div id="sec-standards" class="accordion-content">
-                <div class="accordion-inner px-5 pb-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-transparent">
-                    <div class="space-y-3 pt-4">
-                        <!-- Matrix -->
-                        <div class="p-4 rounded-xl bg-white border border-slate-200 hover:border-amber-400 hover:shadow-sm dark:bg-slate-800/50 dark:border-white/10 dark:hover:border-amber-500/50 transition-colors">
-                            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2 flex items-center gap-2">
-                                <i data-lucide="file" class="w-4 h-4 text-amber-500"></i> Matrix NDT & List tiêu chuẩn
-                            </h3>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/12fRE4Jr7p-opKsEIQF8vAtPsfevup3xf/view?usp=sharing" target="_blank" class="tag-link">Matrix 2021</a>
-                                <a href="https://docs.google.com/spreadsheets/d/1P749fEEwIIVhKpOBEP7rel4D7TpNpgvH/edit?usp=drive_link&ouid=117668423906904167846&rtpof=true&sd=true" target="_blank" class="tag-link">So sánh TC</a>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ABS-2020</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/1fBXdckmomt1wsiBClijBNNy6VvsfzJPf/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/1n0xIC6PHf8O91eQFOxaqTOsXDlL5VuI5/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                    <a href="https://drive.google.com/file/d/1uaGoIDzxRZwm9LVzpEyfVQy7AXZ23UwE/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">API 1104-2021</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/1piIzaevD51CM-oidGxaWFDfadlu-jALG/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/1mb7iL_tSCuZY36EQfA_Dwi_B0p_F0DEq/view?usp=drive_link" target="_blank" class="tag-link">MT/Vis</a>
-                                    <a href="https://drive.google.com/file/d/1fFeXBPpvlSdce_6oZzMo3EnqYRGR2_kr/view?usp=drive_link" target="_blank" class="tag-link">PT</a>
-                                    <a href="https://drive.google.com/file/d/1ZPWevU6P-Yjz_wphJDXfKQ-0Q1S7MquG/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ASME B31.1-2022</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/1ZCTslBbPhA4RGaxs463U5ui86hNnxibJ/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/1Z-TMvaF2i0djCSJvXLz6YyVYvt-7SQnj/view?usp=drive_link" target="_blank" class="tag-link">MT</a>
-                                    <a href="https://drive.google.com/file/d/1w7WgvKGJ5mgVYO2p4_pjC0ErcZ1RpQcw/view?usp=drive_link" target="_blank" class="tag-link">PT</a>
-                                    <a href="https://drive.google.com/file/d/1fzuTCbDGr5wrgtVTWvlFG-ZnqiH5Q6Ap/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ASME B31.3-2022</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/1OVOG7gJE1z94pVJMDEEIIeUqCbE5oo8n/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/148NzAQWPSOj9HLl0BeuiQYELaxKdsk7P/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                    <a href="https://drive.google.com/file/d/1Zt5HgQzjoPdftxx-l5_Hc2_VvjfCH0d9/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                             <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ASME IX-2023</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/1AEWrzh0l8_JblGqllHocwp7Fqpo5IBfF/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/1qBmOa9MsdF_CuOwnGf78NHQP3V6iNKp1/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                    <a href="https://drive.google.com/file/d/1MqE9R7uYPZajuZ9gDlRPq-eOmyhrtVlK/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ASME VIII DIV I-2023</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/1abaLRH6KPq042ptKgIjguylVEh1gwPyP/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/18wNGagtJomqCJguNoFDvHpEpIiyx4XL2/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                    <a href="https://drive.google.com/file/d/1KRd50B2Wvm0ALpNfo_d_aAtRZxnZp4Rc/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                             <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ASME VIII DIV II-2023</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/10Yup0Fo2eUg7CW1cB8egfxsLLDHj0UCy/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/1GFVkHcl7BZMGLCpYXeP-sbE-nnucDQqT/view?usp=drive_link" target="_blank" class="tag-link">PAUT</a>
-                                    <a href="https://drive.google.com/file/d/1cQyWL19tFbyWwJmAwMntxb_I-iYDtnaL/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                    <a href="https://drive.google.com/file/d/107EGLEFmrELc-TlpYIJ0AjFjS7_gQyia/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">AWS D1.1-2020</h4>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="https://drive.google.com/file/d/1XCx7flifejQWQ0UhZV3DFplkIT-rw7Mi/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                    <a href="https://drive.google.com/file/d/1g-fpBBXDISkRSl2hRchtPTxFgwTkFDeV/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                    <a href="https://drive.google.com/file/d/1EnW_MkdCUX1J9-YwSjdUA7Gkhv0M8TV-/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="app-content" class="space-y-5"></div>
 
-        <!-- SECTION 3: QUY TRÌNH NDT (Card Style Accordion) -->
-        <div class="custom-card">
-            <button onclick="toggleSection('sec-procedures', 'icon-procedures')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left group">
-                <div class="flex items-center gap-4">
-                    <div class="icon-box bg-purple-100 text-purple-600 dark:bg-purple-600 dark:text-white">
-                        <i data-lucide="file-check" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-bold text-slate-800 dark:text-white text-lg">Bộ Quy trình NDT</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">ASME, API, ISO, ATBX</p>
-                    </div>
-                </div>
-                <div class="p-2 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-400 group-hover:text-purple-500 transition-colors">
-                    <i id="icon-procedures" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
-                </div>
-            </button>
-            <div id="sec-procedures" class="accordion-content">
-                <div class="accordion-inner px-5 pb-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-transparent">
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
-                        <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ASME</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1fBXdckmomt1wsiBClijBNNy6VvsfzJPf/view?usp=drive_link" target="_blank" class="tag-link">OCD-PR-17_5</a>
-                                <a href="https://drive.google.com/file/d/1n0xIC6PHf8O91eQFOxaqTOsXDlL5VuI5/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/1uaGoIDzxRZwm9LVzpEyfVQy7AXZ23UwE/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                            </div>
-                        </div>
-                        <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">API</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1piIzaevD51CM-oidGxaWFDfadlu-jALG/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                <a href="https://drive.google.com/file/d/1mb7iL_tSCuZY36EQfA_Dwi_B0p_F0DEq/view?usp=drive_link" target="_blank" class="tag-link">MT/Vis</a>
-                                <a href="https://drive.google.com/file/d/1fFeXBPpvlSdce_6oZzMo3EnqYRGR2_kr/view?usp=drive_link" target="_blank" class="tag-link">PT</a>
-                                <a href="https://drive.google.com/file/d/1ZPWevU6P-Yjz_wphJDXfKQ-0Q1S7MquG/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                            </div>
-                        </div>
-                         <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ISO</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1ZCTslBbPhA4RGaxs463U5ui86hNnxibJ/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                <a href="https://drive.google.com/file/d/1Z-TMvaF2i0djCSJvXLz6YyVYvt-7SQnj/view?usp=drive_link" target="_blank" class="tag-link">MT</a>
-                                <a href="https://drive.google.com/file/d/1w7WgvKGJ5mgVYO2p4_pjC0ErcZ1RpQcw/view?usp=drive_link" target="_blank" class="tag-link">PT</a>
-                                <a href="https://drive.google.com/file/d/1fzuTCbDGr5wrgtVTWvlFG-ZnqiH5Q6Ap/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                            </div>
-                        </div>
-                         <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ATBX</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1OVOG7gJE1z94pVJMDEEIIeUqCbE5oo8n/view?usp=drive_link" target="_blank" class="tag-link">UT</a>
-                                <a href="https://drive.google.com/file/d/148NzAQWPSOj9HLl0BeuiQYELaxKdsk7P/view?usp=drive_link" target="_blank" class="tag-link">MT/PT</a>
-                                <a href="https://drive.google.com/file/d/1Zt5HgQzjoPdftxx-l5_Hc2_VvjfCH0d9/view?usp=drive_link" target="_blank" class="tag-link">RT</a>
-                            </div>
-                        </div>
-                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 4: PHẦN MỀM PAUT (Card Style Accordion) -->
-        <div class="custom-card">
-            <button onclick="toggleSection('sec-paut', 'icon-paut')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left group">
-                <div class="flex items-center gap-4">
-                    <div class="icon-box bg-green-100 text-green-600 dark:bg-green-600 dark:text-white">
-                        <i data-lucide="cpu" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-bold text-slate-800 dark:text-white text-lg">Phần mềm PAUT</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">BeamTool, OmniPC, Mentor, VEO3</p>
-                    </div>
-                </div>
-                <div class="p-2 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-400 group-hover:text-green-500 transition-colors">
-                    <i id="icon-paut" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
-                </div>
-            </button>
-            <div id="sec-paut" class="accordion-content">
-                <div class="accordion-inner px-5 pb-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-transparent">
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
-                         
-                        <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">ES BeamTool</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing" target="_blank" class="tag-link">Ver 10</a>
-                                <a href="https://drive.google.com/file/d/1PM-Fr8yKyHd6m42ElqI88p_9hy6us2Au/view?usp=sharing" target="_blank" class="tag-link">Ver 2</a>
-                            </div>
-                        </div>
-
-                         <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">Mentor PC</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1i9-7N7XbS_7hMDHL4trDGNYuIUHkjTuw/view?usp=sharing" target="_blank" class="tag-link">3.11</a>
-                                <a href="https://drive.google.com/file/d/1DqOPR1h4GUcmT4L_06IbKnEEz7O9JZEz/view?usp=sharing" target="_blank" class="tag-link">3.10</a>
-                                <a href="https://drive.google.com/file/d/1BSEhvIKGJt0pge3msRDuopPIDGXAp1VW/view?usp=sharing" target="_blank" class="tag-link">iwp</a>
-                            </div>
-                        </div>
-
-                         <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">OmniScan</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1mXdDiR5muNOo7A50KeybD5h3yrTCjfCZ/view?usp=sharing" target="_blank" class="tag-link">OmniPC-6.1.1</a>
-                                <a href="https://drive.google.com/file/d/1QCY5ZoYBF2iTTcoHulF925Z3m0giTg5C/view?usp=sharing" target="_blank" class="tag-link">Tomoview</a>
-                            </div>
-                        </div>
-
-                         <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">Setup PAUT</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1Pd0LQD8oxQPnblmj4AbDl70-u31iUZsB/view?usp=sharing" target="_blank" class="tag-link">MentorUT</a>
-                                <a href="https://drive.google.com/file/d/1Ykry3CChrsufNQnucDoCJZMAaw-uBmZz/view?usp=sharing" target="_blank" class="tag-link">Omniscan</a>
-                            </div>
-                        </div>
-                        
-                        <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10">
-                            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">Backup SD-Card MX2</h4>
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="https://drive.google.com/file/d/1g4SzC6U20zZU6PNKHBqJ8eYDS4bZhsPd/view?usp=sharing" target="_blank" class="tag-link">MX2-SDCARD</a>
-                                <a href="https://drive.google.com/file/d/1aYtdawvy_fkv9RWgrgELxqp95JoyMXEa/view?usp=sharing" target="_blank" class="tag-link">MX2DD_EN</a>
-                            </div>
-                        </div>
-
-                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 0: GRID CÔNG CỤ (Di chuyển xuống cuối) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-             <a href="pipe_size.html" class="custom-card p-4 flex items-center gap-4 hover:border-blue-400 dark:hover:border-blue-500/50 shadow-sm">
-                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 flex items-center justify-center">
-                    <i data-lucide="ruler" class="w-5 h-5"></i>
-                </div>
-                <div><h3 class="font-bold text-slate-800 dark:text-white text-sm">Pipe Schedule</h3></div>
-            </a>
-            <a href="rt_calculator.html" class="custom-card p-4 flex items-center gap-4 hover:border-violet-400 dark:hover:border-violet-500/50 shadow-sm">
-                <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400 flex items-center justify-center">
-                    <i data-lucide="calculator" class="w-5 h-5"></i>
-                </div>
-                <div><h3 class="font-bold text-slate-800 dark:text-white text-sm">RT Calculator</h3></div>
-            </a>
-            <a href="taoformditau.html" class="custom-card p-4 flex items-center gap-4 hover:border-rose-400 dark:hover:border-rose-500/50 shadow-sm">
-                <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 flex items-center justify-center">
-                    <i data-lucide="ship" class="w-5 h-5"></i>
-                </div>
-                <div><h3 class="font-bold text-slate-800 dark:text-white text-sm">Form VSP Express</h3></div>
-            </a>
-            <a href="https://drive.google.com/file/d/1qvUOMOoabbMIf3wy_an_36wxw0Xc-MBM/view?usp=sharing" target="_blank" class="custom-card p-4 flex items-center gap-4 hover:border-blue-400 dark:hover:border-blue-500/50 shadow-sm">
-                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 flex items-center justify-center">
-                    <i data-lucide="monitor" class="w-5 h-5"></i>
-                </div>
-                <div><h3 class="font-bold text-slate-800 dark:text-white text-sm">Tool Trắc Nghiệm Offline</h3></div>
-            </a>
-            <button onclick="checkPipelinePass()" class="custom-card p-4 flex items-center gap-4 hover:border-orange-400 dark:hover:border-orange-500/50 shadow-sm text-left w-full col-span-2 md:col-span-1">
-                <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400 flex items-center justify-center">
-                    <i data-lucide="lock" class="w-5 h-5"></i>
-                </div>
-                <div><h3 class="font-bold text-slate-800 dark:text-white text-sm">Pipeline 2025</h3></div>
+        <div id="save-bar" class="fixed bottom-6 right-6 hidden z-50 animate-bounce">
+            <button onclick="saveToFirebase()" class="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-500/30 font-bold transition-all transform hover:scale-105">
+                <i data-lucide="save" class="w-5 h-5"></i>
+                Lưu thay đổi
             </button>
         </div>
-
     </main>
 
     <footer class="py-6 border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur">
@@ -453,88 +102,16 @@
         </div>
         <div class="text-center text-slate-500 dark:text-slate-500 text-xs">
             <p>&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
-            <p>E-mail: luunvp.cd@vietsov.com.vn</p>
         </div>
     </footer>
 
-    <style>
-        .tag-link {
-            padding: 3px 8px; 
-            background: #f1f5f9; 
-            border: 1px solid #e2e8f0;
-            border-radius: 6px; 
-            font-size: 10px; 
-            color: #475569; 
-            font-family: monospace; 
-            transition: all 0.2s;
-        }
-        html.dark .tag-link {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-        }
-        .tag-link:hover { 
-            background: #e0f2fe; 
-            color: #0284c7; 
-            border-color: #7dd3fc;
-        }
-        html.dark .tag-link:hover {
-            background: rgba(245, 158, 11, 0.8);
-            color: white;
-            border-color: transparent;
-        }
-    </style>
-
-    <script>
-        lucide.createIcons();
-        function toggleSection(id, iconId) {
-            const el = document.getElementById(id);
-            const icon = document.getElementById(iconId);
-            el.classList.toggle('open');
-            icon.style.transform = el.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
-        }
-
-        const themeBtn = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        
-        if (localStorage.getItem('theme') === 'light') {
-            html.classList.remove('dark');
-        } else {
-            html.classList.add('dark'); 
-        }
-
-        themeBtn.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            if (html.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
-
-        async function checkPipelinePass() {
-            const pass = prompt("Nhập mật khẩu để xem tài liệu:");
-            if (!pass) return;
-            const targetHash = "96efbc43a462ab9d9c6a8173e5b322e17f218b56eb3a05a4bbc53221adebc7b3";
-            const msgBuffer = new TextEncoder().encode(pass);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            if (hashHex === targetHash) {
-                window.location.href = './pipelines.pdf';
-            } else {
-                alert("Mật khẩu không đúng! Vui lòng thử lại.");
-            }
-        }
-    </script>
-
-    <!-- Firebase -->
+    <!-- Firebase SDK & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const userFirebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
             authDomain: "tracnghiemndt.firebaseapp.com",
             projectId: "tracnghiemndt",
@@ -543,54 +120,381 @@
             appId: "1:187385061213:web:fe7977f62aaaeec60f52b4",
             measurementId: "G-TKRBZJT880"
         };
-        
-        let app, auth, db;
-        try { app = initializeApp(userFirebaseConfig); auth = getAuth(app); db = getFirestore(app); } catch (e) {}
 
-        const STATS_COLLECTION = `site_stats`;
-        const VISITOR_DOC_ID = 'visitors_v2'; 
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const COLLECTION_NAME = 'app_data';
+        const DOC_ID = 'tools_master_data_v2'; 
 
-        function animateValue(obj, start, end, duration) {
-            if (start === end) return;
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('vi-VN');
-                if (progress < 1) { window.requestAnimationFrame(step); }
-            };
-            window.requestAnimationFrame(step);
-        }
-
-        const initCounter = async () => {
-            if (!auth || !db) return;
-            try { await signInAnonymously(auth); } catch (err) { return; }
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    const docRef = doc(db, STATS_COLLECTION, VISITOR_DOC_ID);
-                    const counterElement = document.getElementById('visitor-count');
-                    if(!counterElement) return;
-
-                    try {
-                        const docSnap = await getDoc(docRef);
-                        if (!docSnap.exists()) { await setDoc(docRef, { count: 2000 }); } 
-                        else { await updateDoc(docRef, { count: increment(1) }); }
-
-                        onSnapshot(docRef, (doc) => {
-                            if (doc.exists()) {
-                                const newVal = doc.data().count;
-                                const currentText = counterElement.innerText.replace(/\./g, '').replace(/,/g, '');
-                                const currentVal = parseInt(currentText) || 0;
-                                if (!isNaN(currentVal) && currentVal > 0) { animateValue(counterElement, currentVal, newVal, 1500); } 
-                                else { counterElement.innerText = newVal.toLocaleString('vi-VN'); }
-                            }
-                        });
-                    } catch (error) {}
+        const DEFAULT_DATA = {
+            sections: [
+                {
+                    id: 'sec-links', title: 'Cổng liên kết nội bộ', subtitle: 'Stopcard, Nhân sự, Lịch bay...', icon: 'link', color: 'blue', mode: 'simple',
+                    items: [
+                        { text: '1. Viết Stopcard', url: 'https://stopcard.vietsov.com.vn/', icon: 'alert-triangle' },
+                        { text: '2. Cập nhật Stopcard', url: 'https://docs.google.com/spreadsheets/d/1PEBwmbvPQLYliSx08NddV7pgAK_x0CpUMGPuCji7yZ8/edit?gid=946661187#gid=946661187', icon: 'list-checks' },
+                        { text: '3. Các form đi biển', url: 'https://drive.google.com/drive/u/1/folders/1FSh13BOHokfBTYMKVbLFSXzXOjMZWuMW', icon: 'folder-open' },
+                        { text: '4. Cập nhật vật tư', url: 'https://docs.google.com/spreadsheets/d/1gYAUnKbIS6n6HksrOSal9No6uEmyjOek/edit?usp=sharing&ouid=117439100652630854980&rtpof=true&sd=true', icon: 'shopping-cart' },
+                        { text: '5. ĐK Nghỉ phép', url: 'https://phep.vietsov.com.vn/login', icon: 'plane' },
+                        { text: '6. Thông tin nhân sự', url: 'http://nhansu.vietsov.com.vn/login.aspx', icon: 'contact' },
+                        { text: '7. Khai báo y tế', url: 'https://khaibaoyte.vietsov.com.vn/', icon: 'stethoscope' },
+                        { text: '8. Kiểm tra AT', url: 'https://ktat.vietsov.com.vn/', icon: 'shield-check' },
+                        { text: '9. JSA (Nội bộ)', url: 'http://svodka.vsp/Apps/Account/Login.aspx?returnUrl=%2fapps%2fadmin%2fantoan%2fjsa%2fJSA_CheckLists.aspx', icon: 'clipboard-check' },
+                        { text: '10.1 Lịch bay (Trong)', url: 'http://svodka.vsp/LichBayMoi.aspx', icon: 'calendar' },
+                        { text: '10.2 Lịch bay (Ngoài)', url: 'https://www.vietsov.com.vn/pages/flight.aspx', icon: 'globe' },
+                        { text: '11. ĐK Khám SK', url: 'https://khamsuckhoe.vietsov.com.vn/', icon: 'heart-pulse' },
+                        { text: '12. Cập nhật TT đi biển', url: 'https://docs.google.com/spreadsheets/d/1HAxY9pCiU_LgeeXsQ80_fCpvoyOfD2MwXXIu4gZrFS8/edit?gid=843793476#gid=843793476', icon: 'user-cog' },
+                    ]
+                },
+                {
+                    id: 'sec-standards', title: 'Bộ tiêu chuẩn đánh giá', subtitle: 'ASME, API, AWS, ISO...', icon: 'book-open', color: 'amber', mode: 'grouped',
+                    items: [
+                        { title: 'Matrix NDT & List TC', tags: [{text:'Matrix 2021', url:'https://drive.google.com/file/d/12fRE4Jr7p-opKsEIQF8vAtPsfevup3xf/view?usp=sharing'}, {text:'So sánh TC', url:'https://docs.google.com/spreadsheets/d/1P749fEEwIIVhKpOBEP7rel4D7TpNpgvH/edit?usp=drive_link&ouid=117668423906904167846&rtpof=true&sd=true'}] },
+                        { title: 'ABS-2020', tags: [{text:'UT', url:'https://drive.google.com/file/d/1fBXdckmomt1wsiBClijBNNy6VvsfzJPf/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/1n0xIC6PHf8O91eQFOxaqTOsXDlL5VuI5/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1uaGoIDzxRZwm9LVzpEyfVQy7AXZ23UwE/view?usp=drive_link'}] },
+                        { title: 'API 1104-2021', tags: [{text:'UT', url:'https://drive.google.com/file/d/1piIzaevD51CM-oidGxaWFDfadlu-jALG/view?usp=drive_link'}, {text:'MT/Vis', url:'https://drive.google.com/file/d/1mb7iL_tSCuZY36EQfA_Dwi_B0p_F0DEq/view?usp=drive_link'}, {text:'PT', url:'https://drive.google.com/file/d/1fFeXBPpvlSdce_6oZzMo3EnqYRGR2_kr/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1ZPWevU6P-Yjz_wphJDXfKQ-0Q1S7MquG/view?usp=drive_link'}] },
+                        { title: 'ASME B31.1-2022', tags: [{text:'UT', url:'https://drive.google.com/file/d/1ZCTslBbPhA4RGaxs463U5ui86hNnxibJ/view?usp=drive_link'}, {text:'MT', url:'https://drive.google.com/file/d/1Z-TMvaF2i0djCSJvXLz6YyVYvt-7SQnj/view?usp=drive_link'}, {text:'PT', url:'https://drive.google.com/file/d/1w7WgvKGJ5mgVYO2p4_pjC0ErcZ1RpQcw/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1fzuTCbDGr5wrgtVTWvlFG-ZnqiH5Q6Ap/view?usp=drive_link'}] },
+                        { title: 'ASME B31.3-2022', tags: [{text:'UT', url:'https://drive.google.com/file/d/1OVOG7gJE1z94pVJMDEEIIeUqCbE5oo8n/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/148NzAQWPSOj9HLl0BeuiQYELaxKdsk7P/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1Zt5HgQzjoPdftxx-l5_Hc2_VvjfCH0d9/view?usp=drive_link'}] },
+                        { title: 'ASME IX-2023', tags: [{text:'UT', url:'https://drive.google.com/file/d/1AEWrzh0l8_JblGqllHocwp7Fqpo5IBfF/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/1qBmOa9MsdF_CuOwnGf78NHQP3V6iNKp1/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1MqE9R7uYPZajuZ9gDlRPq-eOmyhrtVlK/view?usp=drive_link'}] },
+                        { title: 'ASME VIII DIV I-2023', tags: [{text:'UT', url:'https://drive.google.com/file/d/1abaLRH6KPq042ptKgIjguylVEh1gwPyP/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/18wNGagtJomqCJguNoFDvHpEpIiyx4XL2/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1KRd50B2Wvm0ALpNfo_d_aAtRZxnZp4Rc/view?usp=drive_link'}] },
+                        { title: 'ASME VIII DIV II-2023', tags: [{text:'UT', url:'https://drive.google.com/file/d/10Yup0Fo2eUg7CW1cB8egfxsLLDHj0UCy/view?usp=drive_link'}, {text:'PAUT', url:'https://drive.google.com/file/d/1GFVkHcl7BZMGLCpYXeP-sbE-nnucDQqT/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/1cQyWL19tFbyWwJmAwMntxb_I-iYDtnaL/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/107EGLEFmrELc-TlpYIJ0AjFjS7_gQyia/view?usp=drive_link'}] },
+                        { title: 'AWS D1.1-2020', tags: [{text:'UT', url:'https://drive.google.com/file/d/1XCx7flifejQWQ0UhZV3DFplkIT-rw7Mi/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/1g-fpBBXDISkRSl2hRchtPTxFgwTkFDeV/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1EnW_MkdCUX1J9-YwSjdUA7Gkhv0M8TV-/view?usp=drive_link'}] },
+                    ]
+                },
+                {
+                    id: 'sec-procedures', title: 'Bộ Quy trình NDT', subtitle: 'ASME, API, ISO, ATBX', icon: 'file-check', color: 'purple', mode: 'grouped',
+                    items: [
+                        { title: 'ASME', tags: [{text:'OCD-PR-17_5', url:'https://drive.google.com/file/d/1fBXdckmomt1wsiBClijBNNy6VvsfzJPf/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/1n0xIC6PHf8O91eQFOxaqTOsXDlL5VuI5/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1uaGoIDzxRZwm9LVzpEyfVQy7AXZ23UwE/view?usp=drive_link'}] },
+                        { title: 'API', tags: [{text:'UT', url:'https://drive.google.com/file/d/1piIzaevD51CM-oidGxaWFDfadlu-jALG/view?usp=drive_link'}, {text:'MT/Vis', url:'https://drive.google.com/file/d/1mb7iL_tSCuZY36EQfA_Dwi_B0p_F0DEq/view?usp=drive_link'}, {text:'PT', url:'https://drive.google.com/file/d/1fFeXBPpvlSdce_6oZzMo3EnqYRGR2_kr/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1ZPWevU6P-Yjz_wphJDXfKQ-0Q1S7MquG/view?usp=drive_link'}] },
+                        { title: 'ISO', tags: [{text:'UT', url:'https://drive.google.com/file/d/1ZCTslBbPhA4RGaxs463U5ui86hNnxibJ/view?usp=drive_link'}, {text:'MT', url:'https://drive.google.com/file/d/1Z-TMvaF2i0djCSJvXLz6YyVYvt-7SQnj/view?usp=drive_link'}, {text:'PT', url:'https://drive.google.com/file/d/1w7WgvKGJ5mgVYO2p4_pjC0ErcZ1RpQcw/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1fzuTCbDGr5wrgtVTWvlFG-ZnqiH5Q6Ap/view?usp=drive_link'}] },
+                        { title: 'ATBX', tags: [{text:'UT', url:'https://drive.google.com/file/d/1OVOG7gJE1z94pVJMDEEIIeUqCbE5oo8n/view?usp=drive_link'}, {text:'MT/PT', url:'https://drive.google.com/file/d/148NzAQWPSOj9HLl0BeuiQYELaxKdsk7P/view?usp=drive_link'}, {text:'RT', url:'https://drive.google.com/file/d/1Zt5HgQzjoPdftxx-l5_Hc2_VvjfCH0d9/view?usp=drive_link'}] },
+                    ]
+                },
+                {
+                    id: 'sec-paut', title: 'Phần mềm PAUT', subtitle: 'BeamTool, OmniPC, Mentor, VEO3', icon: 'cpu', color: 'green', mode: 'grouped',
+                    items: [
+                        { title: 'ES BeamTool', tags: [{text:'Ver 10', url:'https://drive.google.com/file/d/1wW0kMOzeQkTH31ZcVCTucznvQsuw-qll/view?usp=sharing'}, {text:'Ver 2', url:'https://drive.google.com/file/d/1PM-Fr8yKyHd6m42ElqI88p_9hy6us2Au/view?usp=sharing'}] },
+                        { title: 'Mentor PC', tags: [{text:'3.11', url:'https://drive.google.com/file/d/1i9-7N7XbS_7hMDHL4trDGNYuIUHkjTuw/view?usp=sharing'}, {text:'3.10', url:'https://drive.google.com/file/d/1DqOPR1h4GUcmT4L_06IbKnEEz7O9JZEz/view?usp=sharing'}, {text:'iwp', url:'https://drive.google.com/file/d/1BSEhvIKGJt0pge3msRDuopPIDGXAp1VW/view?usp=sharing'}] },
+                        { title: 'OmniScan', tags: [{text:'OmniPC-6.1.1', url:'https://drive.google.com/file/d/1mXdDiR5muNOo7A50KeybD5h3yrTCjfCZ/view?usp=sharing'}, {text:'Tomoview', url:'https://drive.google.com/file/d/1QCY5ZoYBF2iTTcoHulF925Z3m0giTg5C/view?usp=sharing'}] },
+                        { title: 'Setup PAUT', tags: [{text:'MentorUT', url:'https://drive.google.com/file/d/1Pd0LQD8oxQPnblmj4AbDl70-u31iUZsB/view?usp=sharing'}, {text:'Omniscan', url:'https://drive.google.com/file/d/1Ykry3CChrsufNQnucDoCJZMAaw-uBmZz/view?usp=sharing'}] },
+                        { title: 'Backup SD-Card MX2', tags: [{text:'MX2-SDCARD', url:'https://drive.google.com/file/d/1g4SzC6U20zZU6PNKHBqJ8eYDS4bZhsPd/view?usp=sharing'}, {text:'MX2DD_EN', url:'https://drive.google.com/file/d/1aYtdawvy_fkv9RWgrgELxqp95JoyMXEa/view?usp=sharing'}] },
+                    ]
                 }
-            });
+            ],
+            bottomTools: [
+                { title: 'Pipe Schedule', url: 'pipe_size.html', icon: 'ruler', color: 'emerald' },
+                { title: 'RT Calculator', url: 'rt_calculator.html', icon: 'calculator', color: 'violet' },
+                { title: 'Form VSP Express', url: 'taoformditau.html', icon: 'ship', color: 'rose' },
+                { title: 'Tool Trắc Nghiệm Offline', url: 'https://drive.google.com/file/d/1qvUOMOoabbMIf3wy_an_36wxw0Xc-MBM/view?usp=sharing', icon: 'monitor', color: 'blue' },
+                { title: 'Pipeline 2025 (Mật khẩu)', url: '#', icon: 'lock', color: 'orange', action: 'checkPipelinePass' }
+            ]
         };
-        initCounter();
+
+        let appData = null;
+        let isEditing = false;
+
+        window.renderApp = () => {
+            const container = document.getElementById('app-content');
+            if (!appData) return;
+            
+            let html = '';
+            appData.sections.forEach((section, sIndex) => {
+                html += `
+                <div class="custom-card group" data-section="${sIndex}">
+                    <div class="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left relative">
+                        <div onclick="toggleSection('${section.id}', 'icon-${section.id}')" class="flex items-center gap-4 cursor-pointer flex-grow">
+                            <div class="icon-box bg-${section.color}-100 text-${section.color}-600 dark:bg-${section.color}-600 dark:text-white">
+                                <i data-lucide="${section.icon}" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-slate-800 dark:text-white text-lg">
+                                    ${isEditing ? `<input type="text" class="bg-transparent border-b border-dashed border-slate-300 w-full focus:outline-none" value="${section.title}" oninput="updateData('section-title', ${sIndex}, this.value)">` : section.title}
+                                </h2>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">${section.subtitle}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                             ${isEditing ? `
+                                <div class="px-2 py-1 bg-slate-100 rounded text-xs text-slate-500">Mode: ${section.mode === 'simple' ? 'Danh sách' : 'Thư mục'}</div>
+                            ` : `
+                                <div onclick="toggleSection('${section.id}', 'icon-${section.id}')" class="p-2 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-400 cursor-pointer">
+                                    <i id="icon-${section.id}" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div id="${section.id}" class="accordion-content ${isEditing ? 'open' : ''}">
+                        <div class="accordion-inner px-5 pb-5 pt-0 border-t border-slate-100 dark:border-white/5">
+                            
+                            <!-- MODE: SIMPLE (List View) -->
+                            ${section.mode === 'simple' ? `
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-4">
+                                    ${section.items.map((item, iIndex) => `
+                                        <div class="relative flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10 ${!isEditing ? 'hover:border-blue-400 hover:shadow-md dark:hover:border-blue-500 cursor-pointer' : ''}">
+                                            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400">
+                                                <i data-lucide="${item.icon || 'link'}" class="w-4 h-4"></i>
+                                            </div>
+                                            <div class="flex-grow min-w-0">
+                                                ${isEditing ? `
+                                                    <input type="text" class="block w-full text-sm font-medium bg-transparent border-b border-dashed border-slate-300 mb-1 focus:outline-none" value="${item.text}" oninput="updateData('item-text', '${sIndex}-${iIndex}', this.value)">
+                                                    <input type="text" class="block w-full text-[10px] text-slate-400 bg-transparent border-b border-dashed border-slate-200 focus:outline-none" value="${item.url}" oninput="updateData('item-url', '${sIndex}-${iIndex}', this.value)">
+                                                ` : `
+                                                    <a href="${item.url}" target="_blank" class="block text-sm font-medium text-slate-700 dark:text-slate-200 truncate">${item.text}</a>
+                                                `}
+                                            </div>
+                                            ${isEditing ? `<button onclick="deleteItem(${sIndex}, ${iIndex})" class="p-2 text-red-500 hover:bg-red-100 rounded-full z-10"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                                        </div>
+                                    `).join('')}
+                                    ${isEditing ? `<button onclick="addItem(${sIndex})" class="flex items-center justify-center p-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-400 hover:border-blue-400 hover:text-blue-500"><i data-lucide="plus" class="w-4 h-4"></i> Thêm</button>` : ''}
+                                </div>
+                            ` : ''}
+
+                            <!-- MODE: GROUPED (Folder/Card View) -->
+                            ${section.mode === 'grouped' ? `
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
+                                    ${section.items.map((group, gIndex) => `
+                                        <div class="p-3 rounded-lg bg-white border border-slate-200 dark:bg-slate-800/50 dark:border-white/10 relative">
+                                            ${isEditing ? `
+                                                <div class="flex justify-between mb-2">
+                                                    <input class="font-bold text-xs bg-transparent border-b border-dashed border-slate-300 w-2/3" value="${group.title}" oninput="updateData('group-title', '${sIndex}-${gIndex}', this.value)">
+                                                    <button onclick="deleteItem(${sIndex}, ${gIndex})" class="text-red-500 hover:bg-red-100 p-1 rounded z-10"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                </div>
+                                            ` : `
+                                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-200 mb-2">${group.title}</h4>
+                                            `}
+                                            
+                                            <div class="flex gap-2 flex-wrap">
+                                                ${group.tags.map((tag, tIndex) => `
+                                                    ${isEditing ? `
+                                                        <div class="flex items-center bg-slate-100 dark:bg-slate-700 rounded px-1 gap-1">
+                                                            <input class="w-10 text-[10px] bg-transparent focus:outline-none" value="${tag.text}" oninput="updateData('tag-text', '${sIndex}-${gIndex}-${tIndex}', this.value)">
+                                                            <input class="w-16 text-[10px] text-blue-500 bg-transparent focus:outline-none" value="${tag.url}" oninput="updateData('tag-url', '${sIndex}-${gIndex}-${tIndex}', this.value)">
+                                                            <button onclick="deleteTag(${sIndex}, ${gIndex}, ${tIndex})" class="text-red-500 hover:text-red-700 px-1"><i data-lucide="x" class="w-3 h-3"></i></button>
+                                                        </div>
+                                                    ` : `
+                                                        <a href="${tag.url}" target="_blank" class="tag-link">${tag.text}</a>
+                                                    `}
+                                                `).join('')}
+                                                ${isEditing ? `<button onclick="addTag(${sIndex}, ${gIndex})" class="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200">+ Link</button>` : ''}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                    ${isEditing ? `<button onclick="addGroup(${sIndex})" class="flex items-center justify-center p-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-400 hover:border-blue-400 hover:text-blue-500"><i data-lucide="folder-plus" class="w-4 h-4"></i> Thêm Nhóm Mới</button>` : ''}
+                                </div>
+                            ` : ''}
+
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+
+            // Bottom Tools Grid (UPDATED with Add/Delete)
+            html += `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 pt-4 border-t border-slate-200 dark:border-white/10 mt-6">`;
+            appData.bottomTools.forEach((tool, tIndex) => {
+                // Determine container tag based on edit mode (Div for safety when editing)
+                const containerTag = isEditing ? 'div' : (tool.action ? 'button' : 'a');
+                const actionAttr = isEditing ? '' : (tool.action ? `onclick="${tool.action}()"` : `href="${tool.url}" target="_blank"`);
+                
+                html += `
+                <${containerTag} ${actionAttr} class="custom-card p-4 flex items-center gap-4 hover:border-blue-400 dark:hover:border-blue-500/50 shadow-sm relative group ${tIndex === 4 && !isEditing ? 'col-span-2 md:col-span-1 text-left w-full' : ''}">
+                    <div class="w-10 h-10 rounded-xl bg-${tool.color || 'blue'}-100 text-${tool.color || 'blue'}-600 dark:bg-${tool.color || 'blue'}-500/20 dark:text-${tool.color || 'blue'}-400 flex items-center justify-center shrink-0">
+                        <i data-lucide="${tool.icon}" class="w-5 h-5"></i>
+                    </div>
+                    <div class="min-w-0 flex-grow">
+                        ${isEditing ? `
+                            <input class="text-sm font-bold bg-transparent border-b border-dashed border-slate-300 w-full mb-1" value="${tool.title}" oninput="updateData('tool-title', ${tIndex}, this.value)">
+                            <input class="text-[10px] bg-transparent border-b border-dashed border-slate-200 w-full text-slate-400" value="${tool.url}" oninput="updateData('tool-url', ${tIndex}, this.value)">
+                            <input class="text-[10px] bg-transparent border-b border-dashed border-slate-200 w-full text-slate-400 mt-1" placeholder="icon" value="${tool.icon}" oninput="updateData('tool-icon', ${tIndex}, this.value)">
+                        ` : `
+                            <h3 class="font-bold text-slate-800 dark:text-white text-sm truncate">${tool.title}</h3>
+                        `}
+                    </div>
+                    ${isEditing ? `<button onclick="deleteBottomTool(${tIndex})" class="absolute top-2 right-2 text-red-500 hover:bg-red-100 rounded-full p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                </${containerTag}>
+                `;
+            });
+            
+            // Add New Tool Button (Only visible in Edit Mode)
+            if (isEditing) {
+                html += `
+                <button onclick="addBottomTool()" class="custom-card p-4 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 text-slate-400 hover:border-blue-400 hover:text-blue-500">
+                    <i data-lucide="plus-circle" class="w-8 h-8"></i>
+                    <span class="text-xs font-bold">+ Thêm Công Cụ</span>
+                </button>
+                `;
+            }
+
+            html += `</div>`;
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        };
+
+        // --- EDIT FUNCTIONS ---
+        window.toggleEditMode = () => {
+            if (!isEditing) {
+                const pass = prompt("Nhập mật khẩu quản trị:");
+                if (pass !== 'kkk') {
+                    alert('Mật khẩu không đúng!');
+                    return;
+                }
+            }
+            
+            isEditing = !isEditing;
+            document.body.classList.toggle('edit-mode', isEditing);
+            document.getElementById('edit-text').innerText = isEditing ? 'Đang Sửa' : 'Chỉnh sửa';
+            const btn = document.getElementById('btn-toggle-edit');
+            btn.classList.toggle('bg-blue-100', isEditing);
+            btn.classList.toggle('text-blue-600', isEditing);
+            
+            const saveBtn = document.getElementById('save-bar');
+            saveBtn.classList.toggle('hidden', !isEditing);
+            saveBtn.classList.toggle('flex', isEditing);
+            
+            renderApp();
+        };
+
+        window.updateData = (type, index, value) => {
+            if (type === 'section-title') appData.sections[index].title = value;
+            if (type === 'tool-title') appData.bottomTools[index].title = value;
+            if (type === 'tool-url') appData.bottomTools[index].url = value;
+            if (type === 'tool-icon') appData.bottomTools[index].icon = value;
+            
+            if (type.startsWith('item-')) {
+                const [sIdx, iIdx] = index.split('-').map(Number);
+                const field = type.split('-')[1];
+                appData.sections[sIdx].items[iIdx][field] = value;
+            }
+
+            if (type === 'group-title') {
+                const [sIdx, gIdx] = index.split('-').map(Number);
+                appData.sections[sIdx].items[gIdx].title = value;
+            }
+
+            if (type.startsWith('tag-')) {
+                const [sIdx, gIdx, tIdx] = index.split('-').map(Number);
+                const field = type.split('-')[1]; 
+                appData.sections[sIdx].items[gIdx].tags[tIdx][field] = value;
+            }
+        };
+
+        // Add Logic
+        window.addItem = (sIdx) => { 
+            appData.sections[sIdx].items.push({ text: 'Link Mới', url: '#', icon: 'link' });
+            renderApp();
+        };
+
+        window.addGroup = (sIdx) => { 
+            appData.sections[sIdx].items.push({ title: 'Nhóm Mới', tags: [{text: 'Link', url: '#'}] });
+            renderApp();
+        };
+
+        window.addTag = (sIdx, gIdx) => { 
+            appData.sections[sIdx].items[gIdx].tags.push({ text: 'New', url: '#' });
+            renderApp();
+        };
+        
+        // Add Bottom Tool Logic
+        window.addBottomTool = () => {
+            appData.bottomTools.push({ title: 'Công cụ Mới', url: '#', icon: 'wrench', color: 'blue' });
+            renderApp();
+        };
+
+        // DELETE LOGIC (NO CONFIRMATION - FIX BUG)
+        window.deleteItem = (sIdx, idx) => { 
+            appData.sections[sIdx].items.splice(idx, 1);
+            renderApp();
+        };
+
+        window.deleteTag = (sIdx, gIdx, tIdx) => {
+            appData.sections[sIdx].items[gIdx].tags.splice(tIdx, 1);
+            renderApp();
+        };
+        
+        window.deleteBottomTool = (tIdx) => {
+            appData.bottomTools.splice(tIdx, 1);
+            renderApp();
+        };
+
+        window.toggleSection = (id, iconId) => {
+            if (isEditing) return;
+            const el = document.getElementById(id);
+            const icon = document.getElementById(iconId);
+            if(el) el.classList.toggle('open');
+            if(icon) icon.style.transform = el.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        };
+
+        // Firebase Sync
+        window.saveToFirebase = async () => {
+            const btn = document.querySelector('#save-bar button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-5 h-5"></i> Đang lưu...`;
+            try {
+                const docRef = doc(db, COLLECTION_NAME, DOC_ID);
+                await setDoc(docRef, appData);
+                alert('Lưu thành công!');
+                toggleEditMode();
+            } catch (error) {
+                console.error(error);
+                alert('Lỗi: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                lucide.createIcons();
+            }
+        };
+
+        const init = async () => {
+            try {
+                await signInAnonymously(auth);
+                const docRef = doc(db, COLLECTION_NAME, DOC_ID);
+                onSnapshot(docRef, (docSnap) => {
+                    document.body.classList.add('loaded');
+                    if (docSnap.exists()) {
+                        appData = docSnap.data();
+                        console.log("Loaded remote data");
+                    } else {
+                        appData = DEFAULT_DATA;
+                    }
+                    if (!isEditing) renderApp();
+                });
+                
+                const statRef = doc(db, 'site_stats', 'visitors_v2');
+                const counterEl = document.getElementById('visitor-count');
+                onSnapshot(statRef, (s) => {
+                    if (s.exists() && counterEl) counterEl.innerText = s.data().count.toLocaleString('vi-VN');
+                });
+
+            } catch (err) {
+                console.error(err);
+                document.body.classList.add('loaded');
+                appData = DEFAULT_DATA;
+                renderApp();
+            }
+        };
+
+        window.checkPipelinePass = async () => {
+            const pass = prompt("Nhập mật khẩu:");
+            if (!pass) return;
+            const targetHash = "96efbc43a462ab9d9c6a8173e5b322e17f218b56eb3a05a4bbc53221adebc7b3";
+            const msgBuffer = new TextEncoder().encode(pass);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            if (hashHex === targetHash) window.location.href = './pipelines.pdf';
+            else alert("Sai mật khẩu!");
+        };
+
+        const themeBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') html.classList.remove('dark');
+        themeBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        init();
     </script>
 </body>
 </html>
