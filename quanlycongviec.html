@@ -199,8 +199,10 @@
                     "ShiftHistory": [
                         { "Staff": "Nguyễn Văn A", "Date": "01/12/2025 - Nay" }
                     ],
-                    "Inventory": { "Equipment": { "Available": "Còn", "Items": "1 Mentor No: 25A00AH9" }, "Materials": { "Available": "Còn", "Items": "PT: 1 bình" } }, 
-                    "NVSX": { "593-25": { "Header": { "Title": "Cải hoán tuyến ống.", "Status": "Tạm dừng", "Method": "PAUT/MT", "ProgressText": "50%" } } } 
+                    "Inventory": { "Equipment": { "Available": "Còn", "Items": "1 Mentor No: 25A00AH9" }, "Materials": { "Available": "Còn", "Items": "PT: 1 bình" }, "LastUpdated": "01/01/2025 08:00" }, 
+                    "NVSX": { "593-25": { "Header": { "Title": "Cải hoán tuyến ống.", "Status": "Tạm dừng", "Method": "PAUT/MT", "ProgressText": "50%", "TotalWelds": "100", "TotalNDT": "50" }, "Progress": {} } },
+                    "ShiftLastUpdated": "01/01/2025 08:00",
+                    "NVSXLastUpdated": "01/01/2025 08:00"
                 }
             }
         };
@@ -241,6 +243,12 @@
                     });
                 }
             });
+        };
+
+        // Helper to get formatted current time
+        const getCurrentTime = () => {
+            const now = new Date();
+            return `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
         };
 
         const renderDashboard = () => {
@@ -284,6 +292,17 @@
                     const h = nv.Header || {};
                     const isEditing = nvsxEditModes[`${rig.key}-${nk}`];
                     
+                    // GET MANUAL TOTALS FROM HEADER (DEFAULT TO 0)
+                    const totalWeld = h.TotalWelds || '0';
+                    const totalNdtCount = h.TotalNDT || '0';
+
+                    const weldNdtInfo = `
+                        <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700 grid grid-cols-2 gap-2 text-xs">
+                            <p class="text-slate-500">Tổng mối hàn: <span class="font-bold text-slate-700 dark:text-slate-300">${totalWeld}</span></p>
+                            <p class="text-slate-500">Đã NDT: <span class="font-bold text-blue-600 dark:text-blue-400">${totalNdtCount}</span></p>
+                        </div>
+                    `;
+
                     if (isNVSXHistoryMode) {
                         // --- 1. TABLE ROW EDIT MODE ---
                         if (isEditing) {
@@ -308,7 +327,10 @@
                         const statusClass = sanitize(h.Status);
                         return `
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-700/50">
-                                <td class="px-4 py-3 align-top font-bold text-blue-600 dark:text-blue-400 text-sm">${nk}</td>
+                                <td class="px-4 py-3 align-top font-bold text-blue-600 dark:text-blue-400 text-sm">
+                                    ${nk}
+                                    <div class="text-xs font-normal text-slate-400 mt-1">Hàn: ${totalWeld} | NDT: ${totalNdtCount}</div>
+                                </td>
                                 <td class="px-4 py-3 align-top text-sm font-semibold text-slate-700 dark:text-slate-200">${h.Title || '---'}</td>
                                 <td class="px-4 py-3 align-top"><span class="status-tag status-${statusClass} text-xs cursor-pointer hover:opacity-80" onclick="window.updateNVSXStatus('${rig.key}', '${nk}', '${h.Status}')">${h.Status}</span></td>
                                 <td class="px-4 py-3 align-top text-sm text-slate-600 dark:text-slate-400">${h.Method || '---'}</td>
@@ -328,22 +350,37 @@
                         return `
                             <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border-2 border-blue-500 shadow-xl relative group">
                                 <div class="grid gap-3 text-sm">
-                                    <div>
-                                        <label class="block text-slate-500 font-semibold mb-1">Số NVSX</label>
-                                        <input id="edit-nvsx-id-${rig.key}-${nk}" value="${nk}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-slate-500 font-semibold mb-1">Số NVSX</label>
+                                            <input id="edit-nvsx-id-${rig.key}-${nk}" value="${nk}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-500 font-semibold mb-1">Phương pháp NDT</label>
+                                            <input id="edit-nvsx-method-${rig.key}-${nk}" value="${h.Method || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
+                                        </div>
                                     </div>
                                     <div>
                                         <label class="block text-slate-500 font-semibold mb-1">Nội dung</label>
                                         <input id="edit-nvsx-title-${rig.key}-${nk}" value="${h.Title || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
                                     </div>
-                                    <div>
-                                        <label class="block text-slate-500 font-semibold mb-1">Phương pháp NDT</label>
-                                        <input id="edit-nvsx-method-${rig.key}-${nk}" value="${h.Method || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
+                                    
+                                    <!-- MANUAL INPUTS ROW -->
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label class="block text-slate-500 font-semibold mb-1 text-xs">Tổng Mối Hàn</label>
+                                            <input id="edit-nvsx-weld-${rig.key}-${nk}" value="${totalWeld}" type="number" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-500 font-semibold mb-1 text-xs">Số Mối Đã NDT</label>
+                                            <input id="edit-nvsx-ndt-${rig.key}-${nk}" value="${totalNdtCount}" type="number" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-500 font-semibold mb-1 text-xs">Tiến độ (%)</label>
+                                            <input id="edit-nvsx-progress-${rig.key}-${nk}" value="${h.ProgressText || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-slate-500 font-semibold mb-1">Tiến độ</label>
-                                        <input id="edit-nvsx-progress-${rig.key}-${nk}" value="${h.ProgressText || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2">
-                                    </div>
+
                                     <div class="flex justify-end gap-2 mt-2">
                                         <button onclick="window.saveNVSX('${rig.key}', '${nk}')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 font-medium">Lưu</button>
                                         <button onclick="window.toggleNVSXEdit('${rig.key}', '${nk}')" class="bg-slate-200 dark:bg-slate-700 text-slate-600 px-3 py-1.5 rounded-lg font-medium">Hủy</button>
@@ -379,6 +416,7 @@
                                 <p class="flex items-center"><span class="text-slate-400 font-medium w-20">PP:</span> <span class="font-semibold text-slate-700 dark:text-slate-300">${h.Method || '---'}</span></p>
                                 <p class="flex items-center"><span class="text-slate-400 font-medium w-20">Tiến độ:</span> <span class="font-bold text-base text-blue-600 dark:text-blue-400">${h.ProgressText || 'Chưa cập nhật'}</span></p>
                             </div>
+                            ${weldNdtInfo}
                         </div>
                     `;
                 }).join('');
@@ -419,11 +457,9 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="mt-6 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                <span class="text-xs text-slate-400 italic">Tổng ${shiftHistory.length} ca</span>
-                                <button onclick="window.toggleHistoryMode('${rig.key}')" class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 font-bold flex items-center hover:underline">
-                                    Xem lịch sử <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
-                                </button>
+                            <div class="mt-4 pt-2 border-t border-slate-100 dark:border-slate-700 text-[10px] text-slate-400 flex justify-between items-center">
+                                <span>Cập nhật: ${rig.ShiftLastUpdated || '---'}</span>
+                                <button onclick="window.toggleHistoryMode('${rig.key}')" class="text-blue-600 hover:underline">Lịch sử</button>
                             </div>
                         </div>
                     `;
@@ -507,13 +543,14 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto custom-scrollbar max-h-[600px]">
                             ${nvsxContentHtml || '<div class="col-span-full text-center py-12 text-sm text-slate-400 italic bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">Không có công việc tồn đọng.</div>'}
                         </div>
-                        ${allNVSX.length > 0 ? `
-                            <div class="mt-4 text-center">
-                                <button onclick="window.toggleNVSXHistory('${rig.key}')" class="text-sm text-blue-600 hover:text-blue-800 font-bold hover:underline flex items-center justify-center w-full py-2 bg-blue-50 dark:bg-slate-800/50 rounded-lg">
-                                    <i data-lucide="list" class="w-4 h-4 mr-2"></i> Xem tất cả (${allNVSX.length}) NVSX đã làm
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-[10px] text-slate-400 italic">Cập nhật: ${rig.NVSXLastUpdated || '---'}</span>
+                            ${allNVSX.length > 0 ? `
+                                <button onclick="window.toggleNVSXHistory('${rig.key}')" class="text-sm text-blue-600 hover:text-blue-800 font-bold hover:underline flex items-center">
+                                    <i data-lucide="list" class="w-4 h-4 mr-2"></i> Xem tất cả (${allNVSX.length})
                                 </button>
-                            </div>
-                        ` : ''}
+                            ` : ''}
+                        </div>
                     `;
                 }
 
@@ -524,6 +561,9 @@
                         <!-- Header (Removed Image and Owner) -->
                         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 border-b border-dashed border-slate-200 dark:border-slate-700/50 pb-6">
                             <div class="flex items-center gap-5 w-full lg:w-auto">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center font-extrabold text-slate-500 text-2xl shadow-inner border border-slate-300 dark:border-slate-600 shrink-0">
+                                    ${rig.key.substring(0,2)}
+                                </div>
                                 <div class="flex-1">
                                     <h3 class="font-extrabold text-slate-900 dark:text-white text-3xl flex flex-wrap items-center gap-3">
                                         ${rig.Fullname}
@@ -558,9 +598,11 @@
 
                                 <!-- COL 2: Inventory -->
                                 <div class="col-span-1 bg-slate-50 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 flex flex-col h-full shadow-sm">
-                                    <h4 class="font-bold text-base text-slate-700 dark:text-slate-300 mb-5 flex items-center uppercase tracking-wide">
-                                        <i data-lucide="box" class="w-5 h-5 mr-2 text-blue-500"></i> Vật Tư Thiết Bị
-                                    </h4>
+                                    <div class="flex justify-between items-center mb-5 pb-2 border-b border-slate-100 dark:border-slate-700">
+                                        <h4 class="font-bold text-base text-slate-700 dark:text-slate-300 uppercase tracking-wide flex items-center">
+                                            <i data-lucide="box" class="w-5 h-5 mr-2 text-blue-500"></i> Vật Tư Thiết Bị
+                                        </h4>
+                                    </div>
                                     <div class="space-y-6 flex-1 overflow-y-auto custom-scrollbar">
                                         <div class="relative group">
                                             <div class="flex justify-between items-center mb-2">
@@ -584,6 +626,9 @@
                                                 <p class="text-sm font-medium text-slate-800 dark:text-slate-200 whitespace-pre-wrap pl-4 border-l-4 border-blue-500/30 min-h-[2rem] leading-relaxed">${matItems || '...'}</p>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="mt-4 pt-2 border-t border-slate-100 dark:border-slate-700 text-[10px] text-slate-400 flex justify-between items-center">
+                                        <span>Cập nhật: ${rig.Inventory.LastUpdated || '---'}</span>
                                     </div>
                                 </div>
 
@@ -639,7 +684,10 @@
             const currentHistory = Array.isArray(currentItem.ShiftHistory) ? currentItem.ShiftHistory : [];
             const newHistory = [{ Staff: staff, Date: date }, ...currentHistory];
 
-            await updateDoc(DOC_REF, { [`items.${key}.ShiftHistory`]: newHistory });
+            await updateDoc(DOC_REF, { 
+                [`items.${key}.ShiftHistory`]: newHistory,
+                [`items.${key}.ShiftLastUpdated`]: getCurrentTime() // Update timestamp
+            });
         };
 
         window.toggleEditMode = (key, idx) => {
@@ -655,7 +703,10 @@
             const date = document.getElementById(`edit-date-${key}-${idx}`).value;
             const currentHistory = [...currentData.items[key].ShiftHistory];
             currentHistory[idx] = { ...currentHistory[idx], Staff: staff, Date: date };
-            await updateDoc(DOC_REF, { [`items.${key}.ShiftHistory`]: currentHistory });
+            await updateDoc(DOC_REF, { 
+                [`items.${key}.ShiftHistory`]: currentHistory,
+                [`items.${key}.ShiftLastUpdated`]: getCurrentTime() // Update timestamp
+            });
             delete editModes[`${key}-${idx}`];
         };
 
@@ -663,7 +714,10 @@
             if (!confirm('Xóa ca này khỏi lịch sử?')) return;
             const currentHistory = [...currentData.items[key].ShiftHistory];
             currentHistory.splice(idx, 1);
-            await updateDoc(DOC_REF, { [`items.${key}.ShiftHistory`]: currentHistory });
+            await updateDoc(DOC_REF, { 
+                [`items.${key}.ShiftHistory`]: currentHistory,
+                [`items.${key}.ShiftLastUpdated`]: getCurrentTime() // Update timestamp
+            });
         };
 
         // --- NVSX ACTIONS ---
@@ -680,12 +734,17 @@
                     Title: title,
                     Status: "Đang làm",
                     Method: "",
-                    ProgressText: "Mới tạo"
+                    ProgressText: "Mới tạo",
+                    TotalWelds: "0",
+                    TotalNDT: "0"
                 },
                 Progress: {}
             };
             
-            await updateDoc(DOC_REF, { [path]: newNVSXData });
+            await updateDoc(DOC_REF, { 
+                [path]: newNVSXData,
+                [`items.${rigKey}.NVSXLastUpdated`]: getCurrentTime() // Update timestamp
+            });
         };
 
         window.toggleNVSXEdit = (rigKey, nvsxKey) => {
@@ -701,6 +760,8 @@
             const newTitle = document.getElementById(`edit-nvsx-title-${rigKey}-${oldNvsxKey}`).value;
             const newMethod = document.getElementById(`edit-nvsx-method-${rigKey}-${oldNvsxKey}`).value;
             const newProgress = document.getElementById(`edit-nvsx-progress-${rigKey}-${oldNvsxKey}`).value;
+            const newTotalWeld = document.getElementById(`edit-nvsx-weld-${rigKey}-${oldNvsxKey}`).value;
+            const newTotalNdt = document.getElementById(`edit-nvsx-ndt-${rigKey}-${oldNvsxKey}`).value;
 
             if (!newId) return alert("Số NVSX không được để trống");
 
@@ -719,13 +780,18 @@
                     Title: newTitle,
                     Status: currentStatus,
                     Method: newMethod,
-                    ProgressText: newProgress
+                    ProgressText: newProgress,
+                    TotalWelds: newTotalWeld,
+                    TotalNDT: newTotalNdt
                 },
                 // Ensure Progress exists or defaults to empty object to prevent undefined errors
                 Progress: currentNVSX.Progress || {} 
             };
 
-            await updateDoc(DOC_REF, { [path]: newData });
+            await updateDoc(DOC_REF, { 
+                [path]: newData,
+                [`items.${rigKey}.NVSXLastUpdated`]: getCurrentTime() // Update timestamp
+            });
             delete nvsxEditModes[`${rigKey}-${oldNvsxKey}`];
         };
 
@@ -733,7 +799,10 @@
         window.deleteNVSX = async (rigKey, nvsxKey) => {
             if (!confirm(`Bạn có chắc chắn muốn XÓA công việc ${nvsxKey}? Hành động này không thể hoàn tác.`)) return;
             const path = `items.${rigKey}.NVSX.${nvsxKey}`;
-            await updateDoc(DOC_REF, { [path]: deleteField() });
+            await updateDoc(DOC_REF, { 
+                [path]: deleteField(),
+                [`items.${rigKey}.NVSXLastUpdated`]: getCurrentTime() // Update timestamp
+            });
         };
 
         window.updateNVSXStatus = async (rigKey, nvsxKey, oldStatus) => {
@@ -747,7 +816,10 @@
             if (index >= 0 && index < statuses.length) {
                 const newStatus = statuses[index];
                 if (newStatus !== oldStatus) {
-                    await updateDoc(DOC_REF, { [`items.${rigKey}.NVSX.${nvsxKey}.Header.Status`]: newStatus });
+                    await updateDoc(DOC_REF, { 
+                        [`items.${rigKey}.NVSX.${nvsxKey}.Header.Status`]: newStatus,
+                        [`items.${rigKey}.NVSXLastUpdated`]: getCurrentTime() // Update timestamp
+                    });
                 }
             } else {
                 alert("Lựa chọn không hợp lệ");
@@ -758,7 +830,10 @@
             if (!confirm(`Xác nhận đổi trạng thái tồn kho?`)) return;
             const current = currentData.items[rigKey].Inventory[type].Available;
             const next = current === 'Còn' ? 'Hết' : 'Còn';
-            await updateDoc(DOC_REF, { [`items.${rigKey}.Inventory.${type}.Available`]: next });
+            await updateDoc(DOC_REF, { 
+                [`items.${rigKey}.Inventory.${type}.Available`]: next,
+                [`items.${rigKey}.Inventory.LastUpdated`]: getCurrentTime() // Update timestamp
+            });
         };
 
         window.editInventoryItems = (rigKey, type) => {
@@ -784,7 +859,12 @@
             if (!confirm('Lưu thay đổi?')) return;
             const inputId = `input-${rigKey}-${type}`;
             const newVal = document.getElementById(inputId).value;
-            try { await updateDoc(DOC_REF, { [`items.${rigKey}.Inventory.${type}.Items`]: newVal }); } 
+            try { 
+                await updateDoc(DOC_REF, { 
+                    [`items.${rigKey}.Inventory.${type}.Items`]: newVal,
+                    [`items.${rigKey}.Inventory.LastUpdated`]: getCurrentTime() // Update timestamp
+                }); 
+            } 
             catch (e) { alert("Lỗi lưu dữ liệu: " + e.message); renderDashboard(); }
         };
         
