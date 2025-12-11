@@ -39,7 +39,6 @@
         
         /* New NVSX Statuses */
         .status-Đang-làm { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; } 
-        .status-Đã-làm { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; } 
         .status-Đã-xong { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; } 
         .status-Tạm-dừng { background-color: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
 
@@ -244,7 +243,7 @@
                 const ndtStatus = rig.NDT_Status || "Không có NDT";
                 const ndtClass = sanitize(ndtStatus);
 
-                // --- NVSX LOGIC ---
+                // --- NVSX HTML Generation ---
                 const allNVSX = Object.entries(rig.NVSX || {});
                 // Limit to 8 for default view
                 const visibleNVSX = isNVSXHistoryMode ? allNVSX : allNVSX.slice(0, 8); 
@@ -254,23 +253,45 @@
                     const isEditing = nvsxEditModes[`${rig.key}-${nk}`];
                     
                     if (isNVSXHistoryMode) {
-                        // TABLE ROW LAYOUT FOR HISTORY MODE
+                        // --- 1. TABLE ROW EDIT MODE ---
+                        if (isEditing) {
+                            return `
+                                <tr class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                                    <td class="p-2 align-top"><input id="edit-nvsx-id-${rig.key}-${nk}" value="${nk}" class="w-full bg-white dark:bg-slate-800 border border-blue-300 rounded px-2 py-1 text-sm"></td>
+                                    <td class="p-2 align-top"><input id="edit-nvsx-title-${rig.key}-${nk}" value="${h.Title || ''}" class="w-full bg-white dark:bg-slate-800 border border-blue-300 rounded px-2 py-1 text-sm"></td>
+                                    <td class="p-2 align-top text-xs text-slate-400 italic">Sửa ở chế độ xem thẻ</td>
+                                    <td class="p-2 align-top"><input id="edit-nvsx-method-${rig.key}-${nk}" value="${h.Method || ''}" class="w-full bg-white dark:bg-slate-800 border border-blue-300 rounded px-2 py-1 text-sm"></td>
+                                    <td class="p-2 align-top"><input id="edit-nvsx-progress-${rig.key}-${nk}" value="${h.ProgressText || ''}" class="w-full bg-white dark:bg-slate-800 border border-blue-300 rounded px-2 py-1 text-sm"></td>
+                                    <td class="p-2 align-top text-right">
+                                        <div class="flex justify-end gap-2">
+                                            <button onclick="window.saveNVSX('${rig.key}', '${nk}')" class="text-green-600 hover:text-green-700"><i data-lucide="check" class="w-5 h-5"></i></button>
+                                            <button onclick="window.toggleNVSXEdit('${rig.key}', '${nk}')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                        
+                        // --- 2. TABLE ROW DISPLAY MODE ---
                         const statusClass = sanitize(h.Status);
                         return `
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-700/50">
                                 <td class="px-4 py-3 align-top font-bold text-blue-600 dark:text-blue-400 text-sm">${nk}</td>
                                 <td class="px-4 py-3 align-top text-sm font-semibold text-slate-700 dark:text-slate-200">${h.Title || '---'}</td>
-                                <td class="px-4 py-3 align-top"><span class="status-tag status-${statusClass} text-xs">${h.Status}</span></td>
+                                <td class="px-4 py-3 align-top"><span class="status-tag status-${statusClass} text-xs cursor-pointer hover:opacity-80" onclick="window.updateNVSXStatus('${rig.key}', '${nk}', '${h.Status}')">${h.Status}</span></td>
                                 <td class="px-4 py-3 align-top text-sm text-slate-600 dark:text-slate-400">${h.Method || '---'}</td>
                                 <td class="px-4 py-3 align-top text-sm font-bold text-slate-700 dark:text-slate-200">${h.ProgressText || '---'}</td>
                                 <td class="px-4 py-3 align-top text-right">
-                                    <button onclick="window.toggleNVSXEdit('${rig.key}', '${nk}')" class="text-blue-500 hover:text-blue-700" title="Sửa"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                    <div class="flex justify-end gap-3">
+                                        <button onclick="window.toggleNVSXEdit('${rig.key}', '${nk}')" class="text-blue-500 hover:text-blue-700" title="Sửa"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                        <button onclick="window.deleteNVSX('${rig.key}', '${nk}')" class="text-red-400 hover:text-red-600" title="Xóa"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    </div>
                                 </td>
                             </tr>
                         `;
                     }
 
-                    // CARD LAYOUT FOR DEFAULT VIEW
+                    // --- 3. CARD EDIT MODE (Default View) ---
                     if (isEditing) {
                         return `
                             <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border-2 border-blue-500 shadow-xl relative group">
@@ -300,6 +321,7 @@
                         `;
                     }
 
+                    // --- 4. CARD DISPLAY MODE (Default View) ---
                     return `
                         <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition relative group">
                             <div class="flex justify-between items-start mb-3">
@@ -309,9 +331,15 @@
                                           onclick="window.updateNVSXStatus('${rig.key}', '${nk}', '${h.Status}')" title="Đổi trạng thái">
                                         ${h.Status}
                                     </span>
-                                    <button onclick="window.toggleNVSXEdit('${rig.key}', '${nk}')" class="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <i data-lucide="edit-2" class="w-4 h-4"></i>
-                                    </button>
+                                    <!-- Edit & Delete Buttons -->
+                                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onclick="window.toggleNVSXEdit('${rig.key}', '${nk}')" class="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-blue-500 transition">
+                                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                        </button>
+                                        <button onclick="window.deleteNVSX('${rig.key}', '${nk}')" class="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-red-500 transition">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3 line-clamp-2">${h.Title || 'Chưa có nội dung'}</p>
@@ -602,6 +630,8 @@
             await updateDoc(DOC_REF, { [`items.${key}.ShiftHistory`]: currentHistory });
         };
 
+        // --- NVSX ACTIONS ---
+
         window.addNVSX = async (rigKey) => {
             const nvsxId = prompt("Nhập số NVSX (VD: 593-25):");
             if (!nvsxId) return;
@@ -655,11 +685,19 @@
                     Method: newMethod,
                     ProgressText: newProgress
                 },
+                // Ensure Progress exists or defaults to empty object to prevent undefined errors
                 Progress: currentNVSX.Progress || {} 
             };
 
             await updateDoc(DOC_REF, { [path]: newData });
             delete nvsxEditModes[`${rigKey}-${oldNvsxKey}`];
+        };
+
+        // NEW: Delete NVSX Function
+        window.deleteNVSX = async (rigKey, nvsxKey) => {
+            if (!confirm(`Bạn có chắc chắn muốn XÓA công việc ${nvsxKey}? Hành động này không thể hoàn tác.`)) return;
+            const path = `items.${rigKey}.NVSX.${nvsxKey}`;
+            await updateDoc(DOC_REF, { [path]: deleteField() });
         };
 
         window.updateNVSXStatus = async (rigKey, nvsxKey, oldStatus) => {
