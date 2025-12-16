@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <script>
@@ -33,7 +34,7 @@
         .glass-panel { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
         html.dark .glass-panel { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        .status-tag { padding: 2px 6px; border-radius: 4px; font-weight: 400; font-size: 0.7rem; display: inline-block; white-space: nowrap; border: 1px solid transparent; }
+        .status-tag { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; display: inline-block; white-space: nowrap; border: 1px solid transparent; }
         
         /* Status Colors */
         .status-Đang-có-NDT { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
@@ -43,6 +44,10 @@
         .status-Đã-làm { background-color: #faf5ff; color: #6b21a8; border-color: #e9d5ff; } 
         .status-Đã-xong { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; } 
         .status-Tạm-dừng { background-color: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+        
+        /* Inventory Status Colors */
+        .status-Còn { background-color: #d1fae5; color: #065f46; border-color: #bbf7d0; }
+        .status-Hết { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; }
 
         .detail-content { display: block; opacity: 1; padding-top: 0.25rem; }
         
@@ -123,7 +128,7 @@
                 <button onclick="window.exportToExcel()" class="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded text-xs shadow-sm transition active:scale-95">
                     <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Excel
                 </button>
-                <button onclick="window.addNewRig()" class="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-slate-800 text-white py-1 px-3 rounded text-xs shadow-sm transition active:scale-95">
+                <button onclick="window.openAddRigModal()" class="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-slate-800 text-white py-1 px-3 rounded text-xs shadow-sm transition active:scale-95">
                     <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Thêm Giàn
                 </button>
             </div>
@@ -140,43 +145,80 @@
 
     </main>
 
-    <!-- NEW: ADD NVSX MODAL -->
-    <div id="add-nvsx-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 transform transition-all scale-100 p-5">
-            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                <i data-lucide="plus-circle" class="w-5 h-5 mr-2 text-green-500"></i> Thêm Công Việc Mới
+    <!-- MODAL: ADD NVSX -->
+    <div id="add-nvsx-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 transform transition-all scale-100 p-6 relative">
+            <button onclick="window.closeAddNVSXModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center">
+                <i data-lucide="plus-circle" class="w-6 h-6 mr-2 text-blue-500"></i> Thêm Công Việc Mới
             </h3>
             
-            <div class="space-y-3">
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Số NVSX <span class="text-red-500">*</span></label>
-                    <input type="text" id="new-nvsx-id" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none" placeholder="VD: 593-25">
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Số NVSX <span class="text-red-500">*</span></label>
+                    <input type="text" id="new-nvsx-id" class="w-full p-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400" placeholder="VD: 593-25">
                 </div>
                 
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Nội dung công việc <span class="text-red-500">*</span></label>
-                    <textarea id="new-nvsx-title" rows="3" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none" placeholder="Mô tả công việc..."></textarea>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Nội dung công việc <span class="text-red-500">*</span></label>
+                    <textarea id="new-nvsx-title" rows="3" class="w-full p-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400" placeholder="Mô tả công việc..."></textarea>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-4">
                      <div>
-                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Phương pháp</label>
-                        <input type="text" id="new-nvsx-method" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none" placeholder="VD: UT/MT">
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Phương pháp</label>
+                        <input type="text" id="new-nvsx-method" class="w-full p-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400" placeholder="VD: UT/MT">
                     </div>
                      <div>
-                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Trạng thái</label>
-                        <select id="new-nvsx-status" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none">
-                            <option value="Đang làm">Đang làm</option>
-                            <option value="Tạm dừng">Tạm dừng</option>
-                            <option value="Đã xong">Đã xong</option>
-                        </select>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Trạng thái</label>
+                        <div class="relative">
+                            <select id="new-nvsx-status" class="w-full p-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:text-white outline-none appearance-none cursor-pointer">
+                                <option value="Đang làm">Đang làm</option>
+                                <option value="Tạm dừng">Tạm dừng</option>
+                                <option value="Đã xong">Đã xong</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-3 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 mt-6">
-                <button onclick="window.closeAddNVSXModal()" class="px-4 py-2 text-xs font-medium text-slate-600 bg-slate-200 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 transition">Hủy</button>
-                <button onclick="window.confirmAddNVSX()" class="px-4 py-2 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-md transition transform active:scale-95">Thêm Mới</button>
+            <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button onclick="window.closeAddNVSXModal()" class="px-5 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 rounded-lg transition">Hủy</button>
+                <button onclick="window.confirmAddNVSX()" class="px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 mr-1.5"></i> Thêm Mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: ADD RIG MODAL -->
+    <div id="add-rig-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 transform transition-all scale-100 p-6 relative">
+            <button onclick="window.closeAddRigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center">
+                <i data-lucide="plus-circle" class="w-6 h-6 mr-2 text-slate-700 dark:text-slate-300"></i> Thêm Giàn Mới
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Tên Giàn <span class="text-red-500">*</span></label>
+                    <input type="text" id="new-rig-name" class="w-full p-3 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400" placeholder="VD: BK-20">
+                    <p class="text-[10px] text-slate-400 mt-1 italic">Hệ thống sẽ tự động tạo mã giàn từ tên bạn nhập.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button onclick="window.closeAddRigModal()" class="px-5 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 rounded-lg transition">Hủy</button>
+                <button onclick="window.confirmAddRig()" class="px-5 py-2.5 text-xs font-bold text-white bg-slate-700 hover:bg-slate-800 rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 mr-1.5"></i> Tạo Giàn
+                </button>
             </div>
         </div>
     </div>
@@ -362,6 +404,7 @@
                                     <span class="text-right truncate">Đã NDT: <b class="text-blue-600 dark:text-blue-400">${totalNdtCount}</b></span>
                                 </div>
                             </div>
+                            <!-- Inline Detail - Expanded Automatically -->
                             <div class="mt-2 pt-1 border-t border-slate-100 dark:border-slate-700">
                                 <div class="flex justify-between items-center mb-0.5">
                                     <span class="text-[10px] text-slate-400 uppercase">Chi tiết công việc</span>
@@ -670,6 +713,53 @@
             }
         };
         // END MODAL LOGIC
+        // UPDATED: ADD RIG VIA MODAL
+        window.openAddRigModal = () => {
+            document.getElementById('new-rig-name').value = '';
+            document.getElementById('add-rig-modal').classList.remove('hidden');
+            document.getElementById('add-rig-modal').classList.add('flex');
+            document.getElementById('new-rig-name').focus();
+        };
+        window.closeAddRigModal = () => {
+            document.getElementById('add-rig-modal').classList.add('hidden');
+            document.getElementById('add-rig-modal').classList.remove('flex');
+        };
+        window.confirmAddRig = async () => {
+            const rigName = document.getElementById('new-rig-name').value.trim();
+            if (!rigName) return alert("Vui lòng nhập tên giàn!");
+            
+            // Create a safe key (e.g., "BK 20" -> "BK_20")
+            const rigKey = rigName.replace(/\s+/g, '_').replace(/\//g, '-').toUpperCase();
+
+            if (currentData.items && currentData.items[rigKey]) {
+                return alert("Giàn này đã tồn tại trong hệ thống!");
+            }
+
+            const newRigData = {
+                Fullname: rigName,
+                Owner: "", // Optional/Hidden per request
+                NDT_Status: "Không có NDT",
+                ShiftHistory: [],
+                Inventory: { Equipment: { Available: "Hết", Items: "" }, Materials: { Available: "Hết", Items: "" } },
+                NVSX: {}
+            };
+
+            const btn = document.querySelector('#add-rig-modal button.bg-slate-700');
+            const originalText = btn.innerText;
+            btn.innerText = 'Đang tạo...';
+            btn.disabled = true;
+
+            try {
+                await updateDoc(DOC_REF, { [`items.${rigKey}`]: newRigData });
+                window.closeAddRigModal();
+            } catch (e) {
+                alert("Lỗi khi tạo giàn: " + e.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        };
+        // END ADD RIG MODAL
 
         window.toggleNVSXEdit = (rigKey, nvsxKey) => {
             const editKey = `${rigKey}-${nvsxKey}`; if (nvsxEditModes[editKey]) delete nvsxEditModes[editKey]; else nvsxEditModes[editKey] = true;
@@ -736,13 +826,8 @@
             const newName = prompt("Tên mới:", oldName);
             if (newName && newName !== oldName && confirm(`Đổi tên thành "${newName}"?`)) { await updateDoc(DOC_REF, { [`items.${key}.Fullname`]: newName }); }
         };
-        window.addNewRig = async () => {
-            const rigName = prompt("Tên giàn (VD: BK-20):"); if (!rigName) return;
-            const rigKey = rigName.replace(/\s+/g, '_').replace(/\//g, '-');
-            if (currentData.items && currentData.items[rigKey]) return alert("Đã tồn tại!");
-            const newRigData = { Fullname: rigName, Owner: "", NDT_Status: "Không có NDT", ShiftHistory: [], Inventory: { Equipment: { Available: "Hết", Items: "" }, Materials: { Available: "Hết", Items: "" } }, NVSX: {} };
-            await updateDoc(DOC_REF, { [`items.${rigKey}`]: newRigData });
-        };
+        // window.addNewRig -> replaced by window.openAddRigModal
+        
         window.deleteRig = async (rigKey) => {
             if (confirm(`XÓA VĨNH VIỄN giàn ${rigKey}?`)) {
                 if (prompt(`Nhập lại "${rigKey}" để xóa:`) === rigKey) { await updateDoc(DOC_REF, { [`items.${rigKey}`]: deleteField() }); } else alert("Sai mã.");
