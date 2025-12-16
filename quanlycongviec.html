@@ -39,6 +39,11 @@
         .status-Đang-có-NDT { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
         .status-Không-có-NDT { background-color: #f8fafc; color: #475569; border-color: #e2e8f0; }
         
+        /* Inventory Status Colors (Restored) */
+        .status-Còn { background-color: #d1fae5; color: #065f46; border-color: #bbf7d0; } /* Green */
+        .status-Hết { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; } /* Red */
+        
+        /* NVSX Statuses */
         .status-Đang-làm { background-color: #eff6ff; color: #1e40af; border-color: #bfdbfe; } 
         .status-Đã-làm { background-color: #faf5ff; color: #6b21a8; border-color: #e9d5ff; } 
         .status-Đã-xong { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; } 
@@ -316,12 +321,10 @@
                                 <div class="grid grid-cols-2 gap-1 text-[10px] text-slate-500 dark:text-slate-400">
                                     <span>PP: ${h.Method || '-'}</span>
                                     <span class="text-right">Tiến độ: ${h.ProgressText || '-'}</span>
-                                    <!-- RENAMED LABELS -->
                                     <span class="truncate">Tổng số mối: <b class="text-slate-700 dark:text-slate-200">${totalWeld}</b></span>
                                     <span class="text-right truncate">Đã NDT: <b class="text-blue-600 dark:text-blue-400">${totalNdtCount}</b></span>
                                 </div>
                             </div>
-                            <!-- Inline Detail - Expanded Automatically -->
                             <div class="mt-2 pt-1 border-t border-slate-100 dark:border-slate-700">
                                 <div class="flex justify-between items-center mb-0.5">
                                     <span class="text-[10px] text-slate-400 uppercase">Chi tiết công việc</span>
@@ -385,13 +388,12 @@
                                 </p>
                             </div>
                             <div class="mt-2 pt-1 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-[10px] text-slate-400">
-                                <span>Upd: ${rig.ShiftLastUpdated ? rig.ShiftLastUpdated.split(' ')[1] : '-'}</span>
+                                <span>Cập nhật: ${rig.ShiftLastUpdated || '-'}</span>
                                 <button onclick="window.toggleHistoryMode('${rig.key}')" class="text-blue-500 hover:underline">Lịch sử</button>
                             </div>
                         </div>
                     `;
                 } else {
-                    // History Table Mode (Compact)
                     const tableRows = shiftHistory.map((s, idx) => {
                          const isEditing = editModes[`${rig.key}-${idx}`];
                          if (isEditing) {
@@ -434,7 +436,7 @@
                         <h4 class="font-medium text-xs text-slate-500 dark:text-slate-400 uppercase flex items-center">
                             <i data-lucide="box" class="w-3.5 h-3.5 mr-1.5 text-blue-500"></i> Vật Tư Thiết Bị
                         </h4>
-                        <span class="text-[10px] text-slate-400">${rig.Inventory.LastUpdated ? rig.Inventory.LastUpdated.split(' ')[1] : '-'}</span>
+                        <span class="text-[10px] text-slate-400">Cập nhật: ${rig.Inventory.LastUpdated || '-'}</span>
                     </div>
                     <div class="space-y-3">
                         <!-- Eq -->
@@ -510,11 +512,10 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 overflow-y-auto custom-scrollbar max-h-80">
                                         ${nvsxContentHtml || '<div class="col-span-full text-center py-4 text-xs text-slate-400 italic border border-dashed border-slate-200 dark:border-slate-700 rounded">Trống</div>'}
                                     </div>
-                                    ${allNVSX.length > 0 ? `
-                                        <div class="mt-2 text-right">
-                                            <button onclick="window.toggleNVSXHistory('${rig.key}')" class="text-[10px] text-blue-500 hover:underline">Xem tất cả ></button>
-                                        </div>
-                                    ` : ''}
+                                    <div class="mt-2 text-[10px] text-slate-400 flex justify-between items-center">
+                                        <span>Cập nhật: ${rig.NVSXLastUpdated || '-'}</span>
+                                        ${allNVSX.length > 0 ? `<button onclick="window.toggleNVSXHistory('${rig.key}')" class="text-blue-500 hover:underline">Xem tất cả ></button>` : ''}
+                                    </div>
                                 </div>
                             `}
                         </div>
