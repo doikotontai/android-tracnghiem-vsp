@@ -52,7 +52,7 @@
     </script>
 
     <style>
-        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        body { transition: background-color 0.3s ease; background-color: #f8fafc; color: #334155; }
         
         /* Light Mode */
         body { background-color: #f8fafc; color: #334155; }
@@ -179,7 +179,7 @@
             <p class="text-slate-500 dark:text-slate-400 text-lg">Chào mừng quay trở lại hệ thống thông tin nội bộ.</p>
         </div>
 
-        <!-- Stats Grid (Đã xóa Trạng thái & Phiên bản) -->
+        <!-- Stats Grid (Chỉ còn Lượt truy cập) -->
         <div class="grid grid-cols-1 md:grid-cols-1 gap-4 animate-fade-in delay-100">
             <!-- Visitor Stat -->
             <div class="glass-card rounded-2xl p-5 flex items-center justify-between relative overflow-hidden group">
@@ -248,36 +248,44 @@
                     <i data-lucide="book-open-check" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Ôn tập trắc nghiệm V1</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Ngân hàng câu hỏi NDT: RT, UT, MT, PT, PAUT, ATLĐ...</p>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Ôn tập V1</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Ngân hàng câu hỏi cơ bản RT, UT, MT, PT.</p>
                 </div>
             </a>
 
             <!-- Card: Trắc nghiệm V2 -->
-            <a href="quiz_ver2.html" class="group col-span-1 relative h-48 rounded-2xl overflow-hidden glass-card p-6 flex flex-col justify-between hover:ring-2 hover:ring-blue-500/50">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-blue-600/5 rounded-full blur-2xl -mr-8 -mt-8"></div>
-                <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-                    <i data-lucide="book-open-check" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Ôn tập trắc nghiệm V2</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Giao diện mới, trải nghiệm mượt mà hơn.</p>
+            <a href="quiz_ver2.html" class="group col-span-1 relative h-48 rounded-2xl overflow-hidden glass-card p-0 hover:ring-2 hover:ring-indigo-500/50">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-violet-600/10 dark:from-indigo-600/20 dark:to-violet-600/20 group-hover:opacity-100 opacity-50 transition-opacity"></div>
+                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        </div>
+                        <span class="px-2 py-1 rounded bg-white/50 dark:bg-indigo-500/30 border border-indigo-200 dark:border-indigo-400/30 text-[10px] font-bold text-indigo-700 dark:text-indigo-200 uppercase">Mới</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1">Trắc nghiệm V2.0</h3>
+                        <p class="text-xs text-slate-500 dark:text-indigo-200/70">Giao diện mới, trải nghiệm mượt mà hơn.</p>
+                    </div>
                 </div>
             </a>
 
-            <!-- Card: Phần mềm -->
-            <a href="software.html" class="group col-span-1 md:col-span-2 lg:col-span-4 h-24 rounded-2xl overflow-hidden glass-card px-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative">
-                <div class="flex items-center gap-4 z-10">
-                    <div class="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
+            <!-- Card: Phần mềm (Đã cập nhật để nằm cùng hàng với 2 ô trắc nghiệm) -->
+            <a href="software.html" class="group col-span-1 md:col-span-2 lg:col-span-2 relative h-48 rounded-2xl overflow-hidden glass-card p-6 flex flex-col justify-between hover:ring-2 hover:ring-purple-500/50">
+                <div class="absolute right-0 bottom-0 w-48 h-48 bg-gradient-to-br from-purple-500/10 to-pink-600/10 rounded-full blur-3xl translate-x-12 translate-y-12 group-hover:translate-x-8 group-hover:translate-y-8 transition-transform"></div>
+                
+                <div class="flex justify-between items-start z-10">
+                    <div class="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-4 group-hover:scale-110 transition-transform">
                         <i data-lucide="monitor-down" class="w-6 h-6"></i>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Phần mềm & Tiện ích</h3>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">Kho phần mềm chuyên ngành và drivers.</p>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-colors text-slate-400">
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <div class="w-10 h-10 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:border-purple-500 group-hover:text-purple-500 transition-all z-10 bg-white dark:bg-slate-900/50">
-                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                
+                <div class="z-10">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Phần mềm & Tiện ích</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">Kho phần mềm chuyên ngành và drivers.</p>
                 </div>
             </a>
 
