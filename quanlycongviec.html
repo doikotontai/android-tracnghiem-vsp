@@ -39,11 +39,6 @@
         .status-Đang-có-NDT { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
         .status-Không-có-NDT { background-color: #f8fafc; color: #475569; border-color: #e2e8f0; }
         
-        /* Inventory Status Colors (Restored) */
-        .status-Còn { background-color: #d1fae5; color: #065f46; border-color: #bbf7d0; } /* Green */
-        .status-Hết { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; } /* Red */
-        
-        /* NVSX Statuses */
         .status-Đang-làm { background-color: #eff6ff; color: #1e40af; border-color: #bfdbfe; } 
         .status-Đã-làm { background-color: #faf5ff; color: #6b21a8; border-color: #e9d5ff; } 
         .status-Đã-xong { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; } 
@@ -145,6 +140,47 @@
 
     </main>
 
+    <!-- NEW: ADD NVSX MODAL -->
+    <div id="add-nvsx-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 transform transition-all scale-100 p-5">
+            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                <i data-lucide="plus-circle" class="w-5 h-5 mr-2 text-green-500"></i> Thêm Công Việc Mới
+            </h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Số NVSX <span class="text-red-500">*</span></label>
+                    <input type="text" id="new-nvsx-id" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none" placeholder="VD: 593-25">
+                </div>
+                
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Nội dung công việc <span class="text-red-500">*</span></label>
+                    <textarea id="new-nvsx-title" rows="3" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none" placeholder="Mô tả công việc..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                     <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Phương pháp</label>
+                        <input type="text" id="new-nvsx-method" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none" placeholder="VD: UT/MT">
+                    </div>
+                     <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Trạng thái</label>
+                        <select id="new-nvsx-status" class="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white outline-none">
+                            <option value="Đang làm">Đang làm</option>
+                            <option value="Tạm dừng">Tạm dừng</option>
+                            <option value="Đã xong">Đã xong</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="window.closeAddNVSXModal()" class="px-4 py-2 text-xs font-medium text-slate-600 bg-slate-200 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 transition">Hủy</button>
+                <button onclick="window.confirmAddNVSX()" class="px-4 py-2 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-md transition transform active:scale-95">Thêm Mới</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Code Protection Script (Anti-Debug) -->
     <script>
         document.addEventListener('contextmenu', event => event.preventDefault());
@@ -196,6 +232,7 @@
         let nvsxHistoryViewMode = new Set(); 
         let editModes = {}; 
         let nvsxEditModes = {}; 
+        let currentRigForAdd = null; // Store which rig to add NVSX to
 
         // --- CORE FUNCTIONS ---
 
@@ -394,6 +431,7 @@
                         </div>
                     `;
                 } else {
+                    // History Table Mode (Compact)
                     const tableRows = shiftHistory.map((s, idx) => {
                          const isEditing = editModes[`${rig.key}-${idx}`];
                          if (isEditing) {
@@ -569,13 +607,70 @@
             currentHistory.splice(idx, 1);
             await updateDoc(DOC_REF, { [`items.${key}.ShiftHistory`]: currentHistory, [`items.${key}.ShiftLastUpdated`]: getCurrentTime() });
         };
-        window.addNVSX = async (rigKey) => {
-            const nvsxId = prompt("Nhập số NVSX:"); if (!nvsxId) return;
-            const title = prompt("Nhập nội dung:"); if (!title) return;
-            const path = `items.${rigKey}.NVSX.${nvsxId}`;
-            const newNVSXData = { Header: { Title: title, Detail: "", Status: "Đang làm", Method: "", ProgressText: "Mới tạo", TotalWelds: "0", TotalNDT: "0" }, Progress: {} };
-            await updateDoc(DOC_REF, { [path]: newNVSXData, [`items.${rigKey}.NVSXLastUpdated`]: getCurrentTime() });
+        // UPDATED: ADD NVSX VIA MODAL
+        window.addNVSX = (rigKey) => {
+            currentRigForAdd = rigKey;
+            document.getElementById('new-nvsx-id').value = '';
+            document.getElementById('new-nvsx-title').value = '';
+            document.getElementById('new-nvsx-method').value = '';
+            document.getElementById('new-nvsx-status').value = 'Đang làm';
+            document.getElementById('add-nvsx-modal').classList.remove('hidden');
+            document.getElementById('add-nvsx-modal').classList.add('flex');
+            document.getElementById('new-nvsx-id').focus();
         };
+        window.closeAddNVSXModal = () => {
+            document.getElementById('add-nvsx-modal').classList.add('hidden');
+            document.getElementById('add-nvsx-modal').classList.remove('flex');
+            currentRigForAdd = null;
+        };
+        window.confirmAddNVSX = async () => {
+            if (!currentRigForAdd) return;
+            const id = document.getElementById('new-nvsx-id').value.trim();
+            const title = document.getElementById('new-nvsx-title').value.trim();
+            const method = document.getElementById('new-nvsx-method').value.trim();
+            const status = document.getElementById('new-nvsx-status').value;
+
+            if (!id) return alert("Vui lòng nhập Số NVSX!");
+            if (!title) return alert("Vui lòng nhập Nội dung công việc!");
+
+            if (currentData.items[currentRigForAdd].NVSX && currentData.items[currentRigForAdd].NVSX[id]) {
+                return alert("Số NVSX này đã tồn tại trên giàn này!");
+            }
+
+            const path = `items.${currentRigForAdd}.NVSX.${id}`;
+            const newNVSXData = {
+                Header: {
+                    Title: title,
+                    Detail: "",
+                    Status: status,
+                    Method: method,
+                    ProgressText: "Mới tạo",
+                    TotalWelds: "0",
+                    TotalNDT: "0"
+                },
+                Progress: {}
+            };
+
+            const btn = document.querySelector('#add-nvsx-modal button.bg-green-600');
+            const originalText = btn.innerText;
+            btn.innerText = 'Đang thêm...';
+            btn.disabled = true;
+
+            try {
+                await updateDoc(DOC_REF, { 
+                    [path]: newNVSXData,
+                    [`items.${currentRigForAdd}.NVSXLastUpdated`]: getCurrentTime()
+                });
+                window.closeAddNVSXModal();
+            } catch (e) {
+                alert("Lỗi khi thêm: " + e.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        };
+        // END MODAL LOGIC
+
         window.toggleNVSXEdit = (rigKey, nvsxKey) => {
             const editKey = `${rigKey}-${nvsxKey}`; if (nvsxEditModes[editKey]) delete nvsxEditModes[editKey]; else nvsxEditModes[editKey] = true;
             renderDashboard();
