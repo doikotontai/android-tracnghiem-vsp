@@ -13,7 +13,9 @@
             theme: { 
                 extend: { 
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { slate: { 850: '#1e293b', 900: '#0f172a' } }
+                    colors: { slate: { 850: '#1e293b', 900: '#0f172a' } },
+                    animation: { 'fade-in': 'fadeIn 0.3s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
                 } 
             }
         }
@@ -101,9 +103,36 @@
             </div>
         </div>
         <div class="text-center text-slate-500 dark:text-slate-500 text-xs">
-            <p>&copy; 2025 BCH-XNXL. CMS Version v7.0 (Confirm Delete)</p>
+            <p>&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
         </div>
     </footer>
+
+    <!-- PASSWORD MODAL -->
+    <div id="password-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 transform transition-all scale-100 p-6 relative">
+            <button onclick="closePasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center">
+                <i data-lucide="lock" class="w-6 h-6 mr-2 text-blue-500"></i> <span id="password-modal-title">Bảo Mật</span>
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <input type="password" id="modal-password-input" class="w-full p-3 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400" placeholder="Nhập mật khẩu..." onkeydown="if(event.key==='Enter') submitPassword()">
+                </div>
+                <p id="password-error" class="text-xs text-red-500 hidden flex items-center"><i data-lucide="alert-circle" class="w-3 h-3 mr-1"></i> Mật khẩu không đúng!</p>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button onclick="closePasswordModal()" class="px-5 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 rounded-lg transition">Hủy</button>
+                <button onclick="submitPassword()" class="px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-95">
+                    Xác Nhận
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Firebase SDK & Logic -->
     <script type="module">
@@ -192,6 +221,7 @@
 
         let appData = null;
         let isEditing = false;
+        let pendingCallback = null; // Store pending callback for password modal
 
         window.renderApp = () => {
             const container = document.getElementById('app-content');
@@ -345,16 +375,51 @@
             lucide.createIcons();
         };
 
-        // --- EDIT FUNCTIONS ---
-        window.toggleEditMode = () => {
-            if (!isEditing) {
-                const pass = prompt("Nhập mật khẩu quản trị:");
-                if (pass !== 'kkk') {
-                    alert('Mật khẩu không đúng!');
-                    return;
+        // --- PASSWORD MODAL LOGIC ---
+        window.openPasswordModal = (title, callback) => {
+            document.getElementById('password-modal-title').textContent = title;
+            document.getElementById('modal-password-input').value = '';
+            document.getElementById('password-error').classList.add('hidden');
+            document.getElementById('password-modal').classList.remove('hidden');
+            document.getElementById('password-modal').classList.add('flex');
+            document.getElementById('modal-password-input').focus();
+            pendingCallback = callback;
+        };
+
+        window.closePasswordModal = () => {
+            document.getElementById('password-modal').classList.add('hidden');
+            document.getElementById('password-modal').classList.remove('flex');
+            pendingCallback = null;
+        };
+
+        window.submitPassword = async () => {
+            const password = document.getElementById('modal-password-input').value;
+            if (pendingCallback) {
+                const isValid = await pendingCallback(password);
+                if (isValid) {
+                    closePasswordModal();
+                } else {
+                    document.getElementById('password-error').classList.remove('hidden');
                 }
             }
-            
+        };
+
+        // --- EDIT FUNCTIONS ---
+        window.toggleEditMode = () => {
+            if (isEditing) {
+                performToggleEdit();
+            } else {
+                openPasswordModal('Quản Trị Viên', (pass) => {
+                    if (pass === 'kkk') {
+                        performToggleEdit();
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        };
+
+        const performToggleEdit = () => {
             isEditing = !isEditing;
             document.body.classList.toggle('edit-mode', isEditing);
             document.getElementById('edit-text').innerText = isEditing ? 'Đang Sửa' : 'Chỉnh sửa';
@@ -516,15 +581,19 @@
             }
         };
 
-        window.checkPipelinePass = async () => {
-            const pass = prompt("Nhập mật khẩu:");
-            if (!pass) return;
-            const targetHash = "96efbc43a462ab9d9c6a8173e5b322e17f218b56eb3a05a4bbc53221adebc7b3";
-            const msgBuffer = new TextEncoder().encode(pass);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-            if (hashHex === targetHash) window.location.href = './pipelines.pdf';
-            else alert("Sai mật khẩu!");
+        window.checkPipelinePass = () => {
+            openPasswordModal('Truy cập Pipeline', async (pass) => {
+                const targetHash = "96efbc43a462ab9d9c6a8173e5b322e17f218b56eb3a05a4bbc53221adebc7b3";
+                const msgBuffer = new TextEncoder().encode(pass);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                if (hashHex === targetHash) {
+                    window.location.href = './pipelines.pdf';
+                    return true;
+                } else {
+                    return false;
+                }
+            });
         };
 
         const themeBtn = document.getElementById('theme-toggle');
