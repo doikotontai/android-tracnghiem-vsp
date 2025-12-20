@@ -158,16 +158,16 @@
 
     /* --- Main Node (VEO3 Machine Image) - MODERNISED --- */
     .map-node.type-main {
-        width: 240px; /* Tăng kích thước để làm điểm nhấn */
-        height: 240px;
-        background: transparent; /* Bỏ nền cứng */
-        border: none; /* Bỏ viền cứng */
-        box-shadow: none; /* Bỏ bóng hộp cứng */
+        /* FIX: Giảm kích thước trên mobile để tránh đè nút */
+        width: 180px; 
+        height: 180px;
+        background: transparent; 
+        border: none; 
+        box-shadow: none; 
         color: var(--node-text);
         z-index: 20;
         padding: 0;
-        overflow: visible; /* Để hiệu ứng glow lan ra ngoài */
-        /* Animation nhẹ nhàng kiểu trôi nổi */
+        overflow: visible; 
         animation: machine-hover 4s ease-in-out infinite alternate;
     }
 
@@ -182,7 +182,7 @@
         transform: translate(-50%, -50%);
         background: var(--main-node-glow);
         border-radius: 50%;
-        filter: blur(40px); /* Làm mờ mạnh để tạo quầng sáng */
+        filter: blur(40px); 
         opacity: 0.6;
         z-index: -1;
         transition: opacity 0.3s ease;
@@ -192,7 +192,7 @@
     .map-node.type-main:hover::before {
         opacity: 0.8;
         filter: blur(50px);
-        background: var(--holo-cyan); /* Sáng hơn khi hover */
+        background: var(--holo-cyan); 
     }
 
     /* Bỏ vòng xoay cũ (::after) để trông hiện đại, tối giản hơn */
@@ -209,13 +209,15 @@
         background: var(--node-bg);
         border: 1px solid var(--node-border);
         border-radius: 50px;
-        padding: 8px 16px;
+        /* FIX: Giảm padding và font size trên mobile */
+        padding: 6px 14px;
         color: var(--node-text);
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 0.75rem;
-        min-width: 100px;
+        font-size: 0.7rem; /* Nhỏ hơn một chút */
+        min-width: 90px;
         box-shadow: var(--node-shadow);
+        white-space: nowrap; /* Tránh xuống dòng trên mobile */
     }
     
     .map-node.type-topic.video-trigger {
@@ -571,7 +573,10 @@
         mainNode.style.transform = 'translate(-50%, -50%)';
 
         const topics = document.querySelectorAll('.map-node.type-topic');
-        const radius = isMobile ? 120 : 250; 
+        
+        // FIX: Mobile Radius tăng lên (145) để tránh đè vào ảnh, nhưng vẫn nằm trong khung hình (trừ đi padding 2 bên)
+        // Main Node Width = 180 => Radius 90. Cần thêm >60px nữa.
+        const radius = isMobile ? 145 : 280; 
         
         topics.forEach((topic, index) => {
             let angle;
@@ -649,15 +654,19 @@
         const cx = parseFloat(parentNode.style.left);
         const cy = parseFloat(parentNode.style.top);
         const isMobile = window.innerWidth < 768;
-        const radius = isMobile ? 120 : 180;
+        
+        // FIX: Cluster Radius trên mobile nhỏ lại để tránh tràn màn hình khi mở rộng
+        const radius = isMobile ? 110 : 180;
         
         children.forEach((child, index) => {
             child.classList.remove('hidden', 'node-hidden');
             let angle;
             if (isMobile) {
+                // Logic hướng: Nếu ở nửa trên màn hình thì mở xuống dưới, ngược lại thì mở lên trên
+                // Điều này giúp menu con không bị chạy ra khỏi cạnh trên/dưới
                 const isTop = cy < window.innerHeight / 2;
                 const baseAngle = isTop ? Math.PI/2 : -Math.PI/2;
-                const spread = Math.PI * 0.8;
+                const spread = Math.PI * 0.7; // Giảm góc mở rộng một chút
                 const start = baseAngle - spread/2;
                 const step = spread / (children.length - 1 || 1);
                 angle = children.length === 1 ? baseAngle : start + (index * step);
