@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learning Content Galaxy - VEO3</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    holo: {
+                        bg: "#050810",
+                        surface: "rgba(10, 20, 35, 0.85)", 
+                        border: "rgba(100, 220, 255, 0.3)",
+                        text: "#d0e0ff",
+                        cyan: "#00f0ff",
+                        purple: "#bc13fe",
+                        green: "#0aff0a",
+                        blue: "#3b82f6"
+                    }
+                },
+                fontFamily: {
+                    sans: ["Inter", "sans-serif"],
+                    display: "Be Vietnam Pro"
+                },
+                boxShadow: {
+                    'neon-blue': '0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3)',
+                    'neon-purple': '0 0 10px rgba(188, 19, 254, 0.5), 0 0 20px rgba(188, 19, 254, 0.3)',
+                },
+                animation: {
+                    'pulse-glow': 'pulseGlow 4s infinite alternate',
+                    'spin-slow': 'spin 20s linear infinite',
+                },
+                keyframes: {
+                    pulseGlow: {
+                        '0%': { opacity: 0.8, filter: 'brightness(1)' },
+                        '100%': { opacity: 1, filter: 'brightness(1.3)' },
+                    }
+                }
+            }
+        }
+    };
+</script>
+<style type="text/tailwindcss">
+    body {
+        @apply bg-holo-bg text-holo-text overflow-hidden font-sans;
+        touch-action: none; /* Prevent scroll on mobile for dragging experience */
+    }
+
+    /* --- Background & Atmosphere --- */
+    .conceptual-map-container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        background: 
+            radial-gradient(circle at 50% 50%, rgba(20, 30, 60, 0.4) 0%, rgba(5, 8, 16, 1) 80%),
+            linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+        background-size: 100% 100%, 60px 60px, 60px 60px;
+        perspective: 1200px;
+        cursor: grab;
+    }
+    .conceptual-map-container:active {
+        cursor: grabbing;
+    }
+
+    /* --- Connecting Lines --- */
+    .connecting-line {
+        position: absolute;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), rgba(0, 240, 255, 0.8), rgba(0, 240, 255, 0.1));
+        transform-origin: 0 50%;
+        pointer-events: none;
+        z-index: 5;
+        box-shadow: 0 0 4px rgba(0, 240, 255, 0.4);
+        opacity: 0;
+        transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+    }
+
+    /* --- Nodes Common Styles --- */
+    .map-node {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+        transform-style: preserve-3d;
+        /* Improved Transition for smoother movement */
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    opacity 0.4s ease,
+                    box-shadow 0.3s ease,
+                    border-color 0.3s ease,
+                    background-color 0.3s ease;
+        will-change: transform, opacity, left, top;
+    }
+
+    /* Node Enter/Exit Animation Classes */
+    .node-hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0) translateZ(0) !important; 
+        /* Important to override inline styles during animation */
+    }
+
+    /* --- Main Node (Sun/Core) --- */
+    .map-node.type-main {
+        width: 140px; /* Slightly smaller for mobile optimization */
+        height: 140px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9) 0%, rgba(0, 220, 255, 0.6) 20%, rgba(0, 80, 200, 0.8) 50%, rgba(0, 10, 30, 0.95) 100%);
+        box-shadow: 
+            0 0 40px rgba(0, 200, 255, 0.5),
+            inset -10px -10px 30px rgba(0, 0, 0, 0.8),
+            inset 10px 10px 20px rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(100, 220, 255, 0.4);
+        color: white;
+        font-weight: 700;
+        font-size: 1.25rem;
+        text-align: center;
+        text-shadow: 0 0 10px rgba(0, 240, 255, 1);
+        z-index: 20;
+        letter-spacing: 0.05em;
+    }
+    .map-node.type-main::after {
+        content: '';
+        position: absolute;
+        inset: -15px;
+        border-radius: 50%;
+        border: 1px dashed rgba(0, 240, 255, 0.3);
+        animation: spin-slow 20s linear infinite;
+    }
+    .map-node.type-main:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 60px rgba(0, 240, 255, 0.8);
+    }
+    
+    @media (min-width: 768px) {
+        .map-node.type-main {
+            width: 160px;
+            height: 160px;
+        }
+    }
+
+    /* --- Topic Nodes (Planets) --- */
+    .map-node.type-topic {
+        background: rgba(15, 25, 45, 0.6);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: 100px;
+        padding: 12px 24px;
+        color: #fff;
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.1), inset 0 0 15px rgba(0, 240, 255, 0.05);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.85rem;
+        min-width: 140px;
+    }
+    .map-node.type-topic:hover {
+        background: rgba(0, 240, 255, 0.15);
+        border-color: rgba(0, 240, 255, 0.8);
+        box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+        text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+        transform: scale(1.1) translateZ(10px);
+        z-index: 25;
+    }
+    .map-node.type-topic.active-cluster {
+        background: rgba(0, 240, 255, 0.2);
+        border-color: #00f0ff;
+        box-shadow: 0 0 40px rgba(0, 240, 255, 0.5);
+    }
+
+    /* --- Leaf Nodes (Files/Media) --- */
+    .map-node.type-doc, .map-node.type-video, .map-node.type-image, .map-node.type-mindmap {
+        background: rgba(5, 10, 20, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        color: rgba(200, 230, 255, 0.7);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+
+    /* Type Specific Styling */
+    .map-node.type-doc { border-left: 3px solid #60a5fa; }
+    .map-node.type-video { border-left: 3px solid #c084fc; }
+    .map-node.type-image { border-left: 3px solid #4ade80; }
+    .map-node.type-mindmap { border-left: 3px solid #fbbf24; }
+    
+    .map-node.type-doc .material-symbols-outlined { color: #60a5fa; }
+    .map-node.type-video .material-symbols-outlined { color: #c084fc; }
+    .map-node.type-image .material-symbols-outlined { color: #4ade80; }
+    .map-node.type-mindmap .material-symbols-outlined { color: #fbbf24; }
+
+    /* Hover & Active States for Leafs */
+    .map-node.type-doc:hover, .map-node.type-video:hover, .map-node.type-image:hover, .map-node.type-mindmap:hover,
+    .map-node.type-doc.active-node, .map-node.type-video.active-node, .map-node.type-image.active-node, .map-node.type-mindmap.active-node {
+        background: rgba(20, 40, 80, 0.95);
+        border-color: rgba(255, 255, 255, 0.9);
+        color: #fff;
+        box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+        transform: scale(1.15) translateZ(20px);
+        z-index: 50;
+    }
+
+    /* Image Preview in Node */
+    .map-node.type-image img {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+        mix-blend-mode: luminosity; /* Cooler blending */
+    }
+    .map-node.type-image.active-node {
+        width: 140px;
+        height: 90px;
+        color: transparent;
+        overflow: hidden;
+    }
+    .map-node.type-image.active-node img {
+        opacity: 1;
+        mix-blend-mode: normal;
+    }
+    .map-node.type-image.active-node .material-symbols-outlined {
+        opacity: 0;
+    }
+
+    /* --- Content Panel --- */
+    .node-content-panel {
+        background: rgba(8, 12, 25, 0.95);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+        backdrop-filter: blur(20px);
+        color: #e0f0ff;
+        border-radius: 16px;
+        padding: 24px;
+        z-index: 100;
+        /* Start state for animation */
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        pointer-events: none;
+        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .node-content-panel.panel-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    .node-content-panel h3 {
+        color: #fff;
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    
+    /* Scrollbar for panel content */
+    .panel-scrollable::-webkit-scrollbar { width: 4px; }
+    .panel-scrollable::-webkit-scrollbar-track { bg: transparent; }
+    .panel-scrollable::-webkit-scrollbar-thumb { background: #00f0ff; border-radius: 2px; }
+
+    /* --- Mindmap Widget Styles --- */
+    .mindmap-widget {
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mindmap-widget.collapsed {
+        transform: translateX(110%);
+    }
+
+</style>
+</head>
+<body class="transition-colors duration-200 min-h-screen flex flex-col">
+
+<!-- Note: Header Removed as requested -->
+
+<!-- Main Canvas -->
+<main class="flex-grow w-full relative overflow-hidden">
+    <div class="absolute inset-0 conceptual-map-container" id="learning-galaxy">
+        
+        <!-- Center Core -->
+        <div class="map-node type-main animate-pulse-glow" id="main-node">
+            VEO3
+        </div>
+
+        <!-- Topic: Core Docs -->
+        <div class="map-node type-topic" data-node-id="core-docs">
+            <span class="material-symbols-outlined text-lg mr-2">library_books</span>
+            Core Docs
+        </div>
+        <!-- Children of Core Docs -->
+        <div class="map-node type-doc node-hidden" data-parent-node="core-docs">
+            <span class="material-symbols-outlined text-lg">description</span>
+            HƯỚNG DẪN VẬN HÀNH VEO3.docx
+        </div>
+        <div class="map-node type-video node-hidden" data-parent-node="core-docs">
+            <span class="material-symbols-outlined text-lg">play_circle</span>
+            Hướng_dẫn_vận_hành_VEO3.mp4
+        </div>
+
+
+        <!-- Topic: Visual Assets -->
+        <div class="map-node type-topic" data-node-id="visual-assets">
+            <span class="material-symbols-outlined text-lg mr-2">perm_media</span>
+            Visual Assets
+        </div>
+        <!-- Children of Visual Assets -->
+        <div class="map-node type-image node-hidden" data-parent-node="visual-assets">
+            <span class="material-symbols-outlined text-lg">image</span>
+            Khối 1.png
+            <img alt="Khối 1.png" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhlBm49epTesS6md2pp5Nbl6tDLRPsql8TneeFXTeWPfys-J14NL5KuB6Q6JxUxMZizLIJ2UAhDz2ph-lqdML7AnwVSek_LnMRuYxEa3bZInwF9SmIZEzJ4TGxkc2xTGzeygY57e_HMPBVcmSNwqFCdNRrUkPB-k7uT7BNJAE_V7cyJbbb9hBT8jPuYkrkN9GGXIBm0xAWH5g_bMvRCNKLqMO1I4Yv9kTcK3uIqne8VrP5WzjLHIa--rF68TBBVFebA7gd9r1ghbo"/>
+        </div>
+        <div class="map-node type-image node-hidden" data-parent-node="visual-assets">
+            <span class="material-symbols-outlined text-lg">image</span>
+            Khối 2.png
+            <img alt="Khối 2.png" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdUDc4X8wdNJjCViSlzNlE9p2lvZ7Q7oeVmhZBxbzr4fyXPGFIwmZBXt4XcFH5BWw0xFrjXZLjFGKbf0gj86kQxEmHE0kS7g0ZxsimR-yEO-n_7QqL9AL7xznX1i-vFY7dQlwbfqWQ6HYSOfi_M_Ii9mt-Ky_rMd2CoRkUNEMnOBD4K3tzgbrptZ11Fi3AhZz3Nb_hwZBzKvCZtNIJ5oT6QUF1LgrsKJWGYEkRQwwoCfa-Ujgjc_im4k1_Obtdt80PiRxkrfpv3vI"/>
+        </div>
+        <div class="map-node type-image node-hidden" data-parent-node="visual-assets">
+            <span class="material-symbols-outlined text-lg">image</span>
+            Khối 3.png
+            <img alt="Khối 3.png" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAATlxbLg-xJdHfCtxmaB5DgBuEPzAVDHxAVMxf-90qXM6FVvGaY6KmQ4U5jHxjFhdBXBEvAgPh6ZOj3ctJLt9gfQNVcGZxYgpbwuwpx62_ux3Q0iUmty4AscQ-SkcYt5pIPgcPFvXR91wHGviVZJFT2RoOU6cXsz3hrXR-A_VNHy2oW2L8BV5Duo9S8fjy_MefmYNWN9yHKVe8LAa1EzAyRfPQ2RU14L1UwRVJTrQgfbSmrbleRzFu1YAFOTjvcfAeV1b-BKTbLM"/>
+        </div>
+        <div class="map-node type-image node-hidden" data-parent-node="visual-assets">
+            <span class="material-symbols-outlined text-lg">image</span>
+            Khối 4.png
+            <img alt="Khối 4.png" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbJbtCo22ygPAEScirVNpaB1riZ2cT_VWAeMiHy8AOkoNvJ1gA1e5sRMI-frZXyqEFBXaXHpsYYCsxBjtISHe27CReSLTnKdXG9fx4MOoijhnNZbU0wBBjNN3Nyn-6zsyuCXqYBpnfS2hSqikxiUT4J-Fa3xJVJEqSE_GqRmc_6j8To6I5KYzc6CBrBJ2AtKWk3BN5hF_YAIFjv7rH7jiCE5zQmTUqhUeKNRfpMr5tEsIUVngnVMG5YkFPGBw61J4h2__fi179eQ4"/>
+        </div>
+        <div class="map-node type-image node-hidden" data-parent-node="visual-assets">
+            <span class="material-symbols-outlined text-lg">image</span>
+            Khối 5.png
+            <img alt="Khối 5.png" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5em8KYCbEyiwBDpggcanZAVyAIyUKWPrYg_bf2-IcV3kVBlkE654RFhWmuIfz-gyUKShpsQ1mGjVh1oYy_9EWNp7oJJ3M7rMV2ODeI13NZk3Jl7iZLZdiw-k7RW3D2o4N1h8h02JV9f3UBe4gajWjmc5NBhxCG3wT5ZVCKeP-Joytsxx55U4SCt3eLjojmUh2cLylVIEfeBmUpN1U5oqpmFXN2GWHe69G1utf2Fpvh8K3eLCP-PM9kVAhNkY5sV2gEBU9JYC5TmI"/>
+        </div>
+        <div class="map-node type-image node-hidden" data-parent-node="visual-assets">
+            <span class="material-symbols-outlined text-lg">image</span>
+            Khối 6.png
+            <img alt="Khối 6.png" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZUZ_QbpdcSuFonMuPNRPvFOxHteRppJjUZD4vLleoAnyoqBHVFMpbyyuRXhFXgLrCdbeDJjD71H2wUkFgfbaLyZ8eqm7Sr-UHVvhM9auh910lyN4uMazcjm-A2JKSkF8spnzXbqqh2aX172anJMhrZ-AM1KeWFztc5nk3Zhfh_GA-HKSE8zfLfVGNPe4KJkB3Q5Qr8bpf2Sh8BSBNRX57rqGYMgtsPAFs2rFwUOPzDoVtFRll8xDqLVvtTZJwXPF3vK8TsatTt8E"/>
+        </div>
+
+        <!-- Note: Structure Map Node REMOVED as it is now a main widget -->
+
+        <!-- Details Panel -->
+        <div class="node-content-panel fixed" id="content-detail-panel" style="max-width: 350px;">
+            <button class="absolute top-3 right-3 text-holo-cyan/50 hover:text-holo-cyan transition-colors" onclick="closePanel()">
+                <span class="material-symbols-outlined text-base">close</span>
+            </button>
+            <h3 class="font-semibold text-lg mb-2 flex items-center tracking-wide">
+                <span class="material-symbols-outlined text-xl mr-2 text-holo-cyan" id="panel-icon"></span>
+                <span id="panel-title"></span>
+            </h3>
+            <div class="h-px w-full bg-gradient-to-r from-holo-cyan/50 to-transparent mb-3"></div>
+            <div class="max-h-[60vh] overflow-y-auto panel-scrollable pr-2">
+                <p class="text-sm text-gray-300 leading-relaxed mb-4" id="panel-description"></p>
+                <img alt="Content preview" class="rounded border border-holo-border mb-4 w-full h-auto object-cover hidden shadow-lg" id="panel-image" src=""/>
+                <video class="rounded border border-holo-border mb-4 w-full h-auto hidden shadow-lg" controls="" id="panel-video" src=""></video>
+            </div>
+            <a class="inline-flex items-center justify-center w-full px-4 py-3 mt-2 bg-holo-cyan/10 border border-holo-cyan/50 hover:bg-holo-cyan/20 text-holo-cyan rounded transition-all text-sm font-medium uppercase tracking-wider group" href="#" id="panel-link" target="_blank">
+                Access Data <span class="material-symbols-outlined text-sm ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- NEW: Persistent Mindmap Widget (Khung lớn nổi) -->
+    <div id="mindmap-widget" class="mindmap-widget fixed top-6 right-6 bottom-6 w-full max-w-md bg-holo-surface/95 backdrop-blur-2xl border border-holo-border rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] flex flex-col z-40">
+        <!-- Widget Header -->
+        <div class="p-4 border-b border-holo-border flex justify-between items-center bg-gradient-to-r from-holo-cyan/10 to-transparent rounded-t-2xl">
+            <h2 class="text-holo-cyan font-bold tracking-wider flex items-center text-sm uppercase">
+                <span class="material-symbols-outlined mr-2 text-lg">hub</span> System Overview
+            </h2>
+            <button onclick="toggleMindmap()" class="text-holo-cyan/60 hover:text-holo-cyan transition-colors" title="Collapse">
+                <span class="material-symbols-outlined">last_page</span>
+            </button>
+        </div>
+        
+        <!-- Widget Content (Scrollable) -->
+        <div class="flex-grow p-4 overflow-y-auto panel-scrollable flex flex-col">
+            <div class="bg-black/40 rounded-xl border border-holo-border/50 p-2 mb-4 shadow-inner relative group cursor-zoom-in">
+                <div class="absolute inset-0 bg-holo-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHMKeqJ2Qgyyerm4i6J8JwRM5ciJpdMB6i8AzGIj2YXvUSsGXH6Ykfp_d8y65iULeCl48Nr__cBRyM1F6-WDCuk1jaOEE4lsvOixYiB78CCT4kL3dqNlhAYrOFUSZkb-PApu9sx2M3ZFUlt9f9PnuLPzuZenXwpRfqH_nTcDz7BTn6OShL8urhRehXItILQI6IE_6y0hdgr4fK6FT3A4Z4EvsX7gl2BAOMZ3XjT3-4JTlzAot1h6GDdABOEjlmD0tTw9pFP9iWha0" 
+                     class="w-full h-auto rounded shadow-lg" alt="Structure Map"
+                     onclick="window.open(this.src, '_blank')"/>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <h4 class="text-xs font-semibold text-holo-cyan mb-1 uppercase">Process Flow</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Sơ đồ này mô tả luồng dữ liệu thần kinh hoàn chỉnh của hệ thống VEO3, kết nối các mô-đun tài liệu lõi với các tài sản trực quan và các giao thức vận hành.
+                    </p>
+                </div>
+                
+                <div class="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <h4 class="text-xs font-semibold text-purple-400 mb-1 uppercase">Key Nodes</h4>
+                    <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc marker:text-purple-500">
+                        <li>Core Documentation Protocols</li>
+                        <li>Visual Asset Distribution</li>
+                        <li>Maintenance Cycles</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Widget Footer -->
+        <div class="p-3 border-t border-holo-border bg-black/20 text-center">
+             <button onclick="resetView()" class="text-xs text-holo-cyan/70 hover:text-holo-cyan flex items-center justify-center w-full py-2 hover:bg-white/5 rounded transition-colors">
+                <span class="material-symbols-outlined text-sm mr-2">center_focus_strong</span> Recenter Galaxy
+            </button>
+        </div>
+    </div>
+
+    <!-- Toggle Button (Visible when Widget is Collapsed) -->
+    <button id="mindmap-toggle-btn" class="fixed top-6 right-0 bg-holo-surface border border-r-0 border-holo-border p-3 rounded-l-xl z-30 shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:bg-holo-cyan/10 transition-all hidden" onclick="toggleMindmap()">
+         <span class="material-symbols-outlined text-holo-cyan">first_page</span>
+    </button>
+
+</main>
+
+<script>
+    // --- Configuration ---
+    const CONFIG = {
+        radius: 200, // Distance from cluster center
+        animSpeed: 50, // Stagger delay in ms
+        mobileBreakpoint: 768
+    };
+
+    // --- State ---
+    const state = {
+        activeCluster: null,
+        activeLeaf: null,
+        panX: 0,
+        panY: 0,
+        isDragging: false,
+        startX: 0,
+        startY: 0,
+        mindmapOpen: true
+    };
+
+    // --- DOM Elements ---
+    const galaxy = document.getElementById('learning-galaxy');
+    const nodes = document.querySelectorAll('.map-node');
+    const mainNode = document.getElementById('main-node');
+    const contentPanel = document.getElementById('content-detail-panel');
+    const mindmapWidget = document.getElementById('mindmap-widget');
+    const mindmapToggleBtn = document.getElementById('mindmap-toggle-btn');
+    
+    const panelEls = {
+        title: document.getElementById('panel-title'),
+        desc: document.getElementById('panel-description'),
+        icon: document.getElementById('panel-icon'),
+        img: document.getElementById('panel-image'),
+        video: document.getElementById('panel-video'),
+        link: document.getElementById('panel-link')
+    };
+
+    // --- Data ---
+    const nodeData = {
+        'core-docs': {
+            title: 'Core Documentation',
+            description: 'Essential operating protocols and encrypted manuals for VEO3 systems.',
+            icon: 'library_books',
+            link: '#',
+            children: [
+                {
+                    type: 'doc', title: 'HƯỚNG DẪN VẬN HÀNH VEO3.docx', description: 'Comprehensive guide to VEO3 operation.', icon: 'description', link: '#',
+                    details: 'SECURE DOCUMENT // Size: 27 KB', image: null
+                },
+                {
+                    type: 'video', title: 'Hướng_dẫn_vận_hành_VEO3.mp4', description: 'Visual tutorial for VEO3 setup and usage.', icon: 'play_circle', link: '#',
+                    details: 'VIDEO STREAM // Length: 12:04', video: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_stereo.mp4'
+                }
+            ]
+        },
+        'visual-assets': {
+            title: 'Visual Assets',
+            description: 'Schematic visualizations and component blueprints.',
+            icon: 'perm_media',
+            link: '#',
+            children: [
+                { type: 'image', title: 'Khối 1.png', description: 'Block 1 Structure Analysis.', icon: 'image', link: '#', details: 'IMG DATA // 4.6 MB', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBhlBm49epTesS6md2pp5Nbl6tDLRPsql8TneeFXTeWPfys-J14NL5KuB6Q6JxUxMZizLIJ2UAhDz2ph-lqdML7AnwVSek_LnMRuYxEa3bZInwF9SmIZEzJ4TGxkc2xTGzeygY57e_HMPBVcmSNwqFCdNRrUkPB-k7uT7BNJAE_V7cyJbbb9hBT8jPuYkrkN9GGXIBm0xAWH5g_bMvRCNKLqMO1I4Yv9kTcK3uIqne8VrP5WzjLHIa--rF68TBBVFebA7gd9r1ghbo' },
+                { type: 'image', title: 'Khối 2.png', description: 'Block 2 Detailed View.', icon: 'image', link: '#', details: 'IMG DATA // 5.1 MB', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdUDc4X8wdNJjCViSlzNlE9p2lvZ7Q7oeVmhZBxbzr4fyXPGFIwmZBXt4XcFH5BWw0xFrjXZLjFGKbf0gj86kQxEmHE0kS7g0ZxsimR-yEO-n_7QqL9AL7xznX1i-vFY7dQlwbfqWQ6HYSOfi_M_Ii9mt-Ky_rMd2CoRkUNEMnOBD4K3tzgbrptZ11Fi3AhZz3Nb_hwZBzKvCZtNIJ5oT6QUF1LgrsKJWGYEkRQwwoCfa-Ujgjc_im4k1_Obtdt80PiRxkrfpv3vI' },
+                { type: 'image', title: 'Khối 3.png', description: 'Block 3 Layout.', icon: 'image', link: '#', details: 'IMG DATA // 5.1 MB', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAATlxbLg-xJdHfCtxmaB5DgBuEPzAVDHxAVMxf-90qXM6FVvGaY6KmQ4U5jHxjFhdBXBEvAgPh6ZOj3ctJLt9gfQNVcGZxYgpbwuwpx62_ux3Q0iUmty4AscQ-SkcYt5pIPgcPFvXR91wHGviVZJFT2RoOU6cXsz3hrXR-A_VNHy2oW2L8BV5Duo9S8fjy_MefmYNWN9yHKVe8LAa1EzAyRfPQ2RU14L1UwRVJTrQgfbSmrbleRzFu1YAFOTjvcfAeV1b-BKTbLM' },
+                { type: 'image', title: 'Khối 4.png', description: 'Block 4 Assembly.', icon: 'image', link: '#', details: 'IMG DATA // 5.5 MB', image: 'image-312c0bedd9794cb5a810df27ae57934' },
+                { type: 'image', title: 'Khối 5.png', description: 'Block 5 Operations.', icon: 'image', link: '#', details: 'IMG DATA // 5.1 MB', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD5em8KYCbEyiwBDpggcanZAVyAIyUKWPrYg_bf2-IcV3kVBlkE654RFhWmuIfz-gyUKShpsQ1mGjVh1oYy_9EWNp7oJJ3M7rMV2ODeI13NZk3Jl7iZLZdiw-k7RW3D2o4N1h8h02JV9f3UBe4gajWjmc5NBhxCG3wT5ZVCKeP-Joytsxx55U4SCt3eLjojmUh2cLylVIEfeBmUpN1U5oqpmFXN2GWHe69G1utf2Fpvh8K3eLCP-PM9kVAhNkY5sV2gEBU9JYC5TmI' },
+                { type: 'image', title: 'Khối 6.png', description: 'Block 6 Maintenance.', icon: 'image', link: '#', details: 'IMG DATA // 5.3 MB', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCZUZ_QbpdcSuFonMuPNRPvFOxHteRppJjUZD4vLleoAnyoqBHVFMpbyyuRXhFXgLrCdbeDJjD71H2wUkFgfbaLyZ8eqm7Sr-UHVvhM9auh910lyN4uMazcjm-A2JKSkF8spnzXbqqh2aX172anJMhrZ-AM1KeWFztc5nk3Zhfh_GA-HKSE8zfLfVGNPe4KJkB3Q5Qr8bpf2Sh8BSBNRX57rqGYMgtsPAFs2rFwUOPzDoVtFRll8xDqLVvtTZJwXPF3vK8TsatTt8E' },
+            ]
+        }
+    };
+
+    // --- Initialization ---
+    function init() {
+        positionInitialNodes();
+        setupEvents();
+        // Check screen size for initial widget state
+        if (window.innerWidth < 1024) {
+            toggleMindmap(); // Auto collapse on smaller screens
+        }
+    }
+
+    // Set initial positions for main topic clusters
+    function positionInitialNodes() {
+        // Shift center slightly left since we have a big widget on the right
+        const cx = (window.innerWidth / 2) - (state.mindmapOpen && window.innerWidth > 1024 ? 150 : 0);
+        const cy = window.innerHeight / 2;
+
+        // Center Main Node
+        mainNode.style.left = `${cx}px`;
+        mainNode.style.top = `${cy}px`;
+        mainNode.style.transform = 'translate(-50%, -50%)';
+
+        // Position Topics (Orbiting)
+        const topics = document.querySelectorAll('.map-node.type-topic');
+        const radius = Math.min(window.innerWidth, window.innerHeight) * 0.35; 
+        
+        topics.forEach((topic, index) => {
+            // Adjust angle to avoid being under the widget if possible
+            // 2 items: 1 top-left, 1 bottom-left looks best
+            const angle = Math.PI + (index === 0 ? -0.5 : 0.5); 
+            
+            const x = cx + radius * Math.cos(angle);
+            const y = cy + radius * Math.sin(angle);
+            
+            topic.style.left = `${x}px`;
+            topic.style.top = `${y}px`;
+            topic.style.transform = 'translate(-50%, -50%)';
+            
+            // Draw lines to center
+            setTimeout(() => createLine(mainNode, topic), 500 + (index * 200));
+        });
+    }
+
+    // --- Interaction Handling ---
+    function setupEvents() {
+        nodes.forEach(node => {
+            node.addEventListener('click', handleNodeClick);
+        });
+
+        // Close panel on background click
+        document.addEventListener('click', (e) => {
+            if (!contentPanel.contains(e.target) && !e.target.closest('.map-node')) {
+                closePanel();
+                if (state.activeLeaf) {
+                    state.activeLeaf.classList.remove('active-node');
+                    state.activeLeaf = null;
+                }
+            }
+        });
+        
+        // Window resize handling
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                closePanel();
+                positionInitialNodes();
+                if (state.activeCluster) expandCluster(state.activeCluster, document.querySelector(`[data-node-id="${state.activeCluster}"]`));
+            }, 200);
+        });
+    }
+
+    function toggleMindmap() {
+        state.mindmapOpen = !state.mindmapOpen;
+        mindmapWidget.classList.toggle('collapsed');
+        mindmapToggleBtn.classList.toggle('hidden');
+        
+        // Re-center galaxy with delay for smooth transition
+        setTimeout(positionInitialNodes, 100);
+    }
+
+    function handleNodeClick(e) {
+        e.stopPropagation();
+        const node = e.currentTarget;
+        const nodeId = node.dataset.nodeId;
+        const parentId = node.dataset.parentNode;
+
+        // 1. Topic Cluster Click
+        if (nodeId) {
+            if (state.activeCluster === nodeId) {
+                collapseCluster(nodeId);
+            } else {
+                if (state.activeCluster) collapseCluster(state.activeCluster);
+                expandCluster(nodeId, node);
+            }
+        }
+        // 2. Leaf Node (Content) Click
+        else if (parentId) {
+            handleContentNode(node, parentId);
+        }
+        // 3. Main Node Click
+        else if (node === mainNode) {
+             showPanel({
+                title: 'VEO3 System Core',
+                description: 'Central Node Active. Exploring Learning Galaxy. Select topic clusters to expand data layers.',
+                icon: 'science',
+                link: '#',
+                details: 'SYSTEM ONLINE'
+            }, node);
+        }
+    }
+
+    function handleContentNode(node, dataKey) {
+        // Toggle Active State
+        if (state.activeLeaf === node) {
+            node.classList.remove('active-node');
+            state.activeLeaf = null;
+            closePanel();
+            return;
+        }
+
+        if (state.activeLeaf) state.activeLeaf.classList.remove('active-node');
+        node.classList.add('active-node');
+        state.activeLeaf = node;
+
+        // Find Data
+        let data = nodeData[dataKey]?.children?.find(item => 
+            node.textContent.trim().includes(item.title) || item.title.includes(node.textContent.trim())
+        );
+
+        if (data) showPanel(data, node);
+    }
+
+    // --- Animation Logic ---
+
+    function expandCluster(clusterId, parentNode) {
+        state.activeCluster = clusterId;
+        parentNode.classList.add('active-cluster');
+        
+        // Remove old lines associated with children
+        document.querySelectorAll(`.line-${clusterId}`).forEach(l => l.remove());
+
+        const children = document.querySelectorAll(`[data-parent-node="${clusterId}"]`);
+        const cx = parseFloat(parentNode.style.left);
+        const cy = parseFloat(parentNode.style.top);
+
+        // Determine layout based on screen ratio
+        const isMobile = window.innerWidth < CONFIG.mobileBreakpoint;
+        const radius = isMobile ? 140 : 220; 
+        
+        children.forEach((child, index) => {
+            child.style.left = `${cx}px`;
+            child.style.top = `${cy}px`;
+            child.classList.remove('hidden'); 
+            
+            // Fan out logic
+            let angle;
+            if (children.length === 1) angle = Math.PI / 2;
+            else angle = (index / children.length) * 2 * Math.PI; 
+
+            const tx = cx + radius * Math.cos(angle);
+            const ty = cy + radius * Math.sin(angle);
+
+            setTimeout(() => {
+                child.classList.remove('node-hidden');
+                child.style.left = `${tx}px`;
+                child.style.top = `${ty}px`;
+                child.style.transform = 'translate(-50%, -50%) scale(1)';
+                
+                setTimeout(() => createLine(parentNode, child, `line-${clusterId}`), 200);
+            }, index * CONFIG.animSpeed);
+        });
+    }
+
+    function collapseCluster(clusterId) {
+        const parentNode = document.querySelector(`[data-node-id="${clusterId}"]`);
+        if(parentNode) parentNode.classList.remove('active-cluster');
+        
+        const children = document.querySelectorAll(`[data-parent-node="${clusterId}"]`);
+        const cx = parseFloat(parentNode.style.left);
+        const cy = parseFloat(parentNode.style.top);
+
+        document.querySelectorAll(`.line-${clusterId}`).forEach(l => {
+            l.style.opacity = '0';
+            l.style.width = '0';
+            setTimeout(() => l.remove(), 300);
+        });
+
+        children.forEach((child, index) => {
+            child.style.left = `${cx}px`;
+            child.style.top = `${cy}px`;
+            child.style.transform = 'translate(-50%, -50%) scale(0.5)';
+            child.classList.add('node-hidden');
+            setTimeout(() => {
+                child.classList.add('hidden');
+            }, 500);
+        });
+
+        state.activeCluster = null;
+        closePanel();
+    }
+
+    // --- Visual Utilities ---
+
+    function createLine(node1, node2, customClass = '') {
+        const getCenter = (el) => {
+            if (el.style.left && el.style.top) {
+                return { x: parseFloat(el.style.left), y: parseFloat(el.style.top) };
+            }
+            const rect = el.getBoundingClientRect();
+            return { x: rect.left + rect.width/2 + window.scrollX, y: rect.top + rect.height/2 + window.scrollY };
+        };
+
+        const p1 = getCenter(node1);
+        const p2 = getCenter(node2);
+
+        const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+        const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+
+        const line = document.createElement('div');
+        line.className = `connecting-line ${customClass}`;
+        line.style.width = `0px`; 
+        line.style.left = `${p1.x}px`;
+        line.style.top = `${p1.y}px`;
+        line.style.transform = `rotate(${angle}deg)`;
+
+        galaxy.appendChild(line);
+
+        requestAnimationFrame(() => {
+            line.style.opacity = '1';
+            line.style.width = `${distance}px`;
+        });
+    }
+
+    // --- Panel Logic ---
+
+    function showPanel(data, targetNode) {
+        panelEls.title.textContent = data.title;
+        panelEls.desc.textContent = data.description + (data.details ? ` [${data.details}]` : '');
+        panelEls.icon.textContent = data.icon;
+        panelEls.link.href = data.link;
+        
+        panelEls.img.classList.add('hidden');
+        panelEls.video.classList.add('hidden');
+        
+        if (data.image) {
+            panelEls.img.src = data.image;
+            panelEls.img.classList.remove('hidden');
+        } else if (data.video) {
+            panelEls.video.src = data.video;
+            panelEls.video.classList.remove('hidden');
+        }
+
+        const rect = targetNode.getBoundingClientRect();
+        const panelW = 350;
+        const panelH = 400; 
+        
+        let left = rect.right + 20;
+        let top = rect.top - 50;
+
+        if (left + panelW > window.innerWidth) {
+            left = rect.left - panelW - 20;
+        }
+        if (left < 10) left = 10;
+        if (top + panelH > window.innerHeight) {
+            top = window.innerHeight - panelH - 20;
+        }
+        if (top < 20) top = 20; // Adjusted for no header
+
+        contentPanel.style.left = `${left}px`;
+        contentPanel.style.top = `${top}px`;
+        
+        contentPanel.classList.remove('hidden');
+        void contentPanel.offsetWidth;
+        contentPanel.classList.add('panel-visible');
+    }
+
+    function closePanel() {
+        contentPanel.classList.remove('panel-visible');
+    }
+
+    function resetView() {
+        closePanel();
+        if (state.activeCluster) collapseCluster(state.activeCluster);
+        init();
+    }
+
+    window.addEventListener('load', init);
+
+</script>
+</body>
+</html>
