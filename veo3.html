@@ -386,7 +386,7 @@
         
         <div class="p-2 flex-grow overflow-auto flex flex-col items-center justify-center bg-black/50 relative">
              <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none"></div>
-             <img src="./media_veo3/Mindmap-VEO3.png" 
+             <img src="./images/so-do-mindmap-tong.png" 
                   class="max-w-full h-auto rounded shadow-lg object-contain max-h-[70vh] md:max-h-none border border-white/10" alt="Structure Map"
                   onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuCHMKeqJ2Qgyyerm4i6J8JwRM5ciJpdMB6i8AzGIj2YXvUSsGXH6Ykfp_d8y65iULeCl48Nr__cBRyM1F6-WDCuk1jaOEE4lsvOixYiB78CCT4kL3dqNlhAYrOFUSZkb-PApu9sx2M3ZFUlt9f9PnuLPzuZenXwpRfqH_nTcDz7BTn6OShL8urhRehXItILQI6IE_6y0hdgr4fK6FT3A4Z4EvsX7gl2BAOMZ3XjT3-4JTlzAot1h6GDdABOEjlmD0tTw9pFP9iWha0'"/>
              
@@ -412,10 +412,10 @@
             title: 'HƯỚNG DẪN VẬN HÀNH VEO3',
             description: 'Xem video chi tiết quy trình lắp đặt và vận hành hệ thống VEO3.',
             icon: 'play_circle',
-            link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Link dự phòng
+            link: 'https://youtu.be/b2TZ0QTYN-I',
             videoType: 'youtube', 
-            // Dùng ID video Youtube hoặc URL Embed. Ví dụ video mẫu.
-            videoSrc: 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&modestbranding=1', 
+            // Dùng ID video Youtube hoặc URL Embed. Thêm autoplay=1 để tự chạy khi mở panel.
+            videoSrc: 'https://www.youtube.com/embed/b2TZ0QTYN-I?autoplay=1', 
             children: [] // No expansion needed
         },
         'visual-assets': {
@@ -633,8 +633,8 @@
         if (data.videoType === 'youtube') {
             mediaContainer.classList.remove('hidden');
             youtubeEmbed.classList.remove('hidden');
-            // Insert Iframe dynamically
-            youtubeEmbed.innerHTML = `<iframe width="100%" height="100%" src="${data.videoSrc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            // Insert Iframe dynamically with full attributes
+            youtubeEmbed.innerHTML = `<iframe id="ytplayer" type="text/html" width="100%" height="100%" src="${data.videoSrc}" frameborder="0" allowfullscreen></iframe>`;
         } else if (data.image) {
             mediaContainer.classList.remove('hidden');
             pImg.src = data.image;
