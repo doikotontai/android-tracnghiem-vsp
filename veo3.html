@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8"/>
+<!-- Giữ user-scalable=no để ta tự xử lý zoom bằng JS mượt hơn, tránh xung đột với trình duyệt -->
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
 <title>Learning Content Galaxy - VEO3</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
@@ -9,11 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script>
     tailwind.config = {
-        darkMode: "class", // Kích hoạt dark mode bằng class 'dark'
+        darkMode: "class",
         theme: {
             extend: {
                 colors: {
-                    // Màu cho Dark Mode (Holo)
                     holo: {
                         bg: "#050810",
                         surface: "rgba(10, 20, 35, 0.9)", 
@@ -24,13 +24,12 @@
                         green: "#0aff0a",
                         blue: "#3b82f6"
                     },
-                    // Màu cho Light Mode
                     light: {
                         bg: "#f0f4f9",
                         surface: "rgba(255, 255, 255, 0.9)",
                         border: "rgba(0, 100, 200, 0.2)",
                         text: "#1e293b",
-                        accent: "#0284c7" // Sky blue đậm
+                        accent: "#0284c7"
                     }
                 },
                 fontFamily: {
@@ -38,20 +37,9 @@
                     display: "Be Vietnam Pro"
                 },
                 animation: {
-                    'pulse-glow': 'pulseGlow 4s infinite alternate',
-                    'spin-slow': 'spin 20s linear infinite',
-                    'float': 'float 6s ease-in-out infinite',
                     'machine-hover': 'machineHover 3s ease-in-out infinite',
                 },
                 keyframes: {
-                    pulseGlow: {
-                        '0%': { opacity: 0.8, filter: 'brightness(1) drop-shadow(0 0 5px rgba(0,240,255,0.2))' },
-                        '100%': { opacity: 1, filter: 'brightness(1.1) drop-shadow(0 0 15px rgba(0,240,255,0.5))' },
-                    },
-                    float: {
-                        '0%, 100%': { transform: 'translateY(0)' },
-                        '50%': { transform: 'translateY(-10px)' },
-                    },
                     machineHover: {
                         '0%, 100%': { transform: 'translate(-50%, -50%) scale(1)' },
                         '50%': { transform: 'translate(-50%, -52%) scale(1.02)' },
@@ -62,51 +50,43 @@
     };
 </script>
 <style type="text/tailwindcss">
-    /* --- CSS Variables cho việc chuyển đổi Theme mượt mà --- */
     :root {
         --bg-primary: #f8fafc;
         --bg-grid: rgba(0, 0, 0, 0.05);
         --bg-gradient-start: rgba(220, 230, 255, 0.6);
         --bg-gradient-end: #ffffff;
-        
-        --line-color: rgba(96, 165, 250, 0.4); /* Blue-400 mờ */
-        
+        --line-color: rgba(96, 165, 250, 0.4);
         --node-bg: rgba(255, 255, 255, 0.85);
         --node-border: rgba(200, 200, 200, 0.6);
         --node-text: #1e293b;
         --node-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        
-        --main-node-glow: rgba(56, 189, 248, 0.5); /* Sáng hơn chút cho light mode */
+        --main-node-glow: rgba(56, 189, 248, 0.5);
     }
 
-    /* Dark Mode Variables */
     .dark {
         --bg-primary: #050810;
         --bg-grid: rgba(0, 240, 255, 0.05);
         --bg-gradient-start: rgba(20, 30, 60, 0.4);
         --bg-gradient-end: #050810;
-        
         --line-color: rgba(0, 240, 255, 0.3);
-        
         --node-bg: rgba(15, 25, 45, 0.7);
         --node-border: rgba(0, 240, 255, 0.3);
         --node-text: #d0e0ff;
         --node-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
-        
         --main-node-glow: rgba(0, 220, 255, 0.6);
     }
 
     body {
         background-color: var(--bg-primary);
         color: var(--node-text);
-        overflow: hidden;
+        overflow: hidden; /* Quan trọng: Ngăn cuộn trang mặc định */
         font-family: 'Inter', sans-serif;
-        touch-action: none;
+        touch-action: none; /* Quan trọng: Ngăn chặn hành vi zoom/scroll mặc định của trình duyệt để JS xử lý */
         -webkit-tap-highlight-color: transparent;
         transition: background-color 0.5s ease, color 0.5s ease;
     }
 
-    /* --- Background --- */
+    /* --- Background & Container --- */
     .conceptual-map-container {
         position: relative;
         width: 100%;
@@ -117,9 +97,26 @@
             linear-gradient(var(--bg-grid) 1px, transparent 1px),
             linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
         background-size: 100% 100%, 40px 40px, 40px 40px;
-        perspective: 1000px;
+        cursor: grab; /* Con trỏ hình bàn tay để báo hiệu có thể kéo */
+    }
+    .conceptual-map-container:active {
+        cursor: grabbing;
+    }
+
+    /* --- Transformer Layer (Lớp chịu tác động Zoom/Pan) --- */
+    #galaxy-transformer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center center;
         will-change: transform;
-        transition: background 0.5s ease;
+        /* Transition chỉ dùng khi reset view, tắt khi drag để mượt */
+        transition: transform 0.1s linear; 
+    }
+    .smooth-reset {
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     }
 
     /* --- Connecting Lines --- */
@@ -131,10 +128,10 @@
         pointer-events: none;
         z-index: 5;
         opacity: 0;
-        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background 0.5s ease;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
 
-    /* --- Nodes Common --- */
+    /* --- Nodes --- */
     .map-node {
         position: absolute;
         display: flex;
@@ -144,8 +141,8 @@
         cursor: pointer;
         z-index: 10;
         backdrop-filter: blur(8px);
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease, background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
-        will-change: transform, left, top;
+        transition: opacity 0.3s ease, background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+        /* Bỏ transition transform ở đây để tránh conflict với zoom */
         -webkit-user-select: none;
         user-select: none;
     }
@@ -153,25 +150,22 @@
     .node-hidden {
         opacity: 0;
         pointer-events: none;
-        transform: scale(0) translateZ(0) !important;
+        /* Ẩn bằng display none sau khi transition xong để tránh click nhầm */
     }
 
-    /* --- Main Node (VEO3 Machine Image) - MODERNISED --- */
+    /* --- Main Node --- */
     .map-node.type-main {
-        /* FIX: Giảm kích thước trên mobile để tránh đè nút */
         width: 180px; 
         height: 180px;
         background: transparent; 
         border: none; 
         box-shadow: none; 
         color: var(--node-text);
-        z-index: 20;
+        z-index: 10; 
         padding: 0;
         overflow: visible; 
         animation: machine-hover 4s ease-in-out infinite alternate;
     }
-
-    /* Hiệu ứng Glow nền phía sau (Ambient Light) */
     .map-node.type-main::before {
         content: '';
         position: absolute;
@@ -185,19 +179,6 @@
         filter: blur(40px); 
         opacity: 0.6;
         z-index: -1;
-        transition: opacity 0.3s ease;
-    }
-    
-    /* Hiệu ứng khi hover vào máy */
-    .map-node.type-main:hover::before {
-        opacity: 0.8;
-        filter: blur(50px);
-        background: var(--holo-cyan); 
-    }
-
-    /* Bỏ vòng xoay cũ (::after) để trông hiện đại, tối giản hơn */
-    .map-node.type-main::after {
-        display: none;
     }
     
     @media (min-width: 768px) {
@@ -209,35 +190,31 @@
         background: var(--node-bg);
         border: 1px solid var(--node-border);
         border-radius: 50px;
-        /* FIX: Giảm padding và font size trên mobile */
         padding: 6px 14px;
         color: var(--node-text);
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 0.7rem; /* Nhỏ hơn một chút */
+        font-size: 0.75rem; 
         min-width: 90px;
         box-shadow: var(--node-shadow);
-        white-space: nowrap; /* Tránh xuống dòng trên mobile */
+        white-space: nowrap; 
+        z-index: 30; 
     }
-    
     .map-node.type-topic.video-trigger {
         border-color: rgba(255, 68, 68, 0.5); 
         box-shadow: 0 0 15px rgba(255, 68, 68, 0.15);
     }
-    .map-node.type-topic.video-trigger .material-symbols-outlined {
-        color: #ef4444;
-    }
-
+    .map-node.type-topic.video-trigger .material-symbols-outlined { color: #ef4444; }
     .map-node.type-topic:active, .map-node.type-topic.active-cluster {
-        background: rgba(14, 165, 233, 0.15); /* Sky blue tint */
+        background: rgba(14, 165, 233, 0.15);
         border-color: #0ea5e9;
-        transform: scale(1.05);
+        /* Scale nhẹ khi active, không ảnh hưởng bố cục */
+        transform: translate(-50%, -50%) scale(1.05); 
     }
     .dark .map-node.type-topic:active, .dark .map-node.type-topic.active-cluster {
         background: rgba(0, 240, 255, 0.15);
         border-color: #00f0ff;
     }
-    
     @media (min-width: 768px) {
         .map-node.type-topic { padding: 12px 24px; font-size: 0.9rem; min-width: 140px; }
     }
@@ -257,62 +234,52 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        border-left: 3px solid #10b981; /* Green-500 */
+        border-left: 3px solid #10b981;
         box-shadow: var(--node-shadow);
     }
     .map-node.type-image .material-symbols-outlined { color: #10b981; font-size: 16px; }
-
     .map-node.active-node {
         background: #0ea5e9;
         border-color: #fff;
         color: #fff;
         z-index: 50;
-        transform: scale(1.1);
     }
-    .dark .map-node.active-node {
-        background: rgba(20, 40, 80, 0.95);
-    }
+    .dark .map-node.active-node { background: rgba(20, 40, 80, 0.95); }
 
-    /* --- Content Panel (CENTER MODAL STYLE) --- */
+    /* --- Content Panel --- */
     .node-content-panel {
         background: rgba(255, 255, 255, 0.95);
         border: 1px solid rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(20px);
         color: #1e293b;
-        z-index: 100;
-        
+        z-index: 100; /* Luôn nổi trên cùng, không bị ảnh hưởng bởi zoom transformer */
         position: fixed;
         top: 50%;
         left: 50%;
         width: 90%;
         max-width: 500px;
         max-height: 85vh;
-        
         transform: translate(-50%, -50%) scale(0.9);
         opacity: 0;
         pointer-events: none;
-        
         border-radius: 16px;
         padding: 20px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.5);
-        
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
     }
-
     .dark .node-content-panel {
         background: rgba(12, 18, 32, 0.95);
         border: 1px solid rgba(0, 240, 255, 0.3);
         color: #e0f0ff;
         box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
     }
-
     .node-content-panel.panel-visible {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
         pointer-events: auto;
     }
 
-    /* Video Container */
+    /* Video & UI Components */
     .aspect-video-container {
         position: relative;
         width: 100%;
@@ -322,69 +289,38 @@
         overflow: hidden;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-    .aspect-video-container iframe, 
-    .aspect-video-container video,
-    .aspect-video-container img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+    .aspect-video-container iframe, .aspect-video-container video, .aspect-video-container img {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;
     }
-
-    /* Theme Toggle Button */
     .theme-toggle-btn {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 100;
-        background: var(--node-bg);
-        border: 1px solid var(--node-border);
-        color: var(--node-text);
-        padding: 8px;
-        border-radius: 50%;
-        cursor: pointer;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: fixed; top: 1rem; right: 1rem; z-index: 100;
+        background: var(--node-bg); border: 1px solid var(--node-border);
+        color: var(--node-text); padding: 8px; border-radius: 50%;
+        cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
     }
-    .theme-toggle-btn:hover {
-        transform: rotate(15deg) scale(1.1);
-        background: rgba(0,0,0,0.05);
-    }
-    .dark .theme-toggle-btn:hover {
-        background: rgba(255,255,255,0.1);
-    }
-
-    /* Panel Item Light Mode Styles */
     .panel-item-light {
-        background: rgba(0, 0, 0, 0.03);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    .panel-item-light:hover {
-        background: rgba(0, 0, 0, 0.06);
+        background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05);
     }
     .dark .panel-item-light {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .dark .panel-item-light:hover {
-        background: rgba(255, 255, 255, 0.1);
+    
+    /* Zoom Controls Hint (Optional) */
+    .gesture-hint {
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.5); color: white; padding: 6px 12px;
+        border-radius: 20px; font-size: 12px; pointer-events: none; opacity: 0;
+        transition: opacity 0.5s; z-index: 90;
     }
 </style>
 </head>
-<!-- Mặc định class body trống để dùng Light Mode. Script sẽ kiểm tra LocalStorage. -->
 <body class="min-h-screen flex flex-col transition-colors duration-500">
 
-<!-- Theme Toggle -->
 <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
     <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
 </button>
 
-<!-- Mobile Header -->
 <div class="fixed top-4 left-4 z-30 pointer-events-none md:hidden">
     <div class="flex items-center space-x-2 bg-white/40 dark:bg-black/40 backdrop-blur rounded-full p-1 pr-3 border border-black/10 dark:border-white/10 pointer-events-auto shadow-sm">
         <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-holo-cyan/20 flex items-center justify-center text-blue-600 dark:text-holo-cyan">
@@ -394,75 +330,64 @@
     </div>
 </div>
 
-<!-- Overlay for Modal -->
+<div class="gesture-hint" id="zoom-hint">Kéo để di chuyển • Nhấn đúp để Reset</div>
+
 <div id="panel-overlay" class="fixed inset-0 bg-black/30 dark:bg-black/70 backdrop-blur-[2px] z-50 hidden opacity-0 transition-opacity duration-300" onclick="closePanel()"></div>
 
-<!-- Main Canvas -->
+<!-- Main Canvas Wrapper -->
 <main class="flex-grow w-full relative h-screen overflow-hidden">
+    <!-- Event Listener Container -->
     <div class="absolute inset-0 conceptual-map-container" id="learning-galaxy">
         
-        <!-- Center Core: Updated to Image (Modern Style) -->
-        <div class="map-node type-main" id="main-node">
-            <!-- Hình ảnh máy VEO3 tách nền -->
-            <img src="./media_veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain filter drop-shadow-xl dark:drop-shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300 hover:scale-105">
-        </div>
+        <!-- Transformer Layer: This layer will be Panned/Zoomed -->
+        <div id="galaxy-transformer">
+            
+            <!-- Center Core -->
+            <div class="map-node type-main" id="main-node">
+                <img src="./media_veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain filter drop-shadow-xl dark:drop-shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300">
+            </div>
 
-        <!-- Topic: Video (Formerly Docs) -->
-        <div class="map-node type-topic video-trigger" data-node-id="core-docs">
-            <span class="material-symbols-outlined text-base mr-1 md:mr-2">play_circle</span>
-            VIDEO HDSD
+            <!-- Topic Nodes -->
+            <div class="map-node type-topic video-trigger" data-node-id="core-docs">
+                <span class="material-symbols-outlined text-base mr-1 md:mr-2">play_circle</span>
+                VIDEO HDSD
+            </div>
+            <div class="map-node type-topic" data-node-id="visual-assets">
+                <span class="material-symbols-outlined text-base mr-1 md:mr-2">perm_media</span>
+                Assets
+            </div>
+            <div class="map-node type-topic" data-node-id="structure-map">
+                <span class="material-symbols-outlined text-base mr-1 md:mr-2">hub</span>
+                SƠ ĐỒ TỔNG
+            </div>
+            
         </div>
-
-        <!-- Topic: Visual Assets -->
-        <div class="map-node type-topic" data-node-id="visual-assets">
-            <span class="material-symbols-outlined text-base mr-1 md:mr-2">perm_media</span>
-            Assets
-        </div>
-
-        <!-- Topic: Structure Map -->
-        <div class="map-node type-topic" data-node-id="structure-map">
-            <span class="material-symbols-outlined text-base mr-1 md:mr-2">hub</span>
-            SƠ ĐỒ TỔNG
-        </div>
-        
     </div>
 
-    <!-- DETAILS PANEL (Center Modal) -->
+    <!-- DETAILS PANEL -->
     <div class="node-content-panel shadow-2xl" id="content-detail-panel">
-        
         <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 dark:text-white/50 dark:hover:text-white p-2 z-10 transition-colors" onclick="closePanel()">
             <span class="material-symbols-outlined">close</span>
         </button>
-        
         <h3 class="font-semibold text-lg mb-2 flex items-center pr-8 text-slate-800 dark:text-white">
             <span class="material-symbols-outlined text-xl mr-2 text-blue-500 dark:text-holo-cyan" id="panel-icon"></span>
             <span id="panel-title">Tiêu đề</span>
         </h3>
-        
         <div class="h-px w-full bg-gradient-to-r from-blue-200 to-transparent dark:from-holo-cyan/50 mb-4"></div>
-        
         <div class="overflow-y-auto max-h-[60vh] pr-1 scrollbar-hide">
-            <!-- Media Container (16:9) -->
             <div class="aspect-video-container mb-4 hidden" id="media-container">
-                <!-- Youtube Iframe placeholder -->
                 <div id="youtube-embed"></div>
-                <!-- Standard Image/Video fallback -->
                 <img alt="Content preview" class="hidden" id="panel-image" src=""/>
                 <video class="hidden" controls="" id="panel-video" src=""></video>
             </div>
-
-            <!-- List Container -->
             <div class="hidden flex flex-col gap-2 mb-4" id="list-container"></div>
-
             <p class="text-sm text-slate-600 dark:text-gray-300 leading-relaxed mb-4" id="panel-description">Mô tả nội dung...</p>
         </div>
-        
         <a class="flex items-center justify-center w-full py-3 bg-blue-600 hover:bg-blue-700 dark:bg-holo-cyan dark:hover:bg-cyan-400 text-white dark:text-black font-bold rounded-lg mt-2 active:scale-95 transition-all shadow-lg hover:shadow-xl" href="#" id="panel-link" target="_blank">
             <span>TRUY CẬP DỮ LIỆU</span>
             <span class="material-symbols-outlined text-lg ml-2">arrow_forward</span>
         </a>
     </div>
-
 </main>
 
 <script>
@@ -512,6 +437,7 @@
 
     // --- DOM ---
     const galaxy = document.getElementById('learning-galaxy');
+    const transformer = document.getElementById('galaxy-transformer');
     const mainNode = document.getElementById('main-node');
     const contentPanel = document.getElementById('content-detail-panel');
     const overlay = document.getElementById('panel-overlay');
@@ -530,22 +456,19 @@
 
     // --- Theme Logic ---
     function initTheme() {
-        // Mặc định là Light Mode như yêu cầu. 
-        // Kiểm tra xem người dùng có lưu preference khác không.
         const userPref = localStorage.getItem('theme');
         if (userPref === 'dark') {
             document.documentElement.classList.add('dark');
-            themeIcon.textContent = 'light_mode'; // Icon để chuyển sang light
+            themeIcon.textContent = 'light_mode'; 
         } else {
             document.documentElement.classList.remove('dark');
-            themeIcon.textContent = 'dark_mode'; // Icon để chuyển sang dark
+            themeIcon.textContent = 'dark_mode'; 
         }
     }
 
     function toggleTheme() {
         const html = document.documentElement;
         html.classList.toggle('dark');
-        
         if (html.classList.contains('dark')) {
             localStorage.setItem('theme', 'dark');
             themeIcon.textContent = 'light_mode';
@@ -559,55 +482,198 @@
     function init() {
         initTheme();
         positionNodes();
-        window.addEventListener('resize', () => positionNodes());
+        // Hint fade out
+        setTimeout(() => document.getElementById('zoom-hint').style.opacity = '0.8', 1000);
+        setTimeout(() => document.getElementById('zoom-hint').style.opacity = '0', 5000);
     }
 
+    // --- Positioning Logic ---
+    // Note: We position relative to center of the TRANSFORMER, which is width/height of screen.
     function positionNodes() {
+        // Recalculate based on current screen size, but nodes are absolute in transformer
         const cx = window.innerWidth / 2;
         const cy = window.innerHeight / 2;
         const isMobile = window.innerWidth < 768;
-        const offsetX = 0;
-
-        mainNode.style.left = `${cx + offsetX}px`;
+        
+        mainNode.style.left = `${cx}px`;
         mainNode.style.top = `${cy}px`;
         mainNode.style.transform = 'translate(-50%, -50%)';
 
         const topics = document.querySelectorAll('.map-node.type-topic');
-        
-        // FIX: Mobile Radius tăng lên (145) để tránh đè vào ảnh, nhưng vẫn nằm trong khung hình (trừ đi padding 2 bên)
-        // Main Node Width = 180 => Radius 90. Cần thêm >60px nữa.
+        // Mobile radius increased to ensure separation from the image
         const radius = isMobile ? 145 : 280; 
         
         topics.forEach((topic, index) => {
             let angle;
             if (isMobile) {
-                // Phân bố đều hình tam giác cho mobile
                 const angles = [-Math.PI/2, Math.PI/6, 5*Math.PI/6];
                 angle = angles[index % 3];
             } else {
                 angle = (index / topics.length) * 2 * Math.PI - Math.PI/2; 
             }
 
-            const x = (cx + offsetX) + radius * Math.cos(angle);
+            const x = cx + radius * Math.cos(angle);
             const y = cy + radius * Math.sin(angle);
 
             topic.style.left = `${x}px`;
             topic.style.top = `${y}px`;
             topic.style.transform = 'translate(-50%, -50%)';
             
+            // Re-render lines if active
             if(state.activeCluster) {
-                 setTimeout(() => {
-                     const parent = document.querySelector(`[data-node-id="${state.activeCluster}"]`);
-                     if(parent) expandCluster(state.activeCluster, parent);
-                 }, 300);
+                 const parent = document.querySelector(`[data-node-id="${state.activeCluster}"]`);
+                 const children = document.querySelectorAll(`[data-parent-node="${state.activeCluster}"]`);
+                 if(parent && children.length > 0) {
+                     // Simple re-positioning logic for open clusters could go here
+                     // But simplest is to just collapse to avoid artifacts on resize
+                     collapseCluster(state.activeCluster);
+                 }
             }
         });
     }
 
-    // --- Interactions ---
+    // --- Interactions (Pan & Zoom) ---
+    let transformState = { x: 0, y: 0, scale: 1 };
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let lastX = 0, lastY = 0;
+    let initialPinchDist = 0;
+    let initialScale = 1;
+    let isPinching = false;
+    let moveThreshold = 0; // Check to distinguish click vs drag
+
+    // Helper: Update CSS
+    function updateTransform() {
+        transformer.style.transform = `translate(${transformState.x}px, ${transformState.y}px) scale(${transformState.scale})`;
+    }
+
+    // Helper: Distance between two fingers
+    function getDistance(touches) {
+        return Math.hypot(
+            touches[0].clientX - touches[1].clientX,
+            touches[0].clientY - touches[1].clientY
+        );
+    }
+
+    // Mouse Events (Desktop)
+    galaxy.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        lastX = transformState.x;
+        lastY = transformState.y;
+        moveThreshold = 0;
+        transformer.classList.remove('smooth-reset');
+        galaxy.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        moveThreshold += Math.abs(e.movementX) + Math.abs(e.movementY);
+        transformState.x = lastX + dx;
+        transformState.y = lastY + dy;
+        updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        galaxy.style.cursor = 'grab';
+    });
+
+    galaxy.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const scaleAmount = -e.deltaY * 0.001;
+        const newScale = Math.min(Math.max(0.5, transformState.scale + scaleAmount), 3);
+        transformState.scale = newScale;
+        updateTransform();
+    }, { passive: false });
+
+    // Touch Events (Mobile)
+    galaxy.addEventListener('touchstart', (e) => {
+        transformer.classList.remove('smooth-reset');
+        if (e.touches.length === 1) {
+            isDragging = true;
+            isPinching = false;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            lastX = transformState.x;
+            lastY = transformState.y;
+            moveThreshold = 0;
+        } else if (e.touches.length === 2) {
+            isDragging = false;
+            isPinching = true;
+            initialPinchDist = getDistance(e.touches);
+            initialScale = transformState.scale;
+        }
+    }, { passive: false });
+
+    galaxy.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches.length === 1) {
+            // Pan
+            const dx = e.touches[0].clientX - startX;
+            const dy = e.touches[0].clientY - startY;
+            moveThreshold += Math.abs(dx) + Math.abs(dy); // Rough estimate
+            // Limit Pan
+            // transformState.x = lastX + dx;
+            // transformState.y = lastY + dy;
+            // Unbounded pan feels better for infinite canvas, but let's keep it simple
+             transformState.x = lastX + dx;
+             transformState.y = lastY + dy;
+            updateTransform();
+        } else if (isPinching && e.touches.length === 2) {
+            // Zoom
+            e.preventDefault(); // Prevent browser zoom
+            const currentDist = getDistance(e.touches);
+            const scaleFactor = currentDist / initialPinchDist;
+            const newScale = Math.min(Math.max(0.5, initialScale * scaleFactor), 3);
+            transformState.scale = newScale;
+            updateTransform();
+        }
+    }, { passive: false });
+
+    galaxy.addEventListener('touchend', (e) => {
+        if (e.touches.length === 0) isDragging = false;
+        if (e.touches.length < 2) isPinching = false;
+    });
+
+    // Double Click/Tap to Reset
+    let lastTap = 0;
+    galaxy.addEventListener('touchend', (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0 && moveThreshold < 10) {
+            resetView();
+            e.preventDefault();
+        }
+        lastTap = currentTime;
+    });
+    galaxy.addEventListener('dblclick', () => {
+        resetView();
+    });
+
+    function resetView() {
+        transformer.classList.add('smooth-reset');
+        transformState = { x: 0, y: 0, scale: 1 };
+        updateTransform();
+    }
+
+    // --- Node Click Logic ---
+    // Modified to prevent click when dragging
     document.querySelectorAll('.map-node').forEach(node => {
+        // Use click for desktop, touchend for mobile logic is handled via click automatically by browser
+        // but we need to check moveThreshold
         node.addEventListener('click', (e) => {
             e.stopPropagation();
+            
+            // If moved significantly, it's a drag, not a click
+            // For mouse, we tracked moveThreshold. For touch, we need to check if user was panning.
+            // A simple check is: if transform changed significantly during this interaction?
+            // Actually, simply checking global isDragging might fail if mouseup happened before click.
+            // Better: Check the global 'moveThreshold' variable reset on down.
+            if (moveThreshold > 5) return; // 5px tolerance
+
             const nodeId = node.dataset.nodeId;
             const parentId = node.dataset.parentNode;
 
@@ -638,10 +704,14 @@
                 });
             }
         });
-    });
-
-    document.addEventListener('click', (e) => {
-        // Overlay handle click now
+        
+        // Prevent drag propagation from node to galaxy
+        node.addEventListener('touchstart', (e) => {
+             // Allow event to bubble so we can pan even if starting on a node?
+             // Usually better to ALLOW panning even if touching a node, 
+             // but interpret tap as click.
+             // So do nothing here.
+        }, {passive: true});
     });
 
     // --- Cluster Logic ---
@@ -651,22 +721,20 @@
         document.querySelectorAll(`.line-${clusterId}`).forEach(l => l.remove());
 
         const children = document.querySelectorAll(`[data-parent-node="${clusterId}"]`);
+        // Coordinates are relative to the transformer now
         const cx = parseFloat(parentNode.style.left);
         const cy = parseFloat(parentNode.style.top);
         const isMobile = window.innerWidth < 768;
         
-        // FIX: Cluster Radius trên mobile nhỏ lại để tránh tràn màn hình khi mở rộng
         const radius = isMobile ? 110 : 180;
         
         children.forEach((child, index) => {
             child.classList.remove('hidden', 'node-hidden');
             let angle;
             if (isMobile) {
-                // Logic hướng: Nếu ở nửa trên màn hình thì mở xuống dưới, ngược lại thì mở lên trên
-                // Điều này giúp menu con không bị chạy ra khỏi cạnh trên/dưới
                 const isTop = cy < window.innerHeight / 2;
                 const baseAngle = isTop ? Math.PI/2 : -Math.PI/2;
-                const spread = Math.PI * 0.7; // Giảm góc mở rộng một chút
+                const spread = Math.PI * 0.7; 
                 const start = baseAngle - spread/2;
                 const step = spread / (children.length - 1 || 1);
                 angle = children.length === 1 ? baseAngle : start + (index * step);
@@ -689,6 +757,9 @@
         const parentNode = document.querySelector(`[data-node-id="${clusterId}"]`);
         if(parentNode) parentNode.classList.remove('active-cluster');
         const children = document.querySelectorAll(`[data-parent-node="${clusterId}"]`);
+        // Safety check if node exists
+        if (!parentNode) return;
+
         const cx = parseFloat(parentNode.style.left);
         const cy = parseFloat(parentNode.style.top);
 
@@ -734,7 +805,6 @@
             if (data.children && data.children.length > 0) {
                 data.children.forEach(child => {
                     const item = document.createElement('div');
-                    // Sử dụng class panel-item-light để style động theo theme
                     item.className = 'panel-item-light flex items-center p-3 rounded-lg cursor-pointer transition-colors group';
                     item.innerHTML = `
                         <div class="w-10 h-10 rounded bg-blue-100 dark:bg-holo-blue/20 flex items-center justify-center mr-3 border border-blue-200 dark:border-holo-blue/30">
@@ -802,7 +872,10 @@
         line.style.left = `${x1}px`;
         line.style.top = `${y1}px`;
         line.style.transform = `rotate(${angle}deg)`;
-        galaxy.appendChild(line);
+        
+        // Append to TRANSFORMER, not Galaxy container
+        transformer.appendChild(line);
+        
         requestAnimationFrame(() => {
             line.style.width = `${dist}px`;
             line.style.opacity = 1;
@@ -810,6 +883,13 @@
     }
 
     init();
+    
+    // Add resize listener to re-center main layout if needed (optional)
+    window.addEventListener('resize', () => {
+         // Only reposition if we haven't panned significantly? 
+         // For now, always reposition base layout, user can pan back.
+         positionNodes();
+    });
 </script>
 </body>
 </html>
