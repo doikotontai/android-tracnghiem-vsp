@@ -8,6 +8,21 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+
+<!-- =============================================================== -->
+<!-- LOAD DỮ LIỆU NỘI DUNG TỪ FILE BÊN NGOÀI                         -->
+<!-- =============================================================== -->
+<script src="./media_veo3/Khối 1.js"></script>
+<script src="./media_veo3/Khối 2.js"></script>
+<script src="./media_veo3/Khối 3.js"></script>
+<script src="./media_veo3/Khối 4.js"></script>
+<script src="./media_veo3/Khối 5.js"></script>
+<script src="./media_veo3/Khối 6.js"></script>
+<script src="./media_veo3/Khối 7.js"></script>
+<script src="./media_veo3/Khối 8.js"></script>
+<!-- THÊM FILE HDSD CHI TIẾT -->
+<script src="./media_veo3/hdsd_chitiet.js"></script>
+
 <script>
     tailwind.config = {
         darkMode: "class",
@@ -79,14 +94,13 @@
     body {
         background-color: var(--bg-primary);
         color: var(--node-text);
-        overflow: hidden; /* Quan trọng: Ngăn cuộn trang mặc định */
+        overflow: hidden; 
         font-family: 'Inter', sans-serif;
-        touch-action: none; /* Quan trọng: Ngăn chặn hành vi zoom/scroll mặc định của trình duyệt để JS xử lý */
+        touch-action: none; 
         -webkit-tap-highlight-color: transparent;
         transition: background-color 0.5s ease, color 0.5s ease;
     }
 
-    /* --- Background & Container --- */
     .conceptual-map-container {
         position: relative;
         width: 100%;
@@ -97,197 +111,96 @@
             linear-gradient(var(--bg-grid) 1px, transparent 1px),
             linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
         background-size: 100% 100%, 40px 40px, 40px 40px;
-        cursor: grab; /* Con trỏ hình bàn tay để báo hiệu có thể kéo */
+        cursor: grab;
     }
-    .conceptual-map-container:active {
-        cursor: grabbing;
-    }
+    .conceptual-map-container:active { cursor: grabbing; }
 
-    /* --- Transformer Layer (Lớp chịu tác động Zoom/Pan) --- */
     #galaxy-transformer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        transform-origin: center center;
-        will-change: transform;
-        /* Transition chỉ dùng khi reset view, tắt khi drag để mượt */
-        transition: transform 0.1s linear; 
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        transform-origin: center center; will-change: transform; transition: transform 0.1s linear; 
     }
-    .smooth-reset {
-        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-    }
+    .smooth-reset { transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important; }
 
-    /* --- Connecting Lines --- */
     .connecting-line {
-        position: absolute;
-        height: 1px;
+        position: absolute; height: 1px;
         background: linear-gradient(90deg, transparent, var(--line-color), transparent);
-        transform-origin: 0 50%;
-        pointer-events: none;
-        z-index: 5;
-        opacity: 0;
+        transform-origin: 0 50%; pointer-events: none; z-index: 5; opacity: 0;
         transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
 
-    /* --- Nodes --- */
     .map-node {
-        position: absolute;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 10;
-        backdrop-filter: blur(8px);
+        position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 10; backdrop-filter: blur(8px);
         transition: opacity 0.3s ease, background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
-        /* Bỏ transition transform ở đây để tránh conflict với zoom */
-        -webkit-user-select: none;
-        user-select: none;
+        -webkit-user-select: none; user-select: none;
     }
+    .node-hidden { opacity: 0; pointer-events: none; }
 
-    .node-hidden {
-        opacity: 0;
-        pointer-events: none;
-        /* Ẩn bằng display none sau khi transition xong để tránh click nhầm */
-    }
-
-    /* --- Main Node --- */
     .map-node.type-main {
-        width: 180px; 
-        height: 180px;
-        background: transparent; 
-        border: none; 
-        box-shadow: none; 
-        color: var(--node-text);
-        z-index: 10; 
-        padding: 0;
-        overflow: visible; 
+        width: 180px; height: 180px; background: transparent; border: none; box-shadow: none; 
+        color: var(--node-text); z-index: 10; padding: 0; overflow: visible; 
         animation: machine-hover 4s ease-in-out infinite alternate;
     }
     .map-node.type-main::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 60%;
-        height: 60%;
-        transform: translate(-50%, -50%);
-        background: var(--main-node-glow);
-        border-radius: 50%;
-        filter: blur(40px); 
-        opacity: 0.6;
-        z-index: -1;
+        content: ''; position: absolute; top: 50%; left: 50%; width: 60%; height: 60%;
+        transform: translate(-50%, -50%); background: var(--main-node-glow);
+        border-radius: 50%; filter: blur(40px); opacity: 0.6; z-index: -1;
     }
-    
-    @media (min-width: 768px) {
-        .map-node.type-main { width: 300px; height: 300px; }
-    }
+    @media (min-width: 768px) { .map-node.type-main { width: 300px; height: 300px; } }
 
-    /* --- Topic Nodes --- */
     .map-node.type-topic {
-        background: var(--node-bg);
-        border: 1px solid var(--node-border);
-        border-radius: 50px;
-        padding: 6px 14px;
-        color: var(--node-text);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem; 
-        min-width: 90px;
-        box-shadow: var(--node-shadow);
-        white-space: nowrap; 
-        z-index: 30; 
+        background: var(--node-bg); border: 1px solid var(--node-border);
+        border-radius: 50px; padding: 6px 14px; color: var(--node-text);
+        font-weight: 600; text-transform: uppercase; font-size: 0.75rem; 
+        min-width: 90px; box-shadow: var(--node-shadow); white-space: nowrap; z-index: 30; 
     }
     .map-node.type-topic.video-trigger {
-        border-color: rgba(255, 68, 68, 0.5); 
-        box-shadow: 0 0 15px rgba(255, 68, 68, 0.15);
+        border-color: rgba(255, 68, 68, 0.5); box-shadow: 0 0 15px rgba(255, 68, 68, 0.15);
     }
     .map-node.type-topic.video-trigger .material-symbols-outlined { color: #ef4444; }
     .map-node.type-topic:active, .map-node.type-topic.active-cluster {
-        background: rgba(14, 165, 233, 0.15);
-        border-color: #0ea5e9;
-        /* Scale nhẹ khi active, không ảnh hưởng bố cục */
+        background: rgba(14, 165, 233, 0.15); border-color: #0ea5e9;
         transform: translate(-50%, -50%) scale(1.05); 
     }
     .dark .map-node.type-topic:active, .dark .map-node.type-topic.active-cluster {
-        background: rgba(0, 240, 255, 0.15);
-        border-color: #00f0ff;
+        background: rgba(0, 240, 255, 0.15); border-color: #00f0ff;
     }
-    @media (min-width: 768px) {
-        .map-node.type-topic { padding: 12px 24px; font-size: 0.9rem; min-width: 140px; }
-    }
+    @media (min-width: 768px) { .map-node.type-topic { padding: 12px 24px; font-size: 0.9rem; min-width: 140px; } }
 
-    /* --- Leaf Nodes --- */
     .map-node.type-image {
-        background: var(--node-bg);
-        border: 1px solid var(--node-border);
-        border-radius: 6px;
-        padding: 6px 10px;
-        font-size: 0.7rem;
-        color: var(--node-text);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        max-width: 160px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        border-left: 3px solid #10b981;
-        box-shadow: var(--node-shadow);
+        background: var(--node-bg); border: 1px solid var(--node-border);
+        border-radius: 6px; padding: 6px 10px; font-size: 0.7rem; color: var(--node-text);
+        display: flex; align-items: center; gap: 6px; max-width: 160px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        border-left: 3px solid #10b981; box-shadow: var(--node-shadow);
     }
     .map-node.type-image .material-symbols-outlined { color: #10b981; font-size: 16px; }
     .map-node.active-node {
-        background: #0ea5e9;
-        border-color: #fff;
-        color: #fff;
-        z-index: 50;
+        background: #0ea5e9; border-color: #fff; color: #fff; z-index: 50;
     }
     .dark .map-node.active-node { background: rgba(20, 40, 80, 0.95); }
 
-    /* --- Content Panel --- */
     .node-content-panel {
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(20px);
-        color: #1e293b;
-        z-index: 100; /* Luôn nổi trên cùng, không bị ảnh hưởng bởi zoom transformer */
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 90%;
-        max-width: 500px;
-        max-height: 85vh;
-        transform: translate(-50%, -50%) scale(0.9);
-        opacity: 0;
-        pointer-events: none;
-        border-radius: 16px;
-        padding: 20px;
+        background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(20px); color: #1e293b; z-index: 100;
+        position: fixed; top: 50%; left: 50%; width: 90%; max-width: 500px; max-height: 85vh;
+        transform: translate(-50%, -50%) scale(0.9); opacity: 0; pointer-events: none;
+        border-radius: 16px; padding: 20px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.5);
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+        display: flex; flex-direction: column;
     }
     .dark .node-content-panel {
-        background: rgba(12, 18, 32, 0.95);
-        border: 1px solid rgba(0, 240, 255, 0.3);
-        color: #e0f0ff;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
+        background: rgba(12, 18, 32, 0.95); border: 1px solid rgba(0, 240, 255, 0.3);
+        color: #e0f0ff; box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
     }
     .node-content-panel.panel-visible {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-        pointer-events: auto;
+        transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto;
     }
 
-    /* Video & UI Components */
     .aspect-video-container {
-        position: relative;
-        width: 100%;
-        padding-bottom: 56.25%;
-        background: #000;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        position: relative; width: 100%; padding-bottom: 56.25%; background: #000;
+        border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0;
     }
     .aspect-video-container iframe, .aspect-video-container video, .aspect-video-container img {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;
@@ -306,13 +219,21 @@
         background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    /* Zoom Controls Hint (Optional) */
     .gesture-hint {
         position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
         background: rgba(0,0,0,0.5); color: white; padding: 6px 12px;
         border-radius: 20px; font-size: 12px; pointer-events: none; opacity: 0;
         transition: opacity 0.5s; z-index: 90;
     }
+    
+    /* Document/Manual Content Styling */
+    .manual-section h3 {
+        font-size: 1.1rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem;
+        color: #0284c7; /* Sky 600 */
+    }
+    .dark .manual-section h3 { color: #38bdf8; /* Sky 400 */ }
+    .manual-section ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+    .manual-section p { margin-bottom: 0.8rem; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col transition-colors duration-500">
@@ -334,67 +255,100 @@
 
 <div id="panel-overlay" class="fixed inset-0 bg-black/30 dark:bg-black/70 backdrop-blur-[2px] z-50 hidden opacity-0 transition-opacity duration-300" onclick="closePanel()"></div>
 
-<!-- Main Canvas Wrapper -->
 <main class="flex-grow w-full relative h-screen overflow-hidden">
-    <!-- Event Listener Container -->
     <div class="absolute inset-0 conceptual-map-container" id="learning-galaxy">
-        
-        <!-- Transformer Layer: This layer will be Panned/Zoomed -->
         <div id="galaxy-transformer">
-            
-            <!-- Center Core -->
             <div class="map-node type-main" id="main-node">
                 <img src="./media_veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain filter drop-shadow-xl dark:drop-shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300">
             </div>
-
-            <!-- Topic Nodes -->
+            
+            <!-- ĐÃ ĐỔI TÊN THÀNH 'HDSD - VIDEO' -->
             <div class="map-node type-topic video-trigger" data-node-id="core-docs">
                 <span class="material-symbols-outlined text-base mr-1 md:mr-2">play_circle</span>
-                VIDEO HDSD
+                HDSD - VIDEO
             </div>
+            
             <div class="map-node type-topic" data-node-id="visual-assets">
                 <span class="material-symbols-outlined text-base mr-1 md:mr-2">perm_media</span>
-                Assets
+                MỤC LỤC
             </div>
             <div class="map-node type-topic" data-node-id="structure-map">
                 <span class="material-symbols-outlined text-base mr-1 md:mr-2">hub</span>
                 SƠ ĐỒ TỔNG
             </div>
             
+            <!-- THÊM MỤC MỚI 'HDSD - NỘI DUNG CHI TIẾT' -->
+            <div class="map-node type-topic" data-node-id="full-manual">
+                <span class="material-symbols-outlined text-base mr-1 md:mr-2">description</span>
+                HDSD - NỘI DUNG CHI TIẾT
+            </div>
         </div>
     </div>
 
-    <!-- DETAILS PANEL -->
     <div class="node-content-panel shadow-2xl" id="content-detail-panel">
         <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 dark:text-white/50 dark:hover:text-white p-2 z-10 transition-colors" onclick="closePanel()">
             <span class="material-symbols-outlined">close</span>
         </button>
-        <h3 class="font-semibold text-lg mb-2 flex items-center pr-8 text-slate-800 dark:text-white">
-            <span class="material-symbols-outlined text-xl mr-2 text-blue-500 dark:text-holo-cyan" id="panel-icon"></span>
-            <span id="panel-title">Tiêu đề</span>
-        </h3>
-        <div class="h-px w-full bg-gradient-to-r from-blue-200 to-transparent dark:from-holo-cyan/50 mb-4"></div>
-        <div class="overflow-y-auto max-h-[60vh] pr-1 scrollbar-hide">
+        
+        <!-- HEADER WITH NAVIGATION -->
+        <div class="flex items-center mb-2 pr-8">
+            <!-- Nút Back Mới -->
+            <button id="panel-back-btn" class="hidden mr-2 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-500 dark:text-slate-300 active:scale-95" title="Trở lại">
+                <span class="material-symbols-outlined text-2xl">arrow_back</span>
+            </button>
+            
+            <h3 class="font-semibold text-lg flex items-center text-slate-800 dark:text-white flex-grow">
+                <span class="material-symbols-outlined text-xl mr-2 text-blue-500 dark:text-holo-cyan" id="panel-icon"></span>
+                <span id="panel-title">Tiêu đề</span>
+            </h3>
+        </div>
+        
+        <div class="h-px w-full bg-gradient-to-r from-blue-200 to-transparent dark:from-holo-cyan/50 mb-4 flex-shrink-0"></div>
+        
+        <div class="overflow-y-auto pr-2 scrollbar-hide flex-grow">
             <div class="aspect-video-container mb-4 hidden" id="media-container">
                 <div id="youtube-embed"></div>
                 <img alt="Content preview" class="hidden" id="panel-image" src=""/>
                 <video class="hidden" controls="" id="panel-video" src=""></video>
             </div>
+            
             <div class="hidden flex flex-col gap-2 mb-4" id="list-container"></div>
-            <p class="text-sm text-slate-600 dark:text-gray-300 leading-relaxed mb-4" id="panel-description">Mô tả nội dung...</p>
+            
+            <p class="text-sm text-slate-600 dark:text-gray-300 leading-relaxed mb-2" id="panel-description">Mô tả nội dung...</p>
+            
+            <div id="panel-long-text" class="hidden text-sm text-slate-700 dark:text-gray-200 leading-relaxed mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700"></div>
         </div>
-        <a class="flex items-center justify-center w-full py-3 bg-blue-600 hover:bg-blue-700 dark:bg-holo-cyan dark:hover:bg-cyan-400 text-white dark:text-black font-bold rounded-lg mt-2 active:scale-95 transition-all shadow-lg hover:shadow-xl" href="#" id="panel-link" target="_blank">
-            <span>TRUY CẬP DỮ LIỆU</span>
-            <span class="material-symbols-outlined text-lg ml-2">arrow_forward</span>
-        </a>
     </div>
 </main>
 
 <script>
-    // --- Data Configuration ---
+    // --- LOAD DỮ LIỆU TỪ FILE NGOÀI AN TOÀN ---
+    var contentKhoi1 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    var contentKhoi2 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    var contentKhoi3 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    var contentKhoi4 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    var contentKhoi5 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    var contentKhoi6 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    var contentKhoi7 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    var contentKhoi8 = "<i>(Chưa tìm thấy dữ liệu)</i>";
+    // Biến cho nội dung HDSD Chi tiết
+    var contentHdsdChitiet = "<i>(Chưa tìm thấy dữ liệu. Vui lòng kiểm tra file media_veo3/hdsd_chitiet.js)</i>";
+
+    // Kiểm tra và gán giá trị
+    if (typeof DATA_KHOI_1 !== 'undefined') contentKhoi1 = DATA_KHOI_1;
+    if (typeof DATA_KHOI_2 !== 'undefined') contentKhoi2 = DATA_KHOI_2;
+    if (typeof DATA_KHOI_3 !== 'undefined') contentKhoi3 = DATA_KHOI_3;
+    if (typeof DATA_KHOI_4 !== 'undefined') contentKhoi4 = DATA_KHOI_4;
+    if (typeof DATA_KHOI_5 !== 'undefined') contentKhoi5 = DATA_KHOI_5;
+    if (typeof DATA_KHOI_6 !== 'undefined') contentKhoi6 = DATA_KHOI_6;
+    if (typeof DATA_KHOI_7 !== 'undefined') contentKhoi7 = DATA_KHOI_7;
+    if (typeof DATA_KHOI_8 !== 'undefined') contentKhoi8 = DATA_KHOI_8;
+    if (typeof DATA_HDSD_CHITIET !== 'undefined') contentHdsdChitiet = DATA_HDSD_CHITIET;
+
+    // --- CẤU HÌNH NODE ---
     const nodeData = {
         'core-docs': {
-            title: 'HƯỚNG DẪN VẬN HÀNH VEO3',
+            title: 'HƯỚNG DẪN VẬN HÀNH VEO3 (VIDEO)',
             description: 'Xem video chi tiết quy trình lắp đặt và vận hành hệ thống VEO3.',
             icon: 'play_circle',
             link: 'https://youtu.be/b2TZ0QTYN-I',
@@ -402,21 +356,94 @@
             videoSrc: 'https://www.youtube.com/embed/b2TZ0QTYN-I?autoplay=1', 
             children: [] 
         },
+        // MỤC MỚI: FULL MANUAL
+        'full-manual': {
+            title: 'HƯỚNG DẪN SỬ DỤNG - CHI TIẾT',
+            description: 'Tài liệu hướng dẫn vận hành VEO3 đầy đủ.',
+            icon: 'description',
+            link: '#',
+            manualContent: contentHdsdChitiet, // Sử dụng biến nội dung mới
+            children: []
+        },
         'visual-assets': {
-            title: 'HƯỚNG DẪN VẬN HÀNH VEO3',
-            description: 'Danh sách các sơ đồ khối',
+            title: 'Danh sách các sơ đồ khối',
             icon: 'perm_media',
             link: '#',
             viewType: 'list', 
             children: [
-                { type: 'image', title: '1 – KHỞI ĐỘNG & CHUẨN BỊ', description: 'Phân tích cấu trúc khối 1.', icon: 'settings_power', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 1.png' },
-                { type: 'image', title: '2 – TẠO SETUP MỚI', description: 'Create Configuration', icon: 'add_circle', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 2.png' },
-                { type: 'image', title: '3 – KHAI BÁO ĐẦU DÒ/NÊM', description: 'Load Probe/Wedge', icon: 'sensors', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 3.png' },
-                { type: 'image', title: '4 – THIẾT LẬP SCAN PLAN', description: 'Group Setup', icon: 'qr_code_scanner', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 4.png' },
-                { type: 'image', title: '5 – TẠO GROUP 2', description: 'Nếu cần thiết', icon: 'layers', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 5.png' },
-                { type: 'image', title: '6 – HIỆU CHUẨN', description: 'Calibration', icon: 'tune', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 6.png' },
-                { type: 'image', title: '7 – HOÀN THIỆN THIẾT LẬP', description: 'Final Setup', icon: 'check_circle', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 7.png' },
-                { type: 'image', title: '8 – QUÉT THỰC TẾ & DỮ LIỆU', description: 'Data Acquisition', icon: 'database', link: '#', details: 'IMG // 4.6 MB', image: './media_veo3/Khối 8.png' },
+                { 
+                    type: 'image', 
+                    title: '1 – KHỞI ĐỘNG & CHUẨN BỊ', 
+                    description: 'Phân tích cấu trúc khối 1 và các bước chuẩn bị ban đầu.', 
+                    icon: 'settings_power', 
+                    link: '#', 
+                    image: './media_veo3/Khối 1.png',
+                    manualContent: contentKhoi1 
+                },
+                { 
+                    type: 'image', 
+                    title: '2 – TẠO SETUP MỚI', 
+                    description: 'Hướng dẫn tạo cấu hình (Configuration) cho thiết bị.', 
+                    icon: 'add_circle', 
+                    link: '#', 
+                    image: './media_veo3/Khối 2.png',
+                    manualContent: contentKhoi2 
+                },
+                { 
+                    type: 'image', 
+                    title: '3 – KHAI BÁO ĐẦU DÒ/NÊM', 
+                    description: 'Load Probe/Wedge', 
+                    icon: 'sensors', 
+                    link: '#', 
+                    image: './media_veo3/Khối 3.png',
+                    manualContent: contentKhoi3
+                },
+                { 
+                    type: 'image', 
+                    title: '4 – THIẾT LẬP SCAN PLAN', 
+                    description: 'Group Setup', 
+                    icon: 'qr_code_scanner', 
+                    link: '#', 
+                    image: './media_veo3/Khối 4.png',
+                    manualContent: contentKhoi4
+                },
+                { 
+                    type: 'image', 
+                    title: '5 – TẠO GROUP 2', 
+                    description: 'Nếu cần thiết', 
+                    icon: 'layers', 
+                    link: '#', 
+                    image: './media_veo3/Khối 5.png',
+                    manualContent: contentKhoi5
+                },
+                { 
+                    type: 'image', 
+                    title: '6 – HIỆU CHUẨN', 
+                    description: 'Calibration', 
+                    icon: 'tune', 
+                    link: '#', 
+                    image: './media_veo3/Khối 6.png',
+                    manualContent: contentKhoi6
+                },
+                { 
+                    type: 'image', 
+                    title: '7 – HOÀN THIỆN THIẾT LẬP', 
+                    description: 'Final Setup', 
+                    icon: 'check_circle', 
+                    link: '#', 
+                    image: './media_veo3/Khối 7.png',
+                    manualContent: contentKhoi7
+                },
+                { 
+                    type: 'image', 
+                    title: '8 – QUÉT THỰC TẾ & DỮ LIỆU', 
+                    description: 'Data Acquisition', 
+                    icon: 'database', 
+                    link: '#', 
+                    image: './media_veo3/Khối 8.png',
+                    manualContent: contentKhoi8
+                },
+                { type: 'image', title: '9 – GIẢI ĐOÁN DỮ LIỆU VỚI UT-STUDIO PC', description: 'Data Acquisition', icon: 'database', link: '#', image: './media_veo3/UTstudio_giaidoan.png' },
 		]
         },
         'structure-map': {
@@ -429,13 +456,8 @@
         }
     };
 
-    // --- State ---
-    const state = {
-        activeCluster: null,
-        activeLeaf: null,
-    };
+    const state = { activeCluster: null, activeLeaf: null };
 
-    // --- DOM ---
     const galaxy = document.getElementById('learning-galaxy');
     const transformer = document.getElementById('galaxy-transformer');
     const mainNode = document.getElementById('main-node');
@@ -452,9 +474,9 @@
     const pIcon = document.getElementById('panel-icon');
     const pImg = document.getElementById('panel-image');
     const pVid = document.getElementById('panel-video');
-    const pLink = document.getElementById('panel-link');
+    const pLongText = document.getElementById('panel-long-text');
+    const pBackBtn = document.getElementById('panel-back-btn');
 
-    // --- Theme Logic ---
     function initTheme() {
         const userPref = localStorage.getItem('theme');
         if (userPref === 'dark') {
@@ -478,19 +500,14 @@
         }
     }
 
-    // --- Core Logic ---
     function init() {
         initTheme();
         positionNodes();
-        // Hint fade out
         setTimeout(() => document.getElementById('zoom-hint').style.opacity = '0.8', 1000);
         setTimeout(() => document.getElementById('zoom-hint').style.opacity = '0', 5000);
     }
 
-    // --- Positioning Logic ---
-    // Note: We position relative to center of the TRANSFORMER, which is width/height of screen.
     function positionNodes() {
-        // Recalculate based on current screen size, but nodes are absolute in transformer
         const cx = window.innerWidth / 2;
         const cy = window.innerHeight / 2;
         const isMobile = window.innerWidth < 768;
@@ -500,14 +517,15 @@
         mainNode.style.transform = 'translate(-50%, -50%)';
 
         const topics = document.querySelectorAll('.map-node.type-topic');
-        // Mobile radius increased to ensure separation from the image
         const radius = isMobile ? 145 : 280; 
         
         topics.forEach((topic, index) => {
             let angle;
             if (isMobile) {
-                const angles = [-Math.PI/2, Math.PI/6, 5*Math.PI/6];
-                angle = angles[index % 3];
+                // Adjust layout for 4 items: Top, Right, Bottom, Left
+                const angles = [-Math.PI/2, 0, Math.PI/2, Math.PI];
+                // Or keep spreading evenly:
+                angle = (index / topics.length) * 2 * Math.PI - Math.PI/2;
             } else {
                 angle = (index / topics.length) * 2 * Math.PI - Math.PI/2; 
             }
@@ -519,20 +537,16 @@
             topic.style.top = `${y}px`;
             topic.style.transform = 'translate(-50%, -50%)';
             
-            // Re-render lines if active
             if(state.activeCluster) {
                  const parent = document.querySelector(`[data-node-id="${state.activeCluster}"]`);
                  const children = document.querySelectorAll(`[data-parent-node="${state.activeCluster}"]`);
                  if(parent && children.length > 0) {
-                     // Simple re-positioning logic for open clusters could go here
-                     // But simplest is to just collapse to avoid artifacts on resize
                      collapseCluster(state.activeCluster);
                  }
             }
         });
     }
 
-    // --- Interactions (Pan & Zoom) ---
     let transformState = { x: 0, y: 0, scale: 1 };
     let isDragging = false;
     let startX = 0, startY = 0;
@@ -540,14 +554,12 @@
     let initialPinchDist = 0;
     let initialScale = 1;
     let isPinching = false;
-    let moveThreshold = 0; // Check to distinguish click vs drag
+    let moveThreshold = 0;
 
-    // Helper: Update CSS
     function updateTransform() {
         transformer.style.transform = `translate(${transformState.x}px, ${transformState.y}px) scale(${transformState.scale})`;
     }
 
-    // Helper: Distance between two fingers
     function getDistance(touches) {
         return Math.hypot(
             touches[0].clientX - touches[1].clientX,
@@ -555,7 +567,6 @@
         );
     }
 
-    // Mouse Events (Desktop)
     galaxy.addEventListener('mousedown', (e) => {
         isDragging = true;
         startX = e.clientX;
@@ -590,7 +601,6 @@
         updateTransform();
     }, { passive: false });
 
-    // Touch Events (Mobile)
     galaxy.addEventListener('touchstart', (e) => {
         transformer.classList.remove('smooth-reset');
         if (e.touches.length === 1) {
@@ -611,20 +621,14 @@
 
     galaxy.addEventListener('touchmove', (e) => {
         if (isDragging && e.touches.length === 1) {
-            // Pan
             const dx = e.touches[0].clientX - startX;
             const dy = e.touches[0].clientY - startY;
-            moveThreshold += Math.abs(dx) + Math.abs(dy); // Rough estimate
-            // Limit Pan
-            // transformState.x = lastX + dx;
-            // transformState.y = lastY + dy;
-            // Unbounded pan feels better for infinite canvas, but let's keep it simple
+            moveThreshold += Math.abs(dx) + Math.abs(dy);
              transformState.x = lastX + dx;
              transformState.y = lastY + dy;
             updateTransform();
         } else if (isPinching && e.touches.length === 2) {
-            // Zoom
-            e.preventDefault(); // Prevent browser zoom
+            e.preventDefault();
             const currentDist = getDistance(e.touches);
             const scaleFactor = currentDist / initialPinchDist;
             const newScale = Math.min(Math.max(0.5, initialScale * scaleFactor), 3);
@@ -638,7 +642,6 @@
         if (e.touches.length < 2) isPinching = false;
     });
 
-    // Double Click/Tap to Reset
     let lastTap = 0;
     galaxy.addEventListener('touchend', (e) => {
         const currentTime = new Date().getTime();
@@ -659,20 +662,10 @@
         updateTransform();
     }
 
-    // --- Node Click Logic ---
-    // Modified to prevent click when dragging
     document.querySelectorAll('.map-node').forEach(node => {
-        // Use click for desktop, touchend for mobile logic is handled via click automatically by browser
-        // but we need to check moveThreshold
         node.addEventListener('click', (e) => {
             e.stopPropagation();
-            
-            // If moved significantly, it's a drag, not a click
-            // For mouse, we tracked moveThreshold. For touch, we need to check if user was panning.
-            // A simple check is: if transform changed significantly during this interaction?
-            // Actually, simply checking global isDragging might fail if mouseup happened before click.
-            // Better: Check the global 'moveThreshold' variable reset on down.
-            if (moveThreshold > 5) return; // 5px tolerance
+            if (moveThreshold > 5) return;
 
             const nodeId = node.dataset.nodeId;
             const parentId = node.dataset.parentNode;
@@ -680,7 +673,7 @@
             if (nodeId) { // Topic Clicked
                 const data = nodeData[nodeId];
                 
-                if (data && (data.videoType === 'youtube' || data.viewType === 'list' || data.image)) {
+                if (data && (data.videoType === 'youtube' || data.viewType === 'list' || data.image || data.manualContent)) {
                     if (state.activeCluster) collapseCluster(state.activeCluster);
                     showPanel(data);
                     return;
@@ -704,24 +697,15 @@
                 });
             }
         });
-        
-        // Prevent drag propagation from node to galaxy
-        node.addEventListener('touchstart', (e) => {
-             // Allow event to bubble so we can pan even if starting on a node?
-             // Usually better to ALLOW panning even if touching a node, 
-             // but interpret tap as click.
-             // So do nothing here.
-        }, {passive: true});
+        node.addEventListener('touchstart', (e) => {}, {passive: true});
     });
 
-    // --- Cluster Logic ---
     function expandCluster(clusterId, parentNode) {
         state.activeCluster = clusterId;
         parentNode.classList.add('active-cluster');
         document.querySelectorAll(`.line-${clusterId}`).forEach(l => l.remove());
 
         const children = document.querySelectorAll(`[data-parent-node="${clusterId}"]`);
-        // Coordinates are relative to the transformer now
         const cx = parseFloat(parentNode.style.left);
         const cy = parseFloat(parentNode.style.top);
         const isMobile = window.innerWidth < 768;
@@ -757,7 +741,6 @@
         const parentNode = document.querySelector(`[data-node-id="${clusterId}"]`);
         if(parentNode) parentNode.classList.remove('active-cluster');
         const children = document.querySelectorAll(`[data-parent-node="${clusterId}"]`);
-        // Safety check if node exists
         if (!parentNode) return;
 
         const cx = parseFloat(parentNode.style.left);
@@ -779,24 +762,34 @@
         state.activeLeaf = node;
         node.classList.add('active-node');
         const text = node.textContent.trim();
-        const data = nodeData[parentId].children.find(c => text.includes(c.title));
-        if(data) showPanel(data);
+        const parentData = nodeData[parentId];
+        const data = parentData.children.find(c => text.includes(c.title));
+        if(data) showPanel(data, parentData);
     }
 
-    function showPanel(data) {
+    function showPanel(data, parentData = null) {
         youtubeEmbed.innerHTML = '';
         pVid.pause();
 
         pTitle.textContent = data.title;
         pDesc.textContent = data.description;
         pIcon.textContent = data.icon;
-        pLink.href = data.link;
+        
+        if (parentData) {
+            pBackBtn.classList.remove('hidden');
+            pBackBtn.onclick = () => showPanel(parentData);
+        } else {
+            pBackBtn.classList.add('hidden');
+            pBackBtn.onclick = null;
+        }
 
         mediaContainer.classList.add('hidden');
         listContainer.classList.add('hidden');
         pImg.classList.add('hidden');
         pVid.classList.add('hidden');
         youtubeEmbed.classList.add('hidden');
+        pLongText.classList.add('hidden');
+        pLongText.innerHTML = '';
         
         listContainer.innerHTML = '';
 
@@ -816,7 +809,7 @@
                         </div>
                         <span class="material-symbols-outlined text-slate-300 dark:text-white/20 group-hover:text-blue-500 dark:group-hover:text-white transition-colors text-sm">arrow_forward_ios</span>
                     `;
-                    item.onclick = () => showPanel(child);
+                    item.onclick = () => showPanel(child, data);
                     listContainer.appendChild(item);
                 });
             } else {
@@ -834,6 +827,11 @@
             mediaContainer.classList.remove('hidden');
             pVid.src = data.video;
             pVid.classList.remove('hidden');
+        }
+        
+        if (data.manualContent) {
+            pLongText.innerHTML = data.manualContent;
+            pLongText.classList.remove('hidden');
         }
 
         contentPanel.classList.add('panel-visible');
@@ -857,7 +855,6 @@
         }
     }
 
-    // --- Utils ---
     function createLine(el1, el2, cls) {
         const x1 = parseFloat(el1.style.left);
         const y1 = parseFloat(el1.style.top);
@@ -873,7 +870,6 @@
         line.style.top = `${y1}px`;
         line.style.transform = `rotate(${angle}deg)`;
         
-        // Append to TRANSFORMER, not Galaxy container
         transformer.appendChild(line);
         
         requestAnimationFrame(() => {
@@ -884,10 +880,7 @@
 
     init();
     
-    // Add resize listener to re-center main layout if needed (optional)
     window.addEventListener('resize', () => {
-         // Only reposition if we haven't panned significantly? 
-         // For now, always reposition base layout, user can pan back.
          positionNodes();
     });
 </script>
