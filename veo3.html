@@ -443,6 +443,42 @@
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
     }
+
+    /* ========================================= */
+    /* NEW CIRCUIT TRACE STYLES (Animated Lines) */
+    /* ========================================= */
+    .trace-bg {
+        stroke: rgba(100, 220, 255, 0.2);
+        stroke-width: 1.5;
+        fill: none;
+    }
+    .dark .trace-bg {
+        stroke: rgba(100, 220, 255, 0.15);
+    }
+
+    .trace-flow {
+        stroke-width: 1.8;
+        fill: none;
+        stroke-dasharray: 40 400; /* Dấu gạch dài 40px, khoảng trống 400px */
+        stroke-dashoffset: 440;
+        filter: drop-shadow(0 0 6px currentColor);
+        animation: flow 3s cubic-bezier(0.5, 0, 0.9, 1) infinite;
+    }
+
+    .circuit-blue {
+        stroke: #3b82f6;
+        color: #3b82f6;
+    }
+    .dark .circuit-blue {
+        stroke: #00f0ff;
+        color: #00f0ff; /* Neon cyan for dark mode */
+    }
+
+    @keyframes flow {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
 </style>
 </head>
 <body class="min-h-screen flex flex-col transition-colors duration-500">
@@ -490,6 +526,11 @@
 <main class="flex-grow w-full relative h-screen overflow-hidden">
     <div class="absolute inset-0 conceptual-map-container" id="learning-galaxy">
         <div id="galaxy-transformer">
+            <!-- SVG LAYER CHO HIỆU ỨNG MẠCH ĐIỆN -->
+            <svg id="svg-connections" class="absolute top-0 left-0 w-full h-full pointer-events-none" style="z-index: 1; overflow: visible;">
+                <!-- Lines will be drawn here by JS -->
+            </svg>
+
             <div class="map-node type-main" id="main-node">
                 <img src="./media_veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain filter drop-shadow-xl dark:drop-shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300">
             </div>
@@ -780,6 +821,10 @@
         const topics = document.querySelectorAll('.map-node.type-topic');
         const radius = isMobile ? 145 : 280; 
         
+        // --- PREPARE FOR SVG LINES ---
+        const svg = document.getElementById('svg-connections');
+        svg.innerHTML = ''; // Clear old lines
+        
         topics.forEach((topic, index) => {
             let angle;
             if (isMobile) {
@@ -797,6 +842,19 @@
             topic.style.left = `${x}px`;
             topic.style.top = `${y}px`;
             topic.style.transform = 'translate(-50%, -50%)';
+            
+            // --- DRAW CIRCUIT LINES FROM CENTER TO TOPIC ---
+            // Draw background line
+            const pathBg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            pathBg.setAttribute('d', `M ${cx} ${cy} L ${x} ${y}`);
+            pathBg.setAttribute('class', 'trace-bg');
+            svg.appendChild(pathBg);
+
+            // Draw animated flow line
+            const pathFlow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            pathFlow.setAttribute('d', `M ${cx} ${cy} L ${x} ${y}`);
+            pathFlow.setAttribute('class', 'trace-flow circuit-blue');
+            svg.appendChild(pathFlow);
             
             if(state.activeCluster) {
                  const parent = document.querySelector(`[data-node-id="${state.activeCluster}"]`);
