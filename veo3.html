@@ -141,10 +141,9 @@
         color: var(--node-text); z-index: 10; padding: 0; overflow: visible; 
         animation: machine-hover 4s ease-in-out infinite alternate;
     }
+    /* ĐÃ XÓA HIỆU ỨNG GLOW/BLUR XUNG QUANH HÌNH */
     .map-node.type-main::before {
-        content: ''; position: absolute; top: 50%; left: 50%; width: 60%; height: 60%;
-        transform: translate(-50%, -50%); background: var(--main-node-glow);
-        border-radius: 50%; filter: blur(40px); opacity: 0.6; z-index: -1;
+        content: none; 
     }
     @media (min-width: 768px) { .map-node.type-main { width: 300px; height: 300px; } }
 
@@ -464,6 +463,21 @@
         filter: drop-shadow(0 0 6px currentColor);
         animation: flow 3s cubic-bezier(0.5, 0, 0.9, 1) infinite;
     }
+    
+    /* MOBILE OPTIMIZATION FOR CIRCUIT EFFECT */
+    @media (max-width: 768px) {
+        .trace-bg {
+            stroke-width: 0.8; /* Mỏng hơn để tinh tế trên màn hình nhỏ */
+            opacity: 0.6;
+        }
+        .trace-flow {
+            stroke-width: 1.2; /* Mỏng hơn */
+            stroke-dasharray: 15 120; /* Vệt sáng ngắn hơn và xuất hiện dày hơn một chút */
+            stroke-dashoffset: 135;
+            filter: drop-shadow(0 0 2px currentColor); /* Giảm glow để tăng hiệu năng và độ nét */
+            animation-duration: 2s; /* Tốc độ nhanh hơn vì quãng đường ngắn */
+        }
+    }
 
     .circuit-blue {
         stroke: #3b82f6;
@@ -532,7 +546,8 @@
             </svg>
 
             <div class="map-node type-main" id="main-node">
-                <img src="./media_veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain filter drop-shadow-xl dark:drop-shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300">
+                <!-- ĐÃ XÓA FILTER DROP-SHADOW TRONG CLASS DƯỚI ĐÂY -->
+                <img src="./media_veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain transition-all duration-300">
             </div>
             
             <!-- ĐÃ ĐỔI TÊN THÀNH 'HDSD - VIDEO' -->
