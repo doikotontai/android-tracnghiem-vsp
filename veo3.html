@@ -214,13 +214,7 @@
     .aspect-video-container iframe, .aspect-video-container video, .aspect-video-container img {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;
     }
-    .theme-toggle-btn {
-        position: fixed; top: 1rem; right: 1rem; z-index: 100;
-        background: var(--node-bg); border: 1px solid var(--node-border);
-        color: var(--node-text); padding: 8px; border-radius: 50%;
-        cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
-    }
+    
     .panel-item-light {
         background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05);
     }
@@ -243,13 +237,242 @@
     .dark .manual-section h3 { color: #38bdf8; /* Sky 400 */ }
     .manual-section ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
     .manual-section p { margin-bottom: 0.8rem; }
+
+    /* ========================================= */
+    /* NEW THEME SWITCH STYLES (From Uiverse.io) */
+    /* ========================================= */
+    .theme-switch {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 100;
+        --toggle-size: 15px; /* Điều chỉnh kích thước ở đây nếu cần */
+        --container-width: 5.625em;
+        --container-height: 2.5em;
+        --container-radius: 6.25em;
+        --container-light-bg: #3D7EAE;
+        --container-night-bg: #1D1F2C;
+        --circle-container-diameter: 3.375em;
+        --sun-moon-diameter: 2.125em;
+        --sun-bg: #ECCA2F;
+        --moon-bg: #C4C9D1;
+        --spot-color: #959DB1;
+        --circle-container-offset: calc((var(--circle-container-diameter) - var(--container-height)) / 2 * -1);
+        --stars-color: #fff;
+        --clouds-color: #F3FDFF;
+        --back-clouds-color: #AACADF;
+        --transition: .5s cubic-bezier(0, -0.02, 0.4, 1.25);
+        --circle-transition: .3s cubic-bezier(0, -0.02, 0.35, 1.17);
+    }
+
+    .theme-switch, .theme-switch *, .theme-switch *::before, .theme-switch *::after {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-size: var(--toggle-size);
+    }
+
+    .theme-switch__container {
+        width: var(--container-width);
+        height: var(--container-height);
+        background-color: var(--container-light-bg);
+        border-radius: var(--container-radius);
+        overflow: hidden;
+        cursor: pointer;
+        -webkit-box-shadow: 0em -0.062em 0.062em rgba(0, 0, 0, 0.25), 0em 0.062em 0.125em rgba(255, 255, 255, 0.94);
+        box-shadow: 0em -0.062em 0.062em rgba(0, 0, 0, 0.25), 0em 0.062em 0.125em rgba(255, 255, 255, 0.94);
+        -webkit-transition: var(--transition);
+        -o-transition: var(--transition);
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .theme-switch__container::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        -webkit-box-shadow: 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset, 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset;
+        box-shadow: 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset, 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset;
+        border-radius: var(--container-radius)
+    }
+
+    .theme-switch__checkbox {
+        display: none;
+    }
+
+    .theme-switch__circle-container {
+        width: var(--circle-container-diameter);
+        height: var(--circle-container-diameter);
+        background-color: rgba(255, 255, 255, 0.1);
+        position: absolute;
+        left: var(--circle-container-offset);
+        top: var(--circle-container-offset);
+        border-radius: var(--container-radius);
+        -webkit-box-shadow: inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), 0 0 0 0.625em rgba(255, 255, 255, 0.1), 0 0 0 1.25em rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), 0 0 0 0.625em rgba(255, 255, 255, 0.1), 0 0 0 1.25em rgba(255, 255, 255, 0.1);
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-transition: var(--circle-transition);
+        -o-transition: var(--circle-transition);
+        transition: var(--circle-transition);
+        pointer-events: none;
+    }
+
+    .theme-switch__sun-moon-container {
+        pointer-events: auto;
+        position: relative;
+        z-index: 2;
+        width: var(--sun-moon-diameter);
+        height: var(--sun-moon-diameter);
+        margin: auto;
+        border-radius: var(--container-radius);
+        background-color: var(--sun-bg);
+        -webkit-box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #a1872a inset;
+        box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #a1872a inset;
+        -webkit-filter: drop-shadow(0.062em 0.125em 0.125em rgba(0, 0, 0, 0.25)) drop-shadow(0em 0.062em 0.125em rgba(0, 0, 0, 0.25));
+        filter: drop-shadow(0.062em 0.125em 0.125em rgba(0, 0, 0, 0.25)) drop-shadow(0em 0.062em 0.125em rgba(0, 0, 0, 0.25));
+        overflow: hidden;
+        -webkit-transition: var(--transition);
+        -o-transition: var(--transition);
+        transition: var(--transition);
+    }
+
+    .theme-switch__moon {
+        -webkit-transform: translateX(100%);
+        -ms-transform: translateX(100%);
+        transform: translateX(100%);
+        width: 100%;
+        height: 100%;
+        background-color: var(--moon-bg);
+        border-radius: inherit;
+        -webkit-box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #969696 inset;
+        box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #969696 inset;
+        -webkit-transition: var(--transition);
+        -o-transition: var(--transition);
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .theme-switch__spot {
+        position: absolute;
+        top: 0.75em;
+        left: 0.312em;
+        width: 0.75em;
+        height: 0.75em;
+        border-radius: var(--container-radius);
+        background-color: var(--spot-color);
+        -webkit-box-shadow: 0em 0.0312em 0.062em rgba(0, 0, 0, 0.25) inset;
+        box-shadow: 0em 0.0312em 0.062em rgba(0, 0, 0, 0.25) inset;
+    }
+
+    .theme-switch__spot:nth-of-type(2) {
+        width: 0.375em;
+        height: 0.375em;
+        top: 0.937em;
+        left: 1.375em;
+    }
+
+    .theme-switch__spot:nth-last-of-type(3) {
+        width: 0.25em;
+        height: 0.25em;
+        top: 0.312em;
+        left: 0.812em;
+    }
+
+    .theme-switch__clouds {
+        width: 1.25em;
+        height: 1.25em;
+        background-color: var(--clouds-color);
+        border-radius: var(--container-radius);
+        position: absolute;
+        bottom: -0.625em;
+        left: 0.312em;
+        -webkit-box-shadow: 0.937em 0.312em var(--clouds-color), -0.312em -0.312em var(--back-clouds-color), 1.437em 0.375em var(--clouds-color), 0.5em -0.125em var(--back-clouds-color), 2.187em 0 var(--clouds-color), 1.25em -0.062em var(--back-clouds-color), 2.937em 0.312em var(--clouds-color), 2em -0.312em var(--back-clouds-color), 3.625em -0.062em var(--clouds-color), 2.625em 0em var(--back-clouds-color), 4.5em -0.312em var(--clouds-color), 3.375em -0.437em var(--back-clouds-color), 4.625em -1.75em 0 0.437em var(--clouds-color), 4em -0.625em var(--back-clouds-color), 4.125em -2.125em 0 0.437em var(--back-clouds-color);
+        box-shadow: 0.937em 0.312em var(--clouds-color), -0.312em -0.312em var(--back-clouds-color), 1.437em 0.375em var(--clouds-color), 0.5em -0.125em var(--back-clouds-color), 2.187em 0 var(--clouds-color), 1.25em -0.062em var(--back-clouds-color), 2.937em 0.312em var(--clouds-color), 2em -0.312em var(--back-clouds-color), 3.625em -0.062em var(--clouds-color), 2.625em 0em var(--back-clouds-color), 4.5em -0.312em var(--clouds-color), 3.375em -0.437em var(--back-clouds-color), 4.625em -1.75em 0 0.437em var(--clouds-color), 4em -0.625em var(--back-clouds-color), 4.125em -2.125em 0 0.437em var(--back-clouds-color);
+        -webkit-transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+        -o-transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+        transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+    }
+
+    .theme-switch__stars-container {
+        position: absolute;
+        color: var(--stars-color);
+        top: -100%;
+        left: 0.312em;
+        width: 2.75em;
+        height: auto;
+        -webkit-transition: var(--transition);
+        -o-transition: var(--transition);
+        transition: var(--transition);
+    }
+
+    /* actions */
+
+    .theme-switch__checkbox:checked + .theme-switch__container {
+        background-color: var(--container-night-bg);
+    }
+
+    .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__circle-container {
+        left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter));
+    }
+
+    .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__circle-container:hover {
+        left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter) - 0.187em)
+    }
+
+    .theme-switch__circle-container:hover {
+        left: calc(var(--circle-container-offset) + 0.187em);
+    }
+
+    .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__moon {
+        -webkit-transform: translate(0);
+        -ms-transform: translate(0);
+        transform: translate(0);
+    }
+
+    .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__clouds {
+        bottom: -4.062em;
+    }
+
+    .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__stars-container {
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
 </style>
 </head>
 <body class="min-h-screen flex flex-col transition-colors duration-500">
 
-<button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
-    <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
-</button>
+<!-- REPLACED OLD BUTTON WITH NEW ANIMATED TOGGLE -->
+<label class="theme-switch" for="theme-toggle">
+    <input type="checkbox" class="theme-switch__checkbox" id="theme-toggle" onchange="handleThemeToggle(event)">
+    <div class="theme-switch__container">
+        <div class="theme-switch__clouds"></div>
+        <div class="theme-switch__stars-container">
+            <!-- Simple SVG Stars -->
+            <svg viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%">
+                <circle cx="4" cy="4" r="1.5" />
+                <circle cx="12" cy="8" r="1" />
+                <circle cx="20" cy="5" r="1.2" />
+                <circle cx="8" cy="18" r="1" />
+                <circle cx="18" cy="16" r="1.5" />
+            </svg>
+        </div>
+        <div class="theme-switch__circle-container">
+            <div class="theme-switch__sun-moon-container">
+                <div class="theme-switch__moon">
+                    <div class="theme-switch__spot"></div>
+                    <div class="theme-switch__spot"></div>
+                    <div class="theme-switch__spot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</label>
 
 <div class="fixed top-4 left-4 z-30 pointer-events-none md:hidden">
     <div class="flex items-center space-x-2 bg-white/40 dark:bg-black/40 backdrop-blur rounded-full p-1 pr-3 border border-black/10 dark:border-white/10 pointer-events-auto shadow-sm">
@@ -317,7 +540,18 @@
         <div class="overflow-y-auto pr-2 scrollbar-hide flex-grow">
             <div class="aspect-video-container mb-4 hidden" id="media-container">
                 <div id="youtube-embed"></div>
-                <img alt="Content preview" class="hidden" id="panel-image" src=""/>
+                
+                <!-- NEW: LOADER CONTAINER -->
+                <div id="panel-loader" class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-sm transition-opacity duration-300">
+                    <div class="flex-col gap-4 w-full flex items-center justify-center">
+                      <div class="w-20 h-20 border-4 border-transparent text-blue-400 text-4xl animate-spin flex items-center justify-center border-t-blue-400 rounded-full">
+                        <div class="w-16 h-16 border-4 border-transparent text-red-400 text-2xl animate-spin flex items-center justify-center border-t-red-400 rounded-full"></div>
+                      </div>
+                    </div>
+                </div>
+
+                <!-- Thêm opacity-0 và transition-opacity để làm hiệu ứng fade-in -->
+                <img alt="Content preview" class="hidden opacity-0 transition-opacity duration-500" id="panel-image" src=""/>
                 <video class="hidden" controls="" id="panel-video" src=""></video>
             </div>
             
@@ -485,27 +719,45 @@
     const pVid = document.getElementById('panel-video');
     const pLongText = document.getElementById('panel-long-text');
     const pBackBtn = document.getElementById('panel-back-btn');
+    const pLoader = document.getElementById('panel-loader'); // NEW LOADER
 
     function initTheme() {
         const userPref = localStorage.getItem('theme');
+        const themeToggle = document.getElementById('theme-toggle');
+        
         if (userPref === 'dark') {
             document.documentElement.classList.add('dark');
-            themeIcon.textContent = 'light_mode'; 
+            if(themeToggle) themeToggle.checked = true;
         } else {
             document.documentElement.classList.remove('dark');
-            themeIcon.textContent = 'dark_mode'; 
+            if(themeToggle) themeToggle.checked = false;
+        }
+    }
+
+    // Hàm mới xử lý sự kiện click vào toggle
+    function handleThemeToggle(event) {
+        const isChecked = event.target.checked;
+        if (isChecked) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
         }
     }
 
     function toggleTheme() {
+        // Fallback function if called directly
         const html = document.documentElement;
         html.classList.toggle('dark');
+        const themeToggle = document.getElementById('theme-toggle');
+        
         if (html.classList.contains('dark')) {
             localStorage.setItem('theme', 'dark');
-            themeIcon.textContent = 'light_mode';
+            if(themeToggle) themeToggle.checked = true;
         } else {
             localStorage.setItem('theme', 'light');
-            themeIcon.textContent = 'dark_mode';
+            if(themeToggle) themeToggle.checked = false;
         }
     }
 
@@ -795,10 +1047,12 @@
         mediaContainer.classList.add('hidden');
         listContainer.classList.add('hidden');
         pImg.classList.add('hidden');
+        pImg.classList.add('opacity-0'); // Reset opacity hidden
         pVid.classList.add('hidden');
         youtubeEmbed.classList.add('hidden');
         pLongText.classList.add('hidden');
         pLongText.innerHTML = '';
+        pLoader.classList.add('hidden'); // Reset loader
         
         listContainer.innerHTML = '';
 
@@ -830,8 +1084,27 @@
             youtubeEmbed.innerHTML = `<iframe id="ytplayer" type="text/html" width="100%" height="100%" src="${data.videoSrc}" frameborder="0" allowfullscreen></iframe>`;
         } else if (data.image) {
             mediaContainer.classList.remove('hidden');
-            pImg.src = data.image;
-            pImg.classList.remove('hidden');
+            
+            // LOGIC MỚI CHO LOADER
+            pLoader.classList.remove('hidden'); // Hiện loader trước
+            pImg.classList.add('hidden');
+            pImg.classList.add('opacity-0');
+            
+            pImg.onload = () => {
+                pLoader.classList.add('hidden'); // Ẩn loader
+                pImg.classList.remove('hidden'); // Hiện container ảnh
+                // Dùng requestAnimationFrame để đảm bảo transition hoạt động mượt
+                requestAnimationFrame(() => {
+                    pImg.classList.remove('opacity-0'); 
+                });
+            };
+            
+            pImg.onerror = () => {
+                 pLoader.classList.add('hidden'); // Ẩn loader nếu lỗi
+            };
+
+            pImg.src = data.image; // Bắt đầu load ảnh
+            
         } else if (data.video) {
             mediaContainer.classList.remove('hidden');
             pVid.src = data.video;
