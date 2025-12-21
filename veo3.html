@@ -136,14 +136,16 @@
     }
     .node-hidden { opacity: 0; pointer-events: none; }
 
+    /* CSS CHO NÚT CHÍNH (HÌNH CÁI MÁY) */
     .map-node.type-main {
         width: 180px; height: 180px; background: transparent; border: none; box-shadow: none; 
         color: var(--node-text); z-index: 10; padding: 0; overflow: visible; 
         animation: machine-hover 4s ease-in-out infinite alternate;
+        /* QUAN TRỌNG: Tắt hiệu ứng mờ nền để xóa khung mờ */
+        backdrop-filter: none; 
     }
-    /* ĐÃ XÓA HIỆU ỨNG GLOW/BLUR XUNG QUANH HÌNH */
     .map-node.type-main::before {
-        content: none; 
+        content: none; /* Đảm bảo không có glow giả */
     }
     @media (min-width: 768px) { .map-node.type-main { width: 300px; height: 300px; } }
 
