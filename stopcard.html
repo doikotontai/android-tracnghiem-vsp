@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Optimized</title>
+    <title>Quản Lý Stopcard - Optimized V2</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -409,19 +409,11 @@
     <!-- Toast Notification -->
     <div id="toast-container" class="fixed top-4 left-4 right-4 md:left-auto md:top-20 md:right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
     
-    <!-- Quota Error Banner -->
-    <div id="quota-error-banner" class="hidden fixed top-0 left-0 w-full bg-red-600 text-white z-[100] p-3 text-center shadow-lg animate-fade-in">
-        <div class="flex items-center justify-center gap-2 font-bold text-sm">
-            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-            <span>HỆ THỐNG ĐANG QUÁ TẢI (Hết Quota Firebase). Vui lòng quay lại vào ngày mai!</span>
-        </div>
-    </div>
-
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5 h-16 transition-colors shadow-sm">
         <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <a href="index.html" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
+                <a href="#" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
                     <i data-lucide="arrow-left" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
                 </a>
                 <div class="flex items-center gap-2.5">
@@ -661,11 +653,11 @@
         </div>
     </div>
 
-    <!-- Firebase Logic -->
+    <!-- Firebase Logic - Optimized Structure -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
@@ -680,10 +672,10 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // --- NEW PATH CONSTANTS ---
+        // --- CONSTANTS ---
         const CONFIG_USERS_DOC = doc(db, 'stopcard_config', 'users_list');
         
-        // DEFAULT USER LIST (Will be seeded if config is empty)
+        // DEFAULT USER LIST (Sẽ dùng nếu database trống)
         const DEFAULT_PERSONNEL = [
             { id: "13453", name: "Nguyễn Anh Đức" },
             { id: "XL2467", name: "Trần Thanh Quang", apiId: "39a7fc3b-c4f5-4e2a-88e0-42dc9d139d9a" },
@@ -748,20 +740,12 @@
         ];
 
         // State
-        let masterData = { users: {}, records: {} };
-        let currentMonthData = {}; // Stores only CURRENT MONTH records
+        let masterData = { users: {}, records: {} }; // records now maps uid -> { count, history } locally
         let currentYear = parseInt(localStorage.getItem('stopcard_year')) || new Date().getFullYear();
         let currentMonth = parseInt(localStorage.getItem('stopcard_month')) || (new Date().getMonth() + 1);
         let sortMode = 'id_asc';
-        let isQuotaExceeded = false; 
-        let hasCheckedSeeding = false; 
-        
-        let unsubscribeMonth = null; // To handle switching listeners
-
-        // --- RATE LIMIT ---
-        let writeTimestamps = [];
-        const RATE_LIMIT_WINDOW = 5000;
-        const RATE_LIMIT_MAX = 5;
+        let unsubscribeMonth = null;
+        let isRenderPending = false;
 
         // --- TOAST ---
         function showToast(message, type = 'success') {
@@ -772,32 +756,9 @@
             
             toast.className = `flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${bgColor} animate-slide-in backdrop-blur-md bg-opacity-90`;
             toast.innerHTML = `${icon} <span>${message}</span>`;
-            
             container.appendChild(toast);
             lucide.createIcons();
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-10px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function showQuotaError() {
-            if (isQuotaExceeded) return;
-            isQuotaExceeded = true;
-            document.getElementById('quota-error-banner').classList.remove('hidden');
-        }
-
-        function checkRateLimit() {
-            const now = Date.now();
-            writeTimestamps = writeTimestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
-            if (writeTimestamps.length >= RATE_LIMIT_MAX) {
-                showToast(`Thao tác quá nhanh (Max ${RATE_LIMIT_MAX} lần/5s).`, 'error');
-                return false;
-            }
-            writeTimestamps.push(now);
-            return true;
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
         // --- INIT ---
@@ -805,57 +766,64 @@
             renderTimeSelectors();
             const html = document.documentElement;
             if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
-            else html.classList.remove('dark');
             
             try { await signInAnonymously(auth); } catch (e) { console.error(e); }
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    const statusEl = document.getElementById('connection-status');
-                    statusEl.innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
-                    statusEl.className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
-                    
-                    // 1. Listen to USERS (Persistent)
+                    document.getElementById('connection-status').className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
+                    document.getElementById('connection-status').innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
+
+                    // 1. Get Users
                     onSnapshot(CONFIG_USERS_DOC, async (snap) => {
                         if (snap.exists()) {
                             masterData.users = snap.data().users || {};
-                            // Seed if empty
-                            if (Object.keys(masterData.users).length === 0 && !hasCheckedSeeding) {
-                                await seedDefaultUsers();
-                                hasCheckedSeeding = true;
-                            }
                         } else {
-                            await seedDefaultUsers(); // Create doc if missing
-                            hasCheckedSeeding = true;
+                            await seedDefaultUsers();
                         }
                         renderTable();
                     });
 
-                    // 2. Listen to RECORDS (Dynamic by Month)
+                    // 2. Listen to Records
                     listenToMonthRecords();
                 }
             });
         };
 
         const listenToMonthRecords = () => {
-            if (unsubscribeMonth) unsubscribeMonth(); // Stop listening to old month
+            if (unsubscribeMonth) unsubscribeMonth();
             
             const monthKey = `${currentYear}_${currentMonth}`;
-            const docRef = doc(db, 'stopcard_records', monthKey);
+            masterData.records = {}; // Reset local cache for new month
             
-            // Set loading state in UI
+            // KEY CHANGE: Listen to a SUB-COLLECTION instead of one big document
+            // Path: stopcard_records / {YYYY_MM} / user_data (collection)
+            const recordsCollectionRef = collection(db, 'stopcard_records', monthKey, 'user_data');
+            
             document.querySelector('#table-body').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu tháng ${currentMonth}/${currentYear}...</td></tr>`;
 
-            unsubscribeMonth = onSnapshot(docRef, (snap) => {
-                if (snap.exists()) {
-                    currentMonthData = snap.data().data || {}; // Structure: { data: { uid: { count: x, history: [] } } }
-                } else {
-                    currentMonthData = {}; // Month doesn't exist yet -> Empty records
+            unsubscribeMonth = onSnapshot(recordsCollectionRef, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    const uid = change.doc.id;
+                    if (change.type === "removed") {
+                        delete masterData.records[uid];
+                    } else {
+                        // Merge individual doc into local state
+                        masterData.records[uid] = change.doc.data(); 
+                    }
+                });
+                
+                // Debounce render to prevent UI flickering if many updates come at once
+                if (!isRenderPending) {
+                    isRenderPending = true;
+                    requestAnimationFrame(() => {
+                        renderTable();
+                        isRenderPending = false;
+                    });
                 }
-                renderTable();
             }, (error) => {
-                console.error("Month Fetch Error:", error);
-                if (error.code === 'resource-exhausted') showQuotaError();
+                console.error("Error:", error);
+                if (error.code === 'resource-exhausted') showToast("Hết Quota Firebase!", "error");
             });
         };
 
@@ -866,7 +834,6 @@
                 usersMap[uid] = u;
             });
             await setDoc(CONFIG_USERS_DOC, { users: usersMap }, { merge: true });
-            console.log("Users seeded.");
         };
 
         // --- RENDER LOGIC ---
@@ -881,10 +848,9 @@
             const updateDate = () => {
                 localStorage.setItem('stopcard_month', currentMonth);
                 localStorage.setItem('stopcard_year', currentYear);
-                renderTimeSelectors(); // Re-render to update selected attr
-                listenToMonthRecords(); // Switch Firestore listener
+                renderTimeSelectors();
+                listenToMonthRecords();
             };
-
             mSelect.onchange = (e) => { currentMonth = parseInt(e.target.value); updateDate(); };
             ySelect.onchange = (e) => { currentYear = parseInt(e.target.value); updateDate(); };
         }
@@ -894,13 +860,9 @@
             if (m > 12) { m = 1; currentYear++; }
             if (m < 1) { m = 12; currentYear--; }
             currentMonth = m;
-            
-            document.getElementById('filter-month').value = m;
-            document.getElementById('filter-year').value = currentYear;
-            
-            // Manually trigger change event logic
             localStorage.setItem('stopcard_month', currentMonth);
             localStorage.setItem('stopcard_year', currentYear);
+            renderTimeSelectors();
             listenToMonthRecords();
         }
 
@@ -911,13 +873,17 @@
         }
 
         function renderTable() {
+            // Save currently focused element to restore after render
+            const activeEl = document.activeElement;
+            const activeId = activeEl ? activeEl.id : null;
+
             const tbody = document.getElementById('table-body');
             const search = document.getElementById('search-input').value.toLowerCase();
             const showUnsubmittedOnly = document.getElementById('filter-unsubmitted').checked;
 
-            // Merge Users with Current Month Records
+            // Combine Users + Records
             let list = Object.entries(masterData.users || {}).map(([uid, info]) => {
-                const record = currentMonthData[uid] || { count: 0, history: [] };
+                const record = masterData.records[uid] || { count: 0, history: [] };
                 return {
                     uid: uid,
                     id: info.id || "---",
@@ -928,15 +894,10 @@
                 };
             });
 
-            if (search) {
-                list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
-            }
+            if (search) list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
+            if (showUnsubmittedOnly) list = list.filter(u => u.count === 0);
 
-            if (showUnsubmittedOnly) {
-                list = list.filter(u => u.count === 0);
-            }
-
-            // Ranking Logic
+            // Sort & Rank
             const rankedList = [...list].sort((a, b) => b.count - a.count);
             const rankMap = {};
             let currentRank = 1;
@@ -945,7 +906,6 @@
                 rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
             });
 
-            // Sorting for Display
             if (sortMode === 'id_asc') list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
             else if (sortMode === 'id_desc') list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
             else if (sortMode === 'count_desc') list.sort((a, b) => b.count - a.count);
@@ -953,16 +913,15 @@
 
             // Stats
             const totalCards = list.reduce((sum, item) => sum + item.count, 0);
-            const totalPersonnel = Object.keys(masterData.users).length; // Total users in system, not just filtered
-            const submittedCount = Object.keys(currentMonthData).filter(uid => currentMonthData[uid].count > 0).length;
+            const totalPersonnel = Object.keys(masterData.users).length;
+            const submittedCount = Object.keys(masterData.records).filter(uid => masterData.records[uid].count > 0).length;
 
             document.getElementById('stat-total-cards').innerText = totalCards;
-            // Note: This ratio might be approximate if search filter is active
             document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
             document.getElementById('stat-unsubmitted').innerText = totalPersonnel - submittedCount;
 
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu.</td></tr>`;
                 return;
             }
 
@@ -993,7 +952,7 @@
                             id="input-${item.uid}"
                             class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900"
                             value="${item.count}" 
-                            onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
+                            onchange="window.updateCount('${item.uid}', this.value)"
                             onfocus="this.select()">
                     </td>
                     <td class="p-4 text-center align-middle">${apiBtnHtml}</td>
@@ -1005,42 +964,60 @@
                 </tr>`;
             }).join('');
             lucide.createIcons();
+            
+            // Restore Focus
+            if (activeId) {
+                const el = document.getElementById(activeId);
+                if (el) {
+                    el.focus();
+                    // Optional: Restore cursor position logic if needed, but for numbers select() is usually better
+                }
+            }
         }
         window.renderTable = renderTable;
-
         document.getElementById('search-input').oninput = renderTable;
 
-        // --- ACTIONS (UPDATED FOR SHARDING) ---
-        
-        window.updateCount = async (uid, newVal, oldVal) => {
+        // --- WRITE LOGIC (Sub-collection) ---
+        window.updateCount = async (uid, newVal) => {
             const count = parseInt(newVal);
             if (isNaN(count) || count < 0) { renderTable(); return; }
-            if (count === oldVal) return;
-            
+
             const monthKey = `${currentYear}_${currentMonth}`;
+            const userDocRef = doc(db, 'stopcard_records', monthKey, 'user_data', uid);
+
+            // Optimistic UI Update (Update local state immediately)
+            const oldRecord = masterData.records[uid] || { count: 0, history: [] };
+            const oldVal = oldRecord.count;
+            
+            if (count === oldVal) return;
+
             const now = new Date().toLocaleString('vi-VN');
             const newHistoryItem = {date: now, by: "User", old: oldVal, new: count};
+            const newHistory = [newHistoryItem, ...oldRecord.history].slice(0, 9);
             
-            const currentHistory = currentMonthData[uid]?.history || [];
-            const newHistory = [newHistoryItem, ...currentHistory].slice(0, 9);
-
-            const docRef = doc(db, 'stopcard_records', monthKey);
+            // Temporary local update to avoid flicker
+            masterData.records[uid] = { count, history: newHistory };
             
-            // Structure: { data: { "U_ID": { count: 5, ... } } }
-            // Using dot notation for nested update
-            const updatePath = `data.${uid}`;
-            
-            try { 
-                await setDoc(docRef, { 
-                    data: {
-                        [uid]: { count: count, lastUpdated: now, history: newHistory }
-                    }
-                }, { merge: true }); 
-                showToast("Đã lưu dữ liệu!"); 
-            } catch (e) { 
-                alert("Lỗi lưu: " + e.message); renderTable(); 
+            try {
+                // WRITE to specific User Document
+                await setDoc(userDocRef, {
+                    count: count,
+                    history: newHistory,
+                    lastUpdated: now
+                }, { merge: true });
+                
+                showToast("Đã lưu!");
+            } catch (e) {
+                console.error(e);
+                showToast("Lỗi khi lưu!", "error");
+                // Revert if failed
+                masterData.records[uid] = oldRecord;
+                renderTable();
             }
         };
+
+        // --- OTHER ACTIONS (Modal, API) ---
+        // (Giữ nguyên logic cũ, chỉ cập nhật cách gọi updateCount)
 
         window.openAddUserModal = () => {
             document.getElementById('add-user-modal').classList.remove('hidden');
@@ -1058,24 +1035,20 @@
         window.confirmAddUser = async () => {
             const id = document.getElementById('new-user-id').value.trim();
             const name = document.getElementById('new-user-name').value.trim();
-            if (!id || !name) return alert("Vui lòng nhập đủ thông tin!");
+            if (!id || !name) return alert("Thiếu thông tin!");
             
             const uid = "U_" + id.replace(/\s+/g, '');
-            if (masterData.users[uid]) return alert("Nhân sự này đã tồn tại!");
+            if (masterData.users[uid]) return alert("Đã tồn tại!");
             
             try {
-                // Update USERS DOC
-                await setDoc(CONFIG_USERS_DOC, { 
-                    users: { [uid]: { id, name } } 
-                }, { merge: true });
-                showToast("Thêm nhân sự thành công!");
+                await setDoc(CONFIG_USERS_DOC, { users: { [uid]: { id, name } } }, { merge: true });
+                showToast("Đã thêm!");
                 window.closeAddUserModal();
             } catch (e) { alert("Lỗi: " + e.message); }
         }
 
-        // --- API FUNCTIONS (Kept mostly same, just checking Quota) ---
         window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
-            if (!apiId) return alert("Chưa có cấu hình API ID.");
+            if (!apiId) return alert("Chưa có API ID.");
             if (!isBulk) showToast("Đang kết nối API...", "info");
             
             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
@@ -1104,22 +1077,24 @@
                 
                 const approvedCount = approvedData.length;
                 const inputEl = document.getElementById(`input-${uid}`);
-                if(inputEl) {
-                    const oldVal = parseInt(inputEl.value) || 0;
-                    if (approvedCount !== oldVal) {
-                        inputEl.value = approvedCount; 
-                        await window.updateCount(uid, approvedCount, oldVal);
-                    } else if (!isBulk) {
-                        showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
-                    }
+                
+                // Logic updated to check against local MasterData instead of reading DOM
+                const oldVal = masterData.records[uid]?.count || 0;
+                
+                if (approvedCount !== oldVal) {
+                    if(inputEl) inputEl.value = approvedCount; 
+                    await window.updateCount(uid, approvedCount);
+                } else if (!isBulk) {
+                    showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
                 }
+                
                 if (!isBulk) renderApiReport(name, allMonthData);
 
-            } catch (error) { console.error(error); if (!isBulk) alert("Lỗi kết nối API"); }
+            } catch (error) { console.error(error); if (!isBulk) alert("Lỗi API"); }
         };
 
         window.syncAllApi = async () => {
-            if (!confirm("Đồng bộ tất cả nhân sự?")) return;
+            if (!confirm("Đồng bộ tất cả?")) return;
             const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => ({ uid, apiId: info.apiId, name: info.name })).filter(u => u.apiId);
             const modal = document.getElementById('loading-modal');
             const percentText = document.querySelector('.intern');
@@ -1129,10 +1104,10 @@
                 const u = usersWithApi[i];
                 await window.fetchApiData(u.uid, u.apiId, u.name, true);
                 percentText.style.setProperty('--loading-percent', `"${Math.round(((i + 1) / usersWithApi.length) * 100)}%"`);
-                await new Promise(r => setTimeout(r, 800)); // Delay to prevent spam
+                await new Promise(r => setTimeout(r, 500)); 
             }
             modal.classList.add('hidden'); modal.classList.remove('flex');
-            showToast("Đồng bộ hoàn tất!", "success");
+            showToast("Hoàn tất!", "success");
         }
 
         function renderApiReport(name, data) {
@@ -1156,7 +1131,7 @@
         }
 
         window.viewHistory = (uid) => {
-            const history = currentMonthData[uid]?.history || [];
+            const history = masterData.records[uid]?.history || [];
             const userName = masterData.users[uid]?.name || "Unknown";
             const container = document.getElementById('history-content');
             if (history.length === 0) container.innerHTML = `<div class="text-center text-slate-400 py-4 italic text-sm">Chưa có lịch sử.</div>`;
@@ -1169,7 +1144,7 @@
         window.exportExcel = () => {
             const list = Object.entries(masterData.users).map(([uid, info]) => ({
                 "Danh Số": info.id, "Họ và Tên": info.name, "Tháng": `${currentMonth}/${currentYear}`, 
-                "Số thẻ nộp": currentMonthData[uid]?.count || 0
+                "Số thẻ nộp": masterData.records[uid]?.count || 0
             }));
             if(list.length === 0) return alert("Không có dữ liệu");
             const ws = XLSX.utils.json_to_sheet(list);
