@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Quản Lý Stopcard - HSE Dashboard</title>
     
     <!-- Fonts & Icons -->
@@ -32,16 +32,16 @@
     </script>
 
     <style>
-        body { transition: background-color 0.3s ease; background-color: #f8fafc; color: #334155; font-size: 14px; }
+        body { transition: background-color 0.3s ease; background-color: #f8fafc; color: #334155; font-size: 14px; -webkit-tap-highlight-color: transparent; }
         html.dark body { background-color: #0f172a; color: #cbd5e1; }
         
-        .glass-panel { background: rgba(255, 255, 255, 0.9); border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        html.dark .glass-panel { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        html.dark .glass-panel { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
         
         .editable-input:focus { outline: none; border-bottom: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         html.dark ::-webkit-scrollbar-thumb { background: #475569; }
@@ -49,16 +49,24 @@
         .no-select { user-select: none; }
         
         /* Zebra Striping */
-        tr.data-row:nth-child(even) { background-color: #f1f5f9; } 
-        html.dark tr.data-row:nth-child(even) { background-color: rgba(30, 41, 59, 0.4); }
-        tr.data-row:hover { background-color: #e2e8f0 !important; }
-        html.dark tr.data-row:hover { background-color: rgba(51, 65, 85, 0.8) !important; }
+        tr.data-row:nth-child(even) { background-color: #f8fafc; } 
+        html.dark tr.data-row:nth-child(even) { background-color: rgba(30, 41, 59, 0.3); }
+        
+        /* Mobile Touch Optimization */
+        @media (max-width: 768px) {
+            input, select, button { font-size: 16px !important; } /* Prevent iOS zoom */
+            .glass-panel { padding: 1rem; }
+            th, td { padding: 1rem 0.5rem; } /* Larger touch targets */
+        }
+
+        /* Smooth scrolling for table */
+        .custom-scrollbar { -webkit-overflow-scrolling: touch; }
 
         /* Report Modal Styles */
         .report-safe { color: #16a34a; font-weight: bold; text-align: center; }
         .report-unsafe { color: #dc2626; font-weight: bold; text-align: center; }
-        .report-table th { background: #e2e8f0; color: #0f172a; position: sticky; top: 0; z-index: 10; font-size: 12px; padding: 8px; text-transform: uppercase; }
-        .report-table td { padding: 8px; font-size: 13px; border: 1px solid #e2e8f0; vertical-align: top; }
+        .report-table th { background: #f1f5f9; color: #0f172a; position: sticky; top: 0; z-index: 10; font-size: 12px; padding: 10px; text-transform: uppercase; white-space: nowrap; }
+        .report-table td { padding: 10px; font-size: 13px; border: 1px solid #e2e8f0; vertical-align: middle; white-space: nowrap; }
         html.dark .report-table th { background: #1e293b; color: #e2e8f0; border-color: #334155; }
         html.dark .report-table td { border-color: #334155; color: #cbd5e1; }
         
@@ -76,10 +84,10 @@
         .input-locked-quota { opacity: 0.5; background-color: #fee2e2; cursor: not-allowed; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col no-select">
+<body class="antialiased min-h-screen flex flex-col no-select pb-20 md:pb-0 bg-slate-50 dark:bg-slate-950">
 
     <!-- Toast Notification -->
-    <div id="toast-container" class="fixed top-20 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-4 left-4 right-4 md:left-auto md:top-20 md:right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
     
     <!-- Quota Error Banner -->
     <div id="quota-error-banner" class="hidden fixed top-0 left-0 w-full bg-red-600 text-white z-[100] p-3 text-center shadow-lg animate-fade-in">
@@ -90,24 +98,24 @@
     </div>
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-slate-200 dark:border-white/5 h-16 transition-colors">
+    <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5 h-16 transition-colors shadow-sm">
         <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <a href="index.html" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                    <i data-lucide="arrow-left" class="w-5 h-5 text-slate-500"></i>
+                <a href="index.html" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
+                    <i data-lucide="arrow-left" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
                 </a>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 flex items-center justify-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
                         <i data-lucide="shield-check" class="w-5 h-5"></i>
                     </div>
-                    <div>
-                        <h1 class="font-bold text-slate-800 dark:text-white leading-tight">Quản Lý Stopcard</h1>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Hệ thống theo dõi an toàn</p>
+                    <div class="hidden xs:block">
+                        <h1 class="font-bold text-slate-800 dark:text-white leading-tight text-base">Quản Lý Stopcard</h1>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">HSE Dashboard</p>
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
                 <div id="connection-status" class="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500">
                     <span class="relative flex h-2 w-2">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -115,7 +123,7 @@
                     </span>
                     Connecting...
                 </div>
-                <button id="theme-toggle" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition">
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 hover:bg-slate-100 transition active:scale-95">
                     <i data-lucide="moon" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -123,106 +131,108 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <main class="flex-grow w-full max-w-7xl mx-auto px-3 md:px-4 py-4 space-y-4 md:space-y-6">
         
         <!-- Controls & Filters -->
-        <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-40 shadow-sm">
-            <!-- Time Filter -->
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <button onclick="changeMonth(-1)" class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+        <div class="glass-panel p-3 md:p-4 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-40 shadow-sm border border-white/20">
+            <!-- Time & Search Group -->
+            <div class="flex flex-col sm:flex-row items-stretch gap-3 w-full md:w-auto">
+                <!-- Date Picker -->
+                <div class="flex items-center justify-between gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                     <div class="flex items-center gap-2 px-2">
                         <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
-                        <select id="filter-month" class="bg-transparent text-sm font-bold focus:outline-none appearance-none cursor-pointer text-slate-700 dark:text-white text-center w-12">
+                        <select id="filter-month" class="bg-transparent text-base font-bold focus:outline-none appearance-none cursor-pointer text-slate-700 dark:text-white text-center w-10">
                             <!-- Months JS -->
                         </select>
-                        <span class="text-slate-400">/</span>
-                        <select id="filter-year" class="bg-transparent text-sm font-bold focus:outline-none appearance-none cursor-pointer text-slate-700 dark:text-white text-center w-16">
+                        <span class="text-slate-300">/</span>
+                        <select id="filter-year" class="bg-transparent text-base font-bold focus:outline-none appearance-none cursor-pointer text-slate-700 dark:text-white text-center w-16">
                             <!-- Years JS -->
                         </select>
                     </div>
-                    <button onclick="changeMonth(1)" class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition text-slate-500"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                 </div>
                 
-                <div class="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
-
+                <!-- Search Box -->
                 <div class="relative flex-1 group min-w-[200px]">
-                    <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-400 group-focus-within:text-blue-500"></i>
-                    <input type="text" id="search-input" placeholder="Tìm tên hoặc mã số..." 
-                        class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                    <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400 group-focus-within:text-blue-500"></i>
+                    <input type="text" id="search-input" placeholder="Tìm tên, mã số..." 
+                        class="w-full h-full min-h-[44px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm">
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <label class="flex items-center gap-2 cursor-pointer bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg border border-red-100 dark:border-red-800 hover:bg-red-100 transition select-none group" title="Lọc danh sách người chưa nộp">
+            <!-- Action Buttons Group -->
+            <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full md:w-auto">
+                <!-- Filter Unsubmitted -->
+                <label class="col-span-2 sm:col-span-1 flex items-center justify-center sm:justify-start gap-2 cursor-pointer bg-white dark:bg-slate-800 px-4 py-2.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition select-none group h-[44px]" title="Lọc danh sách người chưa nộp">
                     <div class="relative flex items-center">
-                        <input type="checkbox" id="filter-unsubmitted" class="peer appearance-none w-4 h-4 border-2 border-red-400 rounded bg-white checked:bg-red-500 checked:border-red-500 transition-all cursor-pointer" onchange="renderTable()">
-                        <i data-lucide="check" class="w-3 h-3 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                        <input type="checkbox" id="filter-unsubmitted" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded bg-white checked:bg-red-500 checked:border-red-500 transition-all cursor-pointer" onchange="renderTable()">
+                        <i data-lucide="check" class="w-3.5 h-3.5 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
                     </div>
-                    <span class="text-sm font-bold text-red-600 dark:text-red-400 group-hover:text-red-700">Chưa nộp thẻ</span>
+                    <span class="text-sm font-semibold text-slate-600 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400">Chưa nộp</span>
                 </label>
 
-                <div class="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
-
-                <button onclick="window.openAddUserModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-semibold shadow-lg shadow-blue-500/20 transition transform active:scale-95">
-                    <i data-lucide="user-plus" class="w-4 h-4"></i> Thêm
+                <button onclick="window.openAddUserModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/20 transition transform active:scale-95 h-[44px]">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Thêm</span>
                 </button>
                 
-                <button onclick="window.exportExcel()" class="flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white py-2 px-4 rounded-lg text-sm font-semibold shadow-lg transition transform active:scale-95" title="Xuất Báo Cáo">
-                    <i data-lucide="download" class="w-4 h-4"></i> Xuất
+                <button onclick="window.exportExcel()" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white py-2.5 px-4 rounded-xl text-sm font-semibold shadow-lg transition transform active:scale-95 h-[44px]" title="Xuất Báo Cáo">
+                    <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden sm:inline">Xuất</span>
                 </button>
             </div>
         </div>
 
         <!-- NEW Stats Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-blue-500">
-                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+            <!-- Stat 1 -->
+            <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-blue-500">
+                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
                     <i data-lucide="files" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Tổng thẻ tháng NDT</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Tổng thẻ tháng</p>
                     <h3 id="stat-total-cards" class="text-2xl font-extrabold text-slate-800 dark:text-white">0</h3>
                 </div>
             </div>
 
-            <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-green-500">
-                <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full">
+            <!-- Stat 2 -->
+            <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-green-500">
+                <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl">
                     <i data-lucide="users" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Đã nộp / Tổng số</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Đã nộp / Tổng số</p>
                     <h3 id="stat-submitted-ratio" class="text-2xl font-extrabold text-slate-800 dark:text-white">0 / 0</h3>
                 </div>
             </div>
 
-            <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-red-500">
-                <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full">
+            <!-- Stat 3 -->
+            <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-red-500">
+                <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl">
                     <i data-lucide="alert-circle" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Nhân sự chưa nộp</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Chưa nộp</p>
                     <h3 id="stat-unsubmitted" class="text-2xl font-extrabold text-red-600 dark:text-red-400">0</h3>
                 </div>
             </div>
         </div>
 
         <!-- Main Table -->
-        <div class="glass-panel rounded-xl overflow-hidden min-h-[400px] flex flex-col shadow-md">
+        <div class="glass-panel rounded-2xl overflow-hidden min-h-[400px] flex flex-col shadow-md border-0 bg-white dark:bg-slate-900">
             <div class="overflow-x-auto custom-scrollbar flex-grow">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur border-b-2 border-slate-300 dark:border-slate-600 text-xs uppercase text-slate-600 dark:text-slate-400">
-                            <th class="p-4 font-bold w-16 text-center">STT</th>
-                            <th class="p-4 font-bold w-36 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('id')">Danh số <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
-                            <th class="p-4 font-bold">Họ và Tên</th>
-                            <th class="p-4 font-bold w-40 text-center">Số thẻ nộp</th>
+                        <tr class="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 text-xs uppercase text-slate-500 dark:text-slate-400">
+                            <th class="p-4 font-bold w-14 text-center">#</th>
+                            <th class="p-4 font-bold w-32 text-left cursor-pointer hover:text-blue-500" onclick="window.toggleSort('id')">Danh số <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
+                            <th class="p-4 font-bold min-w-[180px]">Họ và Tên</th>
+                            <th class="p-4 font-bold w-32 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('count')">Số lượng <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
                             <th class="p-4 font-bold w-20 text-center">API</th>
-                            <th class="p-4 font-bold w-20 text-center">Lịch sử</th>
+                            <th class="p-4 font-bold w-20 text-center">Log</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body" class="text-sm">
+                    <tbody id="table-body" class="text-sm font-medium">
                         <!-- Rows injected by JS -->
                         <tr>
                             <td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu...</td>
@@ -230,9 +240,9 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Pagination / Footer if needed -->
-            <div class="p-3 border-t border-slate-200 dark:border-slate-700 text-xs text-center text-slate-400 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
-                <span>Dữ liệu được lưu trữ vĩnh viễn trên Cloud.</span>
+            
+            <div class="p-3 border-t border-slate-200 dark:border-slate-700 text-xs text-center text-slate-400 flex flex-col sm:flex-row justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 gap-2">
+                <span>Dữ liệu được lưu trữ an toàn trên Cloud.</span>
                 <span id="sort-status" class="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded text-[10px] font-medium">Sắp xếp: Mặc định</span>
             </div>
         </div>
@@ -241,69 +251,70 @@
 
     <!-- MODAL: ADD USER -->
     <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-6 relative">
-            <button onclick="window.closeAddUserModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg"><i data-lucide="user-plus" class="w-5 h-5"></i></div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-6 relative">
+            <button onclick="window.closeAddUserModal()" class="absolute top-4 right-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+                <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="user-plus" class="w-6 h-6"></i></div>
                 Thêm Nhân Sự
             </h3>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Danh số (ID)</label>
-                    <input type="text" id="new-user-id" class="w-full p-3 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: 0123">
+                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">Danh số (ID)</label>
+                    <input type="text" id="new-user-id" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: 0123">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Họ và Tên</label>
-                    <input type="text" id="new-user-name" class="w-full p-3 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: Nguyễn Văn A">
+                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">Họ và Tên</label>
+                    <input type="text" id="new-user-name" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: Nguyễn Văn A">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">API User ID (Nếu có)</label>
-                    <input type="text" id="new-user-api-id" class="w-full p-3 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: 1e147ad6-31d9...">
+                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">API User ID (Nếu có)</label>
+                    <input type="text" id="new-user-api-id" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: 1e147ad6...">
                 </div>
             </div>
             <div class="flex gap-3 mt-8">
-                <button onclick="window.closeAddUserModal()" class="flex-1 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition">Hủy</button>
-                <button onclick="window.confirmAddUser()" class="flex-1 py-2.5 text-xs font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">Lưu</button>
+                <button onclick="window.closeAddUserModal()" class="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">Hủy</button>
+                <button onclick="window.confirmAddUser()" class="flex-1 py-3 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">Lưu</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: HISTORY -->
     <div id="history-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 p-6 relative flex flex-col max-h-[80vh]">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i data-lucide="history" class="w-5 h-5 text-purple-500"></i> Lịch sử chỉnh sửa
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 p-6 relative flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                    <div class="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-xl"><i data-lucide="history" class="w-5 h-5"></i></div>
+                    Lịch sử chỉnh sửa
                 </h3>
-                <button onclick="document.getElementById('history-modal').classList.add('hidden'); document.getElementById('history-modal').classList.remove('flex')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="document.getElementById('history-modal').classList.add('hidden'); document.getElementById('history-modal').classList.remove('flex')" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
+            <div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
                 <!-- Logs injected here -->
             </div>
         </div>
     </div>
 
     <!-- MODAL: API REPORT -->
-    <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
+    <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-900 rounded-none md:rounded-2xl shadow-2xl w-full md:max-w-6xl h-full md:h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
             <!-- Header -->
-            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
-                        <i data-lucide="cloud-download" class="w-5 h-5"></i>
+                    <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
+                        <i data-lucide="cloud-download" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Báo Cáo API StopCard</h3>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3>
                         <p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p>
                     </div>
                 </div>
-                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition text-slate-500">
+                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition text-slate-500">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
             
             <!-- Content -->
-            <div class="flex-1 overflow-auto custom-scrollbar p-0 bg-white dark:bg-slate-900">
+            <div class="flex-1 overflow-auto custom-scrollbar p-0 bg-white dark:bg-slate-950">
                 <table class="w-full text-left border-collapse report-table">
                     <thead>
                         <tr>
@@ -323,8 +334,8 @@
             </div>
             
             <!-- Footer -->
-            <div class="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-right">
-                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-lg font-bold text-sm transition">Đóng</button>
+            <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-center md:text-right pb-8 md:pb-4">
+                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="w-full md:w-auto px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-bold text-sm transition">Đóng</button>
             </div>
         </div>
     </div>
@@ -435,19 +446,21 @@
         let currentUser = "Guest";
         let sortMode = 'id_asc';
         let isQuotaExceeded = false; 
+        let hasCheckedSeeding = false; // Fixed: Defined missing variable
 
         // --- RATE LIMIT STATE ---
-        let lastActionTime = 0;
-        const RATE_LIMIT_INTERVAL = 5000; // 5 seconds
+        let writeTimestamps = [];
+        const RATE_LIMIT_WINDOW = 5000;
+        const RATE_LIMIT_MAX = 5;
 
         // --- TOAST NOTIFICATION ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-red-500' : 'bg-blue-500');
-            const icon = type === 'success' ? '<i data-lucide="check-circle" class="w-4 h-4"></i>' : (type === 'error' ? '<i data-lucide="alert-circle" class="w-4 h-4"></i>' : '<i data-lucide="info" class="w-4 h-4"></i>');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-red-500' : (type === 'warning' ? 'bg-orange-500' : 'bg-blue-500'));
+            const icon = type === 'success' ? '<i data-lucide="check-circle" class="w-4 h-4"></i>' : (type === 'error' ? '<i data-lucide="alert-circle" class="w-4 h-4"></i>' : (type === 'warning' ? '<i data-lucide="alert-triangle" class="w-4 h-4"></i>' : '<i data-lucide="info" class="w-4 h-4"></i>'));
             
-            toast.className = `flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium ${bgColor} animate-slide-in`;
+            toast.className = `flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${bgColor} animate-slide-in backdrop-blur-md bg-opacity-90`;
             toast.innerHTML = `${icon} <span>${message}</span>`;
             
             container.appendChild(toast);
@@ -468,12 +481,15 @@
 
         function checkRateLimit() {
             const now = Date.now();
-            if (now - lastActionTime < RATE_LIMIT_INTERVAL) {
-                const remaining = Math.ceil((RATE_LIMIT_INTERVAL - (now - lastActionTime)) / 1000);
-                showToast(`Thao tác quá nhanh! Vui lòng chờ ${remaining} giây...`, 'error');
+            // Remove old timestamps outside the window
+            writeTimestamps = writeTimestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
+
+            if (writeTimestamps.length >= RATE_LIMIT_MAX) {
+                showToast(`Thao tác quá nhanh (Max ${RATE_LIMIT_MAX} lần/5s). Vui lòng đợi.`, 'error');
                 return false;
             }
-            lastActionTime = now;
+
+            writeTimestamps.push(now);
             return true;
         }
 
@@ -492,13 +508,21 @@
                     statusEl.innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
                     statusEl.className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
 
-                    const unsubscribe = onSnapshot(DOC_REF, (snap) => {
+                    const unsubscribe = onSnapshot(DOC_REF, async (snap) => {
                         if (snap.exists()) {
                             masterData = snap.data();
+                            
+                            // Only check seeding once to prevent loops
+                            if (!hasCheckedSeeding) {
+                                await seedDefaultUsers();
+                                hasCheckedSeeding = true;
+                            }
+
                             if (!masterData.records) masterData.records = {};
                             renderTable();
                         } else {
-                            renderTable(); 
+                            // First time creation
+                            await setDoc(DOC_REF, { users: {}, records: {} });
                         }
                     }, (error) => {
                         console.error("Firestore Error:", error);
@@ -512,6 +536,45 @@
             });
         };
 
+        const seedDefaultUsers = async () => {
+            if (!masterData) return;
+
+            const batchData = {};
+            let hasChanges = false;
+            
+            // 1. Seed Users (Only if missing)
+            DEFAULT_PERSONNEL.forEach(u => {
+                const uid = "U_" + u.id.replace(/\s+/g, '');
+                if (!masterData.users || !masterData.users[uid]) {
+                    batchData[`users.${uid}`] = u;
+                    hasChanges = true;
+                }
+            });
+
+            // 2. Seed Dec 2024 Data (Only if missing)
+            const records = masterData.records || {};
+            const decRecords = records['2024_12'] || {};
+
+            Object.entries(DECEMBER_2024_COUNTS).forEach(([id, count]) => {
+                 const uid = "U_" + id.replace(/\s+/g, '');
+                 if (count !== undefined) {
+                     if (!decRecords[uid]) {
+                        batchData[`records.2024_12.${uid}`] = { 
+                            count: count, 
+                            history: [{date: 'System Init', by: 'System', old: 0, new: count}],
+                            lastUpdated: new Date().toLocaleString('vi-VN')
+                        };
+                        hasChanges = true;
+                     }
+                 }
+            });
+
+            if (hasChanges && Object.keys(batchData).length > 0) {
+                console.log("Seeding missing data...");
+                await updateDoc(DOC_REF, batchData);
+            }
+        };
+
         // --- RENDER LOGIC ---
         function renderTimeSelectors() {
             const mSelect = document.getElementById('filter-month');
@@ -521,6 +584,7 @@
             ySelect.innerHTML = '';
             for(let i=currentYear-1; i<=currentYear+1; i++) ySelect.innerHTML += `<option value="${i}" ${i === currentYear ? 'selected' : ''}>${i}</option>`;
             
+            // FIX: Save selection to LocalStorage
             mSelect.onchange = (e) => { 
                 currentMonth = parseInt(e.target.value); 
                 localStorage.setItem('stopcard_month', currentMonth);
@@ -538,16 +602,21 @@
             if (m > 12) { m = 1; currentYear++; }
             if (m < 1) { m = 12; currentYear--; }
             currentMonth = m;
+            
             localStorage.setItem('stopcard_month', currentMonth);
             localStorage.setItem('stopcard_year', currentYear);
+            
             document.getElementById('filter-month').value = m;
             document.getElementById('filter-year').value = currentYear;
             renderTable();
         }
 
         window.toggleSort = (type) => {
-            if (type === 'id') sortMode = sortMode === 'id_asc' ? 'id_desc' : 'id_asc';
-            else if (type === 'count') sortMode = sortMode === 'count_desc' ? 'count_asc' : 'count_desc';
+            if (type === 'id') {
+                sortMode = sortMode === 'id_asc' ? 'id_desc' : 'id_asc';
+            } else if (type === 'count') {
+                sortMode = sortMode === 'count_desc' ? 'count_asc' : 'count_desc';
+            }
             renderTable();
         }
 
@@ -557,50 +626,79 @@
             const showUnsubmittedOnly = document.getElementById('filter-unsubmitted').checked;
 
             const recordKey = `${currentYear}_${currentMonth}`;
-            const monthRecords = masterData.records?.[recordKey] || {};
+            const monthRecords = masterData.records[recordKey] || {};
             
-            let sourceUsers = Object.keys(masterData.users || {}).length > 0 
-                ? Object.entries(masterData.users).map(([k,v]) => ({uid: k, ...v}))
-                : DEFAULT_PERSONNEL.map(p => ({uid: "U_" + p.id.replace(/\s+/g, ''), ...p}));
-
-            let list = sourceUsers.map(user => {
-                const record = monthRecords[user.uid] || { count: 0, history: [] };
+            // 1. Prepare Data
+            let list = Object.entries(masterData.users).map(([uid, info]) => {
+                const record = monthRecords[uid] || { count: 0, history: [] };
                 
-                // --- FIX: Lookup API ID from DEFAULT_PERSONNEL if missing in DB ---
-                const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === user.uid) || 
-                                   DEFAULT_PERSONNEL.find(p => p.id === user.id);
-                const apiId = user.apiId || staticUser?.apiId || null;
-                // ------------------------------------------------------------------
+                // Lookup API ID fallback
+                const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid) || 
+                                   DEFAULT_PERSONNEL.find(p => p.id === info.id);
+                const apiId = info.apiId || staticUser?.apiId || null;
 
                 return {
-                    uid: user.uid,
-                    id: user.id || "---",
-                    name: user.name || "Không tên",
+                    uid: uid,
+                    id: info.id || "---",
+                    name: info.name || "Không tên",
                     count: record.count || 0,
                     history: record.history || [],
-                    apiId: apiId // Use the looked-up ID
+                    apiId: apiId
                 };
             });
 
-            if (search) list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
-            if (showUnsubmittedOnly) list = list.filter(u => u.count === 0);
+            // 2. Filter Search
+            if (search) {
+                list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
+            }
 
-            // Sort logic...
-            if (sortMode === 'id_asc') list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
-            else if (sortMode === 'id_desc') list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
-            else if (sortMode === 'count_desc') list.sort((a, b) => b.count - a.count);
-            else if (sortMode === 'count_asc') list.sort((a, b) => a.count - b.count);
+            // 3. Filter Unsubmitted
+            if (showUnsubmittedOnly) {
+                list = list.filter(u => u.count === 0);
+            }
 
-            // Stats...
-            const allUsersForStats = sourceUsers.map(u => (monthRecords[u.uid]?.count || 0));
+            // 4. CALCULATE RANKS (Global context before sort)
+            const rankedList = [...list].sort((a, b) => b.count - a.count);
+            const rankMap = {};
+            let currentRank = 1;
+            rankedList.forEach((item, index) => {
+                if (index > 0 && item.count < rankedList[index-1].count) currentRank = index + 1;
+                rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
+            });
+
+            // 5. DISPLAY SORT
+            const sortLabel = document.getElementById('sort-status');
+            if (sortMode === 'id_asc') {
+                list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
+                sortLabel.innerText = "Sắp xếp: Danh số (A-Z)";
+            } else if (sortMode === 'id_desc') {
+                list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
+                sortLabel.innerText = "Sắp xếp: Danh số (Z-A)";
+            } else if (sortMode === 'count_desc') {
+                list.sort((a, b) => b.count - a.count);
+                sortLabel.innerText = "Sắp xếp: Số lượng (Giảm dần)";
+            } else if (sortMode === 'count_asc') {
+                list.sort((a, b) => a.count - b.count);
+                sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
+            }
+
+            // 6. Stats (Calculate based on ALL users, ignoring local filter for accuracy of "Total")
+            const allUsersForStats = Object.values(masterData.users).map(u => {
+                 const uid = "U_" + u.id.replace(/\s+/g, '');
+                 return (monthRecords[uid]?.count || 0);
+            });
+            
             const totalCards = allUsersForStats.reduce((sum, c) => sum + parseInt(c), 0);
             const totalPersonnel = allUsersForStats.length;
             const submittedCount = allUsersForStats.filter(c => c > 0).length;
             const unsubmittedCount = totalPersonnel - submittedCount;
+
             document.getElementById('stat-total-cards').innerText = totalCards;
             document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
             document.getElementById('stat-unsubmitted').innerText = unsubmittedCount;
 
+
+            // 7. Render
             if (list.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
                 return;
@@ -611,28 +709,44 @@
             const isPastMonth = viewDate < new Date(now.getFullYear(), now.getMonth());
 
             tbody.innerHTML = list.map((item, index) => {
+                const rank = rankMap[item.uid];
+                let badgeHtml = '';
+                
+                if (item.count > 0) {
+                    if (rank === 1) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300 text-[10px] shadow-sm" title="Top 1">🥇</span>`;
+                    else if (rank === 2) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[10px] shadow-sm" title="Top 2">🥈</span>`;
+                    else if (rank === 3) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-orange-100 text-orange-800 border border-orange-300 text-[10px] shadow-sm" title="Top 3">🥉</span>`;
+                }
+
                 const hasHistory = item.history && item.history.length > 0;
                 const statusColor = item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
+                
+                // Row Highlight for Unsubmitted if viewing all
                 const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : '';
                 const inputClass = isQuotaExceeded ? 'input-locked-quota' : (isPastMonth ? 'input-past-month' : '');
                 const readOnlyAttr = isQuotaExceeded ? 'readonly' : ''; 
                 
                 // API Button Condition
                 const apiBtnHtml = item.apiId 
-                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-sync p-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition border border-blue-200 dark:border-blue-800" title="Đồng bộ API">
-                        <i data-lucide="cloud-download" class="w-4 h-4"></i>
+                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-sync p-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition border border-blue-200 dark:border-blue-800" title="Đồng bộ API">
+                        <i data-lucide="cloud-download" class="w-5 h-5"></i>
                        </button>`
-                    : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed" title="Chưa có API ID"><i data-lucide="cloud-off" class="w-4 h-4"></i></span>`;
+                    : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block" title="Chưa có API ID"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
 
                 return `
-                <tr class="data-row transition-colors duration-150 border-b border-slate-300 dark:border-slate-700 group ${rowClass}">
-                    <td class="p-4 text-center font-bold text-slate-400 text-sm">${index + 1}</td>
-                    <td class="p-4 text-center font-mono text-blue-700 dark:text-blue-400 text-lg font-bold tracking-wide shadow-sm">${item.id}</td>
-                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-sm">${item.name}</td>
+                <tr class="data-row transition-colors duration-150 border-b border-slate-200 dark:border-slate-700 group ${rowClass}">
+                    <td class="p-4 text-center font-bold text-slate-400 text-sm">
+                        ${index + 1}
+                    </td>
+                    <td class="p-4 text-left font-mono text-blue-700 dark:text-blue-400 text-base font-bold tracking-wide shadow-sm min-w-[100px]">${item.id}</td>
+                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-base whitespace-nowrap min-w-[180px]">
+                        ${item.name}
+                        ${badgeHtml}
+                    </td>
                     <td class="p-4 text-center flex items-center justify-center gap-2">
                         <input type="number" min="0" 
                             id="input-${item.uid}"
-                            class="editable-input w-20 text-center font-bold bg-transparent rounded py-1 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
+                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
                             value="${item.count}" 
                             ${readOnlyAttr}
                             onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
@@ -640,8 +754,8 @@
                     </td>
                     <td class="p-4 text-center">${apiBtnHtml}</td>
                     <td class="p-4 text-center">
-                        <button onclick="window.viewHistory('${item.uid}')" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}">
-                            <i data-lucide="history" class="w-4 h-4"></i>
+                        <button onclick="window.viewHistory('${item.uid}')" class="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}">
+                            <i data-lucide="history" class="w-5 h-5"></i>
                         </button>
                     </td>
                 </tr>
@@ -657,64 +771,99 @@
         window.fetchApiData = async (uid, apiId, name) => {
             if (isQuotaExceeded) { showQuotaError(); return; }
             if (!apiId) return alert("Chưa có cấu hình API ID cho nhân sự này.");
-            if (!checkRateLimit()) return;
+            // REMOVED RATE LIMIT FOR API AS REQUESTED
 
             showToast("Đang kết nối API công ty...", "info");
             
+            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
+            let data = [];
+
             try {
-                // Construct API URL
-                const apiUrl = `https://corsproxy.io/?https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
-                
-                // Fetch Data
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
+                // 1. Try Direct Connection
+                try {
+                    const response = await fetch(targetUrl, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (response.ok) {
+                        data = await response.json();
+                    } else {
+                        throw new Error(response.statusText);
+                    }
+                } catch (directError) {
+                    console.warn("Direct fetch failed, trying proxy...", directError);
+                    try {
+                        // 2. Fallback to CORS Proxy
+                        const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
+                        const response = await fetch(proxyUrl, {
+                            method: 'GET',
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (!response.ok) throw new Error(`Proxy error! Status: ${response.status}`);
+                        data = await response.json();
+                    } catch (proxyError) {
+                        console.error("API Error:", proxyError);
+                        alert(`Không thể lấy dữ liệu (Lỗi CORS/Mạng).\n\nVui lòng thử cài Extension 'Allow CORS' hoặc chạy trên mạng nội bộ.\n\nChi tiết: ${proxyError.message}`);
+                        return;
+                    }
+                }
 
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-                const data = await response.json();
+                if (!Array.isArray(data)) data = []; 
                 
-                // 1. Filter ALL data by Month/Year for REPORT (Show everything for reference)
+                // 1. Filter ALL data by Month/Year for REPORT 
                 const allMonthData = data.filter(item => {
                     const d = new Date(item.createdDate);
                     return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
                 });
 
-                // 2. Filter ONLY APPROVED data for COUNTING (Update "Số thẻ nộp")
+                // 2. Filter ONLY APPROVED data for COUNTING 
                 const approvedData = allMonthData.filter(item => {
                     const statusName = item.trangThai?.name || "";
-                    // Check if status contains "Duyệt" or "Approved" or "Đã xử lý" (Adjust keywords as needed based on actual API data)
-                    // Common Vietnamese statuses: "Đã duyệt", "Chờ duyệt", "Nháp", "Từ chối"
-                    // We want to exclude "Chờ duyệt", "Nháp", "Từ chối".
-                    // Safe approach: Count if it says "Đã duyệt" or similar positive confirmation.
-                    // Or simpler: NOT "Nháp" and NOT "Chờ duyệt"? 
-                    // Let's stick to positive match for "Duyệt" but NOT "Chờ duyệt".
-                    const lowerStatus = statusName.toLowerCase();
-                    return (lowerStatus.includes("duyệt") && !lowerStatus.includes("chờ")) || lowerStatus.includes("đã xử lý") || lowerStatus.includes("approved");
+                    const s = statusName.toLowerCase();
+                    
+                    // Exclude invalid statuses first
+                    if (s.includes('chờ') || s.includes('chưa') || s.includes('nháp') || s.includes('hủy') || s.includes('không')) {
+                        return false;
+                    }
+                    
+                    // Include valid statuses
+                    if (s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý')) {
+                        return true;
+                    }
+                    
+                    return false;
                 });
                 
                 const approvedCount = approvedData.length;
                 
-                // Update UI Input with APPROVED COUNT
+                // Update UI Input
                 const inputEl = document.getElementById(`input-${uid}`);
                 if(inputEl) {
                     const oldVal = parseInt(inputEl.value) || 0;
-                    inputEl.value = approvedCount;
-                    // Trigger Save
+                    
                     if (approvedCount !== oldVal) {
-                        await window.updateCount(uid, approvedCount, oldVal);
+                        inputEl.value = approvedCount; 
+                        // Trigger Save with Rate Limit Check
+                        if (checkRateLimit()) {
+                            await window.updateCount(uid, approvedCount, oldVal);
+                            if (approvedCount === 0) {
+                                showToast("Không có thẻ đạt/đã duyệt. Đã cập nhật về 0.", "warning");
+                            }
+                        }
                     } else {
-                        showToast(`Đã đồng bộ: ${approvedCount} thẻ đã duyệt`, "success");
+                        if (approvedCount === 0) {
+                            showToast("Dữ liệu khớp: 0 thẻ đạt/đã duyệt.", "info");
+                        } else {
+                            showToast(`Dữ liệu đã đồng bộ (${approvedCount} thẻ)`, "success");
+                        }
                     }
                 }
 
-                // Show Report Modal with ALL month data (so user can see pending ones too)
                 renderApiReport(name, allMonthData);
 
             } catch (error) {
                 console.error("API Error:", error);
-                alert(`Lỗi kết nối API: ${error.message}\n\nLưu ý: Nếu bạn đang chạy trên web cá nhân, trình duyệt có thể chặn kết nối đến server công ty (CORS).`);
+                alert(`Lỗi không xác định: ${error.message}`);
             }
         };
 
@@ -726,14 +875,12 @@
             if (data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ nào trong tháng này trên hệ thống.</td></tr>`;
             } else {
-                // Sort by date desc
                 data.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
                 
                 tbody.innerHTML = data.map((item, index) => {
                     const dateStr = new Date(item.createdDate).toLocaleString('vi-VN');
                     const creator = (item.createBy || '').replace('@vietsov.com.vn', '');
                     
-                    // Abbreviate Department Name
                     let deptName = item.departmentName || '';
                     if (deptName === "Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí") {
                         deptName = "XNXL";
@@ -760,15 +907,22 @@
         // --- ACTIONS ---
         window.updateCount = async (uid, newVal, oldVal) => {
             if (isQuotaExceeded) { showQuotaError(); return; }
-            if (!checkRateLimit()) { renderTable(); return; }
+            
+            // Manual edit Rate Limit check
+            if (!checkRateLimit()) { 
+                renderTable(); // Revert UI
+                return; 
+            }
 
             const count = parseInt(newVal);
             if (isNaN(count) || count < 0) { alert("Số không hợp lệ"); renderTable(); return; }
             
             const recordKey = `${currentYear}_${currentMonth}`;
             const now = new Date().toLocaleString('vi-VN');
-            const currentRecord = masterData.records?.[recordKey]?.[uid] || {};
-            const newHistory = [{date: now, by: "API/User", old: oldVal, new: count}, ...(currentRecord.history || [])].slice(0, 10);
+            
+            const newHistoryItem = {date: now, by: "API/User", old: oldVal, new: count};
+            const currentHistory = masterData.records[recordKey]?.[uid]?.history || [];
+            const newHistory = [newHistoryItem, ...currentHistory].slice(0, 10);
 
             const updateData = {
                 records: { [recordKey]: { [uid]: { count: count, lastUpdated: now, history: newHistory } } }
@@ -809,6 +963,7 @@
 
         window.confirmAddUser = async () => {
             if (isQuotaExceeded) { showQuotaError(); return; }
+            // Rate limit check for adding user
             if (!checkRateLimit()) return;
 
             const id = document.getElementById('new-user-id').value.trim();
