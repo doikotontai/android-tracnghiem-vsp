@@ -356,7 +356,7 @@
             { id: "16703", name: "Nguyễn Văn Nam" },
             { id: "15567", name: "Nguyễn Thanh Hùng" },
             { id: "16702", name: "Đinh Đức Quân" },
-            { id: "XL1595", name: "Ngô Thành Nam" },
+            { id: "XL1595", name: "Ngô Thành Nam", apiId: "a8c27a79-13db-400a-be01-2e52744400f9" },
             { id: "14598", name: "Đào Đức Đông" },
             { id: "15805", name: "Nguyễn Văn Minh" },
             { id: "20396", name: "Phạm Thanh Nam" },
@@ -369,7 +369,7 @@
             { id: "XL248", name: "Nguyễn Mạnh Hùng", apiId: "0b20d0cf-4117-4358-8739-db6b23a0cf3e" },
             { id: "20492", name: "Trần Ngọc Thế" },
             { id: "XL291", name: "Vũ Quang Dương" },
-            { id: "XL354", name: "Nguyễn Văn Thủy" },
+            { id: "XL354", name: "Nguyễn Văn Thủy", apiId: "c3ca0c70-659c-4679-8c46-c701ae235375" },
             { id: "XL419", name: "Đinh Văn Thiện" },
             { id: "XL420", name: "Phạm Ngọc Điều" },
             { id: "XL431", name: "Phạm Văn Chinh" },
@@ -399,7 +399,7 @@
             { id: "XL2248", name: "Đinh Đức Vương" },
             { id: "XL2249", name: "Đoàn Ng.M.Trường" },
             { id: "XL1802", name: "Nguyễn Đăng Thành" },
-            { id: "XL2463", name: "Hoàng Văn Sơn" },
+            { id: "XL2463", name: "Hoàng Văn Sơn", apiId: "94c462d3-51d1-4d65-9023-667cdb187af2" },
             { id: "XL2443", name: "Trần Đức Ngân" },
             { id: "XL2465", name: "Đỗ Văn Nam" },
             { id: "XL2464", name: "Bùi Văn Vượng" },
@@ -413,6 +413,20 @@
             { id: "XL853", name: "Cù Chí Công" }
         ];
 
+        // SỐ LIỆU THÁNG 12/2024
+        const DECEMBER_2024_COUNTS = {
+            "13453": 0, "XL2467": 1, "16703": 1, "15567": 1, "16702": 1, "XL1595": 0,
+            "14598": 0, "15805": 1, "20396": 0, "XL1709": 3, "XL104": 1, "XL128": 3,
+            "XL204": 1, "XL239": 0, "XL246": 1, "XL248": 1, "20492": 0, "XL291": 1,
+            "XL354": 3, "XL419": 0, "XL420": 0, "XL431": 2, "XL432": 0, "XL451": 1,
+            "XL453": 1, "XL454": 1, "XL627": 1, "XL628": 2, "XL641": 1, "XL742": 0,
+            "XL780": 1, "XL781": 1, "XL831": 1, "21517": 1, "XL1123": 1, "XL2064": 0,
+            "XL1375": 4, "XL1665": 1, "XL1781": 2, "XL1124": 0, "XL2066": 1, "XL2067": 1,
+            "XL1546": 1, "XL2217": 1, "XL2247": 1, "XL2248": 1, "XL2249": 1, "XL1802": 0,
+            "XL2463": 0, "XL2443": 0, "XL2465": 1, "XL2464": 1, "XL2466": 1, "XL2491": 1,
+            "XL2492": 1, "XL2582": 1, "XL2618": 3, "XL260": 1, "XL2619": 1, "XL853": 1
+        };
+
         // State
         let masterData = { users: {}, records: {} };
         // FIX: Load from LocalStorage OR Default
@@ -420,6 +434,7 @@
         let currentMonth = parseInt(localStorage.getItem('stopcard_month')) || (new Date().getMonth() + 1);
         let currentUser = "Guest";
         let sortMode = 'id_asc';
+        let hasCheckedSeeding = false; // Flag to prevent seeding loop
         let isQuotaExceeded = false; 
 
         // --- RATE LIMIT STATE ---
@@ -479,9 +494,16 @@
                     statusEl.innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
                     statusEl.className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
 
-                    const unsubscribe = onSnapshot(DOC_REF, (snap) => {
+                    const unsubscribe = onSnapshot(DOC_REF, async (snap) => {
                         if (snap.exists()) {
                             masterData = snap.data();
+                            
+                            // Only check seeding once to prevent loops
+                            if (!hasCheckedSeeding) {
+                                await seedDefaultUsers();
+                                hasCheckedSeeding = true;
+                            }
+
                             if (!masterData.records) masterData.records = {};
                             renderTable();
                         } else {
@@ -497,6 +519,45 @@
                     });
                 }
             });
+        };
+
+        const seedDefaultUsers = async () => {
+            if (!masterData) return;
+
+            const batchData = {};
+            let hasChanges = false;
+            
+            // 1. Seed Users (Only if missing)
+            DEFAULT_PERSONNEL.forEach(u => {
+                const uid = "U_" + u.id.replace(/\s+/g, '');
+                if (!masterData.users || !masterData.users[uid]) {
+                    batchData[`users.${uid}`] = u;
+                    hasChanges = true;
+                }
+            });
+
+            // 2. Seed Dec 2024 Data (Only if missing)
+            const records = masterData.records || {};
+            const decRecords = records['2024_12'] || {};
+
+            Object.entries(DECEMBER_2024_COUNTS).forEach(([id, count]) => {
+                 const uid = "U_" + id.replace(/\s+/g, '');
+                 if (count !== undefined) {
+                     if (!decRecords[uid]) {
+                        batchData[`records.2024_12.${uid}`] = { 
+                            count: count, 
+                            history: [{date: 'System Init', by: 'System', old: 0, new: count}],
+                            lastUpdated: new Date().toLocaleString('vi-VN')
+                        };
+                        hasChanges = true;
+                     }
+                 }
+            });
+
+            if (hasChanges && Object.keys(batchData).length > 0) {
+                console.log("Seeding missing data...");
+                await updateDoc(DOC_REF, batchData);
+            }
         };
 
         // --- RENDER LOGIC ---
@@ -712,12 +773,18 @@
                     const dateStr = new Date(item.createdDate).toLocaleString('vi-VN');
                     const creator = (item.createBy || '').replace('@vietsov.com.vn', '');
                     
+                    // Abbreviate Department Name
+                    let deptName = item.departmentName || '';
+                    if (deptName === "Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí") {
+                        deptName = "XNXL";
+                    }
+
                     return `
                     <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                         <td>${index + 1}</td>
                         <td class="font-mono text-xs whitespace-nowrap">${dateStr}</td>
                         <td>${item.constructionName || ''}</td>
-                        <td>${item.departmentName || ''}</td>
+                        <td>${deptName}</td>
                         <td>${item.toChuc || ''}</td>
                         <td class="text-xs font-mono text-slate-500">${creator}</td>
                         <td><span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">${item.trangThai?.name || ''}</span></td>
