@@ -82,6 +82,275 @@
         .input-past-month { background-color: #fffbeb; color: #d97706; border-bottom: 1px dashed #fcd34d; }
         html.dark .input-past-month { background-color: rgba(120, 53, 15, 0.2); color: #fbbf24; border-bottom: 1px dashed #92400e; }
         .input-locked-quota { opacity: 0.5; background-color: #fee2e2; cursor: not-allowed; }
+
+        /* --- NEW COMPONENTS --- */
+
+        /* 1. New Checkbox Style (Uiverse.io by sssynk) */
+        .container-checkbox {
+          cursor: pointer;
+          font-size: 20px;
+          user-select: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .container-checkbox input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+          height: 0;
+          width: 0;
+        }
+
+        .container-checkbox .checkmark {
+          position: relative;
+          top: 0;
+          left: 0;
+          height: 1.3em;
+          width: 1.3em;
+          background-color: #ccc;
+          border-radius: 50%; /* Circle shape */
+          transition: .4s;
+        }
+
+        .container-checkbox .checkmark:hover {
+          box-shadow: inset 17px 17px 16px #b3b3b3,
+                    inset -17px -17px 16px #ffffff;
+        }
+
+        .container-checkbox input:checked ~ .checkmark {
+          box-shadow: none;
+          background-color: #2196F3;
+          transform: rotate(360deg);
+        }
+
+        .container-checkbox .checkmark:after {
+          content: "";
+          position: absolute;
+          display: none;
+        }
+
+        .container-checkbox input:checked ~ .checkmark:after {
+          display: block;
+        }
+
+        .container-checkbox .checkmark:after {
+          left: 0.45em;
+          top: 0.25em;
+          width: 0.40em;
+          height: 0.7em;
+          border: solid white;
+          border-width: 0 0.15em 0.15em 0;
+          transform: rotate(45deg);
+        }
+
+        /* 2. New Search Box Style (Uiverse.io by satyamchaudharydev) */
+        .search-form {
+          --timing: 0.3s;
+          --width-of-input: 200px;
+          --height-of-input: 40px;
+          --border-height: 2px;
+          --input-bg: #fff;
+          --border-color: #2f2ee9;
+          --border-radius: 30px;
+          --after-border-radius: 1px;
+          position: relative;
+          width: var(--width-of-input);
+          height: var(--height-of-input);
+          display: flex;
+          align-items: center;
+          padding-inline: 0.8em;
+          border-radius: var(--border-radius);
+          transition: border-radius 0.5s ease;
+          background: var(--input-bg,#fff);
+          border: 1px solid #e2e8f0; /* Default border */
+        }
+        html.dark .search-form { --input-bg: #1e293b; border-color: #334155; }
+        
+        .search-input {
+          font-size: 0.9rem;
+          background-color: transparent;
+          width: 100%;
+          height: 100%;
+          padding-inline: 0.5em;
+          padding-block: 0.7em;
+          border: none;
+          color: inherit;
+        }
+        .search-input:focus { outline: none; }
+        
+        .search-form:before {
+          content: "";
+          position: absolute;
+          background: var(--border-color);
+          transform: scaleX(0);
+          transform-origin: center;
+          width: 100%;
+          height: var(--border-height);
+          left: 0;
+          bottom: 0;
+          border-radius: 1px;
+          transition: transform var(--timing) ease;
+        }
+        
+        .search-form:focus-within { border-radius: var(--after-border-radius); }
+        .search-form:focus-within:before { transform: scale(1); }
+        
+        .search-reset {
+          border: none;
+          background: none;
+          opacity: 0;
+          visibility: hidden;
+          cursor: pointer;
+        }
+        .search-input:not(:placeholder-shown) ~ .search-reset {
+          opacity: 1;
+          visibility: visible;
+        }
+        .search-form svg { width: 17px; margin-top: 3px; color: #8b8ba7; }
+
+        /* 3. New API Button Style (Uiverse.io by RashadGhzi) */
+        .btn-api-new {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px; /* Adjusted size */
+          height: 40px;
+          background: linear-gradient(to right, #3b82f6, #22c55e);
+          color: white;
+          border-radius: 50%;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s;
+          border: none;
+          outline: none;
+          cursor: pointer;
+        }
+        .btn-api-new:hover svg {
+           transform: rotate(-45deg) scale(0.9);
+        }
+        .btn-api-new svg {
+           transition: all 0.3s ease-out;
+           width: 20px; /* Smaller icon inside */
+           height: 20px;
+        }
+
+        /* 4. New Download Button Style (Uiverse.io by satyamchaudharydev) */
+        .button-export {
+          --width: 100px;
+          --height: 40px; /* Match other inputs */
+          --tooltip-height: 35px;
+          --tooltip-width: 90px;
+          --gap-between-tooltip-to-button: 18px;
+          --button-color: #1e293b; /* Dark slate */
+          --tooltip-color: #fff;
+          width: var(--width);
+          height: var(--height);
+          background: var(--button-color);
+          position: relative;
+          text-align: center;
+          border-radius: 0.45em;
+          font-family: "Arial";
+          transition: background 0.3s;
+          border: none;
+          cursor: pointer;
+          display: flex; /* Flex to center */
+          align-items: center;
+          justify-content: center;
+        }
+        html.dark .button-export { --button-color: #334155; }
+
+        .button-export::before {
+          position: absolute;
+          content: attr(data-tooltip);
+          width: var(--tooltip-width);
+          height: var(--tooltip-height);
+          background-color: var(--tooltip-color);
+          font-size: 0.9rem;
+          color: #111;
+          border-radius: .25em;
+          line-height: var(--tooltip-height);
+          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px);
+          left: calc(50% - var(--tooltip-width) / 2);
+        }
+
+        .button-export::after {
+          position: absolute;
+          content: '';
+          width: 0;
+          height: 0;
+          border: 10px solid transparent;
+          border-top-color: var(--tooltip-color);
+          left: calc(50% - 10px);
+          bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
+        }
+
+        .button-export::after,.button-export::before {
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.5s;
+          pointer-events: none; /* Prevent blocking clicks */
+        }
+
+        .button-export .text {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          color: #fff;
+          font-weight: 600;
+          font-size: 14px;
+          transition: top 0.5s;
+        }
+
+        .button-export .icon {
+          color: #fff;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: top 0.5s;
+        }
+
+        .button-export .icon svg {
+          width: 24px;
+          height: 24px;
+        }
+
+        .button-export:hover {
+          background: #0f172a;
+        }
+        html.dark .button-export:hover { background: #475569; }
+
+        .button-export:hover .text {
+          top: -100%;
+        }
+
+        .button-export:hover .icon {
+          top: 0;
+        }
+
+        .button-export:hover:before,.button-export:hover:after {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .button-export:hover:after {
+          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px);
+        }
+
+        .button-export:hover:before {
+          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col no-select pb-20 md:pb-0 bg-slate-50 dark:bg-slate-950">
@@ -138,7 +407,7 @@
             <!-- Time & Search Group -->
             <div class="flex flex-col sm:flex-row items-stretch gap-3 w-full md:w-auto">
                 <!-- Date Picker -->
-                <div class="flex items-center justify-between gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div class="flex items-center justify-between gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm min-w-[160px]">
                     <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                     <div class="flex items-center gap-2 px-2">
                         <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
@@ -153,31 +422,48 @@
                     <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition text-slate-500"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                 </div>
                 
-                <!-- Search Box -->
-                <div class="relative flex-1 group min-w-[200px]">
-                    <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400 group-focus-within:text-blue-500"></i>
-                    <input type="text" id="search-input" placeholder="Tìm tên, mã số..." 
-                        class="w-full h-full min-h-[44px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm">
+                <!-- NEW SEARCH BOX -->
+                <div class="search-form flex-1">
+                    <button>
+                        <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
+                            <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                    <input class="search-input" id="search-input" placeholder="Tìm tên, mã số..." type="text">
+                    <button class="search-reset" onclick="document.getElementById('search-input').value = ''; renderTable();" type="reset">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    </button>
                 </div>
             </div>
 
             <!-- Action Buttons Group -->
-            <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full md:w-auto">
-                <!-- Filter Unsubmitted -->
-                <label class="col-span-2 sm:col-span-1 flex items-center justify-center sm:justify-start gap-2 cursor-pointer bg-white dark:bg-slate-800 px-4 py-2.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition select-none group h-[44px]" title="Lọc danh sách người chưa nộp">
-                    <div class="relative flex items-center">
-                        <input type="checkbox" id="filter-unsubmitted" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded bg-white checked:bg-red-500 checked:border-red-500 transition-all cursor-pointer" onchange="renderTable()">
-                        <i data-lucide="check" class="w-3.5 h-3.5 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-slate-600 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400">Chưa nộp</span>
-                </label>
+            <div class="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto justify-end">
+                
+                <!-- Sync All Button -->
+                <button onclick="window.syncAllApi()" class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800 transition active:scale-95 h-[44px] w-[44px] flex items-center justify-center group relative" title="Đồng bộ tất cả API">
+                    <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
+                </button>
 
+                <!-- NEW CHECKBOX (Toggle Style) -->
+                <div class="flex items-center gap-3 bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 h-[44px]">
+                    <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Chưa nộp</span>
+                    <label class="container-checkbox">
+                        <input type="checkbox" id="filter-unsubmitted" onchange="renderTable()">
+                        <div class="checkmark"></div>
+                    </label>
+                </div>
+
+                <!-- ADD Button -->
                 <button onclick="window.openAddUserModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/20 transition transform active:scale-95 h-[44px]">
                     <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Thêm</span>
                 </button>
                 
-                <button onclick="window.exportExcel()" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white py-2.5 px-4 rounded-xl text-sm font-semibold shadow-lg transition transform active:scale-95 h-[44px]" title="Xuất Báo Cáo">
-                    <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden sm:inline">Xuất</span>
+                <!-- NEW EXPORT BUTTON (Animated) -->
+                <button class="button-export" data-tooltip="Tải xuống" onclick="window.exportExcel()">
+                    <div class="text">Xuất</div>
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    </div>
                 </button>
             </div>
         </div>
@@ -364,13 +650,13 @@
         const DEFAULT_PERSONNEL = [
             { id: "13453", name: "Nguyễn Anh Đức" },
             { id: "XL2467", name: "Trần Thanh Quang", apiId: "39a7fc3b-c4f5-4e2a-88e0-42dc9d139d9a" },
-            { id: "16703", name: "Nguyễn Văn Nam" },
-            { id: "15567", name: "Nguyễn Thanh Hùng" },
-            { id: "16702", name: "Đinh Đức Quân" },
+            { id: "16703", name: "Nguyễn Văn Nam", apiId: "ad607def-7ff3-4a14-b3ac-dd97b67455e1" },
+            { id: "15567", name: "Nguyễn Thanh Hùng", apiId: "0dd04d60-3317-424d-bdee-bdf04444c21c" },
+            { id: "16702", name: "Đinh Đức Quân", apiId: "96b1e630-8857-4141-8c71-11e0c978d7aa" },
             { id: "XL1595", name: "Ngô Thành Nam", apiId: "a8c27a79-13db-400a-be01-2e52744400f9" },
             { id: "14598", name: "Đào Đức Đông", apiId: "c89c21bb-4a5f-4533-8349-08e9d8fc176f" },
             { id: "15805", name: "Nguyễn Văn Minh", apiId: "6c6dc89f-3c7a-4fde-9be3-e627ce5919a1" },
-            { id: "20396", name: "Phạm Thanh Nam" },
+            { id: "20396", name: "Phạm Thanh Nam", apiId: "104984c0-7a23-43a5-af33-a3ab1d9a0db7" },
             { id: "XL1709", name: "Ng. Viết Phong Lưu", apiId: "1e147ad6-31d9-4c16-a611-85a1caff06c1" }, // TEST USER
             { id: "XL104", name: "Trần Văn Đoàn" },
             { id: "XL128", name: "Bùi Văn Dũng", apiId: "c6ece3b6-91a9-41ea-8809-2acd4d56e7b2" },
@@ -395,7 +681,7 @@
             { id: "XL780", name: "Vũ Tuấn Anh" },
             { id: "XL781", name: "Nguyễn Đức Hảo", apiId: "39e15b50-8710-4070-b38f-6479aa84a2ca" },
             { id: "XL831", name: "Trần Hồng Thành" },
-            { id: "21517", name: "Nguyễn Ngọc An" },
+            { id: "21517", name: "Nguyễn Ngọc An", apiId: "167da8dd-ae1a-420d-b865-4b23fca1ca39" },
             { id: "XL1123", name: "Nguyễn Văn Lộc", apiId: "6c58b2aa-2b0b-400d-8113-dbc0fd1fe793" },
             { id: "XL2064", name: "Nguyễn Quốc Tài", apiId: "25489db6-948f-4504-a1fc-d692127958bf" },
             { id: "XL1375", name: "Nguyễn Anh Tiến", apiId: "0f30900c-83e6-4021-bc02-9bc86fdab368" },
@@ -446,7 +732,7 @@
         let currentUser = "Guest";
         let sortMode = 'id_asc';
         let isQuotaExceeded = false; 
-        let hasCheckedSeeding = false; // Fixed: Defined missing variable
+        let hasCheckedSeeding = false; 
 
         // --- RATE LIMIT STATE ---
         let writeTimestamps = [];
@@ -481,7 +767,6 @@
 
         function checkRateLimit() {
             const now = Date.now();
-            // Remove old timestamps outside the window
             writeTimestamps = writeTimestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
 
             if (writeTimestamps.length >= RATE_LIMIT_MAX) {
@@ -512,7 +797,6 @@
                         if (snap.exists()) {
                             masterData = snap.data();
                             
-                            // Only check seeding once to prevent loops
                             if (!hasCheckedSeeding) {
                                 await seedDefaultUsers();
                                 hasCheckedSeeding = true;
@@ -521,7 +805,6 @@
                             if (!masterData.records) masterData.records = {};
                             renderTable();
                         } else {
-                            // First time creation
                             await setDoc(DOC_REF, { users: {}, records: {} });
                         }
                     }, (error) => {
@@ -542,7 +825,6 @@
             const batchData = {};
             let hasChanges = false;
             
-            // 1. Seed Users (Only if missing)
             DEFAULT_PERSONNEL.forEach(u => {
                 const uid = "U_" + u.id.replace(/\s+/g, '');
                 if (!masterData.users || !masterData.users[uid]) {
@@ -551,7 +833,6 @@
                 }
             });
 
-            // 2. Seed Dec 2024 Data (Only if missing)
             const records = masterData.records || {};
             const decRecords = records['2024_12'] || {};
 
@@ -584,7 +865,6 @@
             ySelect.innerHTML = '';
             for(let i=currentYear-1; i<=currentYear+1; i++) ySelect.innerHTML += `<option value="${i}" ${i === currentYear ? 'selected' : ''}>${i}</option>`;
             
-            // FIX: Save selection to LocalStorage
             mSelect.onchange = (e) => { 
                 currentMonth = parseInt(e.target.value); 
                 localStorage.setItem('stopcard_month', currentMonth);
@@ -612,11 +892,8 @@
         }
 
         window.toggleSort = (type) => {
-            if (type === 'id') {
-                sortMode = sortMode === 'id_asc' ? 'id_desc' : 'id_asc';
-            } else if (type === 'count') {
-                sortMode = sortMode === 'count_desc' ? 'count_asc' : 'count_desc';
-            }
+            if (type === 'id') sortMode = sortMode === 'id_asc' ? 'id_desc' : 'id_asc';
+            else if (type === 'count') sortMode = sortMode === 'count_desc' ? 'count_asc' : 'count_desc';
             renderTable();
         }
 
@@ -628,11 +905,9 @@
             const recordKey = `${currentYear}_${currentMonth}`;
             const monthRecords = masterData.records[recordKey] || {};
             
-            // 1. Prepare Data
             let list = Object.entries(masterData.users).map(([uid, info]) => {
                 const record = monthRecords[uid] || { count: 0, history: [] };
                 
-                // Lookup API ID fallback
                 const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid) || 
                                    DEFAULT_PERSONNEL.find(p => p.id === info.id);
                 const apiId = info.apiId || staticUser?.apiId || null;
@@ -647,17 +922,14 @@
                 };
             });
 
-            // 2. Filter Search
             if (search) {
                 list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
             }
 
-            // 3. Filter Unsubmitted
             if (showUnsubmittedOnly) {
                 list = list.filter(u => u.count === 0);
             }
 
-            // 4. CALCULATE RANKS (Global context before sort)
             const rankedList = [...list].sort((a, b) => b.count - a.count);
             const rankMap = {};
             let currentRank = 1;
@@ -666,7 +938,6 @@
                 rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
             });
 
-            // 5. DISPLAY SORT
             const sortLabel = document.getElementById('sort-status');
             if (sortMode === 'id_asc') {
                 list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
@@ -682,7 +953,6 @@
                 sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
             }
 
-            // 6. Stats (Calculate based on ALL users, ignoring local filter for accuracy of "Total")
             const allUsersForStats = Object.values(masterData.users).map(u => {
                  const uid = "U_" + u.id.replace(/\s+/g, '');
                  return (monthRecords[uid]?.count || 0);
@@ -697,16 +967,10 @@
             document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
             document.getElementById('stat-unsubmitted').innerText = unsubmittedCount;
 
-
-            // 7. Render
             if (list.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
                 return;
             }
-
-            const now = new Date();
-            const viewDate = new Date(currentYear, currentMonth - 1);
-            const isPastMonth = viewDate < new Date(now.getFullYear(), now.getMonth());
 
             tbody.innerHTML = list.map((item, index) => {
                 const rank = rankMap[item.uid];
@@ -720,16 +984,16 @@
 
                 const hasHistory = item.history && item.history.length > 0;
                 const statusColor = item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
-                
-                // Row Highlight for Unsubmitted if viewing all
                 const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : '';
-                const inputClass = isQuotaExceeded ? 'input-locked-quota' : (isPastMonth ? 'input-past-month' : '');
+                const inputClass = isQuotaExceeded ? 'input-locked-quota' : '';
                 const readOnlyAttr = isQuotaExceeded ? 'readonly' : ''; 
                 
-                // API Button Condition
+                // New API Button Style (Smaller Icon)
                 const apiBtnHtml = item.apiId 
-                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-sync p-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition border border-blue-200 dark:border-blue-800" title="Đồng bộ API">
-                        <i data-lucide="cloud-download" class="w-5 h-5"></i>
+                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Đồng bộ API">
+                         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19.9381 13C19.979 12.6724 20 12.3387 20 12C20 7.58172 16.4183 4 12 4C9.49042 4 7.25264 5.15582 5.82397 6.96918C5.64251 7.19955 5.37894 7.36214 5.08861 7.4243C2.79373 7.91574 1 9.98069 1 12.5C1 15.2285 3.00397 17.4939 5.61394 17.9272C5.90805 17.976 6.13674 18.1883 6.20815 18.4802C6.34789 19.0515 6.6433 19.5756 7.05436 20M23 17L18 22M18 17V22M18 22L13 17" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                         </svg>
                        </button>`
                     : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block" title="Chưa có API ID"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
 
@@ -746,13 +1010,12 @@
                     <td class="p-4 text-center flex items-center justify-center gap-2">
                         <input type="number" min="0" 
                             id="input-${item.uid}"
-                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
+                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900"
                             value="${item.count}" 
-                            ${readOnlyAttr}
                             onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
                             onfocus="this.select()">
                     </td>
-                    <td class="p-4 text-center">${apiBtnHtml}</td>
+                    <td class="p-4 text-center align-middle">${apiBtnHtml}</td>
                     <td class="p-4 text-center">
                         <button onclick="window.viewHistory('${item.uid}')" class="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}">
                             <i data-lucide="history" class="w-5 h-5"></i>
@@ -764,16 +1027,16 @@
             
             lucide.createIcons();
         }
-        window.renderTable = renderTable;
+        window.renderTable = renderTable; // Export to global scope for HTML events
+
         document.getElementById('search-input').oninput = renderTable;
 
         // --- API FETCH FUNCTION ---
-        window.fetchApiData = async (uid, apiId, name) => {
+        window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
             if (isQuotaExceeded) { showQuotaError(); return; }
             if (!apiId) return alert("Chưa có cấu hình API ID cho nhân sự này.");
-            // REMOVED RATE LIMIT FOR API AS REQUESTED
 
-            showToast("Đang kết nối API công ty...", "info");
+            if (!isBulk) showToast("Đang kết nối API công ty...", "info");
             
             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
             let data = [];
@@ -803,7 +1066,7 @@
                         data = await response.json();
                     } catch (proxyError) {
                         console.error("API Error:", proxyError);
-                        alert(`Không thể lấy dữ liệu (Lỗi CORS/Mạng).\n\nVui lòng thử cài Extension 'Allow CORS' hoặc chạy trên mạng nội bộ.\n\nChi tiết: ${proxyError.message}`);
+                        if (!isBulk) alert(`Không thể lấy dữ liệu (Lỗi CORS/Mạng).\n\nVui lòng thử cài Extension 'Allow CORS' hoặc chạy trên mạng nội bộ.\n\nChi tiết: ${proxyError.message}`);
                         return;
                     }
                 }
@@ -821,12 +1084,10 @@
                     const statusName = item.trangThai?.name || "";
                     const s = statusName.toLowerCase();
                     
-                    // Exclude invalid statuses first
                     if (s.includes('chờ') || s.includes('chưa') || s.includes('nháp') || s.includes('hủy') || s.includes('không')) {
                         return false;
                     }
                     
-                    // Include valid statuses
                     if (s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý')) {
                         return true;
                     }
@@ -843,29 +1104,53 @@
                     
                     if (approvedCount !== oldVal) {
                         inputEl.value = approvedCount; 
-                        // Trigger Save with Rate Limit Check
-                        if (checkRateLimit()) {
+                        if (isBulk || checkRateLimit()) {
                             await window.updateCount(uid, approvedCount, oldVal);
-                            if (approvedCount === 0) {
+                            if (approvedCount === 0 && !isBulk) {
                                 showToast("Không có thẻ đạt/đã duyệt. Đã cập nhật về 0.", "warning");
                             }
                         }
                     } else {
-                        if (approvedCount === 0) {
-                            showToast("Dữ liệu khớp: 0 thẻ đạt/đã duyệt.", "info");
-                        } else {
-                            showToast(`Dữ liệu đã đồng bộ (${approvedCount} thẻ)`, "success");
+                        if (!isBulk) {
+                            if (approvedCount === 0) {
+                                showToast("Dữ liệu khớp: 0 thẻ đạt/đã duyệt.", "info");
+                            } else {
+                                showToast(`Dữ liệu đã đồng bộ (${approvedCount} thẻ)`, "success");
+                            }
                         }
                     }
                 }
 
-                renderApiReport(name, allMonthData);
+                if (!isBulk) renderApiReport(name, allMonthData);
 
             } catch (error) {
                 console.error("API Error:", error);
-                alert(`Lỗi không xác định: ${error.message}`);
+                if (!isBulk) alert(`Lỗi không xác định: ${error.message}`);
             }
         };
+        
+        window.syncAllApi = async () => {
+            if (isQuotaExceeded) { showQuotaError(); return; }
+            if (!confirm("Bạn có chắc muốn đồng bộ dữ liệu API cho TẤT CẢ nhân sự? Việc này có thể mất một chút thời gian.")) return;
+
+            const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => {
+                 const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid) || 
+                                   DEFAULT_PERSONNEL.find(p => p.id === info.id);
+                 const apiId = info.apiId || staticUser?.apiId;
+                 return { uid, apiId, name: info.name };
+            }).filter(u => u.apiId);
+
+            let count = 0;
+            showToast(`Bắt đầu đồng bộ ${usersWithApi.length} nhân sự...`, "info");
+            
+            for (const user of usersWithApi) {
+                await window.fetchApiData(user.uid, user.apiId, user.name, true); 
+                await new Promise(r => setTimeout(r, 1200)); 
+                count++;
+            }
+            
+            showToast(`Đã hoàn tất đồng bộ ${count} nhân sự!`, "success");
+        }
 
         function renderApiReport(name, data) {
             const modal = document.getElementById('api-report-modal');
@@ -906,54 +1191,44 @@
 
         // --- ACTIONS ---
         window.updateCount = async (uid, newVal, oldVal) => {
-            if (isQuotaExceeded) { showQuotaError(); return; }
-            
-            // Manual edit Rate Limit check
-            if (!checkRateLimit()) { 
-                renderTable(); // Revert UI
-                return; 
-            }
-
             const count = parseInt(newVal);
             if (isNaN(count) || count < 0) { alert("Số không hợp lệ"); renderTable(); return; }
-            
+            if (count === oldVal) return;
             const recordKey = `${currentYear}_${currentMonth}`;
             const now = new Date().toLocaleString('vi-VN');
             
-            const newHistoryItem = {date: now, by: "API/User", old: oldVal, new: count};
+            const newHistoryItem = {date: now, by: "User", old: oldVal, new: count};
             const currentHistory = masterData.records[recordKey]?.[uid]?.history || [];
-            const newHistory = [newHistoryItem, ...currentHistory].slice(0, 10);
+            const newHistory = [newHistoryItem, ...currentHistory].slice(0, 9);
 
-            const updateData = {
-                records: { [recordKey]: { [uid]: { count: count, lastUpdated: now, history: newHistory } } }
-            };
-            
-            if (!masterData.users || !masterData.users[uid]) {
-                const userInfo = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid);
-                if (userInfo) {
-                    if(!updateData.users) updateData.users = {};
-                    updateData.users[uid] = userInfo;
+            const updatePayload = {
+                records: {
+                    [recordKey]: {
+                        [uid]: {
+                            count: count,
+                            lastUpdated: now,
+                            history: newHistory
+                        }
+                    }
                 }
-            }
+            };
 
             try { 
-                await setDoc(DOC_REF, updateData, { merge: true }); 
+                await setDoc(DOC_REF, updatePayload, { merge: true }); 
                 showToast("Đã lưu dữ liệu!"); 
             } 
             catch (e) { 
-                console.error(e);
-                if (e.code === 'resource-exhausted') showQuotaError();
-                else { alert("Lỗi lưu: " + e.message); renderTable(); }
+                alert("Lỗi lưu dữ liệu: " + e.message); 
+                renderTable(); 
             }
         };
 
         window.openAddUserModal = () => {
-            if (isQuotaExceeded) { showQuotaError(); return; }
             document.getElementById('add-user-modal').classList.remove('hidden');
             document.getElementById('add-user-modal').classList.add('flex');
             document.getElementById('new-user-id').value = '';
             document.getElementById('new-user-name').value = '';
-            document.getElementById('new-user-api-id').value = '';
+            document.getElementById('new-user-id').focus();
         }
 
         window.closeAddUserModal = () => {
@@ -962,33 +1237,24 @@
         }
 
         window.confirmAddUser = async () => {
-            if (isQuotaExceeded) { showQuotaError(); return; }
-            // Rate limit check for adding user
-            if (!checkRateLimit()) return;
-
             const id = document.getElementById('new-user-id').value.trim();
             const name = document.getElementById('new-user-name').value.trim();
-            const apiId = document.getElementById('new-user-api-id').value.trim();
-            
             if (!id || !name) return alert("Vui lòng nhập đủ thông tin!");
             const uid = "U_" + id.replace(/\s+/g, '');
-            if (masterData.users && masterData.users[uid]) return alert("Nhân sự này đã tồn tại!");
-            
+            if (masterData.users[uid]) return alert("Nhân sự này đã tồn tại!");
             try {
-                await setDoc(DOC_REF, { users: { [uid]: { id, name, apiId } } }, { merge: true });
+                // Use setDoc merge for adding user too
+                await setDoc(DOC_REF, { users: { [uid]: { id, name } } }, { merge: true });
                 showToast("Thêm nhân sự thành công!");
                 window.closeAddUserModal();
-            } catch (e) { 
-                if (e.code === 'resource-exhausted') showQuotaError();
-                else alert("Lỗi: " + e.message); 
-            }
+            } catch (e) { alert("Lỗi: " + e.message); }
         }
 
         window.viewHistory = (uid) => {
             const recordKey = `${currentYear}_${currentMonth}`;
-            const record = masterData.records?.[recordKey]?.[uid];
+            const record = masterData.records[recordKey]?.[uid];
             const history = record?.history || [];
-            const userName = masterData.users?.[uid]?.name || "Unknown";
+            const userName = masterData.users[uid]?.name || "Unknown";
             const container = document.getElementById('history-content');
             if (history.length === 0) {
                 container.innerHTML = `<div class="text-center text-slate-400 py-4 italic text-sm">Chưa có lịch sử chỉnh sửa cho tháng này.</div>`;
@@ -1001,9 +1267,9 @@
         }
 
         window.exportExcel = () => {
-            const list = Object.entries(masterData.users || {}).map(([uid, info]) => {
+            const list = Object.entries(masterData.users).map(([uid, info]) => {
                 const recordKey = `${currentYear}_${currentMonth}`;
-                const record = masterData.records?.[recordKey]?.[uid] || { count: 0 };
+                const record = masterData.records[recordKey]?.[uid] || { count: 0 };
                 return { "Danh Số": info.id, "Họ và Tên": info.name, "Tháng": `${currentMonth}/${currentYear}`, "Số thẻ nộp": record.count };
             });
             if(list.length === 0) return alert("Không có dữ liệu để xuất");
@@ -1014,8 +1280,12 @@
         }
 
         const html = document.documentElement;
-        if(localStorage.getItem('theme') === 'dark') html.classList.add('dark');
-        else html.classList.remove('dark');
+        // Logic to default to LIGHT mode unless 'dark' is explicitly saved
+        if(localStorage.getItem('theme') === 'dark') {
+             html.classList.add('dark');
+        } else {
+             html.classList.remove('dark');
+        }
         
         document.getElementById('theme-toggle').onclick = () => {
             html.classList.toggle('dark');
