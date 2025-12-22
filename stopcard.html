@@ -202,7 +202,7 @@
         }
         .search-form svg { width: 17px; margin-top: 3px; color: #8b8ba7; }
 
-        /* 3. New API Button Style (Uiverse.io by RashadGhzi) */
+        /* 3. New API Button Style (Updated for Info Icon) */
         .btn-api-new {
           position: relative;
           display: inline-flex;
@@ -220,12 +220,12 @@
           cursor: pointer;
         }
         .btn-api-new:hover svg {
-           transform: rotate(-45deg) scale(0.9);
+           transform: scale(1.1);
         }
         .btn-api-new svg {
            transition: all 0.3s ease-out;
-           width: 20px; /* Smaller icon inside */
-           height: 20px;
+           width: 24px;
+           height: 24px;
         }
 
         /* 4. New Download Button Style (Uiverse.io by satyamchaudharydev) */
@@ -408,7 +408,7 @@
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col no-select pb-20 md:pb-0 bg-slate-50 dark:bg-slate-950">
+<body class="antialiased min-h-screen flex flex-col no-select bg-slate-50 dark:bg-slate-950">
 
     <!-- Toast Notification -->
     <div id="toast-container" class="fixed top-4 left-4 right-4 md:left-auto md:top-20 md:right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
@@ -568,8 +568,8 @@
                             <th class="p-4 font-bold w-14 text-center">#</th>
                             <th class="p-4 font-bold w-32 text-left cursor-pointer hover:text-blue-500" onclick="window.toggleSort('id')">Danh số <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
                             <th class="p-4 font-bold min-w-[180px]">Họ và Tên</th>
-                            <th class="p-4 font-bold w-32 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('count')">Số lượng <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
-                            <th class="p-4 font-bold w-20 text-center">API</th>
+                            <th class="p-4 font-bold w-32 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('count')">Số thẻ <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
+                            <th class="p-4 font-bold w-20 text-center">Chi tiết</th>
                             <th class="p-4 font-bold w-20 text-center">Log</th>
                         </tr>
                     </thead>
@@ -582,13 +582,25 @@
                 </table>
             </div>
             
-            <div class="p-3 border-t border-slate-200 dark:border-slate-700 text-xs text-center text-slate-400 flex flex-col sm:flex-row justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 gap-2">
-                <span>Dữ liệu được lưu trữ an toàn trên Cloud.</span>
-                <span id="sort-status" class="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded text-[10px] font-medium">Sắp xếp: Mặc định</span>
-            </div>
+            <!-- Hidden sort status to maintain JS functionality without displaying text -->
+            <span id="sort-status" class="hidden"></span>
         </div>
 
     </main>
+
+    <!-- Footer from index.html -->
+    <footer class="mt-auto border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm mb-2">&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
+            <div class="flex justify-center gap-4 text-xs text-slate-600 dark:text-slate-400">
+                <a href="#" class="hover:text-slate-800 dark:hover:text-slate-200">Điều khoản</a>
+                <span class="w-px h-4 bg-slate-300 dark:bg-slate-800"></span>
+                <a href="#" class="hover:text-slate-800 dark:hover:text-slate-200">Bảo mật</a>
+                <span class="w-px h-4 bg-slate-300 dark:bg-slate-800"></span>
+                <a href="mailto:luunvp.cd@vietsov.com.vn" class="hover:text-slate-800 dark:hover:text-slate-200">Liên hệ</a>
+            </div>
+        </div>
+    </footer>
 
     <!-- NEW LOADING MODAL -->
     <div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in flex-col gap-4">
@@ -1006,19 +1018,20 @@
                 rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
             });
 
+            // Updating hidden sort-status element to keep logic valid
             const sortLabel = document.getElementById('sort-status');
             if (sortMode === 'id_asc') {
                 list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
-                sortLabel.innerText = "Sắp xếp: Danh số (A-Z)";
+                if(sortLabel) sortLabel.innerText = "Sắp xếp: Danh số (A-Z)";
             } else if (sortMode === 'id_desc') {
                 list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
-                sortLabel.innerText = "Sắp xếp: Danh số (Z-A)";
+                if(sortLabel) sortLabel.innerText = "Sắp xếp: Danh số (Z-A)";
             } else if (sortMode === 'count_desc') {
                 list.sort((a, b) => b.count - a.count);
-                sortLabel.innerText = "Sắp xếp: Số lượng (Giảm dần)";
+                if(sortLabel) sortLabel.innerText = "Sắp xếp: Số lượng (Giảm dần)";
             } else if (sortMode === 'count_asc') {
                 list.sort((a, b) => a.count - b.count);
-                sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
+                if(sortLabel) sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
             }
 
             const allUsersForStats = Object.values(masterData.users).map(u => {
@@ -1056,11 +1069,13 @@
                 const inputClass = isQuotaExceeded ? 'input-locked-quota' : '';
                 const readOnlyAttr = isQuotaExceeded ? 'readonly' : ''; 
                 
-                // New API Button Style (Smaller Icon)
+                // New Info Icon Button Style
                 const apiBtnHtml = item.apiId 
-                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Đồng bộ API">
-                         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M19.9381 13C19.979 12.6724 20 12.3387 20 12C20 7.58172 16.4183 4 12 4C9.49042 4 7.25264 5.15582 5.82397 6.96918C5.64251 7.19955 5.37894 7.36214 5.08861 7.4243C2.79373 7.91574 1 9.98069 1 12.5C1 15.2285 3.00397 17.4939 5.61394 17.9272C5.90805 17.976 6.13674 18.1883 6.20815 18.4802C6.34789 19.0515 6.6433 19.5756 7.05436 20M23 17L18 22M18 17V22M18 22L13 17" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Xem chi tiết">
+                         <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <circle cx="12" cy="12" r="10"></circle>
+                             <line x1="12" y1="16" x2="12" y2="12"></line>
+                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
                          </svg>
                        </button>`
                     : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block" title="Chưa có API ID"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
@@ -1385,4 +1400,3 @@
     </script>
 </body>
 </html>
-
