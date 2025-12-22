@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -32,14 +32,6 @@
         .glass-panel { background: rgba(255, 255, 255, 0.9); border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         html.dark .glass-panel { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* Rank Badges */
-        .rank-badge { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 12px; margin: 0 auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); color: #8a6d3b; border: 2px solid #fff; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .rank-2 { background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%); color: #616161; border: 2px solid #fff; }
-        .rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); color: #fff; border: 2px solid #fff; }
-        .rank-normal { background: #f1f5f9; color: #94a3b8; }
-        html.dark .rank-normal { background: #1e293b; color: #475569; }
-        
         .editable-input:focus { outline: none; border-bottom: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
         /* Custom Scrollbar */
@@ -49,6 +41,14 @@
         html.dark ::-webkit-scrollbar-thumb { background: #475569; }
         
         .no-select { user-select: none; }
+        
+        /* Zebra Striping - High Contrast */
+        tr.data-row:nth-child(even) { background-color: #f1f5f9; } /* Slate-100 */
+        html.dark tr.data-row:nth-child(even) { background-color: rgba(30, 41, 59, 0.4); }
+        
+        /* Hover State - CSS Priority */
+        tr.data-row:hover { background-color: #e2e8f0 !important; } /* Slate-200 */
+        html.dark tr.data-row:hover { background-color: rgba(51, 65, 85, 0.8) !important; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col no-select">
@@ -62,7 +62,7 @@
                 </a>
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 flex items-center justify-center">
-                        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
                     </div>
                     <div>
                         <h1 class="font-bold text-slate-800 dark:text-white leading-tight">Quản Lý Stopcard</h1>
@@ -90,7 +90,7 @@
     <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
         
         <!-- Controls & Filters -->
-        <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-40">
+        <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-40 shadow-sm">
             <!-- Time Filter -->
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -118,77 +118,90 @@
             </div>
 
             <!-- Actions -->
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <!-- Removed Import Button as requested -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
                 
+                <!-- FILTER UNSUBMITTED -->
+                <label class="flex items-center gap-2 cursor-pointer bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg border border-red-100 dark:border-red-800 hover:bg-red-100 transition select-none group" title="Lọc danh sách người chưa nộp">
+                    <div class="relative flex items-center">
+                        <input type="checkbox" id="filter-unsubmitted" class="peer appearance-none w-4 h-4 border-2 border-red-400 rounded bg-white checked:bg-red-500 checked:border-red-500 transition-all cursor-pointer" onchange="renderTable()">
+                        <i data-lucide="check" class="w-3 h-3 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                    </div>
+                    <span class="text-sm font-bold text-red-600 dark:text-red-400 group-hover:text-red-700">Chưa nộp thẻ</span>
+                </label>
+
+                <div class="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
+
                 <button onclick="window.openAddUserModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-semibold shadow-lg shadow-blue-500/20 transition transform active:scale-95">
-                    <i data-lucide="user-plus" class="w-4 h-4"></i> Thêm Nhân Sự
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Thêm
                 </button>
                 
                 <button onclick="window.exportExcel()" class="flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white py-2 px-4 rounded-lg text-sm font-semibold shadow-lg transition transform active:scale-95" title="Xuất Báo Cáo">
-                    <i data-lucide="download" class="w-4 h-4"></i> Xuất Excel
+                    <i data-lucide="download" class="w-4 h-4"></i> Xuất
                 </button>
             </div>
         </div>
 
-        <!-- Stats Overview -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="glass-panel p-4 rounded-xl flex items-center gap-3">
-                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
+        <!-- NEW Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Stat 1: Tổng thẻ -->
+            <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-blue-500">
+                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full">
                     <i data-lucide="files" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">Tổng thẻ tháng</p>
-                    <h3 id="stat-total-cards" class="text-xl font-bold text-slate-800 dark:text-white">0</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Tổng thẻ tháng NDT</p>
+                    <h3 id="stat-total-cards" class="text-2xl font-extrabold text-slate-800 dark:text-white">0</h3>
                 </div>
             </div>
-            <div class="glass-panel p-4 rounded-xl flex items-center gap-3">
-                <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg">
+
+            <!-- Stat 2: Nhân sự đã nộp / Tổng -->
+            <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-green-500">
+                <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full">
                     <i data-lucide="users" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">Nhân sự nộp</p>
-                    <h3 id="stat-active-users" class="text-xl font-bold text-slate-800 dark:text-white">0</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Đã nộp / Tổng số</p>
+                    <h3 id="stat-submitted-ratio" class="text-2xl font-extrabold text-slate-800 dark:text-white">0 / 0</h3>
                 </div>
             </div>
-             <div class="glass-panel p-4 rounded-xl flex items-center gap-3 md:col-span-2 relative overflow-hidden group">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 rounded-lg z-10">
-                    <i data-lucide="trophy" class="w-6 h-6"></i>
+
+            <!-- Stat 3: Chưa nộp -->
+            <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-red-500">
+                <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full">
+                    <i data-lucide="alert-circle" class="w-6 h-6"></i>
                 </div>
-                <div class="z-10">
-                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">Người dẫn đầu</p>
-                    <h3 id="stat-top-user" class="text-lg font-bold text-slate-800 dark:text-white truncate max-w-[200px]">---</h3>
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Nhân sự chưa nộp</p>
+                    <h3 id="stat-unsubmitted" class="text-2xl font-extrabold text-red-600 dark:text-red-400">0</h3>
                 </div>
             </div>
         </div>
 
         <!-- Main Table -->
-        <div class="glass-panel rounded-xl overflow-hidden min-h-[400px] flex flex-col">
+        <div class="glass-panel rounded-xl overflow-hidden min-h-[400px] flex flex-col shadow-md">
             <div class="overflow-x-auto custom-scrollbar flex-grow">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 text-xs uppercase text-slate-500 dark:text-slate-400">
-                            <th class="p-4 font-bold w-16 text-center">Xếp hạng</th>
-                            <th class="p-4 font-bold w-24 cursor-pointer hover:text-blue-500" onclick="window.toggleSort('id')">Danh số <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
+                        <tr class="bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur border-b-2 border-slate-300 dark:border-slate-600 text-xs uppercase text-slate-600 dark:text-slate-400">
+                            <th class="p-4 font-bold w-16 text-center">STT</th>
+                            <th class="p-4 font-bold w-36 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('id')">Danh số <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
                             <th class="p-4 font-bold">Họ và Tên</th>
                             <th class="p-4 font-bold w-32 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('count')">Số thẻ nộp <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
                             <th class="p-4 font-bold w-20 text-center">Lịch sử</th>
-                            <th class="p-4 font-bold w-16 text-center">Xóa</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm">
+                    <tbody id="table-body" class="text-sm">
                         <!-- Rows injected by JS -->
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu...</td>
+                            <td colspan="5" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <!-- Pagination / Footer if needed -->
-            <div class="p-3 border-t border-slate-100 dark:border-slate-700 text-xs text-center text-slate-400 flex justify-between items-center">
+            <div class="p-3 border-t border-slate-200 dark:border-slate-700 text-xs text-center text-slate-400 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
                 <span>Dữ liệu được lưu trữ vĩnh viễn trên Cloud.</span>
-                <span id="sort-status" class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-[10px]">Sắp xếp: Mặc định</span>
+                <span id="sort-status" class="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded text-[10px] font-medium">Sắp xếp: Mặc định</span>
             </div>
         </div>
 
@@ -258,27 +271,25 @@
         const db = getFirestore(app);
         const DOC_REF = doc(db, 'app_data', 'stopcard_registry_live');
 
-        // DANH SÁCH NHÂN SỰ TOÀN BỘ (Tổng hợp từ tất cả các file Excel của bạn)
+        // DANH SÁCH NHÂN SỰ TOÀN BỘ
         const DEFAULT_PERSONNEL = [
             { id: "13453", name: "Nguyễn Anh Đức" },
+            { id: "XL2467", name: "Trần Thanh Quang" },
+            { id: "16703", name: "Nguyễn Văn Nam" },
             { id: "15567", name: "Nguyễn Thanh Hùng" },
             { id: "16702", name: "Đinh Đức Quân" },
-            { id: "16703", name: "Nguyễn Văn Nam" },
-            { id: "20396", name: "Phạm Thanh Nam" },
-            { id: "21517", name: "Nguyễn Ngọc An" },
-            { id: "XL1546", name: "Nguyễn Tuấn Anh" },
             { id: "XL1595", name: "Ngô Thành Nam" },
             { id: "14598", name: "Đào Đức Đông" },
             { id: "15805", name: "Nguyễn Văn Minh" },
-            { id: "20492", name: "Trần Ngọc Thế" },
-            { id: "XL1709", name: "Ng. Viết Phong Lưu" },
+            { id: "20396", name: "Phạm Thanh Nam" },
+            { id: "XL1709", name: "Ng. Viết Phong Lưu" },
             { id: "XL104", name: "Trần Văn Đoàn" },
             { id: "XL128", name: "Bùi Văn Dũng" },
             { id: "XL204", name: "Nguyễn Ngọc Long" },
             { id: "XL239", name: "Bùi Hồng Sáng" },
             { id: "XL246", name: "Võ Quốc Tuấn" },
             { id: "XL248", name: "Nguyễn Mạnh Hùng" },
-            { id: "XL260", name: "Vũ Xuân Chính" },
+            { id: "20492", name: "Trần Ngọc Thế" },
             { id: "XL291", name: "Vũ Quang Dương" },
             { id: "XL354", name: "Nguyễn Văn Thủy" },
             { id: "XL419", name: "Đinh Văn Thiện" },
@@ -295,13 +306,48 @@
             { id: "XL780", name: "Vũ Tuấn Anh" },
             { id: "XL781", name: "Nguyễn Đức Hảo" },
             { id: "XL831", name: "Trần Hồng Thành" },
-            { id: "XL853", name: "Cù Chí Công" },
+            { id: "21517", name: "Nguyễn Ngọc An" },
             { id: "XL1123", name: "Nguyễn Văn Lộc" },
-            { id: "XL1124", name: "Ngô Đức Thuận" },
+            { id: "XL2064", name: "Nguyễn Quốc Tài" },
             { id: "XL1375", name: "Nguyễn Anh Tiến" },
-            { id: "XL2467", name: "Trần Thanh Quang" },
-            { id: "19430", name: "Trần Thị Hương" }
+            { id: "XL1665", name: "Phạm Hồng Vũ" },
+            { id: "XL1781", name: "Lê Nguyễn Huy Hoàn" },
+            { id: "XL1124", name: "Ngô Đức Thuận" },
+            { id: "XL2066", name: "Nguyễn Quang Vinh" },
+            { id: "XL2067", name: "Trần Tiến Trường" },
+            { id: "XL1546", name: "Nguyễn Tuấn Anh" },
+            { id: "XL2217", name: "Ngô Lai Thích" },
+            { id: "XL2247", name: "Trần Quốc Thiện" },
+            { id: "XL2248", name: "Đinh Đức Vương" },
+            { id: "XL2249", name: "Đoàn Ng.M.Trường" },
+            { id: "XL1802", name: "Nguyễn Đăng Thành" },
+            { id: "XL2463", name: "Hoàng Văn Sơn" },
+            { id: "XL2443", name: "Trần Đức Ngân" },
+            { id: "XL2465", name: "Đỗ Văn Nam" },
+            { id: "XL2464", name: "Bùi Văn Vượng" },
+            { id: "XL2466", name: "Nguyễn Thanh Ngân" },
+            { id: "XL2491", name: "Nghiêm Trình Nhật" },
+            { id: "XL2492", name: "Phạm Văn Trinh" },
+            { id: "XL2582", name: "Nguyễn Hiền Đăng" },
+            { id: "XL2618", name: "Hoàng Trọng Linh" },
+            { id: "XL260", name: "Vũ Xuân Chính" },
+            { id: "XL2619", name: "Nguyễn Tuấn Đạt" },
+            { id: "XL853", name: "Cù Chí Công" }
         ];
+
+        // SỐ LIỆU THÁNG 12/2024
+        const DECEMBER_2024_COUNTS = {
+            "13453": 0, "XL2467": 1, "16703": 1, "15567": 1, "16702": 1, "XL1595": 0,
+            "14598": 0, "15805": 0, "20396": 0, "XL1709": 3, "XL104": 1, "XL128": 3,
+            "XL204": 1, "XL239": 0, "XL246": 1, "XL248": 0, "20492": 0, "XL291": 1,
+            "XL354": 3, "XL419": 0, "XL420": 0, "XL431": 2, "XL432": 0, "XL451": 1,
+            "XL453": 1, "XL454": 0, "XL627": 1, "XL628": 2, "XL641": 1, "XL742": 0,
+            "XL780": 1, "XL781": 1, "XL831": 1, "21517": 1, "XL1123": 1, "XL2064": 0,
+            "XL1375": 4, "XL1665": 1, "XL1781": 2, "XL1124": 0, "XL2066": 1, "XL2067": 1,
+            "XL1546": 0, "XL2217": 1, "XL2247": 1, "XL2248": 1, "XL2249": 1, "XL1802": 0,
+            "XL2463": 0, "XL2443": 0, "XL2465": 1, "XL2464": 1, "XL2466": 1, "XL2491": 1,
+            "XL2492": 1, "XL2582": 1, "XL2618": 3, "XL260": 0, "XL2619": 1, "XL853": 0
+        };
 
         // State
         let masterData = { users: {}, records: {} };
@@ -313,6 +359,15 @@
         // --- INIT ---
         const init = async () => {
             renderTimeSelectors();
+            
+            // THEME INIT: Default to Light
+            const html = document.documentElement;
+            if (localStorage.getItem('theme') === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+            
             const statusEl = document.getElementById('connection-status');
             try { await signInAnonymously(auth); } 
             catch (e) { console.error(e); statusEl.innerText = "Auth Error"; statusEl.classList.add("text-red-500"); }
@@ -326,17 +381,10 @@
                     onSnapshot(DOC_REF, async (snap) => {
                         if (snap.exists()) {
                             masterData = snap.data();
-                            
-                            // AUTO POPULATE IF EMPTY
-                            if (!masterData.users || Object.keys(masterData.users).length === 0) {
-                                console.log("Database empty. Seeding default personnel...");
-                                await seedDefaultUsers();
-                            } else {
-                                if (!masterData.records) masterData.records = {};
-                                renderTable();
-                            }
+                            await seedDefaultUsers();
+                            if (!masterData.records) masterData.records = {};
+                            renderTable();
                         } else {
-                            // Create new doc and seed
                             await setDoc(DOC_REF, { users: {}, records: {} });
                             await seedDefaultUsers();
                         }
@@ -346,20 +394,42 @@
         };
 
         const seedDefaultUsers = async () => {
+            if (!masterData) return;
+
             const batchData = {};
+            let hasChanges = false;
             
-            // 1. Seed Users
+            // 1. Seed Users (Only if missing)
             DEFAULT_PERSONNEL.forEach(u => {
                 const uid = "U_" + u.id.replace(/\s+/g, '');
-                batchData[`users.${uid}`] = u;
+                if (!masterData.users || !masterData.users[uid]) {
+                    batchData[`users.${uid}`] = u;
+                    hasChanges = true;
+                }
             });
-            
-            // 2. Seed Initial Records (Sample Data extracted from files for 2024)
-            // Note: In a real scenario with full file access, I would parse exact counts. 
-            // Here I am seeding the structure so you see the names immediately.
-            // You can edit the counts manually for history if needed.
-            
-            await updateDoc(DOC_REF, batchData);
+
+            // 2. Seed Dec 2024 Data (Only if missing)
+            const records = masterData.records || {};
+            const decRecords = records['2024_12'] || {};
+
+            Object.entries(DECEMBER_2024_COUNTS).forEach(([id, count]) => {
+                 const uid = "U_" + id.replace(/\s+/g, '');
+                 if (count !== undefined) {
+                     if (!decRecords[uid]) {
+                        batchData[`records.2024_12.${uid}`] = { 
+                            count: count, 
+                            history: [{date: 'System Init', by: 'System', old: 0, new: count}],
+                            lastUpdated: new Date().toLocaleString('vi-VN')
+                        };
+                        hasChanges = true;
+                     }
+                 }
+            });
+
+            if (hasChanges && Object.keys(batchData).length > 0) {
+                console.log("Seeding missing data...");
+                await updateDoc(DOC_REF, batchData);
+            }
         };
 
         // --- RENDER LOGIC ---
@@ -396,6 +466,8 @@
         function renderTable() {
             const tbody = document.getElementById('table-body');
             const search = document.getElementById('search-input').value.toLowerCase();
+            const showUnsubmittedOnly = document.getElementById('filter-unsubmitted').checked;
+
             const recordKey = `${currentYear}_${currentMonth}`;
             const monthRecords = masterData.records[recordKey] || {};
             
@@ -411,24 +483,26 @@
                 };
             });
 
-            // 2. Filter
+            // 2. Filter Search
             if (search) {
                 list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
             }
 
-            // 3. CALCULATE RANKS
+            // 3. Filter Unsubmitted
+            if (showUnsubmittedOnly) {
+                list = list.filter(u => u.count === 0);
+            }
+
+            // 4. CALCULATE RANKS (Global context before sort)
             const rankedList = [...list].sort((a, b) => b.count - a.count);
             const rankMap = {};
             let currentRank = 1;
             rankedList.forEach((item, index) => {
-                if (index > 0 && item.count < rankedList[index-1].count) {
-                    currentRank = index + 1;
-                }
+                if (index > 0 && item.count < rankedList[index-1].count) currentRank = index + 1;
                 rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
             });
-            const topUser = rankedList.length > 0 && rankedList[0].count > 0 ? `${rankedList[0].name} (${rankedList[0].count})` : "---";
 
-            // 4. DISPLAY SORT
+            // 5. DISPLAY SORT
             const sortLabel = document.getElementById('sort-status');
             if (sortMode === 'id_asc') {
                 list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
@@ -444,54 +518,66 @@
                 sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
             }
 
-            // 5. Stats
-            const totalCards = list.reduce((sum, item) => sum + parseInt(item.count || 0), 0);
-            const activeUsers = list.filter(i => i.count > 0).length;
+            // 6. Stats (Calculate based on ALL users, ignoring local filter for accuracy of "Total")
+            const allUsersForStats = Object.values(masterData.users).map(u => {
+                 const uid = "U_" + u.id.replace(/\s+/g, '');
+                 return (monthRecords[uid]?.count || 0);
+            });
+            
+            const totalCards = allUsersForStats.reduce((sum, c) => sum + parseInt(c), 0);
+            const totalPersonnel = allUsersForStats.length;
+            const submittedCount = allUsersForStats.filter(c => c > 0).length;
+            const unsubmittedCount = totalPersonnel - submittedCount;
 
             document.getElementById('stat-total-cards').innerText = totalCards;
-            document.getElementById('stat-active-users').innerText = activeUsers;
-            document.getElementById('stat-top-user').innerText = topUser;
+            document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
+            document.getElementById('stat-unsubmitted').innerText = unsubmittedCount;
 
-            // 6. Render
+
+            // 7. Render
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Đang tải danh sách nhân sự mặc định...</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = list.map((item, index) => {
                 const rank = rankMap[item.uid];
-                let rankHtml = `<span class="text-slate-400">#${index + 1}</span>`; 
+                let badgeHtml = '';
                 
-                if (rank === 1) rankHtml = `<div class="rank-badge rank-1">1</div>`;
-                else if (rank === 2) rankHtml = `<div class="rank-badge rank-2">2</div>`;
-                else if (rank === 3) rankHtml = `<div class="rank-badge rank-3">3</div>`;
-                else if (item.count > 0) rankHtml = `<div class="rank-badge rank-normal">${rank}</div>`; 
+                if (item.count > 0) {
+                    if (rank === 1) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300 text-[10px] shadow-sm" title="Top 1">🥇</span>`;
+                    else if (rank === 2) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[10px] shadow-sm" title="Top 2">🥈</span>`;
+                    else if (rank === 3) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-orange-100 text-orange-800 border border-orange-300 text-[10px] shadow-sm" title="Top 3">🥉</span>`;
+                }
 
                 const hasHistory = item.history && item.history.length > 0;
                 const statusColor = item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
+                
+                // Row Highlight for Unsubmitted if viewing all
+                const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : '';
 
                 return `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800 group">
-                    <td class="p-3 text-center">
-                        ${rankHtml}
+                <tr class="data-row transition-colors duration-150 border-b border-slate-300 dark:border-slate-700 group ${rowClass}">
+                    <td class="p-4 text-center font-bold text-slate-400 text-sm">
+                        ${index + 1}
                     </td>
-                    <td class="p-3 font-mono text-slate-600 dark:text-slate-400 text-xs font-bold">${item.id}</td>
-                    <td class="p-3 font-medium text-slate-800 dark:text-slate-200">${item.name}</td>
-                    <td class="p-3 text-center">
+                    <td class="p-4 text-center font-mono text-blue-700 dark:text-blue-400 text-lg font-bold tracking-wide shadow-sm">${item.id}</td>
+                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-sm">
+                        <div class="flex items-center">
+                            ${item.name}
+                            ${badgeHtml}
+                        </div>
+                    </td>
+                    <td class="p-4 text-center">
                         <input type="number" min="0" 
                             class="editable-input w-16 text-center font-bold bg-transparent rounded py-1 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900"
                             value="${item.count}" 
                             onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
                             onfocus="this.select()">
                     </td>
-                    <td class="p-3 text-center">
+                    <td class="p-4 text-center">
                         <button onclick="window.viewHistory('${item.uid}')" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}">
                             <i data-lucide="history" class="w-4 h-4"></i>
-                        </button>
-                    </td>
-                    <td class="p-3 text-center">
-                         <button onclick="window.deleteUser('${item.uid}')" class="p-2 rounded-full hover:bg-red-100 text-slate-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </td>
                 </tr>
@@ -544,12 +630,6 @@
             } catch (e) { alert("Lỗi: " + e.message); }
         }
 
-        window.deleteUser = async (uid) => {
-            if(confirm("XÓA nhân sự này? (Dữ liệu lịch sử sẽ ẩn đi)")){
-                await updateDoc(DOC_REF, { [`users.${uid}`]: deleteField() });
-            }
-        }
-
         window.viewHistory = (uid) => {
             const recordKey = `${currentYear}_${currentMonth}`;
             const record = masterData.records[recordKey]?.[uid];
@@ -580,7 +660,13 @@
         }
 
         const html = document.documentElement;
-        if(localStorage.getItem('theme') === 'light') html.classList.remove('dark');
+        // Logic to default to LIGHT mode unless 'dark' is explicitly saved
+        if(localStorage.getItem('theme') === 'dark') {
+             html.classList.add('dark');
+        } else {
+             html.classList.remove('dark');
+        }
+        
         document.getElementById('theme-toggle').onclick = () => {
             html.classList.toggle('dark');
             localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
