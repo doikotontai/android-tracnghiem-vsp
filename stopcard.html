@@ -54,9 +54,9 @@
         
         /* Mobile Touch Optimization */
         @media (max-width: 768px) {
-            input, select, button { font-size: 16px !important; } /* Prevent iOS zoom */
+            input, select, button { font-size: 16px !important; }
             .glass-panel { padding: 1rem; }
-            th, td { padding: 1rem 0.5rem; } /* Larger touch targets */
+            th, td { padding: 1rem 0.5rem; }
         }
 
         /* Smooth scrolling for table */
@@ -70,14 +70,6 @@
         html.dark .report-table th { background: #1e293b; color: #e2e8f0; border-color: #334155; }
         html.dark .report-table td { border-color: #334155; color: #cbd5e1; }
         
-        /* API Button Pulse */
-        @keyframes pulse-blue {
-            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        }
-        .btn-api-sync:active { animation: pulse-blue 1s infinite; }
-
         /* Locked States */
         .input-past-month { background-color: #fffbeb; color: #d97706; border-bottom: 1px dashed #fcd34d; }
         html.dark .input-past-month { background-color: rgba(120, 53, 15, 0.2); color: #fbbf24; border-bottom: 1px dashed #92400e; }
@@ -351,6 +343,69 @@
         .button-export:hover:before {
           bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
         }
+
+        /* 5. NEW LOADER (Uiverse.io by Ratinax) */
+        .loader {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          cursor: not-allowed;
+          scale: 0.7;
+        }
+
+        .central {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          width: 10em;
+          height: 10em;
+          border-radius: 50%;
+          box-shadow: 0.5em 1em 1em blueviolet,
+            -0.5em 0.5em 1em blue,
+            0.5em -0.5em 1em purple,
+            -0.5em -0.5em 1em cyan;
+        }
+
+        .external-shadow {
+          width: 10em;
+          height: 10em;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          box-shadow: 0.5em 0.5em 3em blueviolet,
+            -0.5em 0.5em 3em blue,
+            0.5em -0.5em 3em purple,
+            -0.5em -0.5em 3em cyan;
+          z-index: 999;
+          animation: rotate 3s linear infinite;
+          background-color: #212121;
+        }
+
+        .intern {
+          position: absolute;
+          color: white;
+          z-index: 9999;
+          font-family: 'Inter', sans-serif;
+          font-weight: bold;
+          font-size: 1.5rem;
+        }
+
+        /* Dynamic percent using JS variable */
+        .intern::before {
+          content: var(--loading-percent, "0%"); 
+          /* Remove animation to control via JS */
+          /* animation: percent 2s ease-in-out infinite; */
+        }
+
+        @keyframes rotate {
+          0% { transform: rotate(0deg); }
+          50% { transform: rotate(180deg); }
+          100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col no-select pb-20 md:pb-0 bg-slate-50 dark:bg-slate-950">
@@ -439,7 +494,7 @@
             <!-- Action Buttons Group -->
             <div class="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto justify-end">
                 
-                <!-- Sync All Button -->
+                <!-- Sync All Button (Added next to Checkbox) -->
                 <button onclick="window.syncAllApi()" class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800 transition active:scale-95 h-[44px] w-[44px] flex items-center justify-center group relative" title="Đồng bộ tất cả API">
                     <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
                 </button>
@@ -534,6 +589,18 @@
         </div>
 
     </main>
+
+    <!-- NEW LOADING MODAL -->
+    <div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in flex-col gap-4">
+        <div class="loader">
+            <div class="external-shadow">
+                <div class="central">
+                </div>
+            </div>
+            <div class="intern" id="loading-text"></div>
+        </div>
+        <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
+    </div>
 
     <!-- MODAL: ADD USER -->
     <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
@@ -767,6 +834,7 @@
 
         function checkRateLimit() {
             const now = Date.now();
+            // Remove old timestamps outside the window
             writeTimestamps = writeTimestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
 
             if (writeTimestamps.length >= RATE_LIMIT_MAX) {
@@ -1010,8 +1078,9 @@
                     <td class="p-4 text-center flex items-center justify-center gap-2">
                         <input type="number" min="0" 
                             id="input-${item.uid}"
-                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900"
+                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
                             value="${item.count}" 
+                            ${readOnlyAttr}
                             onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
                             onfocus="this.select()">
                     </td>
@@ -1141,13 +1210,31 @@
             }).filter(u => u.apiId);
 
             let count = 0;
-            showToast(`Bắt đầu đồng bộ ${usersWithApi.length} nhân sự...`, "info");
+            const total = usersWithApi.length;
+            const modal = document.getElementById('loading-modal');
+            const percentText = document.querySelector('.intern');
             
-            for (const user of usersWithApi) {
+            // Show Loading Modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            for (let i = 0; i < total; i++) {
+                const user = usersWithApi[i];
                 await window.fetchApiData(user.uid, user.apiId, user.name, true); 
+                
+                // Update percent
+                const percent = Math.round(((i + 1) / total) * 100);
+                percentText.style.setProperty('--loading-percent', `"${percent}%"`);
+                
+                // Delay 1.2s
                 await new Promise(r => setTimeout(r, 1200)); 
                 count++;
             }
+            
+            // Hide Loading Modal
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            percentText.style.setProperty('--loading-percent', '"0%"'); // Reset
             
             showToast(`Đã hoàn tất đồng bộ ${count} nhân sự!`, "success");
         }
@@ -1197,6 +1284,8 @@
             const recordKey = `${currentYear}_${currentMonth}`;
             const now = new Date().toLocaleString('vi-VN');
             
+            // Note: In real app, we should fetch current history first to append.
+            // Here we just overwrite history with new entry at top for simplicity in setDoc merge
             const newHistoryItem = {date: now, by: "User", old: oldVal, new: count};
             const currentHistory = masterData.records[recordKey]?.[uid]?.history || [];
             const newHistory = [newHistoryItem, ...currentHistory].slice(0, 9);
