@@ -48,19 +48,31 @@
         
         .no-select { user-select: none; }
         
-        /* Zebra Striping - High Contrast */
+        /* Zebra Striping */
         tr.data-row:nth-child(even) { background-color: #f1f5f9; } 
         html.dark tr.data-row:nth-child(even) { background-color: rgba(30, 41, 59, 0.4); }
-        
         tr.data-row:hover { background-color: #e2e8f0 !important; }
         html.dark tr.data-row:hover { background-color: rgba(51, 65, 85, 0.8) !important; }
 
-        /* Past Month Warning Style */
+        /* Report Modal Styles */
+        .report-safe { color: #16a34a; font-weight: bold; text-align: center; }
+        .report-unsafe { color: #dc2626; font-weight: bold; text-align: center; }
+        .report-table th { background: #e2e8f0; color: #0f172a; position: sticky; top: 0; z-index: 10; font-size: 12px; padding: 8px; text-transform: uppercase; }
+        .report-table td { padding: 8px; font-size: 13px; border: 1px solid #e2e8f0; vertical-align: top; }
+        html.dark .report-table th { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+        html.dark .report-table td { border-color: #334155; color: #cbd5e1; }
+        
+        /* API Button Pulse */
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .btn-api-sync:active { animation: pulse-blue 1s infinite; }
+
+        /* Locked States */
         .input-past-month { background-color: #fffbeb; color: #d97706; border-bottom: 1px dashed #fcd34d; }
         html.dark .input-past-month { background-color: rgba(120, 53, 15, 0.2); color: #fbbf24; border-bottom: 1px dashed #92400e; }
-        .input-past-month:focus { background-color: #fff; border-bottom: 2px solid #d97706; }
-
-        /* Quota Locked State */
         .input-locked-quota { opacity: 0.5; background-color: #fee2e2; cursor: not-allowed; }
     </style>
 </head>
@@ -143,8 +155,6 @@
 
             <!-- Actions -->
             <div class="flex items-center gap-3 w-full md:w-auto">
-                
-                <!-- FILTER UNSUBMITTED -->
                 <label class="flex items-center gap-2 cursor-pointer bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg border border-red-100 dark:border-red-800 hover:bg-red-100 transition select-none group" title="Lọc danh sách người chưa nộp">
                     <div class="relative flex items-center">
                         <input type="checkbox" id="filter-unsubmitted" class="peer appearance-none w-4 h-4 border-2 border-red-400 rounded bg-white checked:bg-red-500 checked:border-red-500 transition-all cursor-pointer" onchange="renderTable()">
@@ -167,7 +177,6 @@
 
         <!-- NEW Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Stat 1: Tổng thẻ -->
             <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-blue-500">
                 <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full">
                     <i data-lucide="files" class="w-6 h-6"></i>
@@ -178,7 +187,6 @@
                 </div>
             </div>
 
-            <!-- Stat 2: Nhân sự đã nộp / Tổng -->
             <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-green-500">
                 <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full">
                     <i data-lucide="users" class="w-6 h-6"></i>
@@ -189,7 +197,6 @@
                 </div>
             </div>
 
-            <!-- Stat 3: Chưa nộp -->
             <div class="glass-panel p-4 rounded-xl flex items-center gap-4 border-l-4 border-red-500">
                 <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full">
                     <i data-lucide="alert-circle" class="w-6 h-6"></i>
@@ -210,14 +217,15 @@
                             <th class="p-4 font-bold w-16 text-center">STT</th>
                             <th class="p-4 font-bold w-36 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('id')">Danh số <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
                             <th class="p-4 font-bold">Họ và Tên</th>
-                            <th class="p-4 font-bold w-32 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('count')">Số thẻ nộp <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
+                            <th class="p-4 font-bold w-40 text-center">Số thẻ nộp</th>
+                            <th class="p-4 font-bold w-20 text-center">API</th>
                             <th class="p-4 font-bold w-20 text-center">Lịch sử</th>
                         </tr>
                     </thead>
                     <tbody id="table-body" class="text-sm">
                         <!-- Rows injected by JS -->
                         <tr>
-                            <td colspan="5" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu...</td>
+                            <td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -235,12 +243,10 @@
     <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-6 relative">
             <button onclick="window.closeAddUserModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
-            
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg"><i data-lucide="user-plus" class="w-5 h-5"></i></div>
                 Thêm Nhân Sự
             </h3>
-            
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Danh số (ID)</label>
@@ -250,8 +256,11 @@
                     <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Họ và Tên</label>
                     <input type="text" id="new-user-name" class="w-full p-3 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: Nguyễn Văn A">
                 </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">API User ID (Nếu có)</label>
+                    <input type="text" id="new-user-api-id" class="w-full p-3 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: 1e147ad6-31d9...">
+                </div>
             </div>
-
             <div class="flex gap-3 mt-8">
                 <button onclick="window.closeAddUserModal()" class="flex-1 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition">Hủy</button>
                 <button onclick="window.confirmAddUser()" class="flex-1 py-2.5 text-xs font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">Lưu</button>
@@ -268,9 +277,54 @@
                 </h3>
                 <button onclick="document.getElementById('history-modal').classList.add('hidden'); document.getElementById('history-modal').classList.remove('flex')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            
             <div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
                 <!-- Logs injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: API REPORT -->
+    <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
+                        <i data-lucide="cloud-download" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Báo Cáo API StopCard</h3>
+                        <p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition text-slate-500">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-auto custom-scrollbar p-0 bg-white dark:bg-slate-900">
+                <table class="w-full text-left border-collapse report-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ngày tạo</th>
+                            <th>Công trình</th>
+                            <th>Đơn vị</th>
+                            <th>Tổ chức</th>
+                            <th>Người tạo</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="api-report-body">
+                        <!-- Content via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Footer -->
+            <div class="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-right">
+                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-lg font-bold text-sm transition">Đóng</button>
             </div>
         </div>
     </div>
@@ -295,7 +349,7 @@
         const db = getFirestore(app);
         const DOC_REF = doc(db, 'app_data', 'stopcard_registry_live');
 
-        // DANH SÁCH NHÂN SỰ TOÀN BỘ (Dữ liệu tĩnh)
+        // DANH SÁCH NHÂN SỰ TOÀN BỘ (Đã cập nhật apiId cho XL1709)
         const DEFAULT_PERSONNEL = [
             { id: "13453", name: "Nguyễn Anh Đức" },
             { id: "XL2467", name: "Trần Thanh Quang" },
@@ -306,13 +360,13 @@
             { id: "14598", name: "Đào Đức Đông" },
             { id: "15805", name: "Nguyễn Văn Minh" },
             { id: "20396", name: "Phạm Thanh Nam" },
-            { id: "XL1709", name: "Ng. Viết Phong Lưu" },
+            { id: "XL1709", name: "Ng. Viết Phong Lưu", apiId: "1e147ad6-31d9-4c16-a611-85a1caff06c1" }, // TEST USER
             { id: "XL104", name: "Trần Văn Đoàn" },
             { id: "XL128", name: "Bùi Văn Dũng" },
             { id: "XL204", name: "Nguyễn Ngọc Long" },
             { id: "XL239", name: "Bùi Hồng Sáng" },
             { id: "XL246", name: "Võ Quốc Tuấn" },
-            { id: "XL248", name: "Nguyễn Mạnh Hùng" },
+            { id: "XL248", name: "Nguyễn Mạnh Hùng", apiId: "0b20d0cf-4117-4358-8739-db6b23a0cf3e" },
             { id: "20492", name: "Trần Ngọc Thế" },
             { id: "XL291", name: "Vũ Quang Dương" },
             { id: "XL354", name: "Nguyễn Văn Thủy" },
@@ -366,12 +420,12 @@
         let currentMonth = parseInt(localStorage.getItem('stopcard_month')) || (new Date().getMonth() + 1);
         let currentUser = "Guest";
         let sortMode = 'id_asc';
-        let isQuotaExceeded = false; // Flag to stop retries
+        let isQuotaExceeded = false; 
 
         // --- RATE LIMIT STATE ---
         let writeTimestamps = [];
-        const RATE_LIMIT_WINDOW = 5000; // 5 seconds
-        const RATE_LIMIT_MAX = 5;       // Max 5 writes per 5 seconds
+        const RATE_LIMIT_WINDOW = 5000;
+        const RATE_LIMIT_MAX = 5;
 
         // --- TOAST NOTIFICATION ---
         function showToast(message, type = 'success') {
@@ -394,23 +448,18 @@
         }
 
         function showQuotaError() {
-            if (isQuotaExceeded) return; // Prevent multiple triggers
+            if (isQuotaExceeded) return;
             isQuotaExceeded = true;
             document.getElementById('quota-error-banner').classList.remove('hidden');
-            document.getElementById('connection-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Offline (Quota)';
-            document.getElementById('connection-status').className = "hidden md:flex items-center px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-xs font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800";
         }
 
         function checkRateLimit() {
             const now = Date.now();
-            // Remove old timestamps outside the window
             writeTimestamps = writeTimestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
-
             if (writeTimestamps.length >= RATE_LIMIT_MAX) {
                 showToast(`Thao tác quá nhanh! Vui lòng đợi vài giây.`, 'error');
                 return false;
             }
-
             writeTimestamps.push(now);
             return true;
         }
@@ -418,26 +467,18 @@
         // --- INIT ---
         const init = async () => {
             renderTimeSelectors();
-            
-            // THEME INIT
             const html = document.documentElement;
-            if (localStorage.getItem('theme') === 'dark') {
-                html.classList.add('dark');
-            } else {
-                html.classList.remove('dark');
-            }
+            if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
+            else html.classList.remove('dark');
             
-            const statusEl = document.getElementById('connection-status');
-            try { await signInAnonymously(auth); } 
-            catch (e) { console.error(e); statusEl.innerText = "Auth Error"; statusEl.classList.add("text-red-500"); }
+            try { await signInAnonymously(auth); } catch (e) { console.error(e); }
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    currentUser = "User_" + user.uid.slice(0, 4);
+                    const statusEl = document.getElementById('connection-status');
                     statusEl.innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
                     statusEl.className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
 
-                    // ERROR HANDLING WRAPPER
                     const unsubscribe = onSnapshot(DOC_REF, (snap) => {
                         if (snap.exists()) {
                             masterData = snap.data();
@@ -450,7 +491,7 @@
                         console.error("Firestore Error:", error);
                         if (error.code === 'resource-exhausted') {
                             showQuotaError();
-                            renderTable(); // Re-render to lock inputs visually
+                            renderTable();
                             unsubscribe();
                         }
                     });
@@ -484,21 +525,16 @@
             if (m > 12) { m = 1; currentYear++; }
             if (m < 1) { m = 12; currentYear--; }
             currentMonth = m;
-            
             localStorage.setItem('stopcard_month', currentMonth);
             localStorage.setItem('stopcard_year', currentYear);
-            
             document.getElementById('filter-month').value = m;
             document.getElementById('filter-year').value = currentYear;
             renderTable();
         }
 
         window.toggleSort = (type) => {
-            if (type === 'id') {
-                sortMode = sortMode === 'id_asc' ? 'id_desc' : 'id_asc';
-            } else if (type === 'count') {
-                sortMode = sortMode === 'count_desc' ? 'count_asc' : 'count_desc';
-            }
+            if (type === 'id') sortMode = sortMode === 'id_asc' ? 'id_desc' : 'id_asc';
+            else if (type === 'count') sortMode = sortMode === 'count_desc' ? 'count_asc' : 'count_desc';
             renderTable();
         }
 
@@ -510,119 +546,86 @@
             const recordKey = `${currentYear}_${currentMonth}`;
             const monthRecords = masterData.records?.[recordKey] || {};
             
-            // Fallback to static DEFAULT_PERSONNEL if masterData.users is empty
             let sourceUsers = Object.keys(masterData.users || {}).length > 0 
                 ? Object.entries(masterData.users).map(([k,v]) => ({uid: k, ...v}))
                 : DEFAULT_PERSONNEL.map(p => ({uid: "U_" + p.id.replace(/\s+/g, ''), ...p}));
 
-            // Check if viewing past month
-            const now = new Date();
-            const viewDate = new Date(currentYear, currentMonth - 1);
-            const isPastMonth = viewDate < new Date(now.getFullYear(), now.getMonth());
-
-            // 1. Prepare Data
             let list = sourceUsers.map(user => {
                 const record = monthRecords[user.uid] || { count: 0, history: [] };
+                
+                // --- FIX: Lookup API ID from DEFAULT_PERSONNEL if missing in DB ---
+                const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === user.uid) || 
+                                   DEFAULT_PERSONNEL.find(p => p.id === user.id);
+                const apiId = user.apiId || staticUser?.apiId || null;
+                // ------------------------------------------------------------------
+
                 return {
                     uid: user.uid,
                     id: user.id || "---",
                     name: user.name || "Không tên",
                     count: record.count || 0,
-                    history: record.history || []
+                    history: record.history || [],
+                    apiId: apiId // Use the looked-up ID
                 };
             });
 
-            // 2. Filter Search
-            if (search) {
-                list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
-            }
+            if (search) list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
+            if (showUnsubmittedOnly) list = list.filter(u => u.count === 0);
 
-            // 3. Filter Unsubmitted
-            if (showUnsubmittedOnly) {
-                list = list.filter(u => u.count === 0);
-            }
+            // Sort logic...
+            if (sortMode === 'id_asc') list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
+            else if (sortMode === 'id_desc') list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
+            else if (sortMode === 'count_desc') list.sort((a, b) => b.count - a.count);
+            else if (sortMode === 'count_asc') list.sort((a, b) => a.count - b.count);
 
-            // 4. CALCULATE RANKS
-            const rankedList = [...list].sort((a, b) => b.count - a.count);
-            const rankMap = {};
-            let currentRank = 1;
-            rankedList.forEach((item, index) => {
-                if (index > 0 && item.count < rankedList[index-1].count) currentRank = index + 1;
-                rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
-            });
-
-            // 5. DISPLAY SORT
-            const sortLabel = document.getElementById('sort-status');
-            if (sortMode === 'id_asc') {
-                list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
-                sortLabel.innerText = "Sắp xếp: Danh số (A-Z)";
-            } else if (sortMode === 'id_desc') {
-                list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
-                sortLabel.innerText = "Sắp xếp: Danh số (Z-A)";
-            } else if (sortMode === 'count_desc') {
-                list.sort((a, b) => b.count - a.count);
-                sortLabel.innerText = "Sắp xếp: Số lượng (Giảm dần)";
-            } else if (sortMode === 'count_asc') {
-                list.sort((a, b) => a.count - b.count);
-                sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
-            }
-
-            // 6. Stats
+            // Stats...
             const allUsersForStats = sourceUsers.map(u => (monthRecords[u.uid]?.count || 0));
             const totalCards = allUsersForStats.reduce((sum, c) => sum + parseInt(c), 0);
             const totalPersonnel = allUsersForStats.length;
             const submittedCount = allUsersForStats.filter(c => c > 0).length;
             const unsubmittedCount = totalPersonnel - submittedCount;
-
             document.getElementById('stat-total-cards').innerText = totalCards;
             document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
             document.getElementById('stat-unsubmitted').innerText = unsubmittedCount;
 
-            // 7. Render
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = list.map((item, index) => {
-                const rank = rankMap[item.uid];
-                let badgeHtml = '';
-                
-                if (item.count > 0) {
-                    if (rank === 1) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300 text-[10px] shadow-sm" title="Top 1">🥇</span>`;
-                    else if (rank === 2) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[10px] shadow-sm" title="Top 2">🥈</span>`;
-                    else if (rank === 3) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-orange-100 text-orange-800 border border-orange-300 text-[10px] shadow-sm" title="Top 3">🥉</span>`;
-                }
+            const now = new Date();
+            const viewDate = new Date(currentYear, currentMonth - 1);
+            const isPastMonth = viewDate < new Date(now.getFullYear(), now.getMonth());
 
+            tbody.innerHTML = list.map((item, index) => {
                 const hasHistory = item.history && item.history.length > 0;
                 const statusColor = item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
                 const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : '';
-                
-                // Past month style
                 const inputClass = isQuotaExceeded ? 'input-locked-quota' : (isPastMonth ? 'input-past-month' : '');
-                const titleAttr = isPastMonth ? 'title="Bạn đang sửa dữ liệu tháng cũ"' : (isQuotaExceeded ? 'title="Hết Quota, không thể sửa"' : '');
                 const readOnlyAttr = isQuotaExceeded ? 'readonly' : ''; 
+                
+                // API Button Condition
+                const apiBtnHtml = item.apiId 
+                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-sync p-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition border border-blue-200 dark:border-blue-800" title="Đồng bộ API">
+                        <i data-lucide="cloud-download" class="w-4 h-4"></i>
+                       </button>`
+                    : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed" title="Chưa có API ID"><i data-lucide="cloud-off" class="w-4 h-4"></i></span>`;
 
                 return `
                 <tr class="data-row transition-colors duration-150 border-b border-slate-300 dark:border-slate-700 group ${rowClass}">
-                    <td class="p-4 text-center font-bold text-slate-400 text-sm">
-                        ${index + 1}
-                    </td>
+                    <td class="p-4 text-center font-bold text-slate-400 text-sm">${index + 1}</td>
                     <td class="p-4 text-center font-mono text-blue-700 dark:text-blue-400 text-lg font-bold tracking-wide shadow-sm">${item.id}</td>
-                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-sm">
-                        <div class="flex items-center">
-                            ${item.name}
-                            ${badgeHtml}
-                        </div>
-                    </td>
-                    <td class="p-4 text-center">
+                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-sm">${item.name}</td>
+                    <td class="p-4 text-center flex items-center justify-center gap-2">
                         <input type="number" min="0" 
-                            class="editable-input w-16 text-center font-bold bg-transparent rounded py-1 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
+                            id="input-${item.uid}"
+                            class="editable-input w-20 text-center font-bold bg-transparent rounded py-1 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
                             value="${item.count}" 
-                            ${titleAttr} ${readOnlyAttr}
+                            ${readOnlyAttr}
                             onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
                             onfocus="this.select()">
                     </td>
+                    <td class="p-4 text-center">${apiBtnHtml}</td>
                     <td class="p-4 text-center">
                         <button onclick="window.viewHistory('${item.uid}')" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}">
                             <i data-lucide="history" class="w-4 h-4"></i>
@@ -635,49 +638,113 @@
             lucide.createIcons();
         }
         window.renderTable = renderTable;
-
         document.getElementById('search-input').oninput = renderTable;
+
+        // --- API FETCH FUNCTION ---
+        window.fetchApiData = async (uid, apiId, name) => {
+            if (isQuotaExceeded) { showQuotaError(); return; }
+            if (!apiId) return alert("Chưa có cấu hình API ID cho nhân sự này.");
+
+            showToast("Đang kết nối API công ty...", "info");
+            
+            try {
+                // Construct API URL
+                const apiUrl = `https://corsproxy.io/?https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
+                
+                // Fetch Data
+                // NOTE: This might be blocked by CORS if not allowed by server.
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+                const data = await response.json();
+                
+                // Filter data by Month/Year if needed? 
+                // For now, let's assume we count ALL cards like the PS1 script implies total count.
+                // Or user wants count for THIS MONTH?
+                // The PS1 script gets ALL cards. Let's filter for current month/year to be accurate for "Monthly Report"
+                // Parse date format: "2024-12-20T..." or similar from API
+                
+                const filteredData = data.filter(item => {
+                    const d = new Date(item.createdDate); // API returns 'createdDate'
+                    return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
+                });
+                
+                const count = filteredData.length;
+                
+                // Update UI Input directly first for feedback
+                const inputEl = document.getElementById(`input-${uid}`);
+                if(inputEl) {
+                    const oldVal = parseInt(inputEl.value) || 0;
+                    inputEl.value = count;
+                    // Trigger Save
+                    if (count !== oldVal) {
+                        await window.updateCount(uid, count, oldVal);
+                    } else {
+                        showToast("Dữ liệu đã đồng bộ (Không thay đổi)", "success");
+                    }
+                }
+
+                // Show Report Modal
+                renderApiReport(name, filteredData);
+
+            } catch (error) {
+                console.error("API Error:", error);
+                alert(`Lỗi kết nối API: ${error.message}\n\nLưu ý: Nếu bạn đang chạy trên web cá nhân, trình duyệt có thể chặn kết nối đến server công ty (CORS).`);
+            }
+        };
+
+        function renderApiReport(name, data) {
+            const modal = document.getElementById('api-report-modal');
+            const tbody = document.getElementById('api-report-body');
+            document.getElementById('api-report-subtitle').innerText = `${name} - Tháng ${currentMonth}/${currentYear} - Tổng: ${data.length} thẻ`;
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ nào trong tháng này trên hệ thống.</td></tr>`;
+            } else {
+                // Sort by date desc
+                data.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+                
+                tbody.innerHTML = data.map((item, index) => {
+                    const dateStr = new Date(item.createdDate).toLocaleString('vi-VN');
+                    const creator = (item.createBy || '').replace('@vietsov.com.vn', '');
+                    
+                    return `
+                    <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td>${index + 1}</td>
+                        <td class="font-mono text-xs whitespace-nowrap">${dateStr}</td>
+                        <td>${item.constructionName || ''}</td>
+                        <td>${item.departmentName || ''}</td>
+                        <td>${item.toChuc || ''}</td>
+                        <td class="text-xs font-mono text-slate-500">${creator}</td>
+                        <td><span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">${item.trangThai?.name || ''}</span></td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
 
         // --- ACTIONS ---
         window.updateCount = async (uid, newVal, oldVal) => {
-            if (isQuotaExceeded) {
-                showQuotaError();
-                return;
-            }
-
-            // RATE LIMIT CHECK
-            if (!checkRateLimit()) {
-                // Revert UI to old value because we are cancelling the action
-                // renderTable will fetch from masterData which hasn't changed yet
-                renderTable(); 
-                return;
-            }
+            if (isQuotaExceeded) { showQuotaError(); return; }
+            if (!checkRateLimit()) { renderTable(); return; }
 
             const count = parseInt(newVal);
             if (isNaN(count) || count < 0) { alert("Số không hợp lệ"); renderTable(); return; }
-            if (count === oldVal) return;
             
             const recordKey = `${currentYear}_${currentMonth}`;
             const now = new Date().toLocaleString('vi-VN');
-            
             const currentRecord = masterData.records?.[recordKey]?.[uid] || {};
-            const currentHistory = currentRecord.history || [];
-            
-            const newHistory = [
-                {date: now, by: "User", old: oldVal, new: count},
-                ...currentHistory
-            ].slice(0, 10);
+            const newHistory = [{date: now, by: "API/User", old: oldVal, new: count}, ...(currentRecord.history || [])].slice(0, 10);
 
             const updateData = {
-                records: {
-                    [recordKey]: {
-                        [uid]: {
-                            count: count,
-                            lastUpdated: now,
-                            history: newHistory
-                        }
-                    }
-                }
+                records: { [recordKey]: { [uid]: { count: count, lastUpdated: now, history: newHistory } } }
             };
             
             if (!masterData.users || !masterData.users[uid]) {
@@ -694,12 +761,8 @@
             } 
             catch (e) { 
                 console.error(e);
-                if (e.code === 'resource-exhausted') {
-                    showQuotaError();
-                } else {
-                    alert("Lỗi lưu dữ liệu: " + e.message); 
-                    renderTable(); 
-                }
+                if (e.code === 'resource-exhausted') showQuotaError();
+                else { alert("Lỗi lưu: " + e.message); renderTable(); }
             }
         };
 
@@ -709,7 +772,7 @@
             document.getElementById('add-user-modal').classList.add('flex');
             document.getElementById('new-user-id').value = '';
             document.getElementById('new-user-name').value = '';
-            document.getElementById('new-user-id').focus();
+            document.getElementById('new-user-api-id').value = '';
         }
 
         window.closeAddUserModal = () => {
@@ -719,17 +782,18 @@
 
         window.confirmAddUser = async () => {
             if (isQuotaExceeded) { showQuotaError(); return; }
-            
-            // RATE LIMIT CHECK
             if (!checkRateLimit()) return;
 
             const id = document.getElementById('new-user-id').value.trim();
             const name = document.getElementById('new-user-name').value.trim();
+            const apiId = document.getElementById('new-user-api-id').value.trim();
+            
             if (!id || !name) return alert("Vui lòng nhập đủ thông tin!");
             const uid = "U_" + id.replace(/\s+/g, '');
             if (masterData.users && masterData.users[uid]) return alert("Nhân sự này đã tồn tại!");
+            
             try {
-                await setDoc(DOC_REF, { users: { [uid]: { id, name } } }, { merge: true });
+                await setDoc(DOC_REF, { users: { [uid]: { id, name, apiId } } }, { merge: true });
                 showToast("Thêm nhân sự thành công!");
                 window.closeAddUserModal();
             } catch (e) { 
@@ -768,11 +832,8 @@
         }
 
         const html = document.documentElement;
-        if(localStorage.getItem('theme') === 'dark') {
-             html.classList.add('dark');
-        } else {
-             html.classList.remove('dark');
-        }
+        if(localStorage.getItem('theme') === 'dark') html.classList.add('dark');
+        else html.classList.remove('dark');
         
         document.getElementById('theme-toggle').onclick = () => {
             html.classList.toggle('dark');
