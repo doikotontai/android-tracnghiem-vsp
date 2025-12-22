@@ -586,6 +586,7 @@
             
             lucide.createIcons();
         }
+        window.renderTable = renderTable; // Export to global scope for HTML events
 
         document.getElementById('search-input').oninput = renderTable;
 
