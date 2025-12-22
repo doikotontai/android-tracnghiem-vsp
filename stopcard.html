@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - HSE Dashboard</title>
+    <title>Quản Lý Stopcard - Optimized</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -71,13 +71,11 @@
         html.dark .report-table td { border-color: #334155; color: #cbd5e1; }
         
         /* Locked States */
-        .input-past-month { background-color: #fffbeb; color: #d97706; border-bottom: 1px dashed #fcd34d; }
-        html.dark .input-past-month { background-color: rgba(120, 53, 15, 0.2); color: #fbbf24; border-bottom: 1px dashed #92400e; }
         .input-locked-quota { opacity: 0.5; background-color: #fee2e2; cursor: not-allowed; }
 
         /* --- NEW COMPONENTS --- */
 
-        /* 1. New Checkbox Style (Uiverse.io by sssynk) */
+        /* 1. New Checkbox Style */
         .container-checkbox {
           cursor: pointer;
           font-size: 20px;
@@ -137,7 +135,7 @@
           transform: rotate(45deg);
         }
 
-        /* 2. New Search Box Style (Uiverse.io by satyamchaudharydev) */
+        /* 2. New Search Box Style */
         .search-form {
           --timing: 0.3s;
           --width-of-input: 200px;
@@ -228,7 +226,7 @@
            height: 24px;
         }
 
-        /* 4. New Download Button Style (Uiverse.io by satyamchaudharydev) */
+        /* 4. New Download Button Style */
         .button-export {
           --width: 100px;
           --height: 40px; /* Match other inputs */
@@ -344,7 +342,7 @@
           bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
         }
 
-        /* 5. NEW LOADER (Uiverse.io by Ratinax) */
+        /* 5. NEW LOADER */
         .loader {
           display: flex;
           justify-content: center;
@@ -397,8 +395,6 @@
         /* Dynamic percent using JS variable */
         .intern::before {
           content: var(--loading-percent, "0%"); 
-          /* Remove animation to control via JS */
-          /* animation: percent 2s ease-in-out infinite; */
         }
 
         @keyframes rotate {
@@ -494,12 +490,12 @@
             <!-- Action Buttons Group -->
             <div class="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto justify-end">
                 
-                <!-- Sync All Button (Added next to Checkbox) -->
+                <!-- Sync All Button -->
                 <button onclick="window.syncAllApi()" class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800 transition active:scale-95 h-[44px] w-[44px] flex items-center justify-center group relative" title="Đồng bộ tất cả API">
                     <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
                 </button>
 
-                <!-- NEW CHECKBOX (Toggle Style) -->
+                <!-- NEW CHECKBOX -->
                 <div class="flex items-center gap-3 bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 h-[44px]">
                     <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Chưa nộp</span>
                     <label class="container-checkbox">
@@ -513,7 +509,7 @@
                     <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Thêm</span>
                 </button>
                 
-                <!-- NEW EXPORT BUTTON (Animated) -->
+                <!-- NEW EXPORT BUTTON -->
                 <button class="button-export" data-tooltip="Tải xuống" onclick="window.exportExcel()">
                     <div class="text">Xuất</div>
                     <div class="icon">
@@ -582,13 +578,12 @@
                 </table>
             </div>
             
-            <!-- Hidden sort status to maintain JS functionality without displaying text -->
             <span id="sort-status" class="hidden"></span>
         </div>
 
     </main>
 
-    <!-- Footer from index.html -->
+    <!-- Footer -->
     <footer class="mt-auto border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm py-8">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <p class="text-slate-500 text-sm mb-2">&copy; 2025 BCH-XNXL. Developed by Phong Luu.</p>
@@ -602,19 +597,12 @@
         </div>
     </footer>
 
-    <!-- NEW LOADING MODAL -->
+    <!-- MODALS (Hidden by default) -->
     <div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in flex-col gap-4">
-        <div class="loader">
-            <div class="external-shadow">
-                <div class="central">
-                </div>
-            </div>
-            <div class="intern" id="loading-text"></div>
-        </div>
+        <div class="loader"><div class="external-shadow"><div class="central"></div></div><div class="intern" id="loading-text"></div></div>
         <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
     </div>
 
-    <!-- MODAL: ADD USER -->
     <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-6 relative">
             <button onclick="window.closeAddUserModal()" class="absolute top-4 right-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -631,10 +619,6 @@
                     <label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">Họ và Tên</label>
                     <input type="text" id="new-user-name" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: Nguyễn Văn A">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">API User ID (Nếu có)</label>
-                    <input type="text" id="new-user-api-id" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: 1e147ad6...">
-                </div>
             </div>
             <div class="flex gap-3 mt-8">
                 <button onclick="window.closeAddUserModal()" class="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">Hủy</button>
@@ -643,7 +627,6 @@
         </div>
     </div>
 
-    <!-- MODAL: HISTORY -->
     <div id="history-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 p-6 relative flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-6">
@@ -653,52 +636,25 @@
                 </h3>
                 <button onclick="document.getElementById('history-modal').classList.add('hidden'); document.getElementById('history-modal').classList.remove('flex')" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
-                <!-- Logs injected here -->
-            </div>
+            <div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2"></div>
         </div>
     </div>
 
-    <!-- MODAL: API REPORT -->
     <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-none md:rounded-2xl shadow-2xl w-full md:max-w-6xl h-full md:h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
-            <!-- Header -->
             <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
-                        <i data-lucide="cloud-download" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3>
-                        <p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p>
-                    </div>
+                    <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="cloud-download" class="w-6 h-6"></i></div>
+                    <div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3><p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p></div>
                 </div>
-                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition text-slate-500">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
+                <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition text-slate-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            
-            <!-- Content -->
             <div class="flex-1 overflow-auto custom-scrollbar p-0 bg-white dark:bg-slate-950">
                 <table class="w-full text-left border-collapse report-table">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Ngày tạo</th>
-                            <th>Công trình</th>
-                            <th>Đơn vị</th>
-                            <th>Tổ chức</th>
-                            <th>Người tạo</th>
-                            <th>Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody id="api-report-body">
-                        <!-- Content via JS -->
-                    </tbody>
+                    <thead><tr><th>STT</th><th>Ngày tạo</th><th>Công trình</th><th>Đơn vị</th><th>Tổ chức</th><th>Người tạo</th><th>Trạng thái</th></tr></thead>
+                    <tbody id="api-report-body"></tbody>
                 </table>
             </div>
-            
-            <!-- Footer -->
             <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-center md:text-right pb-8 md:pb-4">
                 <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="w-full md:w-auto px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-bold text-sm transition">Đóng</button>
             </div>
@@ -709,7 +665,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, deleteField, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
@@ -723,9 +679,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const DOC_REF = doc(db, 'app_data', 'stopcard_registry_live');
-
-        // DANH SÁCH NHÂN SỰ TOÀN BỘ (Đã cập nhật apiId cho XL1709)
+        
+        // --- NEW PATH CONSTANTS ---
+        const CONFIG_USERS_DOC = doc(db, 'stopcard_config', 'users_list');
+        
+        // DEFAULT USER LIST (Will be seeded if config is empty)
         const DEFAULT_PERSONNEL = [
             { id: "13453", name: "Nguyễn Anh Đức" },
             { id: "XL2467", name: "Trần Thanh Quang", apiId: "39a7fc3b-c4f5-4e2a-88e0-42dc9d139d9a" },
@@ -736,7 +694,7 @@
             { id: "14598", name: "Đào Đức Đông", apiId: "c89c21bb-4a5f-4533-8349-08e9d8fc176f" },
             { id: "15805", name: "Nguyễn Văn Minh", apiId: "6c6dc89f-3c7a-4fde-9be3-e627ce5919a1" },
             { id: "20396", name: "Phạm Thanh Nam", apiId: "104984c0-7a23-43a5-af33-a3ab1d9a0db7" },
-            { id: "XL1709", name: "Ng. Viết Phong Lưu", apiId: "1e147ad6-31d9-4c16-a611-85a1caff06c1" }, // TEST USER
+            { id: "XL1709", name: "Ng. Viết Phong Lưu", apiId: "1e147ad6-31d9-4c16-a611-85a1caff06c1" }, 
             { id: "XL104", name: "Trần Văn Đoàn" },
             { id: "XL128", name: "Bùi Văn Dũng", apiId: "c6ece3b6-91a9-41ea-8809-2acd4d56e7b2" },
             { id: "XL204", name: "Nguyễn Ngọc Long", apiId: "80929c87-8b3e-4e5f-bfea-25549e2363a9" },
@@ -789,36 +747,23 @@
             { id: "XL853", name: "Cù Chí Công", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
         ];
 
-        // SỐ LIỆU THÁNG 12/2024
-        const DECEMBER_2024_COUNTS = {
-            "13453": 0, "XL2467": 1, "16703": 1, "15567": 1, "16702": 1, "XL1595": 0,
-            "14598": 0, "15805": 1, "20396": 0, "XL1709": 3, "XL104": 1, "XL128": 3,
-            "XL204": 1, "XL239": 0, "XL246": 1, "XL248": 1, "20492": 0, "XL291": 1,
-            "XL354": 3, "XL419": 0, "XL420": 0, "XL431": 2, "XL432": 0, "XL451": 1,
-            "XL453": 1, "XL454": 1, "XL627": 1, "XL628": 2, "XL641": 1, "XL742": 0,
-            "XL780": 1, "XL781": 1, "XL831": 1, "21517": 1, "XL1123": 1, "XL2064": 0,
-            "XL1375": 4, "XL1665": 1, "XL1781": 2, "XL1124": 0, "XL2066": 1, "XL2067": 1,
-            "XL1546": 1, "XL2217": 1, "XL2247": 1, "XL2248": 1, "XL2249": 1, "XL1802": 0,
-            "XL2463": 0, "XL2443": 0, "XL2465": 1, "XL2464": 1, "XL2466": 1, "XL2491": 1,
-            "XL2492": 1, "XL2582": 1, "XL2618": 3, "XL260": 1, "XL2619": 1, "XL853": 1
-        };
-
         // State
         let masterData = { users: {}, records: {} };
-        // FIX: Load from LocalStorage OR Default
+        let currentMonthData = {}; // Stores only CURRENT MONTH records
         let currentYear = parseInt(localStorage.getItem('stopcard_year')) || new Date().getFullYear();
         let currentMonth = parseInt(localStorage.getItem('stopcard_month')) || (new Date().getMonth() + 1);
-        let currentUser = "Guest";
         let sortMode = 'id_asc';
         let isQuotaExceeded = false; 
         let hasCheckedSeeding = false; 
+        
+        let unsubscribeMonth = null; // To handle switching listeners
 
-        // --- RATE LIMIT STATE ---
+        // --- RATE LIMIT ---
         let writeTimestamps = [];
         const RATE_LIMIT_WINDOW = 5000;
         const RATE_LIMIT_MAX = 5;
 
-        // --- TOAST NOTIFICATION ---
+        // --- TOAST ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -846,14 +791,11 @@
 
         function checkRateLimit() {
             const now = Date.now();
-            // Remove old timestamps outside the window
             writeTimestamps = writeTimestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
-
             if (writeTimestamps.length >= RATE_LIMIT_MAX) {
-                showToast(`Thao tác quá nhanh (Max ${RATE_LIMIT_MAX} lần/5s). Vui lòng đợi.`, 'error');
+                showToast(`Thao tác quá nhanh (Max ${RATE_LIMIT_MAX} lần/5s).`, 'error');
                 return false;
             }
-
             writeTimestamps.push(now);
             return true;
         }
@@ -872,68 +814,59 @@
                     const statusEl = document.getElementById('connection-status');
                     statusEl.innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
                     statusEl.className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
-
-                    const unsubscribe = onSnapshot(DOC_REF, async (snap) => {
+                    
+                    // 1. Listen to USERS (Persistent)
+                    onSnapshot(CONFIG_USERS_DOC, async (snap) => {
                         if (snap.exists()) {
-                            masterData = snap.data();
-                            
-                            if (!hasCheckedSeeding) {
+                            masterData.users = snap.data().users || {};
+                            // Seed if empty
+                            if (Object.keys(masterData.users).length === 0 && !hasCheckedSeeding) {
                                 await seedDefaultUsers();
                                 hasCheckedSeeding = true;
                             }
-
-                            if (!masterData.records) masterData.records = {};
-                            renderTable();
                         } else {
-                            await setDoc(DOC_REF, { users: {}, records: {} });
+                            await seedDefaultUsers(); // Create doc if missing
+                            hasCheckedSeeding = true;
                         }
-                    }, (error) => {
-                        console.error("Firestore Error:", error);
-                        if (error.code === 'resource-exhausted') {
-                            showQuotaError();
-                            renderTable();
-                            unsubscribe();
-                        }
+                        renderTable();
                     });
+
+                    // 2. Listen to RECORDS (Dynamic by Month)
+                    listenToMonthRecords();
                 }
             });
         };
 
-        const seedDefaultUsers = async () => {
-            if (!masterData) return;
-
-            const batchData = {};
-            let hasChanges = false;
+        const listenToMonthRecords = () => {
+            if (unsubscribeMonth) unsubscribeMonth(); // Stop listening to old month
             
+            const monthKey = `${currentYear}_${currentMonth}`;
+            const docRef = doc(db, 'stopcard_records', monthKey);
+            
+            // Set loading state in UI
+            document.querySelector('#table-body').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu tháng ${currentMonth}/${currentYear}...</td></tr>`;
+
+            unsubscribeMonth = onSnapshot(docRef, (snap) => {
+                if (snap.exists()) {
+                    currentMonthData = snap.data().data || {}; // Structure: { data: { uid: { count: x, history: [] } } }
+                } else {
+                    currentMonthData = {}; // Month doesn't exist yet -> Empty records
+                }
+                renderTable();
+            }, (error) => {
+                console.error("Month Fetch Error:", error);
+                if (error.code === 'resource-exhausted') showQuotaError();
+            });
+        };
+
+        const seedDefaultUsers = async () => {
+            const usersMap = {};
             DEFAULT_PERSONNEL.forEach(u => {
                 const uid = "U_" + u.id.replace(/\s+/g, '');
-                if (!masterData.users || !masterData.users[uid]) {
-                    batchData[`users.${uid}`] = u;
-                    hasChanges = true;
-                }
+                usersMap[uid] = u;
             });
-
-            const records = masterData.records || {};
-            const decRecords = records['2024_12'] || {};
-
-            Object.entries(DECEMBER_2024_COUNTS).forEach(([id, count]) => {
-                 const uid = "U_" + id.replace(/\s+/g, '');
-                 if (count !== undefined) {
-                     if (!decRecords[uid]) {
-                        batchData[`records.2024_12.${uid}`] = { 
-                            count: count, 
-                            history: [{date: 'System Init', by: 'System', old: 0, new: count}],
-                            lastUpdated: new Date().toLocaleString('vi-VN')
-                        };
-                        hasChanges = true;
-                     }
-                 }
-            });
-
-            if (hasChanges && Object.keys(batchData).length > 0) {
-                console.log("Seeding missing data...");
-                await updateDoc(DOC_REF, batchData);
-            }
+            await setDoc(CONFIG_USERS_DOC, { users: usersMap }, { merge: true });
+            console.log("Users seeded.");
         };
 
         // --- RENDER LOGIC ---
@@ -945,16 +878,15 @@
             ySelect.innerHTML = '';
             for(let i=currentYear-1; i<=currentYear+1; i++) ySelect.innerHTML += `<option value="${i}" ${i === currentYear ? 'selected' : ''}>${i}</option>`;
             
-            mSelect.onchange = (e) => { 
-                currentMonth = parseInt(e.target.value); 
+            const updateDate = () => {
                 localStorage.setItem('stopcard_month', currentMonth);
-                renderTable(); 
-            };
-            ySelect.onchange = (e) => { 
-                currentYear = parseInt(e.target.value); 
                 localStorage.setItem('stopcard_year', currentYear);
-                renderTable(); 
+                renderTimeSelectors(); // Re-render to update selected attr
+                listenToMonthRecords(); // Switch Firestore listener
             };
+
+            mSelect.onchange = (e) => { currentMonth = parseInt(e.target.value); updateDate(); };
+            ySelect.onchange = (e) => { currentYear = parseInt(e.target.value); updateDate(); };
         }
 
         window.changeMonth = (delta) => {
@@ -963,12 +895,13 @@
             if (m < 1) { m = 12; currentYear--; }
             currentMonth = m;
             
-            localStorage.setItem('stopcard_month', currentMonth);
-            localStorage.setItem('stopcard_year', currentYear);
-            
             document.getElementById('filter-month').value = m;
             document.getElementById('filter-year').value = currentYear;
-            renderTable();
+            
+            // Manually trigger change event logic
+            localStorage.setItem('stopcard_month', currentMonth);
+            localStorage.setItem('stopcard_year', currentYear);
+            listenToMonthRecords();
         }
 
         window.toggleSort = (type) => {
@@ -982,23 +915,16 @@
             const search = document.getElementById('search-input').value.toLowerCase();
             const showUnsubmittedOnly = document.getElementById('filter-unsubmitted').checked;
 
-            const recordKey = `${currentYear}_${currentMonth}`;
-            const monthRecords = masterData.records[recordKey] || {};
-            
-            let list = Object.entries(masterData.users).map(([uid, info]) => {
-                const record = monthRecords[uid] || { count: 0, history: [] };
-                
-                const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid) || 
-                                   DEFAULT_PERSONNEL.find(p => p.id === info.id);
-                const apiId = info.apiId || staticUser?.apiId || null;
-
+            // Merge Users with Current Month Records
+            let list = Object.entries(masterData.users || {}).map(([uid, info]) => {
+                const record = currentMonthData[uid] || { count: 0, history: [] };
                 return {
                     uid: uid,
                     id: info.id || "---",
                     name: info.name || "Không tên",
                     count: record.count || 0,
                     history: record.history || [],
-                    apiId: apiId
+                    apiId: info.apiId || null
                 };
             });
 
@@ -1010,6 +936,7 @@
                 list = list.filter(u => u.count === 0);
             }
 
+            // Ranking Logic
             const rankedList = [...list].sort((a, b) => b.count - a.count);
             const rankMap = {};
             let currentRank = 1;
@@ -1018,35 +945,21 @@
                 rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
             });
 
-            // Updating hidden sort-status element to keep logic valid
-            const sortLabel = document.getElementById('sort-status');
-            if (sortMode === 'id_asc') {
-                list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
-                if(sortLabel) sortLabel.innerText = "Sắp xếp: Danh số (A-Z)";
-            } else if (sortMode === 'id_desc') {
-                list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
-                if(sortLabel) sortLabel.innerText = "Sắp xếp: Danh số (Z-A)";
-            } else if (sortMode === 'count_desc') {
-                list.sort((a, b) => b.count - a.count);
-                if(sortLabel) sortLabel.innerText = "Sắp xếp: Số lượng (Giảm dần)";
-            } else if (sortMode === 'count_asc') {
-                list.sort((a, b) => a.count - b.count);
-                if(sortLabel) sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
-            }
+            // Sorting for Display
+            if (sortMode === 'id_asc') list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
+            else if (sortMode === 'id_desc') list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
+            else if (sortMode === 'count_desc') list.sort((a, b) => b.count - a.count);
+            else if (sortMode === 'count_asc') list.sort((a, b) => a.count - b.count);
 
-            const allUsersForStats = Object.values(masterData.users).map(u => {
-                 const uid = "U_" + u.id.replace(/\s+/g, '');
-                 return (monthRecords[uid]?.count || 0);
-            });
-            
-            const totalCards = allUsersForStats.reduce((sum, c) => sum + parseInt(c), 0);
-            const totalPersonnel = allUsersForStats.length;
-            const submittedCount = allUsersForStats.filter(c => c > 0).length;
-            const unsubmittedCount = totalPersonnel - submittedCount;
+            // Stats
+            const totalCards = list.reduce((sum, item) => sum + item.count, 0);
+            const totalPersonnel = Object.keys(masterData.users).length; // Total users in system, not just filtered
+            const submittedCount = Object.keys(currentMonthData).filter(uid => currentMonthData[uid].count > 0).length;
 
             document.getElementById('stat-total-cards').innerText = totalCards;
+            // Note: This ratio might be approximate if search filter is active
             document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
-            document.getElementById('stat-unsubmitted').innerText = unsubmittedCount;
+            document.getElementById('stat-unsubmitted').innerText = totalPersonnel - submittedCount;
 
             if (list.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
@@ -1056,46 +969,30 @@
             tbody.innerHTML = list.map((item, index) => {
                 const rank = rankMap[item.uid];
                 let badgeHtml = '';
-                
                 if (item.count > 0) {
-                    if (rank === 1) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300 text-[10px] shadow-sm" title="Top 1">🥇</span>`;
-                    else if (rank === 2) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[10px] shadow-sm" title="Top 2">🥈</span>`;
-                    else if (rank === 3) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-orange-100 text-orange-800 border border-orange-300 text-[10px] shadow-sm" title="Top 3">🥉</span>`;
+                    if (rank === 1) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300 text-[10px] shadow-sm">🥇</span>`;
+                    else if (rank === 2) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[10px] shadow-sm">🥈</span>`;
+                    else if (rank === 3) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-orange-100 text-orange-800 border border-orange-300 text-[10px] shadow-sm">🥉</span>`;
                 }
 
                 const hasHistory = item.history && item.history.length > 0;
                 const statusColor = item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
                 const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : '';
-                const inputClass = isQuotaExceeded ? 'input-locked-quota' : '';
-                const readOnlyAttr = isQuotaExceeded ? 'readonly' : ''; 
                 
-                // New Info Icon Button Style
                 const apiBtnHtml = item.apiId 
-                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Xem chi tiết">
-                         <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                             <circle cx="12" cy="12" r="10"></circle>
-                             <line x1="12" y1="16" x2="12" y2="12"></line>
-                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                         </svg>
-                       </button>`
-                    : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block" title="Chưa có API ID"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
+                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Xem chi tiết"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></button>`
+                    : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
 
                 return `
                 <tr class="data-row transition-colors duration-150 border-b border-slate-200 dark:border-slate-700 group ${rowClass}">
-                    <td class="p-4 text-center font-bold text-slate-400 text-sm">
-                        ${index + 1}
-                    </td>
+                    <td class="p-4 text-center font-bold text-slate-400 text-sm">${index + 1}</td>
                     <td class="p-4 text-left font-mono text-blue-700 dark:text-blue-400 text-base font-bold tracking-wide shadow-sm min-w-[100px]">${item.id}</td>
-                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-base whitespace-nowrap min-w-[180px]">
-                        ${item.name}
-                        ${badgeHtml}
-                    </td>
+                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-base whitespace-nowrap min-w-[180px]">${item.name} ${badgeHtml}</td>
                     <td class="p-4 text-center flex items-center justify-center gap-2">
                         <input type="number" min="0" 
                             id="input-${item.uid}"
-                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
+                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900"
                             value="${item.count}" 
-                            ${readOnlyAttr}
                             onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
                             onfocus="this.select()">
                     </td>
@@ -1105,225 +1002,43 @@
                             <i data-lucide="history" class="w-5 h-5"></i>
                         </button>
                     </td>
-                </tr>
-                `;
+                </tr>`;
             }).join('');
-            
             lucide.createIcons();
         }
-        window.renderTable = renderTable; // Export to global scope for HTML events
+        window.renderTable = renderTable;
 
         document.getElementById('search-input').oninput = renderTable;
 
-        // --- API FETCH FUNCTION ---
-        window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
-            if (isQuotaExceeded) { showQuotaError(); return; }
-            if (!apiId) return alert("Chưa có cấu hình API ID cho nhân sự này.");
-
-            if (!isBulk) showToast("Đang kết nối API công ty...", "info");
-            
-            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
-            let data = [];
-
-            try {
-                // 1. Try Direct Connection
-                try {
-                    const response = await fetch(targetUrl, {
-                        method: 'GET',
-                        headers: { 'Accept': 'application/json' }
-                    });
-                    if (response.ok) {
-                        data = await response.json();
-                    } else {
-                        throw new Error(response.statusText);
-                    }
-                } catch (directError) {
-                    console.warn("Direct fetch failed, trying proxy...", directError);
-                    try {
-                        // 2. Fallback to CORS Proxy
-                        const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
-                        const response = await fetch(proxyUrl, {
-                            method: 'GET',
-                            headers: { 'Accept': 'application/json' }
-                        });
-                        if (!response.ok) throw new Error(`Proxy error! Status: ${response.status}`);
-                        data = await response.json();
-                    } catch (proxyError) {
-                        console.error("API Error:", proxyError);
-                        if (!isBulk) alert(`Không thể lấy dữ liệu (Lỗi CORS/Mạng).\n\nVui lòng thử cài Extension 'Allow CORS' hoặc chạy trên mạng nội bộ.\n\nChi tiết: ${proxyError.message}`);
-                        return;
-                    }
-                }
-
-                if (!Array.isArray(data)) data = []; 
-                
-                // 1. Filter ALL data by Month/Year for REPORT 
-                const allMonthData = data.filter(item => {
-                    const d = new Date(item.createdDate);
-                    return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
-                });
-
-                // 2. Filter ONLY APPROVED data for COUNTING 
-                const approvedData = allMonthData.filter(item => {
-                    const statusName = item.trangThai?.name || "";
-                    const s = statusName.toLowerCase();
-                    
-                    if (s.includes('chờ') || s.includes('chưa') || s.includes('nháp') || s.includes('hủy') || s.includes('không')) {
-                        return false;
-                    }
-                    
-                    if (s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý')) {
-                        return true;
-                    }
-                    
-                    return false;
-                });
-                
-                const approvedCount = approvedData.length;
-                
-                // Update UI Input
-                const inputEl = document.getElementById(`input-${uid}`);
-                if(inputEl) {
-                    const oldVal = parseInt(inputEl.value) || 0;
-                    
-                    if (approvedCount !== oldVal) {
-                        inputEl.value = approvedCount; 
-                        if (isBulk || checkRateLimit()) {
-                            await window.updateCount(uid, approvedCount, oldVal);
-                            if (approvedCount === 0 && !isBulk) {
-                                showToast("Không có thẻ đạt/đã duyệt. Đã cập nhật về 0.", "warning");
-                            }
-                        }
-                    } else {
-                        if (!isBulk) {
-                            if (approvedCount === 0) {
-                                showToast("Dữ liệu khớp: 0 thẻ đạt/đã duyệt.", "info");
-                            } else {
-                                showToast(`Dữ liệu đã đồng bộ (${approvedCount} thẻ)`, "success");
-                            }
-                        }
-                    }
-                }
-
-                if (!isBulk) renderApiReport(name, allMonthData);
-
-            } catch (error) {
-                console.error("API Error:", error);
-                if (!isBulk) alert(`Lỗi không xác định: ${error.message}`);
-            }
-        };
+        // --- ACTIONS (UPDATED FOR SHARDING) ---
         
-        window.syncAllApi = async () => {
-            if (isQuotaExceeded) { showQuotaError(); return; }
-            if (!confirm("Bạn có chắc muốn đồng bộ dữ liệu API cho TẤT CẢ nhân sự? Việc này có thể mất một chút thời gian.")) return;
-
-            const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => {
-                 const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid) || 
-                                   DEFAULT_PERSONNEL.find(p => p.id === info.id);
-                 const apiId = info.apiId || staticUser?.apiId;
-                 return { uid, apiId, name: info.name };
-            }).filter(u => u.apiId);
-
-            let count = 0;
-            const total = usersWithApi.length;
-            const modal = document.getElementById('loading-modal');
-            const percentText = document.querySelector('.intern');
-            
-            // Show Loading Modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            for (let i = 0; i < total; i++) {
-                const user = usersWithApi[i];
-                await window.fetchApiData(user.uid, user.apiId, user.name, true); 
-                
-                // Update percent
-                const percent = Math.round(((i + 1) / total) * 100);
-                percentText.style.setProperty('--loading-percent', `"${percent}%"`);
-                
-                // Delay 1.2s
-                await new Promise(r => setTimeout(r, 1200)); 
-                count++;
-            }
-            
-            // Hide Loading Modal
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            percentText.style.setProperty('--loading-percent', '"0%"'); // Reset
-            
-            showToast(`Đã hoàn tất đồng bộ ${count} nhân sự!`, "success");
-        }
-
-        function renderApiReport(name, data) {
-            const modal = document.getElementById('api-report-modal');
-            const tbody = document.getElementById('api-report-body');
-            document.getElementById('api-report-subtitle').innerText = `${name} - Tháng ${currentMonth}/${currentYear} - Tổng: ${data.length} thẻ`;
-            
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ nào trong tháng này trên hệ thống.</td></tr>`;
-            } else {
-                data.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
-                
-                tbody.innerHTML = data.map((item, index) => {
-                    const dateStr = new Date(item.createdDate).toLocaleString('vi-VN');
-                    const creator = (item.createBy || '').replace('@vietsov.com.vn', '');
-                    
-                    let deptName = item.departmentName || '';
-                    if (deptName === "Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí") {
-                        deptName = "XNXL";
-                    }
-
-                    return `
-                    <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td>${index + 1}</td>
-                        <td class="font-mono text-xs whitespace-nowrap">${dateStr}</td>
-                        <td>${item.constructionName || ''}</td>
-                        <td>${deptName}</td>
-                        <td>${item.toChuc || ''}</td>
-                        <td class="text-xs font-mono text-slate-500">${creator}</td>
-                        <td><span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">${item.trangThai?.name || ''}</span></td>
-                    </tr>
-                    `;
-                }).join('');
-            }
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        // --- ACTIONS ---
         window.updateCount = async (uid, newVal, oldVal) => {
             const count = parseInt(newVal);
-            if (isNaN(count) || count < 0) { alert("Số không hợp lệ"); renderTable(); return; }
+            if (isNaN(count) || count < 0) { renderTable(); return; }
             if (count === oldVal) return;
-            const recordKey = `${currentYear}_${currentMonth}`;
-            const now = new Date().toLocaleString('vi-VN');
             
-            // Note: In real app, we should fetch current history first to append.
-            // Here we just overwrite history with new entry at top for simplicity in setDoc merge
+            const monthKey = `${currentYear}_${currentMonth}`;
+            const now = new Date().toLocaleString('vi-VN');
             const newHistoryItem = {date: now, by: "User", old: oldVal, new: count};
-            const currentHistory = masterData.records[recordKey]?.[uid]?.history || [];
+            
+            const currentHistory = currentMonthData[uid]?.history || [];
             const newHistory = [newHistoryItem, ...currentHistory].slice(0, 9);
 
-            const updatePayload = {
-                records: {
-                    [recordKey]: {
-                        [uid]: {
-                            count: count,
-                            lastUpdated: now,
-                            history: newHistory
-                        }
-                    }
-                }
-            };
-
+            const docRef = doc(db, 'stopcard_records', monthKey);
+            
+            // Structure: { data: { "U_ID": { count: 5, ... } } }
+            // Using dot notation for nested update
+            const updatePath = `data.${uid}`;
+            
             try { 
-                await setDoc(DOC_REF, updatePayload, { merge: true }); 
+                await setDoc(docRef, { 
+                    data: {
+                        [uid]: { count: count, lastUpdated: now, history: newHistory }
+                    }
+                }, { merge: true }); 
                 showToast("Đã lưu dữ liệu!"); 
-            } 
-            catch (e) { 
-                alert("Lỗi lưu dữ liệu: " + e.message); 
-                renderTable(); 
+            } catch (e) { 
+                alert("Lỗi lưu: " + e.message); renderTable(); 
             }
         };
 
@@ -1344,53 +1059,125 @@
             const id = document.getElementById('new-user-id').value.trim();
             const name = document.getElementById('new-user-name').value.trim();
             if (!id || !name) return alert("Vui lòng nhập đủ thông tin!");
+            
             const uid = "U_" + id.replace(/\s+/g, '');
             if (masterData.users[uid]) return alert("Nhân sự này đã tồn tại!");
+            
             try {
-                // Use setDoc merge for adding user too
-                await setDoc(DOC_REF, { users: { [uid]: { id, name } } }, { merge: true });
+                // Update USERS DOC
+                await setDoc(CONFIG_USERS_DOC, { 
+                    users: { [uid]: { id, name } } 
+                }, { merge: true });
                 showToast("Thêm nhân sự thành công!");
                 window.closeAddUserModal();
             } catch (e) { alert("Lỗi: " + e.message); }
         }
 
+        // --- API FUNCTIONS (Kept mostly same, just checking Quota) ---
+        window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
+            if (!apiId) return alert("Chưa có cấu hình API ID.");
+            if (!isBulk) showToast("Đang kết nối API...", "info");
+            
+            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
+            let data = [];
+            try {
+                try {
+                    const res = await fetch(targetUrl);
+                    if(res.ok) data = await res.json();
+                    else throw new Error("API Error");
+                } catch {
+                    const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
+                    const res = await fetch(proxyUrl);
+                    if(res.ok) data = await res.json();
+                }
+
+                if (!Array.isArray(data)) data = []; 
+                const allMonthData = data.filter(item => {
+                    const d = new Date(item.createdDate);
+                    return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
+                });
+
+                const approvedData = allMonthData.filter(item => {
+                    const s = (item.trangThai?.name || "").toLowerCase();
+                    return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý');
+                });
+                
+                const approvedCount = approvedData.length;
+                const inputEl = document.getElementById(`input-${uid}`);
+                if(inputEl) {
+                    const oldVal = parseInt(inputEl.value) || 0;
+                    if (approvedCount !== oldVal) {
+                        inputEl.value = approvedCount; 
+                        await window.updateCount(uid, approvedCount, oldVal);
+                    } else if (!isBulk) {
+                        showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
+                    }
+                }
+                if (!isBulk) renderApiReport(name, allMonthData);
+
+            } catch (error) { console.error(error); if (!isBulk) alert("Lỗi kết nối API"); }
+        };
+
+        window.syncAllApi = async () => {
+            if (!confirm("Đồng bộ tất cả nhân sự?")) return;
+            const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => ({ uid, apiId: info.apiId, name: info.name })).filter(u => u.apiId);
+            const modal = document.getElementById('loading-modal');
+            const percentText = document.querySelector('.intern');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            
+            for (let i = 0; i < usersWithApi.length; i++) {
+                const u = usersWithApi[i];
+                await window.fetchApiData(u.uid, u.apiId, u.name, true);
+                percentText.style.setProperty('--loading-percent', `"${Math.round(((i + 1) / usersWithApi.length) * 100)}%"`);
+                await new Promise(r => setTimeout(r, 800)); // Delay to prevent spam
+            }
+            modal.classList.add('hidden'); modal.classList.remove('flex');
+            showToast("Đồng bộ hoàn tất!", "success");
+        }
+
+        function renderApiReport(name, data) {
+            const tbody = document.getElementById('api-report-body');
+            document.getElementById('api-report-subtitle').innerText = `${name} - T${currentMonth}/${currentYear}`;
+            if (data.length === 0) tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ.</td></tr>`;
+            else {
+                tbody.innerHTML = data.map((item, i) => `
+                    <tr class="border-b border-slate-100 dark:border-slate-800">
+                        <td>${i + 1}</td>
+                        <td class="font-mono text-xs whitespace-nowrap">${new Date(item.createdDate).toLocaleString('vi-VN')}</td>
+                        <td>${item.constructionName || ''}</td>
+                        <td>${(item.departmentName || '').replace('Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí', 'XNXL')}</td>
+                        <td>${item.toChuc || ''}</td>
+                        <td class="text-xs font-mono text-slate-500">${(item.createBy || '').replace('@vietsov.com.vn', '')}</td>
+                        <td><span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-bold">${item.trangThai?.name || ''}</span></td>
+                    </tr>`).join('');
+            }
+            document.getElementById('api-report-modal').classList.remove('hidden');
+            document.getElementById('api-report-modal').classList.add('flex');
+        }
+
         window.viewHistory = (uid) => {
-            const recordKey = `${currentYear}_${currentMonth}`;
-            const record = masterData.records[recordKey]?.[uid];
-            const history = record?.history || [];
+            const history = currentMonthData[uid]?.history || [];
             const userName = masterData.users[uid]?.name || "Unknown";
             const container = document.getElementById('history-content');
-            if (history.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-400 py-4 italic text-sm">Chưa có lịch sử chỉnh sửa cho tháng này.</div>`;
-            } else {
-                container.innerHTML = `<div class="mb-3 pb-2 border-b border-slate-100 dark:border-slate-700"><span class="font-bold text-slate-700 dark:text-white">${userName}</span> - Tháng ${currentMonth}/${currentYear}</div>` + history.map(h => `<div class="flex items-start gap-3 p-2 bg-slate-50 dark:bg-slate-700/30 rounded border border-slate-100 dark:border-slate-700/50 text-xs"><div class="mt-0.5 text-slate-400"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div><div><p class="font-bold text-slate-700 dark:text-slate-300">Thay đổi: <span class="text-slate-400 line-through">${h.old}</span> <i data-lucide="arrow-right" class="w-3 h-3 inline"></i> <span class="text-blue-500">${h.new}</span></p><p class="text-slate-400 mt-0.5">${h.date}</p></div></div>`).join('');
-            }
+            if (history.length === 0) container.innerHTML = `<div class="text-center text-slate-400 py-4 italic text-sm">Chưa có lịch sử.</div>`;
+            else container.innerHTML = `<div class="mb-3 pb-2 border-b border-slate-100 dark:border-slate-700 font-bold">${userName} - T${currentMonth}/${currentYear}</div>` + history.map(h => `<div class="flex items-start gap-3 p-2 bg-slate-50 dark:bg-slate-700/30 rounded border border-slate-100 dark:border-slate-700/50 text-xs"><div class="text-slate-400"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div><div><p class="font-bold text-slate-700 dark:text-slate-300">${h.old} <i data-lucide="arrow-right" class="w-3 h-3 inline"></i> <span class="text-blue-500">${h.new}</span></p><p class="text-slate-400 mt-0.5">${h.date}</p></div></div>`).join('');
             document.getElementById('history-modal').classList.remove('hidden');
             document.getElementById('history-modal').classList.add('flex');
             lucide.createIcons();
         }
 
         window.exportExcel = () => {
-            const list = Object.entries(masterData.users).map(([uid, info]) => {
-                const recordKey = `${currentYear}_${currentMonth}`;
-                const record = masterData.records[recordKey]?.[uid] || { count: 0 };
-                return { "Danh Số": info.id, "Họ và Tên": info.name, "Tháng": `${currentMonth}/${currentYear}`, "Số thẻ nộp": record.count };
-            });
-            if(list.length === 0) return alert("Không có dữ liệu để xuất");
+            const list = Object.entries(masterData.users).map(([uid, info]) => ({
+                "Danh Số": info.id, "Họ và Tên": info.name, "Tháng": `${currentMonth}/${currentYear}`, 
+                "Số thẻ nộp": currentMonthData[uid]?.count || 0
+            }));
+            if(list.length === 0) return alert("Không có dữ liệu");
             const ws = XLSX.utils.json_to_sheet(list);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, `Stopcard_T${currentMonth}_${currentYear}`);
             XLSX.writeFile(wb, `Stopcard_Report_${currentMonth}_${currentYear}.xlsx`);
         }
 
-        const html = document.documentElement;
-        // Logic to default to LIGHT mode unless 'dark' is explicitly saved
-        if(localStorage.getItem('theme') === 'dark') {
-             html.classList.add('dark');
-        } else {
-             html.classList.remove('dark');
-        }
-        
         document.getElementById('theme-toggle').onclick = () => {
             html.classList.toggle('dark');
             localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
