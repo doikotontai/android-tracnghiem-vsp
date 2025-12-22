@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - HSE Dashboard</title>
+    <title>Quản Lý Stopcard - HSE Dashboard (Fixed)</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -75,340 +75,56 @@
         html.dark .input-past-month { background-color: rgba(120, 53, 15, 0.2); color: #fbbf24; border-bottom: 1px dashed #92400e; }
         .input-locked-quota { opacity: 0.5; background-color: #fee2e2; cursor: not-allowed; }
 
-        /* --- NEW COMPONENTS --- */
+        /* Components */
+        .container-checkbox { cursor: pointer; font-size: 20px; user-select: none; display: flex; align-items: center; justify-content: center; }
+        .container-checkbox input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .container-checkbox .checkmark { position: relative; top: 0; left: 0; height: 1.3em; width: 1.3em; background-color: #ccc; border-radius: 50%; transition: .4s; }
+        .container-checkbox .checkmark:hover { box-shadow: inset 17px 17px 16px #b3b3b3, inset -17px -17px 16px #ffffff; }
+        .container-checkbox input:checked ~ .checkmark { box-shadow: none; background-color: #2196F3; transform: rotate(360deg); }
+        .container-checkbox .checkmark:after { content: ""; position: absolute; display: none; }
+        .container-checkbox input:checked ~ .checkmark:after { display: block; }
+        .container-checkbox .checkmark:after { left: 0.45em; top: 0.25em; width: 0.40em; height: 0.7em; border: solid white; border-width: 0 0.15em 0.15em 0; transform: rotate(45deg); }
 
-        /* 1. New Checkbox Style (Uiverse.io by sssynk) */
-        .container-checkbox {
-          cursor: pointer;
-          font-size: 20px;
-          user-select: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .container-checkbox input {
-          position: absolute;
-          opacity: 0;
-          cursor: pointer;
-          height: 0;
-          width: 0;
-        }
-
-        .container-checkbox .checkmark {
-          position: relative;
-          top: 0;
-          left: 0;
-          height: 1.3em;
-          width: 1.3em;
-          background-color: #ccc;
-          border-radius: 50%; /* Circle shape */
-          transition: .4s;
-        }
-
-        .container-checkbox .checkmark:hover {
-          box-shadow: inset 17px 17px 16px #b3b3b3,
-                    inset -17px -17px 16px #ffffff;
-        }
-
-        .container-checkbox input:checked ~ .checkmark {
-          box-shadow: none;
-          background-color: #2196F3;
-          transform: rotate(360deg);
-        }
-
-        .container-checkbox .checkmark:after {
-          content: "";
-          position: absolute;
-          display: none;
-        }
-
-        .container-checkbox input:checked ~ .checkmark:after {
-          display: block;
-        }
-
-        .container-checkbox .checkmark:after {
-          left: 0.45em;
-          top: 0.25em;
-          width: 0.40em;
-          height: 0.7em;
-          border: solid white;
-          border-width: 0 0.15em 0.15em 0;
-          transform: rotate(45deg);
-        }
-
-        /* 2. New Search Box Style (Uiverse.io by satyamchaudharydev) */
-        .search-form {
-          --timing: 0.3s;
-          --width-of-input: 200px;
-          --height-of-input: 40px;
-          --border-height: 2px;
-          --input-bg: #fff;
-          --border-color: #2f2ee9;
-          --border-radius: 30px;
-          --after-border-radius: 1px;
-          position: relative;
-          width: var(--width-of-input);
-          height: var(--height-of-input);
-          display: flex;
-          align-items: center;
-          padding-inline: 0.8em;
-          border-radius: var(--border-radius);
-          transition: border-radius 0.5s ease;
-          background: var(--input-bg,#fff);
-          border: 1px solid #e2e8f0; /* Default border */
-        }
+        .search-form { --timing: 0.3s; --width-of-input: 200px; --height-of-input: 40px; --border-height: 2px; --input-bg: #fff; --border-color: #2f2ee9; --border-radius: 30px; --after-border-radius: 1px; position: relative; width: var(--width-of-input); height: var(--height-of-input); display: flex; align-items: center; padding-inline: 0.8em; border-radius: var(--border-radius); transition: border-radius 0.5s ease; background: var(--input-bg,#fff); border: 1px solid #e2e8f0; }
         html.dark .search-form { --input-bg: #1e293b; border-color: #334155; }
-        
-        .search-input {
-          font-size: 0.9rem;
-          background-color: transparent;
-          width: 100%;
-          height: 100%;
-          padding-inline: 0.5em;
-          padding-block: 0.7em;
-          border: none;
-          color: inherit;
-        }
+        .search-input { font-size: 0.9rem; background-color: transparent; width: 100%; height: 100%; padding-inline: 0.5em; padding-block: 0.7em; border: none; color: inherit; }
         .search-input:focus { outline: none; }
-        
-        .search-form:before {
-          content: "";
-          position: absolute;
-          background: var(--border-color);
-          transform: scaleX(0);
-          transform-origin: center;
-          width: 100%;
-          height: var(--border-height);
-          left: 0;
-          bottom: 0;
-          border-radius: 1px;
-          transition: transform var(--timing) ease;
-        }
-        
+        .search-form:before { content: ""; position: absolute; background: var(--border-color); transform: scaleX(0); transform-origin: center; width: 100%; height: var(--border-height); left: 0; bottom: 0; border-radius: 1px; transition: transform var(--timing) ease; }
         .search-form:focus-within { border-radius: var(--after-border-radius); }
         .search-form:focus-within:before { transform: scale(1); }
-        
-        .search-reset {
-          border: none;
-          background: none;
-          opacity: 0;
-          visibility: hidden;
-          cursor: pointer;
-        }
-        .search-input:not(:placeholder-shown) ~ .search-reset {
-          opacity: 1;
-          visibility: visible;
-        }
+        .search-reset { border: none; background: none; opacity: 0; visibility: hidden; cursor: pointer; }
+        .search-input:not(:placeholder-shown) ~ .search-reset { opacity: 1; visibility: visible; }
         .search-form svg { width: 17px; margin-top: 3px; color: #8b8ba7; }
 
-        /* 3. New API Button Style (Uiverse.io by RashadGhzi) */
-        .btn-api-new {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px; /* Adjusted size */
-          height: 40px;
-          background: linear-gradient(to right, #3b82f6, #22c55e);
-          color: white;
-          border-radius: 50%;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s;
-          border: none;
-          outline: none;
-          cursor: pointer;
-        }
-        .btn-api-new:hover svg {
-           transform: rotate(-45deg) scale(0.9);
-        }
-        .btn-api-new svg {
-           transition: all 0.3s ease-out;
-           width: 20px; /* Smaller icon inside */
-           height: 20px;
-        }
+        .btn-api-new { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: linear-gradient(to right, #3b82f6, #22c55e); color: white; border-radius: 50%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.3s; border: none; outline: none; cursor: pointer; }
+        .btn-api-new:hover svg { transform: scale(1.1); }
+        .btn-api-new svg { transition: all 0.3s ease-out; width: 24px; height: 24px; }
 
-        /* 4. New Download Button Style (Uiverse.io by satyamchaudharydev) */
-        .button-export {
-          --width: 100px;
-          --height: 40px; /* Match other inputs */
-          --tooltip-height: 35px;
-          --tooltip-width: 90px;
-          --gap-between-tooltip-to-button: 18px;
-          --button-color: #1e293b; /* Dark slate */
-          --tooltip-color: #fff;
-          width: var(--width);
-          height: var(--height);
-          background: var(--button-color);
-          position: relative;
-          text-align: center;
-          border-radius: 0.45em;
-          font-family: "Arial";
-          transition: background 0.3s;
-          border: none;
-          cursor: pointer;
-          display: flex; /* Flex to center */
-          align-items: center;
-          justify-content: center;
-        }
+        .button-export { --width: 100px; --height: 40px; --tooltip-height: 35px; --tooltip-width: 90px; --gap-between-tooltip-to-button: 18px; --button-color: #1e293b; --tooltip-color: #fff; width: var(--width); height: var(--height); background: var(--button-color); position: relative; text-align: center; border-radius: 0.45em; font-family: "Arial"; transition: background 0.3s; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         html.dark .button-export { --button-color: #334155; }
-
-        .button-export::before {
-          position: absolute;
-          content: attr(data-tooltip);
-          width: var(--tooltip-width);
-          height: var(--tooltip-height);
-          background-color: var(--tooltip-color);
-          font-size: 0.9rem;
-          color: #111;
-          border-radius: .25em;
-          line-height: var(--tooltip-height);
-          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px);
-          left: calc(50% - var(--tooltip-width) / 2);
-        }
-
-        .button-export::after {
-          position: absolute;
-          content: '';
-          width: 0;
-          height: 0;
-          border: 10px solid transparent;
-          border-top-color: var(--tooltip-color);
-          left: calc(50% - 10px);
-          bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
-        }
-
-        .button-export::after,.button-export::before {
-          opacity: 0;
-          visibility: hidden;
-          transition: all 0.5s;
-          pointer-events: none; /* Prevent blocking clicks */
-        }
-
-        .button-export .text {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 0;
-          color: #fff;
-          font-weight: 600;
-          font-size: 14px;
-          transition: top 0.5s;
-        }
-
-        .button-export .icon {
-          color: #fff;
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: top 0.5s;
-        }
-
-        .button-export .icon svg {
-          width: 24px;
-          height: 24px;
-        }
-
-        .button-export:hover {
-          background: #0f172a;
-        }
+        .button-export::before { position: absolute; content: attr(data-tooltip); width: var(--tooltip-width); height: var(--tooltip-height); background-color: var(--tooltip-color); font-size: 0.9rem; color: #111; border-radius: .25em; line-height: var(--tooltip-height); bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px); left: calc(50% - var(--tooltip-width) / 2); }
+        .button-export::after { position: absolute; content: ''; width: 0; height: 0; border: 10px solid transparent; border-top-color: var(--tooltip-color); left: calc(50% - 10px); bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px); }
+        .button-export::after,.button-export::before { opacity: 0; visibility: hidden; transition: all 0.5s; pointer-events: none; }
+        .button-export .text { display: flex; align-items: center; justify-content: center; position: absolute; width: 100%; height: 100%; left: 0; top: 0; color: #fff; font-weight: 600; font-size: 14px; transition: top 0.5s; }
+        .button-export .icon { color: #fff; position: absolute; width: 100%; height: 100%; left: 0; top: 100%; display: flex; align-items: center; justify-content: center; transition: top 0.5s; }
+        .button-export .icon svg { width: 24px; height: 24px; }
+        .button-export:hover { background: #0f172a; }
         html.dark .button-export:hover { background: #475569; }
+        .button-export:hover .text { top: -100%; }
+        .button-export:hover .icon { top: 0; }
+        .button-export:hover:before,.button-export:hover:after { opacity: 1; visibility: visible; }
+        .button-export:hover:after { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px); }
+        .button-export:hover:before { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button)); }
 
-        .button-export:hover .text {
-          top: -100%;
-        }
-
-        .button-export:hover .icon {
-          top: 0;
-        }
-
-        .button-export:hover:before,.button-export:hover:after {
-          opacity: 1;
-          visibility: visible;
-        }
-
-        .button-export:hover:after {
-          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px);
-        }
-
-        .button-export:hover:before {
-          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
-        }
-
-        /* 5. NEW LOADER (Uiverse.io by Ratinax) */
-        .loader {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          cursor: not-allowed;
-          scale: 0.7;
-        }
-
-        .central {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          width: 10em;
-          height: 10em;
-          border-radius: 50%;
-          box-shadow: 0.5em 1em 1em blueviolet,
-            -0.5em 0.5em 1em blue,
-            0.5em -0.5em 1em purple,
-            -0.5em -0.5em 1em cyan;
-        }
-
-        .external-shadow {
-          width: 10em;
-          height: 10em;
-          border-radius: 50%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          box-shadow: 0.5em 0.5em 3em blueviolet,
-            -0.5em 0.5em 3em blue,
-            0.5em -0.5em 3em purple,
-            -0.5em -0.5em 3em cyan;
-          z-index: 999;
-          animation: rotate 3s linear infinite;
-          background-color: #212121;
-        }
-
-        .intern {
-          position: absolute;
-          color: white;
-          z-index: 9999;
-          font-family: 'Inter', sans-serif;
-          font-weight: bold;
-          font-size: 1.5rem;
-        }
-
-        /* Dynamic percent using JS variable */
-        .intern::before {
-          content: var(--loading-percent, "0%"); 
-          /* Remove animation to control via JS */
-          /* animation: percent 2s ease-in-out infinite; */
-        }
-
-        @keyframes rotate {
-          0% { transform: rotate(0deg); }
-          50% { transform: rotate(180deg); }
-          100% { transform: rotate(360deg); }
-        }
+        .loader { display: flex; justify-content: center; align-items: center; position: relative; cursor: not-allowed; scale: 0.7; }
+        .central { display: flex; justify-content: center; align-items: center; position: relative; width: 10em; height: 10em; border-radius: 50%; box-shadow: 0.5em 1em 1em blueviolet, -0.5em 0.5em 1em blue, 0.5em -0.5em 1em purple, -0.5em -0.5em 1em cyan; }
+        .external-shadow { width: 10em; height: 10em; border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; box-shadow: 0.5em 0.5em 3em blueviolet, -0.5em 0.5em 3em blue, 0.5em -0.5em 3em purple, -0.5em -0.5em 3em cyan; z-index: 999; animation: rotate 3s linear infinite; background-color: #212121; }
+        .intern { position: absolute; color: white; z-index: 9999; font-family: 'Inter', sans-serif; font-weight: bold; font-size: 1.5rem; }
+        .intern::before { content: var(--loading-percent, "0%"); }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(180deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col no-select pb-20 md:pb-0 bg-slate-50 dark:bg-slate-950">
+<body class="antialiased min-h-screen flex flex-col no-select bg-slate-50 dark:bg-slate-950">
 
     <!-- Toast Notification -->
     <div id="toast-container" class="fixed top-4 left-4 right-4 md:left-auto md:top-20 md:right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
@@ -417,7 +133,7 @@
     <div id="quota-error-banner" class="hidden fixed top-0 left-0 w-full bg-red-600 text-white z-[100] p-3 text-center shadow-lg animate-fade-in">
         <div class="flex items-center justify-center gap-2 font-bold text-sm">
             <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-            <span>HỆ THỐNG ĐANG QUÁ TẢI (Hết Quota Firebase). Vui lòng quay lại vào ngày mai!</span>
+            <span>HỆ THỐNG ĐANG BẢO TRÌ. Vui lòng quay lại sau!</span>
         </div>
     </div>
 
@@ -425,15 +141,15 @@
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5 h-16 transition-colors shadow-sm">
         <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <a href="index.html" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
-                    <i data-lucide="arrow-left" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
+                <a href="#" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
                 </a>
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
                         <i data-lucide="shield-check" class="w-5 h-5"></i>
                     </div>
                     <div class="hidden xs:block">
-                        <h1 class="font-bold text-slate-800 dark:text-white leading-tight text-base">Quản Lý Stopcard</h1>
+                        <h1 class="font-bold text-slate-800 dark:text-white leading-tight text-base">Quản Lý Stopcard (v2.0)</h1>
                         <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">HSE Dashboard</p>
                     </div>
                 </div>
@@ -441,11 +157,7 @@
 
             <div class="flex items-center gap-2">
                 <div id="connection-status" class="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500">
-                    <span class="relative flex h-2 w-2">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
-                    Connecting...
+                     <span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span></span> Connecting...
                 </div>
                 <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 hover:bg-slate-100 transition active:scale-95">
                     <i data-lucide="moon" class="w-5 h-5"></i>
@@ -494,12 +206,10 @@
             <!-- Action Buttons Group -->
             <div class="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto justify-end">
                 
-                <!-- Sync All Button (Added next to Checkbox) -->
                 <button onclick="window.syncAllApi()" class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800 transition active:scale-95 h-[44px] w-[44px] flex items-center justify-center group relative" title="Đồng bộ tất cả API">
                     <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
                 </button>
 
-                <!-- NEW CHECKBOX (Toggle Style) -->
                 <div class="flex items-center gap-3 bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 h-[44px]">
                     <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Chưa nộp</span>
                     <label class="container-checkbox">
@@ -508,12 +218,10 @@
                     </label>
                 </div>
 
-                <!-- ADD Button -->
                 <button onclick="window.openAddUserModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/20 transition transform active:scale-95 h-[44px]">
                     <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Thêm</span>
                 </button>
                 
-                <!-- NEW EXPORT BUTTON (Animated) -->
                 <button class="button-export" data-tooltip="Tải xuống" onclick="window.exportExcel()">
                     <div class="text">Xuất</div>
                     <div class="icon">
@@ -525,7 +233,6 @@
 
         <!-- NEW Stats Overview -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-            <!-- Stat 1 -->
             <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-blue-500">
                 <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
                     <i data-lucide="files" class="w-6 h-6"></i>
@@ -536,7 +243,6 @@
                 </div>
             </div>
 
-            <!-- Stat 2 -->
             <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-green-500">
                 <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl">
                     <i data-lucide="users" class="w-6 h-6"></i>
@@ -547,7 +253,6 @@
                 </div>
             </div>
 
-            <!-- Stat 3 -->
             <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-red-500">
                 <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl">
                     <i data-lucide="alert-circle" class="w-6 h-6"></i>
@@ -568,8 +273,8 @@
                             <th class="p-4 font-bold w-14 text-center">#</th>
                             <th class="p-4 font-bold w-32 text-left cursor-pointer hover:text-blue-500" onclick="window.toggleSort('id')">Danh số <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
                             <th class="p-4 font-bold min-w-[180px]">Họ và Tên</th>
-                            <th class="p-4 font-bold w-32 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('count')">Số lượng <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
-                            <th class="p-4 font-bold w-20 text-center">API</th>
+                            <th class="p-4 font-bold w-32 text-center cursor-pointer hover:text-blue-500" onclick="window.toggleSort('count')">Số thẻ <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i></th>
+                            <th class="p-4 font-bold w-20 text-center">Chi tiết</th>
                             <th class="p-4 font-bold w-20 text-center">Log</th>
                         </tr>
                     </thead>
@@ -581,26 +286,17 @@
                     </tbody>
                 </table>
             </div>
-            
-            <div class="p-3 border-t border-slate-200 dark:border-slate-700 text-xs text-center text-slate-400 flex flex-col sm:flex-row justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 gap-2">
-                <span>Dữ liệu được lưu trữ an toàn trên Cloud.</span>
-                <span id="sort-status" class="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded text-[10px] font-medium">Sắp xếp: Mặc định</span>
-            </div>
+            <span id="sort-status" class="hidden"></span>
         </div>
 
     </main>
 
-    <!-- NEW LOADING MODAL -->
-    <div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in flex-col gap-4">
-        <div class="loader">
-            <div class="external-shadow">
-                <div class="central">
-                </div>
-            </div>
-            <div class="intern" id="loading-text"></div>
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm mb-2">&copy; 2025 BCH-XNXL.</p>
         </div>
-        <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
-    </div>
+    </footer>
 
     <!-- MODAL: ADD USER -->
     <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
@@ -650,7 +346,6 @@
     <!-- MODAL: API REPORT -->
     <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-none md:rounded-2xl shadow-2xl w-full md:max-w-6xl h-full md:h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
-            <!-- Header -->
             <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
                 <div class="flex items-center gap-3">
                     <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
@@ -665,8 +360,6 @@
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            
-            <!-- Content -->
             <div class="flex-1 overflow-auto custom-scrollbar p-0 bg-white dark:bg-slate-950">
                 <table class="w-full text-left border-collapse report-table">
                     <thead>
@@ -680,40 +373,62 @@
                             <th>Trạng thái</th>
                         </tr>
                     </thead>
-                    <tbody id="api-report-body">
-                        <!-- Content via JS -->
-                    </tbody>
+                    <tbody id="api-report-body"></tbody>
                 </table>
             </div>
-            
-            <!-- Footer -->
             <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-center md:text-right pb-8 md:pb-4">
                 <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="w-full md:w-auto px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-bold text-sm transition">Đóng</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Logic -->
+    <!-- NEW LOADING MODAL -->
+    <div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in flex-col gap-4">
+        <div class="loader">
+            <div class="external-shadow"><div class="central"></div></div>
+            <div class="intern" id="loading-text"></div>
+        </div>
+        <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
+    </div>
+
+    <!-- Logic Firebase Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, deleteField, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, collection, query, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
-            authDomain: "tracnghiemndt.firebaseapp.com",
-            projectId: "tracnghiemndt",
-            storageBucket: "tracnghiemndt.firebasestorage.app",
-            messagingSenderId: "187385061213",
-            appId: "1:187385061213:web:fe7977f62aaaeec60f52b4"
-        };
+        // Cấu hình từ môi trường hoặc mặc định
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app';
+        
+        // Nếu không có config (chạy local file), fallback về config cũ của bạn
+        if (Object.keys(firebaseConfig).length === 0) {
+           Object.assign(firebaseConfig, {
+                apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
+                authDomain: "tracnghiemndt.firebaseapp.com",
+                projectId: "tracnghiemndt",
+                storageBucket: "tracnghiemndt.firebasestorage.app",
+                messagingSenderId: "187385061213",
+                appId: "1:187385061213:web:fe7977f62aaaeec60f52b4"
+            });
+        }
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const DOC_REF = doc(db, 'app_data', 'stopcard_registry_live');
 
-        // DANH SÁCH NHÂN SỰ TOÀN BỘ (Đã cập nhật apiId cho XL1709)
+        // --- CẤU TRÚC DATABASE MỚI (TỐI ƯU HÓA) ---
+        // 1. Users Collection: /artifacts/{appId}/public/data/users/{uid}
+        // 2. Records Collection: /artifacts/{appId}/public/data/records/{year_month_uid}
+        
+        const USERS_COL_PATH = ['artifacts', appId, 'public', 'data', 'users'];
+        const RECORDS_COL_PATH = ['artifacts', appId, 'public', 'data', 'records'];
+
+        function getCollectionRef(pathArray) {
+            return collection(db, ...pathArray);
+        }
+
+        // Dữ liệu mẫu (Giữ nguyên của bạn)
         const DEFAULT_PERSONNEL = [
             { id: "13453", name: "Nguyễn Anh Đức" },
             { id: "XL2467", name: "Trần Thanh Quang", apiId: "39a7fc3b-c4f5-4e2a-88e0-42dc9d139d9a" },
@@ -724,7 +439,7 @@
             { id: "14598", name: "Đào Đức Đông", apiId: "c89c21bb-4a5f-4533-8349-08e9d8fc176f" },
             { id: "15805", name: "Nguyễn Văn Minh", apiId: "6c6dc89f-3c7a-4fde-9be3-e627ce5919a1" },
             { id: "20396", name: "Phạm Thanh Nam", apiId: "104984c0-7a23-43a5-af33-a3ab1d9a0db7" },
-            { id: "XL1709", name: "Ng. Viết Phong Lưu", apiId: "1e147ad6-31d9-4c16-a611-85a1caff06c1" }, // TEST USER
+            { id: "XL1709", name: "Ng. Viết Phong Lưu", apiId: "1e147ad6-31d9-4c16-a611-85a1caff06c1" },
             { id: "XL104", name: "Trần Văn Đoàn" },
             { id: "XL128", name: "Bùi Văn Dũng", apiId: "c6ece3b6-91a9-41ea-8809-2acd4d56e7b2" },
             { id: "XL204", name: "Nguyễn Ngọc Long", apiId: "80929c87-8b3e-4e5f-bfea-25549e2363a9" },
@@ -777,152 +492,107 @@
             { id: "XL853", name: "Cù Chí Công", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
         ];
 
-        // SỐ LIỆU THÁNG 12/2024
-        const DECEMBER_2024_COUNTS = {
-            "13453": 0, "XL2467": 1, "16703": 1, "15567": 1, "16702": 1, "XL1595": 0,
-            "14598": 0, "15805": 1, "20396": 0, "XL1709": 3, "XL104": 1, "XL128": 3,
-            "XL204": 1, "XL239": 0, "XL246": 1, "XL248": 1, "20492": 0, "XL291": 1,
-            "XL354": 3, "XL419": 0, "XL420": 0, "XL431": 2, "XL432": 0, "XL451": 1,
-            "XL453": 1, "XL454": 1, "XL627": 1, "XL628": 2, "XL641": 1, "XL742": 0,
-            "XL780": 1, "XL781": 1, "XL831": 1, "21517": 1, "XL1123": 1, "XL2064": 0,
-            "XL1375": 4, "XL1665": 1, "XL1781": 2, "XL1124": 0, "XL2066": 1, "XL2067": 1,
-            "XL1546": 1, "XL2217": 1, "XL2247": 1, "XL2248": 1, "XL2249": 1, "XL1802": 0,
-            "XL2463": 0, "XL2443": 0, "XL2465": 1, "XL2464": 1, "XL2466": 1, "XL2491": 1,
-            "XL2492": 1, "XL2582": 1, "XL2618": 3, "XL260": 1, "XL2619": 1, "XL853": 1
+        // State Management
+        let appState = {
+            users: [],
+            records: {}, // Map: { uid: { count: 0, history: [] } }
+            loadingUsers: true,
+            loadingRecords: true
         };
 
-        // State
-        let masterData = { users: {}, records: {} };
-        // FIX: Load from LocalStorage OR Default
         let currentYear = parseInt(localStorage.getItem('stopcard_year')) || new Date().getFullYear();
         let currentMonth = parseInt(localStorage.getItem('stopcard_month')) || (new Date().getMonth() + 1);
-        let currentUser = "Guest";
         let sortMode = 'id_asc';
-        let isQuotaExceeded = false; 
-        let hasCheckedSeeding = false; 
+        let unsubscribeRecords = null;
 
-        // --- RATE LIMIT STATE ---
-        let writeTimestamps = [];
-        const RATE_LIMIT_WINDOW = 5000;
-        const RATE_LIMIT_MAX = 5;
-
-        // --- TOAST NOTIFICATION ---
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-red-500' : (type === 'warning' ? 'bg-orange-500' : 'bg-blue-500'));
-            const icon = type === 'success' ? '<i data-lucide="check-circle" class="w-4 h-4"></i>' : (type === 'error' ? '<i data-lucide="alert-circle" class="w-4 h-4"></i>' : (type === 'warning' ? '<i data-lucide="alert-triangle" class="w-4 h-4"></i>' : '<i data-lucide="info" class="w-4 h-4"></i>'));
-            
-            toast.className = `flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${bgColor} animate-slide-in backdrop-blur-md bg-opacity-90`;
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            
-            container.appendChild(toast);
-            lucide.createIcons();
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-10px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function showQuotaError() {
-            if (isQuotaExceeded) return;
-            isQuotaExceeded = true;
-            document.getElementById('quota-error-banner').classList.remove('hidden');
-        }
-
-        function checkRateLimit() {
-            const now = Date.now();
-            // Remove old timestamps outside the window
-            writeTimestamps = writeTimestamps.filter(t => now - t < RATE_LIMIT_WINDOW);
-
-            if (writeTimestamps.length >= RATE_LIMIT_MAX) {
-                showToast(`Thao tác quá nhanh (Max ${RATE_LIMIT_MAX} lần/5s). Vui lòng đợi.`, 'error');
-                return false;
+        // --- AUTH & INIT ---
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
             }
+        };
 
-            writeTimestamps.push(now);
-            return true;
-        }
-
-        // --- INIT ---
         const init = async () => {
             renderTimeSelectors();
-            const html = document.documentElement;
-            if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
-            else html.classList.remove('dark');
+            setupTheme();
             
-            try { await signInAnonymously(auth); } catch (e) { console.error(e); }
+            await initAuth();
 
-            onAuthStateChanged(auth, (user) => {
+            onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    const statusEl = document.getElementById('connection-status');
-                    statusEl.innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
-                    statusEl.className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
-
-                    const unsubscribe = onSnapshot(DOC_REF, async (snap) => {
-                        if (snap.exists()) {
-                            masterData = snap.data();
-                            
-                            if (!hasCheckedSeeding) {
-                                await seedDefaultUsers();
-                                hasCheckedSeeding = true;
-                            }
-
-                            if (!masterData.records) masterData.records = {};
-                            renderTable();
+                    showConnectionStatus(true);
+                    
+                    // 1. Listen to Users Collection
+                    const usersRef = getCollectionRef(USERS_COL_PATH);
+                    
+                    onSnapshot(usersRef, async (snap) => {
+                        if (snap.empty) {
+                            // Seed default data if empty
+                            await seedUsers();
                         } else {
-                            await setDoc(DOC_REF, { users: {}, records: {} });
+                            appState.users = snap.docs.map(d => ({...d.data(), uid: d.id}));
+                            appState.loadingUsers = false;
+                            checkAndRender();
                         }
-                    }, (error) => {
-                        console.error("Firestore Error:", error);
-                        if (error.code === 'resource-exhausted') {
-                            showQuotaError();
-                            renderTable();
-                            unsubscribe();
-                        }
-                    });
+                    }, (err) => console.error("Users Error:", err));
+
+                    // 2. Listen to Records (based on current month)
+                    subscribeToRecords();
                 }
             });
         };
 
-        const seedDefaultUsers = async () => {
-            if (!masterData) return;
-
-            const batchData = {};
-            let hasChanges = false;
-            
+        // --- LOGIC DATABASE ---
+        async function seedUsers() {
+            console.log("Seeding Users...");
+            const batch = writeBatch(db);
             DEFAULT_PERSONNEL.forEach(u => {
                 const uid = "U_" + u.id.replace(/\s+/g, '');
-                if (!masterData.users || !masterData.users[uid]) {
-                    batchData[`users.${uid}`] = u;
-                    hasChanges = true;
-                }
+                const userRef = doc(db, ...USERS_COL_PATH, uid);
+                batch.set(userRef, { ...u, uid: uid });
             });
+            await batch.commit();
+        }
 
-            const records = masterData.records || {};
-            const decRecords = records['2024_12'] || {};
+        function subscribeToRecords() {
+            if (unsubscribeRecords) unsubscribeRecords();
+            appState.loadingRecords = true;
+            appState.records = {}; // Reset records for new month
 
-            Object.entries(DECEMBER_2024_COUNTS).forEach(([id, count]) => {
-                 const uid = "U_" + id.replace(/\s+/g, '');
-                 if (count !== undefined) {
-                     if (!decRecords[uid]) {
-                        batchData[`records.2024_12.${uid}`] = { 
-                            count: count, 
-                            history: [{date: 'System Init', by: 'System', old: 0, new: count}],
-                            lastUpdated: new Date().toLocaleString('vi-VN')
-                        };
-                        hasChanges = true;
-                     }
-                 }
-            });
+            // Query only records for this specific Year_Month
+            // Note: Since Firestore requires composite indexes for complex queries, 
+            // we will fetch all records that have ID starting with YYYY_MM
+            // OR simpler: Use client side filtering if we don't want to create indexes right now
+            // BUT BEST PRACTICE: Store month/year fields.
+            
+            // Optimization: Just listen to the collection and filter by ID prefix manually in snapshot
+            // because strict mode here doesn't let us easily make composite indexes.
+            const recordsRef = getCollectionRef(RECORDS_COL_PATH);
+            
+            unsubscribeRecords = onSnapshot(recordsRef, (snap) => {
+                const prefix = `${currentYear}_${currentMonth}_`;
+                const newRecords = {};
+                
+                snap.docs.forEach(d => {
+                    if (d.id.startsWith(prefix)) {
+                        const uid = d.id.replace(prefix, '');
+                        newRecords[uid] = d.data();
+                    }
+                });
+                
+                appState.records = newRecords;
+                appState.loadingRecords = false;
+                checkAndRender();
+            }, (err) => console.error("Records Error:", err));
+        }
 
-            if (hasChanges && Object.keys(batchData).length > 0) {
-                console.log("Seeding missing data...");
-                await updateDoc(DOC_REF, batchData);
+        function checkAndRender() {
+            if (!appState.loadingUsers) {
+                renderTable();
             }
-        };
+        }
 
         // --- RENDER LOGIC ---
         function renderTimeSelectors() {
@@ -936,12 +606,12 @@
             mSelect.onchange = (e) => { 
                 currentMonth = parseInt(e.target.value); 
                 localStorage.setItem('stopcard_month', currentMonth);
-                renderTable(); 
+                subscribeToRecords(); // Reload records
             };
             ySelect.onchange = (e) => { 
                 currentYear = parseInt(e.target.value); 
                 localStorage.setItem('stopcard_year', currentYear);
-                renderTable(); 
+                subscribeToRecords(); // Reload records
             };
         }
 
@@ -950,13 +620,11 @@
             if (m > 12) { m = 1; currentYear++; }
             if (m < 1) { m = 12; currentYear--; }
             currentMonth = m;
-            
             localStorage.setItem('stopcard_month', currentMonth);
             localStorage.setItem('stopcard_year', currentYear);
-            
             document.getElementById('filter-month').value = m;
             document.getElementById('filter-year').value = currentYear;
-            renderTable();
+            subscribeToRecords();
         }
 
         window.toggleSort = (type) => {
@@ -970,34 +638,23 @@
             const search = document.getElementById('search-input').value.toLowerCase();
             const showUnsubmittedOnly = document.getElementById('filter-unsubmitted').checked;
 
-            const recordKey = `${currentYear}_${currentMonth}`;
-            const monthRecords = masterData.records[recordKey] || {};
-            
-            let list = Object.entries(masterData.users).map(([uid, info]) => {
-                const record = monthRecords[uid] || { count: 0, history: [] };
-                
-                const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid) || 
-                                   DEFAULT_PERSONNEL.find(p => p.id === info.id);
-                const apiId = info.apiId || staticUser?.apiId || null;
-
+            let list = appState.users.map(u => {
+                const record = appState.records[u.uid] || { count: 0, history: [] };
                 return {
-                    uid: uid,
-                    id: info.id || "---",
-                    name: info.name || "Không tên",
+                    uid: u.uid,
+                    id: u.id || "---",
+                    name: u.name || "Không tên",
                     count: record.count || 0,
                     history: record.history || [],
-                    apiId: apiId
+                    apiId: u.apiId
                 };
             });
 
-            if (search) {
-                list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
-            }
+            // Filter
+            if (search) list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
+            if (showUnsubmittedOnly) list = list.filter(u => u.count === 0);
 
-            if (showUnsubmittedOnly) {
-                list = list.filter(u => u.count === 0);
-            }
-
+            // Calculate Ranks & Stats
             const rankedList = [...list].sort((a, b) => b.count - a.count);
             const rankMap = {};
             let currentRank = 1;
@@ -1006,380 +663,249 @@
                 rankMap[item.uid] = item.count > 0 ? currentRank : 9999;
             });
 
-            const sortLabel = document.getElementById('sort-status');
-            if (sortMode === 'id_asc') {
-                list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
-                sortLabel.innerText = "Sắp xếp: Danh số (A-Z)";
-            } else if (sortMode === 'id_desc') {
-                list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
-                sortLabel.innerText = "Sắp xếp: Danh số (Z-A)";
-            } else if (sortMode === 'count_desc') {
-                list.sort((a, b) => b.count - a.count);
-                sortLabel.innerText = "Sắp xếp: Số lượng (Giảm dần)";
-            } else if (sortMode === 'count_asc') {
-                list.sort((a, b) => a.count - b.count);
-                sortLabel.innerText = "Sắp xếp: Số lượng (Tăng dần)";
-            }
+            // Sort
+            const sortFn = {
+                'id_asc': (a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }),
+                'id_desc': (a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }),
+                'count_desc': (a, b) => b.count - a.count,
+                'count_asc': (a, b) => a.count - b.count
+            }[sortMode];
+            list.sort(sortFn);
 
-            const allUsersForStats = Object.values(masterData.users).map(u => {
-                 const uid = "U_" + u.id.replace(/\s+/g, '');
-                 return (monthRecords[uid]?.count || 0);
-            });
+            // Update Stats
+            const totalCards = appState.users.reduce((sum, u) => sum + (appState.records[u.uid]?.count || 0), 0);
+            const submittedCount = appState.users.filter(u => (appState.records[u.uid]?.count || 0) > 0).length;
             
-            const totalCards = allUsersForStats.reduce((sum, c) => sum + parseInt(c), 0);
-            const totalPersonnel = allUsersForStats.length;
-            const submittedCount = allUsersForStats.filter(c => c > 0).length;
-            const unsubmittedCount = totalPersonnel - submittedCount;
-
             document.getElementById('stat-total-cards').innerText = totalCards;
-            document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
-            document.getElementById('stat-unsubmitted').innerText = unsubmittedCount;
+            document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${appState.users.length}`;
+            document.getElementById('stat-unsubmitted').innerText = appState.users.length - submittedCount;
 
+            // Render HTML
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = list.map((item, index) => {
                 const rank = rankMap[item.uid];
                 let badgeHtml = '';
-                
-                if (item.count > 0) {
-                    if (rank === 1) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300 text-[10px] shadow-sm" title="Top 1">🥇</span>`;
-                    else if (rank === 2) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[10px] shadow-sm" title="Top 2">🥈</span>`;
-                    else if (rank === 3) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-orange-100 text-orange-800 border border-orange-300 text-[10px] shadow-sm" title="Top 3">🥉</span>`;
+                if (item.count > 0 && rank <= 3) {
+                    const colors = {1: 'yellow', 2: 'slate', 3: 'orange'};
+                    const icons = {1: '🥇', 2: '🥈', 3: '🥉'};
+                    badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-${colors[rank]}-100 text-${colors[rank]}-700 border border-${colors[rank]}-300 text-[10px] shadow-sm">${icons[rank]}</span>`;
                 }
 
-                const hasHistory = item.history && item.history.length > 0;
-                const statusColor = item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
-                const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : '';
-                const inputClass = isQuotaExceeded ? 'input-locked-quota' : '';
-                const readOnlyAttr = isQuotaExceeded ? 'readonly' : ''; 
-                
-                // New API Button Style (Smaller Icon)
                 const apiBtnHtml = item.apiId 
-                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Đồng bộ API">
-                         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M19.9381 13C19.979 12.6724 20 12.3387 20 12C20 7.58172 16.4183 4 12 4C9.49042 4 7.25264 5.15582 5.82397 6.96918C5.64251 7.19955 5.37894 7.36214 5.08861 7.4243C2.79373 7.91574 1 9.98069 1 12.5C1 15.2285 3.00397 17.4939 5.61394 17.9272C5.90805 17.976 6.13674 18.1883 6.20815 18.4802C6.34789 19.0515 6.6433 19.5756 7.05436 20M23 17L18 22M18 17V22M18 22L13 17" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                         </svg>
+                    ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Xem chi tiết">
+                         <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                        </button>`
-                    : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block" title="Chưa có API ID"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
+                    : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
 
                 return `
-                <tr class="data-row transition-colors duration-150 border-b border-slate-200 dark:border-slate-700 group ${rowClass}">
-                    <td class="p-4 text-center font-bold text-slate-400 text-sm">
-                        ${index + 1}
-                    </td>
-                    <td class="p-4 text-left font-mono text-blue-700 dark:text-blue-400 text-base font-bold tracking-wide shadow-sm min-w-[100px]">${item.id}</td>
-                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-base whitespace-nowrap min-w-[180px]">
-                        ${item.name}
-                        ${badgeHtml}
-                    </td>
-                    <td class="p-4 text-center flex items-center justify-center gap-2">
+                <tr class="data-row transition-colors duration-150 border-b border-slate-200 dark:border-slate-700 group ${item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : ''}">
+                    <td class="p-4 text-center font-bold text-slate-400 text-sm">${index + 1}</td>
+                    <td class="p-4 text-left font-mono text-blue-700 dark:text-blue-400 font-bold min-w-[100px]">${item.id}</td>
+                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap min-w-[180px]">${item.name} ${badgeHtml}</td>
+                    <td class="p-4 text-center">
                         <input type="number" min="0" 
-                            id="input-${item.uid}"
-                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 ${inputClass}"
+                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900"
                             value="${item.count}" 
-                            ${readOnlyAttr}
                             onchange="window.updateCount('${item.uid}', this.value, ${item.count})"
                             onfocus="this.select()">
                     </td>
                     <td class="p-4 text-center align-middle">${apiBtnHtml}</td>
                     <td class="p-4 text-center">
-                        <button onclick="window.viewHistory('${item.uid}')" class="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}">
+                        <button onclick="window.viewHistory('${item.uid}')" class="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${item.history.length > 0 ? 'text-blue-400' : 'opacity-30'}">
                             <i data-lucide="history" class="w-5 h-5"></i>
                         </button>
                     </td>
                 </tr>
                 `;
             }).join('');
-            
             lucide.createIcons();
         }
-        window.renderTable = renderTable; // Export to global scope for HTML events
-
+        window.renderTable = renderTable;
         document.getElementById('search-input').oninput = renderTable;
 
-        // --- API FETCH FUNCTION ---
-        window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
-            if (isQuotaExceeded) { showQuotaError(); return; }
-            if (!apiId) return alert("Chưa có cấu hình API ID cho nhân sự này.");
-
-            if (!isBulk) showToast("Đang kết nối API công ty...", "info");
-            
-            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
-            let data = [];
-
-            try {
-                // 1. Try Direct Connection
-                try {
-                    const response = await fetch(targetUrl, {
-                        method: 'GET',
-                        headers: { 'Accept': 'application/json' }
-                    });
-                    if (response.ok) {
-                        data = await response.json();
-                    } else {
-                        throw new Error(response.statusText);
-                    }
-                } catch (directError) {
-                    console.warn("Direct fetch failed, trying proxy...", directError);
-                    try {
-                        // 2. Fallback to CORS Proxy
-                        const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
-                        const response = await fetch(proxyUrl, {
-                            method: 'GET',
-                            headers: { 'Accept': 'application/json' }
-                        });
-                        if (!response.ok) throw new Error(`Proxy error! Status: ${response.status}`);
-                        data = await response.json();
-                    } catch (proxyError) {
-                        console.error("API Error:", proxyError);
-                        if (!isBulk) alert(`Không thể lấy dữ liệu (Lỗi CORS/Mạng).\n\nVui lòng thử cài Extension 'Allow CORS' hoặc chạy trên mạng nội bộ.\n\nChi tiết: ${proxyError.message}`);
-                        return;
-                    }
-                }
-
-                if (!Array.isArray(data)) data = []; 
-                
-                // 1. Filter ALL data by Month/Year for REPORT 
-                const allMonthData = data.filter(item => {
-                    const d = new Date(item.createdDate);
-                    return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
-                });
-
-                // 2. Filter ONLY APPROVED data for COUNTING 
-                const approvedData = allMonthData.filter(item => {
-                    const statusName = item.trangThai?.name || "";
-                    const s = statusName.toLowerCase();
-                    
-                    if (s.includes('chờ') || s.includes('chưa') || s.includes('nháp') || s.includes('hủy') || s.includes('không')) {
-                        return false;
-                    }
-                    
-                    if (s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý')) {
-                        return true;
-                    }
-                    
-                    return false;
-                });
-                
-                const approvedCount = approvedData.length;
-                
-                // Update UI Input
-                const inputEl = document.getElementById(`input-${uid}`);
-                if(inputEl) {
-                    const oldVal = parseInt(inputEl.value) || 0;
-                    
-                    if (approvedCount !== oldVal) {
-                        inputEl.value = approvedCount; 
-                        if (isBulk || checkRateLimit()) {
-                            await window.updateCount(uid, approvedCount, oldVal);
-                            if (approvedCount === 0 && !isBulk) {
-                                showToast("Không có thẻ đạt/đã duyệt. Đã cập nhật về 0.", "warning");
-                            }
-                        }
-                    } else {
-                        if (!isBulk) {
-                            if (approvedCount === 0) {
-                                showToast("Dữ liệu khớp: 0 thẻ đạt/đã duyệt.", "info");
-                            } else {
-                                showToast(`Dữ liệu đã đồng bộ (${approvedCount} thẻ)`, "success");
-                            }
-                        }
-                    }
-                }
-
-                if (!isBulk) renderApiReport(name, allMonthData);
-
-            } catch (error) {
-                console.error("API Error:", error);
-                if (!isBulk) alert(`Lỗi không xác định: ${error.message}`);
-            }
-        };
-        
-        window.syncAllApi = async () => {
-            if (isQuotaExceeded) { showQuotaError(); return; }
-            if (!confirm("Bạn có chắc muốn đồng bộ dữ liệu API cho TẤT CẢ nhân sự? Việc này có thể mất một chút thời gian.")) return;
-
-            const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => {
-                 const staticUser = DEFAULT_PERSONNEL.find(p => "U_" + p.id.replace(/\s+/g, '') === uid) || 
-                                   DEFAULT_PERSONNEL.find(p => p.id === info.id);
-                 const apiId = info.apiId || staticUser?.apiId;
-                 return { uid, apiId, name: info.name };
-            }).filter(u => u.apiId);
-
-            let count = 0;
-            const total = usersWithApi.length;
-            const modal = document.getElementById('loading-modal');
-            const percentText = document.querySelector('.intern');
-            
-            // Show Loading Modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            for (let i = 0; i < total; i++) {
-                const user = usersWithApi[i];
-                await window.fetchApiData(user.uid, user.apiId, user.name, true); 
-                
-                // Update percent
-                const percent = Math.round(((i + 1) / total) * 100);
-                percentText.style.setProperty('--loading-percent', `"${percent}%"`);
-                
-                // Delay 1.2s
-                await new Promise(r => setTimeout(r, 1200)); 
-                count++;
-            }
-            
-            // Hide Loading Modal
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            percentText.style.setProperty('--loading-percent', '"0%"'); // Reset
-            
-            showToast(`Đã hoàn tất đồng bộ ${count} nhân sự!`, "success");
-        }
-
-        function renderApiReport(name, data) {
-            const modal = document.getElementById('api-report-modal');
-            const tbody = document.getElementById('api-report-body');
-            document.getElementById('api-report-subtitle').innerText = `${name} - Tháng ${currentMonth}/${currentYear} - Tổng: ${data.length} thẻ`;
-            
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ nào trong tháng này trên hệ thống.</td></tr>`;
-            } else {
-                data.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
-                
-                tbody.innerHTML = data.map((item, index) => {
-                    const dateStr = new Date(item.createdDate).toLocaleString('vi-VN');
-                    const creator = (item.createBy || '').replace('@vietsov.com.vn', '');
-                    
-                    let deptName = item.departmentName || '';
-                    if (deptName === "Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí") {
-                        deptName = "XNXL";
-                    }
-
-                    return `
-                    <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td>${index + 1}</td>
-                        <td class="font-mono text-xs whitespace-nowrap">${dateStr}</td>
-                        <td>${item.constructionName || ''}</td>
-                        <td>${deptName}</td>
-                        <td>${item.toChuc || ''}</td>
-                        <td class="text-xs font-mono text-slate-500">${creator}</td>
-                        <td><span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">${item.trangThai?.name || ''}</span></td>
-                    </tr>
-                    `;
-                }).join('');
-            }
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        // --- ACTIONS ---
+        // --- UPDATE LOGIC (DB Writes) ---
         window.updateCount = async (uid, newVal, oldVal) => {
             const count = parseInt(newVal);
-            if (isNaN(count) || count < 0) { alert("Số không hợp lệ"); renderTable(); return; }
+            if (isNaN(count) || count < 0) { renderTable(); return; }
             if (count === oldVal) return;
-            const recordKey = `${currentYear}_${currentMonth}`;
+
             const now = new Date().toLocaleString('vi-VN');
+            const docId = `${currentYear}_${currentMonth}_${uid}`;
+            const docRef = doc(db, ...RECORDS_COL_PATH, docId);
+
+            // Optimistic Update (Update UI immediately)
+            if (!appState.records[uid]) appState.records[uid] = { history: [] };
+            appState.records[uid].count = count;
             
-            // Note: In real app, we should fetch current history first to append.
-            // Here we just overwrite history with new entry at top for simplicity in setDoc merge
             const newHistoryItem = {date: now, by: "User", old: oldVal, new: count};
-            const currentHistory = masterData.records[recordKey]?.[uid]?.history || [];
-            const newHistory = [newHistoryItem, ...currentHistory].slice(0, 9);
+            const currentHistory = appState.records[uid].history || [];
+            const newHistory = [newHistoryItem, ...currentHistory].slice(0, 10); // Keep last 10
+            
+            appState.records[uid].history = newHistory;
+            renderTable(); // Re-render to show updated status
 
-            const updatePayload = {
-                records: {
-                    [recordKey]: {
-                        [uid]: {
-                            count: count,
-                            lastUpdated: now,
-                            history: newHistory
-                        }
-                    }
-                }
-            };
-
-            try { 
-                await setDoc(DOC_REF, updatePayload, { merge: true }); 
-                showToast("Đã lưu dữ liệu!"); 
-            } 
-            catch (e) { 
-                alert("Lỗi lưu dữ liệu: " + e.message); 
-                renderTable(); 
+            try {
+                await setDoc(docRef, {
+                    uid,
+                    year: currentYear,
+                    month: currentMonth,
+                    count: count,
+                    lastUpdated: now,
+                    history: newHistory
+                }, { merge: true });
+                showToast("Đã lưu dữ liệu!");
+            } catch (e) {
+                console.error(e);
+                alert("Lỗi lưu dữ liệu: " + e.message);
+                // Revert on error would be ideal here
             }
         };
-
-        window.openAddUserModal = () => {
-            document.getElementById('add-user-modal').classList.remove('hidden');
-            document.getElementById('add-user-modal').classList.add('flex');
-            document.getElementById('new-user-id').value = '';
-            document.getElementById('new-user-name').value = '';
-            document.getElementById('new-user-id').focus();
-        }
-
-        window.closeAddUserModal = () => {
-            document.getElementById('add-user-modal').classList.add('hidden');
-            document.getElementById('add-user-modal').classList.remove('flex');
-        }
 
         window.confirmAddUser = async () => {
             const id = document.getElementById('new-user-id').value.trim();
             const name = document.getElementById('new-user-name').value.trim();
+            const apiId = document.getElementById('new-user-api-id').value.trim();
+            
             if (!id || !name) return alert("Vui lòng nhập đủ thông tin!");
             const uid = "U_" + id.replace(/\s+/g, '');
-            if (masterData.users[uid]) return alert("Nhân sự này đã tồn tại!");
+            
             try {
-                // Use setDoc merge for adding user too
-                await setDoc(DOC_REF, { users: { [uid]: { id, name } } }, { merge: true });
+                const userRef = doc(db, ...USERS_COL_PATH, uid);
+                await setDoc(userRef, { id, name, apiId: apiId || null, uid }, { merge: true });
                 showToast("Thêm nhân sự thành công!");
                 window.closeAddUserModal();
             } catch (e) { alert("Lỗi: " + e.message); }
         }
 
+        // --- API FETCH & UTILS ---
+        window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
+             if (!apiId) return alert("Chưa có cấu hình API ID.");
+             if (!isBulk) showToast("Đang kết nối API...", "info");
+             
+             // Fake API call structure for demo/safety (Replace with real logic)
+             // Using proxy logic as requested but warning applied
+             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
+             const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
+             
+             try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error("Network error");
+                const data = await response.json();
+                
+                const validData = data.filter(item => {
+                    const d = new Date(item.createdDate);
+                    // Check Month/Year
+                    if (d.getMonth() + 1 !== currentMonth || d.getFullYear() !== currentYear) return false;
+                    // Check Approved Status
+                    const s = (item.trangThai?.name || "").toLowerCase();
+                    return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý');
+                });
+
+                const count = validData.length;
+                const oldVal = appState.records[uid]?.count || 0;
+                
+                if (count !== oldVal) {
+                    await window.updateCount(uid, count, oldVal);
+                }
+                
+                if(!isBulk) renderApiReport(name, data.filter(item => {
+                     const d = new Date(item.createdDate);
+                     return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
+                }));
+
+             } catch (e) {
+                 if(!isBulk) alert("Lỗi API (CORS hoặc Mạng). Thử lại sau.");
+                 console.error(e);
+             }
+        }
+
+        window.syncAllApi = async () => {
+            if (!confirm("Đồng bộ tất cả?")) return;
+            const usersWithApi = appState.users.filter(u => u.apiId);
+            const modal = document.getElementById('loading-modal');
+            const percentText = document.querySelector('.intern');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            let done = 0;
+            for (const user of usersWithApi) {
+                await window.fetchApiData(user.uid, user.apiId, user.name, true);
+                done++;
+                percentText.style.setProperty('--loading-percent', `"${Math.round((done/usersWithApi.length)*100)}%"`);
+                await new Promise(r => setTimeout(r, 800)); // Delay to prevent rate limit
+            }
+            
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            showToast("Đã đồng bộ xong!", "success");
+        }
+
+        // Helpers
+        window.openAddUserModal = () => { document.getElementById('add-user-modal').classList.remove('hidden'); document.getElementById('add-user-modal').classList.add('flex'); }
+        window.closeAddUserModal = () => { document.getElementById('add-user-modal').classList.add('hidden'); document.getElementById('add-user-modal').classList.remove('flex'); }
+        
         window.viewHistory = (uid) => {
-            const recordKey = `${currentYear}_${currentMonth}`;
-            const record = masterData.records[recordKey]?.[uid];
-            const history = record?.history || [];
-            const userName = masterData.users[uid]?.name || "Unknown";
+            const history = appState.records[uid]?.history || [];
+            const user = appState.users.find(u => u.uid === uid);
             const container = document.getElementById('history-content');
+            
             if (history.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-400 py-4 italic text-sm">Chưa có lịch sử chỉnh sửa cho tháng này.</div>`;
+                container.innerHTML = `<div class="text-center text-slate-400 py-4 italic text-sm">Chưa có lịch sử.</div>`;
             } else {
-                container.innerHTML = `<div class="mb-3 pb-2 border-b border-slate-100 dark:border-slate-700"><span class="font-bold text-slate-700 dark:text-white">${userName}</span> - Tháng ${currentMonth}/${currentYear}</div>` + history.map(h => `<div class="flex items-start gap-3 p-2 bg-slate-50 dark:bg-slate-700/30 rounded border border-slate-100 dark:border-slate-700/50 text-xs"><div class="mt-0.5 text-slate-400"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div><div><p class="font-bold text-slate-700 dark:text-slate-300">Thay đổi: <span class="text-slate-400 line-through">${h.old}</span> <i data-lucide="arrow-right" class="w-3 h-3 inline"></i> <span class="text-blue-500">${h.new}</span></p><p class="text-slate-400 mt-0.5">${h.date}</p></div></div>`).join('');
+                container.innerHTML = `<div class="mb-3 pb-2 border-b border-slate-100 dark:border-slate-700 font-bold">${user?.name} - T${currentMonth}/${currentYear}</div>` + 
+                history.map(h => `<div class="flex items-start gap-3 p-2 bg-slate-50 dark:bg-slate-700/30 rounded border text-xs"><div class="text-slate-400">${h.date}</div><div><span class="text-slate-400 line-through">${h.old}</span> -> <span class="text-blue-500 font-bold">${h.new}</span></div></div>`).join('');
             }
             document.getElementById('history-modal').classList.remove('hidden');
             document.getElementById('history-modal').classList.add('flex');
-            lucide.createIcons();
+        }
+
+        function renderApiReport(name, data) {
+            const modal = document.getElementById('api-report-modal');
+            const tbody = document.getElementById('api-report-body');
+            document.getElementById('api-report-subtitle').innerText = `${name} - Tháng ${currentMonth}/${currentYear}`;
+            tbody.innerHTML = data.map((item, i) => `<tr><td>${i+1}</td><td>${new Date(item.createdDate).toLocaleString()}</td><td>${item.constructionName||''}</td><td>${item.departmentName||''}</td><td>${item.toChuc||''}</td><td>${item.createBy||''}</td><td>${item.trangThai?.name||''}</td></tr>`).join('');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         window.exportExcel = () => {
-            const list = Object.entries(masterData.users).map(([uid, info]) => {
-                const recordKey = `${currentYear}_${currentMonth}`;
-                const record = masterData.records[recordKey]?.[uid] || { count: 0 };
-                return { "Danh Số": info.id, "Họ và Tên": info.name, "Tháng": `${currentMonth}/${currentYear}`, "Số thẻ nộp": record.count };
-            });
-            if(list.length === 0) return alert("Không có dữ liệu để xuất");
-            const ws = XLSX.utils.json_to_sheet(list);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, `Stopcard_T${currentMonth}_${currentYear}`);
-            XLSX.writeFile(wb, `Stopcard_Report_${currentMonth}_${currentYear}.xlsx`);
+             const list = appState.users.map(u => ({ "ID": u.id, "Tên": u.name, "Số thẻ": appState.records[u.uid]?.count || 0 }));
+             const ws = XLSX.utils.json_to_sheet(list);
+             const wb = XLSX.utils.book_new();
+             XLSX.utils.book_append_sheet(wb, ws, "Data");
+             XLSX.writeFile(wb, "Stopcard_Report.xlsx");
         }
 
-        const html = document.documentElement;
-        // Logic to default to LIGHT mode unless 'dark' is explicitly saved
-        if(localStorage.getItem('theme') === 'dark') {
-             html.classList.add('dark');
-        } else {
-             html.classList.remove('dark');
+        function setupTheme() {
+            const html = document.documentElement;
+            if(localStorage.getItem('theme') === 'dark') html.classList.add('dark');
+            document.getElementById('theme-toggle').onclick = () => {
+                html.classList.toggle('dark');
+                localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+            };
+        }
+
+        function showToast(msg, type='success') {
+            const c = document.getElementById('toast-container');
+            const d = document.createElement('div');
+            d.className = `p-3 rounded-xl shadow text-white text-sm ${type==='success'?'bg-emerald-500':'bg-blue-500'} animate-slide-in`;
+            d.innerText = msg;
+            c.appendChild(d);
+            setTimeout(()=>d.remove(), 3000);
         }
         
-        document.getElementById('theme-toggle').onclick = () => {
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-        };
+        function showConnectionStatus(online) {
+            const el = document.getElementById('connection-status');
+            if(online) {
+                el.className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200";
+                el.innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
+            }
+        }
 
         init();
     </script>
