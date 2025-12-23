@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Optimized V4</title>
+    <title>Quản Lý Stopcard - Optimized V5</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -734,6 +734,7 @@
             { id: "XL1123", name: "Nguyễn Văn Lộc", apiId: "6c58b2aa-2b0b-400d-8113-dbc0fd1fe793" },
             { id: "XL2064", name: "Nguyễn Quốc Tài", apiId: "25489db6-948f-4504-a1fc-d692127958bf" },
             { id: "XL1375", name: "Nguyễn Anh Tiến", apiId: "0f30900c-83e6-4021-bc02-9bc86fdab368" },
+            // UPDATED HERE: Added API ID for Phạm Hồng Vũ
             { id: "XL1665", name: "Phạm Hồng Vũ", apiId: "1e0f9d58-7e4a-44fe-91ab-6e57d0c54573" },
             { id: "XL1781", name: "Lê Nguyễn Huy Hoàn", apiId: "3e2df8bd-c965-4eb2-83c1-5806169aedce" },
             { id: "XL1124", name: "Ngô Đức Thuận", apiId: "52be4e27-3831-425e-80ca-fc0990e751ee" },
@@ -1117,22 +1118,59 @@
             if (!isBulk) showToast("Đang kết nối API...", "info");
             
             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
-            let data = null; // KEY FIX: Initialize as NULL, not []
+            let data = null;
+
+            // Helper for timeout to prevent hanging forever
+            const fetchWithTimeout = (url, options = {}, timeout = 5000) => {
+                return Promise.race([
+                    fetch(url, options),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+                ]);
+            };
+
+            // Strategy: Try multiple fetch methods until one succeeds
             try {
+                // Attempt 1: Direct Fetch (Fastest if CORS allowed / Same network)
                 try {
-                    const res = await fetch(targetUrl);
+                    // Short timeout for direct fetch
+                    const res = await fetchWithTimeout(targetUrl, {}, 3000); 
                     if(res.ok) data = await res.json();
-                } catch {
-                    const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
-                    const res = await fetch(proxyUrl);
-                    if(res.ok) data = await res.json();
+                } catch (e) {
+                    console.log("Direct fetch failed, trying Proxy...");
                 }
 
-                // CRITICAL SAFETY GUARD: If data is NOT an array (means both fetch attempts failed), ABORT.
-                // Do NOT proceed to treat it as empty list (0 count).
+                // Attempt 2: Primary Proxy (CorsProxy.io)
+                if (!data) {
+                    try {
+                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+                        const res = await fetchWithTimeout(proxyUrl, {}, 5000);
+                        if(res.ok) data = await res.json();
+                    } catch (e) {
+                        console.log("Proxy 1 failed, trying Backup Proxy...");
+                    }
+                }
+
+                // Attempt 3: Backup Proxy (AllOrigins)
+                if (!data) {
+                    try {
+                        // AllOrigins wraps response in contents property
+                        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+                        const res = await fetchWithTimeout(proxyUrl, {}, 8000);
+                        if (res.ok) {
+                            const json = await res.json();
+                            if (json && json.contents) {
+                                data = JSON.parse(json.contents);
+                            }
+                        }
+                    } catch (e) {
+                        console.log("All proxies failed.");
+                    }
+                }
+
+                // CRITICAL SAFETY GUARD: If data is NOT an array (means all attempts failed), ABORT.
                 if (!Array.isArray(data)) {
                     console.warn(`Failed to fetch for ${name}`);
-                    if (!isBulk) showToast("Lỗi kết nối API (Không lấy được dữ liệu)", "error");
+                    if (!isBulk) showToast("Lỗi kết nối API (Thử tắt VPN hoặc đổi mạng)", "error");
                     return; 
                 }
                 
@@ -1169,7 +1207,10 @@
                 
                 if (!isBulk) renderApiReport(name, allMonthData);
 
-            } catch (error) { console.error(error); if (!isBulk) alert("Lỗi API"); }
+            } catch (error) { 
+                console.error(error); 
+                if (!isBulk) showToast("Lỗi hệ thống nghiêm trọng", "error"); 
+            }
         };
 
         window.syncAllApi = async () => {
