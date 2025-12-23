@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V10</title>
+    <title>Quản Lý Stopcard - Final V13</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -278,7 +278,7 @@
         <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
     </div>
 
-    <!-- NEW: Error Report Modal -->
+    <!-- Error Report Modal -->
     <div id="sync-error-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-red-200 dark:border-red-900 p-6 relative flex flex-col">
             <button onclick="document.getElementById('sync-error-modal').classList.add('hidden'); document.getElementById('sync-error-modal').classList.remove('flex')" class="absolute top-4 right-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -337,6 +337,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // *** STEP 1: Paste Cloudflare Worker URL here after deploying ***
+        const CUSTOM_PROXY_URL = "https://api-proxy.phongluuservices.workers.dev/"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
@@ -633,12 +636,16 @@
                 ]);
             };
 
-            const proxies = [
+            const proxies = [];
+            if (CUSTOM_PROXY_URL) {
+                proxies.push({ name: 'CustomWorker', url: `${CUSTOM_PROXY_URL}?apiId=${apiId}` });
+            }
+            proxies.push(
                 { name: 'Direct', url: targetUrl + noCache }, 
                 { name: 'CorsProxy', url: `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` }, 
                 { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}` },
                 { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` }
-            ];
+            );
 
             for (const proxy of proxies) {
                 if (data) break;
@@ -656,7 +663,7 @@
 
             if (!Array.isArray(data)) {
                 if (!isBulk) showToast("Lỗi kết nối API (Chặn mạng hoặc Server lỗi)", "error");
-                return false; // Return false on failure
+                return false; 
             }
             
             const allMonthData = data.filter(item => {
@@ -682,7 +689,7 @@
                 showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
             }
             if (!isBulk) renderApiReport(name, allMonthData);
-            return true; // Return true on success
+            return true; 
         };
 
         window.syncAllApi = async () => {
@@ -690,27 +697,23 @@
             const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => ({ uid, apiId: info.apiId, name: info.name })).filter(u => u.apiId);
             const modal = document.getElementById('loading-modal');
             const percentText = document.querySelector('.intern');
-            const failedUsers = []; // Track failures
+            const failedUsers = []; 
 
             modal.classList.remove('hidden'); modal.classList.add('flex');
             
-            // Turbo Sync: Concurrency of 5
             const batchSize = 5;
             for (let i = 0; i < usersWithApi.length; i += batchSize) {
                 const batch = usersWithApi.slice(i, i + batchSize);
-                // Capture results
                 const results = await Promise.all(batch.map(async u => {
                     const success = await window.fetchApiData(u.uid, u.apiId, u.name, true);
                     return { name: u.name, success };
                 }));
                 
-                // Collect failed
                 results.forEach(r => { if (!r.success) failedUsers.push(r.name); });
 
                 const progress = Math.min(100, Math.round(((i + batchSize) / usersWithApi.length) * 100));
                 percentText.style.setProperty('--loading-percent', `"${progress}%"`);
                 
-                // Minimal delay
                 await new Promise(r => setTimeout(r, 50)); 
             }
             
