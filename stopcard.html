@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Optimized V6</title>
+    <title>Quản Lý Stopcard - Direct Connection</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1119,93 +1119,62 @@
             
             // Generate unique param to prevent caching
             const noCache = `?t=${Date.now()}`;
-            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
+            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}${noCache}`;
             
             let data = null;
 
-            // Helper: Fetch with robust timeout
-            const fetchWithTimeout = (url, options = {}, timeout = 10000) => {
-                return Promise.race([
-                    fetch(url, options),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-                ]);
-            };
-
-            // PROXY LIST: Multi-Agent Strategy
-            // 1. Direct: Fastest
-            // 2. CorsProxy: Standard
-            // 3. CodeTabs: Reliable Backup
-            // 4. AllOrigins: Last Resort
-            const proxies = [
-                { name: 'Direct', url: targetUrl + noCache }, 
-                { name: 'CorsProxy', url: `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` }, 
-                { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}` },
-                { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` }
-            ];
-
-            for (const proxy of proxies) {
-                if (data) break; // If we already got data, stop trying
-                
-                try {
-                    // console.log(`Trying ${proxy.name}...`); // Debug
-                    const res = await fetchWithTimeout(proxy.url, {}, 5000); // 5s timeout per try
-                    
-                    if (res.ok) {
-                        const json = await res.json();
-                        
-                        // Handle AllOrigins specific structure
-                        if (proxy.name === 'AllOrigins') {
-                            if (json && json.contents) {
-                                try { data = JSON.parse(json.contents); } catch(e) {}
-                            }
-                        } else {
-                            data = json;
-                        }
-                        
-                        // Validate data structure
-                        if (Array.isArray(data)) {
-                            // Success!
-                        } else {
-                            data = null; // Invalid format, try next proxy
-                        }
-                    }
-                } catch (e) {
-                    // console.warn(`${proxy.name} failed`); // Debug
+            try {
+                // Direct Fetch ONLY as requested
+                const res = await fetch(targetUrl);
+                if (res.ok) {
+                    data = await res.json();
+                } else {
+                    console.warn(`Direct fetch failed with status: ${res.status}`);
                 }
-            }
 
-            // CRITICAL SAFETY GUARD: If data is NOT an array (means ALL attempts failed), ABORT.
-            if (!Array.isArray(data)) {
-                console.warn(`Failed to fetch for ${name} using all methods.`);
-                if (!isBulk) showToast("Lỗi kết nối API (Chặn mạng hoặc Server lỗi)", "error");
-                return; 
-            }
-            
-            // --- UPDATE: Custom Date Range Logic ---
-            const allMonthData = data.filter(item => {
-                const d = new Date(item.createdDate);
-                const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0);
-                const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59);
-                return d >= startDate && d <= endDate;
-            });
+                // CRITICAL SAFETY GUARD: If data is NOT an array (means fetch failed), ABORT.
+                if (!Array.isArray(data)) {
+                    console.warn(`Failed to fetch for ${name} using direct connection.`);
+                    if (!isBulk) showToast("Lỗi kết nối API (CORS hoặc Mạng)", "error");
+                    return; 
+                }
+                
+                // --- UPDATE: Custom Date Range Logic ---
+                const allMonthData = data.filter(item => {
+                    const d = new Date(item.createdDate);
+                    
+                    // JS Date Month: 0-11. currentMonth: 1-12.
+                    // Start: 25th of Previous Month (currentMonth - 2 in JS index)
+                    // End: 24th of Current Month (currentMonth - 1 in JS index)
+                    const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0);
+                    const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59);
+                    
+                    return d >= startDate && d <= endDate;
+                });
 
-            const approvedData = allMonthData.filter(item => {
-                const s = (item.trangThai?.name || "").toLowerCase();
-                return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý');
-            });
-            
-            const approvedCount = approvedData.length;
-            const inputEl = document.getElementById(`input-${uid}`);
-            const oldVal = masterData.records[uid]?.count || 0;
-            
-            if (approvedCount !== oldVal) {
-                if(inputEl) inputEl.value = approvedCount; 
-                await window.updateCount(uid, approvedCount);
-            } else if (!isBulk) {
-                showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
+                const approvedData = allMonthData.filter(item => {
+                    const s = (item.trangThai?.name || "").toLowerCase();
+                    return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý');
+                });
+                
+                const approvedCount = approvedData.length;
+                const inputEl = document.getElementById(`input-${uid}`);
+                
+                const oldVal = masterData.records[uid]?.count || 0;
+                
+                if (approvedCount !== oldVal) {
+                    if(inputEl) inputEl.value = approvedCount; 
+                    await window.updateCount(uid, approvedCount);
+                } else if (!isBulk) {
+                    showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
+                }
+                
+                if (!isBulk) renderApiReport(name, allMonthData);
+
+            } catch (error) { 
+                console.error(error); 
+                if (!isBulk) showToast("Lỗi hệ thống hoặc bị chặn bởi trình duyệt", "error"); 
             }
-            
-            if (!isBulk) renderApiReport(name, allMonthData);
         };
 
         window.syncAllApi = async () => {
