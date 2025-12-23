@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V14</title>
+    <title>Quản Lý Stopcard - Final V15</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -196,7 +196,7 @@
                     <button class="search-reset" onclick="document.getElementById('search-input').value = ''; renderTable();" type="reset"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
                 </div>
                 
-                <!-- NEW: Proxy Status Indicator -->
+                <!-- PROXY STATUS -->
                 <div id="proxy-status" class="hidden items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-500 whitespace-nowrap border border-slate-200 dark:border-slate-700" title="Proxy đang sử dụng">
                     <span class="w-2 h-2 rounded-full bg-slate-400"></span>
                     <span>...</span>
@@ -284,7 +284,23 @@
         <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
     </div>
 
-    <!-- Error Report Modal -->
+    <!-- RATELIMIT MODAL -->
+    <div id="rate-limit-modal" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-orange-200 dark:border-orange-900 p-6 relative flex flex-col text-center">
+            <div class="mx-auto p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full text-orange-500 mb-4">
+                <i data-lucide="shield-alert" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Cảnh báo Spam</h3>
+            <p id="rate-limit-msg" class="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                <!-- Message injected by JS -->
+            </p>
+            <div class="flex gap-3">
+                <button id="btn-wait" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-bold text-sm transition">Chờ thêm</button>
+                <button id="btn-switch" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-blue-500/30">Chuyển Proxy</button>
+            </div>
+        </div>
+    </div>
+
     <div id="sync-error-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-red-200 dark:border-red-900 p-6 relative flex flex-col">
             <button onclick="document.getElementById('sync-error-modal').classList.add('hidden'); document.getElementById('sync-error-modal').classList.remove('flex')" class="absolute top-4 right-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -292,9 +308,7 @@
                 <i data-lucide="alert-triangle" class="w-6 h-6"></i> Kết quả Đồng bộ
             </h3>
             <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Các nhân sự sau đây không lấy được dữ liệu (do mạng hoặc lỗi server):</p>
-            <div id="sync-error-list" class="flex-1 overflow-y-auto custom-scrollbar max-h-[60vh] space-y-2 border border-slate-100 dark:border-slate-800 rounded-xl p-2 bg-slate-50 dark:bg-slate-950">
-                <!-- Error items -->
-            </div>
+            <div id="sync-error-list" class="flex-1 overflow-y-auto custom-scrollbar max-h-[60vh] space-y-2 border border-slate-100 dark:border-slate-800 rounded-xl p-2 bg-slate-50 dark:bg-slate-950"></div>
             <div class="mt-6 text-center">
                 <button onclick="document.getElementById('sync-error-modal').classList.add('hidden'); document.getElementById('sync-error-modal').classList.remove('flex')" class="px-6 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-bold text-sm transition">Đóng</button>
             </div>
@@ -323,10 +337,7 @@
     <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-none md:rounded-2xl shadow-2xl w-full md:max-w-6xl h-full md:h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
             <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="cloud-download" class="w-6 h-6"></i></div>
-                    <div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3><p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p></div>
-                </div>
+                <div class="flex items-center gap-3"><div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="cloud-download" class="w-6 h-6"></i></div><div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3><p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p></div></div>
                 <!-- NEW: Status info in Modal -->
                 <div id="api-source-info" class="hidden md:flex px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-mono text-slate-500">Source: ...</div>
                 <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition text-slate-500"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -349,7 +360,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // *** STEP 1: Paste Cloudflare Worker URL here after deploying ***
         const CUSTOM_PROXY_URL = "https://api-proxy.phongluuservices.workers.dev/"; 
 
         const firebaseConfig = {
@@ -470,6 +480,40 @@
                 dot.className = "w-2 h-2 rounded-full bg-orange-500";
                 el.className = "flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-900/20 text-xs font-bold text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 whitespace-nowrap";
             }
+        }
+
+        // --- NEW: Helper to show Rate Limit Modal ---
+        function showRateLimitModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('rate-limit-modal');
+                const msgEl = document.getElementById('rate-limit-msg');
+                const btnWait = document.getElementById('btn-wait');
+                const btnSwitch = document.getElementById('btn-switch');
+
+                msgEl.innerText = message || "Đã đạt giới hạn truy cập. Vui lòng chờ.";
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                // Cleanup helper to remove listeners
+                const cleanup = () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    btnWait.replaceWith(btnWait.cloneNode(true));
+                    btnSwitch.replaceWith(btnSwitch.cloneNode(true));
+                };
+
+                // Wait Button: User chooses to WAIT -> Return FALSE (Stop trying)
+                document.getElementById('btn-wait').onclick = () => {
+                    cleanup();
+                    resolve(false); 
+                };
+
+                // Switch Button: User chooses to SWITCH -> Return TRUE (Continue loop)
+                document.getElementById('btn-switch').onclick = () => {
+                    cleanup();
+                    resolve(true);
+                };
+            });
         }
 
         const init = async () => {
@@ -684,11 +728,32 @@
                 if (data) break;
                 try {
                     const res = await fetchWithTimeout(proxy.url, {}, 5000);
+                    
+                    // --- NEW: Handle Rate Limit (429) Logic ---
+                    if (res.status === 429) {
+                        if (!isBulk) {
+                            // Only show popup for manual clicks
+                            const json = await res.json();
+                            const userChoice = await showRateLimitModal(json.message);
+                            if (userChoice) {
+                                // User clicked "Switch Proxy" -> Continue loop to next proxy
+                                continue;
+                            } else {
+                                // User clicked "Wait" -> Stop everything
+                                return false;
+                            }
+                        } else {
+                            // If Bulk sync, auto continue to next proxy
+                            continue;
+                        }
+                    }
+
                     if (res.ok) {
                         const json = await res.json();
                         if (proxy.name === 'AllOrigins') {
                             if (json && json.contents) { try { data = JSON.parse(json.contents); } catch(e) {} }
                         } else { data = json; }
+                        
                         if (Array.isArray(data)) { 
                              updateProxyStatus(proxy.name);
                         } else {
@@ -788,7 +853,6 @@
             const rangeText = `(25/${prevMonth} - 24/${currentMonth})`;
             document.getElementById('api-report-subtitle').innerText = `${name} - Kỳ T${currentMonth}/${currentYear} ${rangeText}`;
             
-            // Show Source in Modal
             const proxyName = document.getElementById('proxy-status').innerText;
             const sourceEl = document.getElementById('api-source-info');
             if(sourceEl) sourceEl.innerText = `Source: ${proxyName || 'Unknown'}`;
