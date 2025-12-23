@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V8</title>
+    <title>Quản Lý Stopcard - Final V9</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -619,6 +619,7 @@
             const proxies = [
                 { name: 'Direct', url: targetUrl + noCache }, 
                 { name: 'CorsProxy', url: `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` }, 
+                { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}` },
                 { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` }
             ];
 
