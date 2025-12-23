@@ -3,7 +3,7 @@
 // Biến này sẽ được gắn vào window để file chính có thể đọc được
 
 window.DEFAULT_PERSONNEL = [
-    { id: "13453", name: "Nguyễn Anh Đức" },
+    { id: "13453", name: "Nguyễn Anh Đức", apiId: "39a7fc3b-c4f5-4e2a-88e0-42dc9d139d9a" },
     { id: "XL2467", name: "Trần Thanh Quang", apiId: "39a7fc3b-c4f5-4e2a-88e0-42dc9d139d9a" },
     { id: "16703", name: "Nguyễn Văn Nam", apiId: "ad607def-7ff3-4a14-b3ac-dd97b67455e1" },
     { id: "15567", name: "Nguyễn Thanh Hùng", apiId: "0dd04d60-3317-424d-bdee-bdf04444c21c" },
@@ -64,3 +64,4 @@ window.DEFAULT_PERSONNEL = [
     { id: "XL2619", name: "Nguyễn Tuấn Đạt" },
     { id: "XL853", name: "Cù Chí Công", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
 ];
+
