@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V7</title>
+    <title>Quản Lý Stopcard - Final V8</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -668,17 +668,25 @@
         };
 
         window.syncAllApi = async () => {
-            if (!confirm("Đồng bộ tất cả?")) return;
+            if (!confirm("Đồng bộ tất cả? (Turbo Mode)")) return;
             const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => ({ uid, apiId: info.apiId, name: info.name })).filter(u => u.apiId);
             const modal = document.getElementById('loading-modal');
             const percentText = document.querySelector('.intern');
             modal.classList.remove('hidden'); modal.classList.add('flex');
-            for (let i = 0; i < usersWithApi.length; i++) {
-                const u = usersWithApi[i];
-                await window.fetchApiData(u.uid, u.apiId, u.name, true);
-                percentText.style.setProperty('--loading-percent', `"${Math.round(((i + 1) / usersWithApi.length) * 100)}%"`);
-                await new Promise(r => setTimeout(r, 500)); 
+            
+            // Turbo Sync: Concurrency of 5
+            const batchSize = 5;
+            for (let i = 0; i < usersWithApi.length; i += batchSize) {
+                const batch = usersWithApi.slice(i, i + batchSize);
+                await Promise.all(batch.map(u => window.fetchApiData(u.uid, u.apiId, u.name, true)));
+                
+                const progress = Math.min(100, Math.round(((i + batchSize) / usersWithApi.length) * 100));
+                percentText.style.setProperty('--loading-percent', `"${progress}%"`);
+                
+                // Minimal delay between batches to keep UI responsive
+                await new Promise(r => setTimeout(r, 50)); 
             }
+            
             modal.classList.add('hidden'); modal.classList.remove('flex');
             showToast("Hoàn tất!", "success");
         }
