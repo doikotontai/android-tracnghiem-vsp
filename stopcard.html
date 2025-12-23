@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Optimized V4</title>
+    <title>Quản Lý Stopcard - Final V7</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
         body { transition: background-color 0.3s ease; background-color: #f8fafc; color: #334155; font-size: 14px; -webkit-tap-highlight-color: transparent; }
         html.dark body { background-color: #0f172a; color: #cbd5e1; }
 
-        /* --- UPDATED DARK MODE BACKGROUND (From Index) --- */
+        /* --- DARK MODE BACKGROUND --- */
         .bg-gradient-mesh {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -51,33 +51,27 @@
         }
         html.dark .bg-gradient-mesh { opacity: 1; }
         
-        /* Updated Glass Panel for better contrast in Dark Mode */
         .glass-panel { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         html.dark .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); }
         
         .editable-input:focus { outline: none; border-bottom: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         html.dark ::-webkit-scrollbar-thumb { background: #475569; }
         
-        /* Zebra Striping */
         tr.data-row:nth-child(even) { background-color: #f8fafc; } 
         html.dark tr.data-row:nth-child(even) { background-color: rgba(30, 41, 59, 0.3); }
         
-        /* Mobile Touch Optimization */
         @media (max-width: 768px) {
             input, select, button { font-size: 16px !important; }
             .glass-panel { padding: 1rem; }
             th, td { padding: 1rem 0.5rem; }
         }
 
-        /* Smooth scrolling for table */
         .custom-scrollbar { -webkit-overflow-scrolling: touch; }
 
-        /* Report Modal Styles */
         .report-safe { color: #16a34a; font-weight: bold; text-align: center; }
         .report-unsafe { color: #dc2626; font-weight: bold; text-align: center; }
         .report-table th { background: #f1f5f9; color: #0f172a; position: sticky; top: 0; z-index: 10; font-size: 12px; padding: 10px; text-transform: uppercase; white-space: nowrap; }
@@ -85,353 +79,66 @@
         html.dark .report-table th { background: #1e293b; color: #e2e8f0; border-color: #334155; }
         html.dark .report-table td { border-color: #334155; color: #cbd5e1; }
         
-        /* Locked States */
         .input-locked-quota { opacity: 0.5; background-color: #fee2e2; cursor: not-allowed; }
 
-        /* --- NEW COMPONENTS --- */
+        /* --- COMPONENTS --- */
+        .container-checkbox { cursor: pointer; font-size: 20px; user-select: none; display: flex; align-items: center; justify-content: center; }
+        .container-checkbox input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .container-checkbox .checkmark { position: relative; top: 0; left: 0; height: 1.3em; width: 1.3em; background-color: #ccc; border-radius: 50%; transition: .4s; }
+        .container-checkbox .checkmark:hover { box-shadow: inset 17px 17px 16px #b3b3b3, inset -17px -17px 16px #ffffff; }
+        .container-checkbox input:checked ~ .checkmark { box-shadow: none; background-color: #2196F3; transform: rotate(360deg); }
+        .container-checkbox .checkmark:after { content: ""; position: absolute; display: none; }
+        .container-checkbox input:checked ~ .checkmark:after { display: block; }
+        .container-checkbox .checkmark:after { left: 0.45em; top: 0.25em; width: 0.40em; height: 0.7em; border: solid white; border-width: 0 0.15em 0.15em 0; transform: rotate(45deg); }
 
-        /* 1. New Checkbox Style */
-        .container-checkbox {
-          cursor: pointer;
-          font-size: 20px;
-          user-select: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .container-checkbox input {
-          position: absolute;
-          opacity: 0;
-          cursor: pointer;
-          height: 0;
-          width: 0;
-        }
-
-        .container-checkbox .checkmark {
-          position: relative;
-          top: 0;
-          left: 0;
-          height: 1.3em;
-          width: 1.3em;
-          background-color: #ccc;
-          border-radius: 50%; /* Circle shape */
-          transition: .4s;
-        }
-
-        .container-checkbox .checkmark:hover {
-          box-shadow: inset 17px 17px 16px #b3b3b3,
-                    inset -17px -17px 16px #ffffff;
-        }
-
-        .container-checkbox input:checked ~ .checkmark {
-          box-shadow: none;
-          background-color: #2196F3;
-          transform: rotate(360deg);
-        }
-
-        .container-checkbox .checkmark:after {
-          content: "";
-          position: absolute;
-          display: none;
-        }
-
-        .container-checkbox input:checked ~ .checkmark:after {
-          display: block;
-        }
-
-        .container-checkbox .checkmark:after {
-          left: 0.45em;
-          top: 0.25em;
-          width: 0.40em;
-          height: 0.7em;
-          border: solid white;
-          border-width: 0 0.15em 0.15em 0;
-          transform: rotate(45deg);
-        }
-
-        /* 2. New Search Box Style */
-        .search-form {
-          --timing: 0.3s;
-          --width-of-input: 200px;
-          --height-of-input: 40px;
-          --border-height: 2px;
-          --input-bg: #fff;
-          --border-color: #2f2ee9;
-          --border-radius: 30px;
-          --after-border-radius: 1px;
-          position: relative;
-          width: var(--width-of-input);
-          height: var(--height-of-input);
-          display: flex;
-          align-items: center;
-          padding-inline: 0.8em;
-          border-radius: var(--border-radius);
-          transition: border-radius 0.5s ease;
-          background: var(--input-bg,#fff);
-          border: 1px solid #e2e8f0; /* Default border */
-        }
+        .search-form { --timing: 0.3s; --width-of-input: 200px; --height-of-input: 40px; --border-height: 2px; --input-bg: #fff; --border-color: #2f2ee9; --border-radius: 30px; --after-border-radius: 1px; position: relative; width: var(--width-of-input); height: var(--height-of-input); display: flex; align-items: center; padding-inline: 0.8em; border-radius: var(--border-radius); transition: border-radius 0.5s ease; background: var(--input-bg,#fff); border: 1px solid #e2e8f0; }
         html.dark .search-form { --input-bg: #1e293b; border-color: #334155; }
-        
-        .search-input {
-          font-size: 0.9rem;
-          background-color: transparent;
-          width: 100%;
-          height: 100%;
-          padding-inline: 0.5em;
-          padding-block: 0.7em;
-          border: none;
-          color: inherit;
-        }
+        .search-input { font-size: 0.9rem; background-color: transparent; width: 100%; height: 100%; padding-inline: 0.5em; padding-block: 0.7em; border: none; color: inherit; }
         .search-input:focus { outline: none; }
-        
-        .search-form:before {
-          content: "";
-          position: absolute;
-          background: var(--border-color);
-          transform: scaleX(0);
-          transform-origin: center;
-          width: 100%;
-          height: var(--border-height);
-          left: 0;
-          bottom: 0;
-          border-radius: 1px;
-          transition: transform var(--timing) ease;
-        }
-        
+        .search-form:before { content: ""; position: absolute; background: var(--border-color); transform: scaleX(0); transform-origin: center; width: 100%; height: var(--border-height); left: 0; bottom: 0; border-radius: 1px; transition: transform var(--timing) ease; }
         .search-form:focus-within { border-radius: var(--after-border-radius); }
         .search-form:focus-within:before { transform: scale(1); }
-        
-        .search-reset {
-          border: none;
-          background: none;
-          opacity: 0;
-          visibility: hidden;
-          cursor: pointer;
-        }
-        .search-input:not(:placeholder-shown) ~ .search-reset {
-          opacity: 1;
-          visibility: visible;
-        }
+        .search-reset { border: none; background: none; opacity: 0; visibility: hidden; cursor: pointer; }
+        .search-input:not(:placeholder-shown) ~ .search-reset { opacity: 1; visibility: visible; }
         .search-form svg { width: 17px; margin-top: 3px; color: #8b8ba7; }
 
-        /* 3. New API Button Style (Updated for Info Icon) */
-        .btn-api-new {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px; /* Adjusted size */
-          height: 40px;
-          background: linear-gradient(to right, #3b82f6, #22c55e);
-          color: white;
-          border-radius: 50%;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s;
-          border: none;
-          outline: none;
-          cursor: pointer;
-        }
-        .btn-api-new:hover svg {
-           transform: scale(1.1);
-        }
-        .btn-api-new svg {
-           transition: all 0.3s ease-out;
-           width: 24px;
-           height: 24px;
-        }
+        .btn-api-new { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: linear-gradient(to right, #3b82f6, #22c55e); color: white; border-radius: 50%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.3s; border: none; outline: none; cursor: pointer; }
+        .btn-api-new:hover svg { transform: scale(1.1); }
+        .btn-api-new svg { transition: all 0.3s ease-out; width: 24px; height: 24px; }
 
-        /* 4. New Download Button Style */
-        .button-export {
-          --width: 100px;
-          --height: 40px; /* Match other inputs */
-          --tooltip-height: 35px;
-          --tooltip-width: 90px;
-          --gap-between-tooltip-to-button: 18px;
-          --button-color: #1e293b; /* Dark slate */
-          --tooltip-color: #fff;
-          width: var(--width);
-          height: var(--height);
-          background: var(--button-color);
-          position: relative;
-          text-align: center;
-          border-radius: 0.45em;
-          font-family: "Arial";
-          transition: background 0.3s;
-          border: none;
-          cursor: pointer;
-          display: flex; /* Flex to center */
-          align-items: center;
-          justify-content: center;
-        }
+        .button-export { --width: 100px; --height: 40px; --tooltip-height: 35px; --tooltip-width: 90px; --gap-between-tooltip-to-button: 18px; --button-color: #1e293b; --tooltip-color: #fff; width: var(--width); height: var(--height); background: var(--button-color); position: relative; text-align: center; border-radius: 0.45em; font-family: "Arial"; transition: background 0.3s; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         html.dark .button-export { --button-color: #334155; }
-
-        .button-export::before {
-          position: absolute;
-          content: attr(data-tooltip);
-          width: var(--tooltip-width);
-          height: var(--tooltip-height);
-          background-color: var(--tooltip-color);
-          font-size: 0.9rem;
-          color: #111;
-          border-radius: .25em;
-          line-height: var(--tooltip-height);
-          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px);
-          left: calc(50% - var(--tooltip-width) / 2);
-        }
-
-        .button-export::after {
-          position: absolute;
-          content: '';
-          width: 0;
-          height: 0;
-          border: 10px solid transparent;
-          border-top-color: var(--tooltip-color);
-          left: calc(50% - 10px);
-          bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
-        }
-
-        .button-export::after,.button-export::before {
-          opacity: 0;
-          visibility: hidden;
-          transition: all 0.5s;
-          pointer-events: none; /* Prevent blocking clicks */
-        }
-
-        .button-export .text {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 0;
-          color: #fff;
-          font-weight: 600;
-          font-size: 14px;
-          transition: top 0.5s;
-        }
-
-        .button-export .icon {
-          color: #fff;
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: top 0.5s;
-        }
-
-        .button-export .icon svg {
-          width: 24px;
-          height: 24px;
-        }
-
-        .button-export:hover {
-          background: #0f172a;
-        }
+        .button-export::before { position: absolute; content: attr(data-tooltip); width: var(--tooltip-width); height: var(--tooltip-height); background-color: var(--tooltip-color); font-size: 0.9rem; color: #111; border-radius: .25em; line-height: var(--tooltip-height); bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px); left: calc(50% - var(--tooltip-width) / 2); }
+        .button-export::after { position: absolute; content: ''; width: 0; height: 0; border: 10px solid transparent; border-top-color: var(--tooltip-color); left: calc(50% - 10px); bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px); }
+        .button-export::after,.button-export::before { opacity: 0; visibility: hidden; transition: all 0.5s; pointer-events: none; }
+        .button-export .text { display: flex; align-items: center; justify-content: center; position: absolute; width: 100%; height: 100%; left: 0; top: 0; color: #fff; font-weight: 600; font-size: 14px; transition: top 0.5s; }
+        .button-export .icon { color: #fff; position: absolute; width: 100%; height: 100%; left: 0; top: 100%; display: flex; align-items: center; justify-content: center; transition: top 0.5s; }
+        .button-export .icon svg { width: 24px; height: 24px; }
+        .button-export:hover { background: #0f172a; }
         html.dark .button-export:hover { background: #475569; }
+        .button-export:hover .text { top: -100%; }
+        .button-export:hover .icon { top: 0; }
+        .button-export:hover:before,.button-export:hover:after { opacity: 1; visibility: visible; }
+        .button-export:hover:after { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px); }
+        .button-export:hover:before { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button)); }
 
-        .button-export:hover .text {
-          top: -100%;
-        }
-
-        .button-export:hover .icon {
-          top: 0;
-        }
-
-        .button-export:hover:before,.button-export:hover:after {
-          opacity: 1;
-          visibility: visible;
-        }
-
-        .button-export:hover:after {
-          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px);
-        }
-
-        .button-export:hover:before {
-          bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
-        }
-
-        /* 5. NEW LOADER */
-        .loader {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          cursor: not-allowed;
-          scale: 0.7;
-        }
-
-        .central {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          width: 10em;
-          height: 10em;
-          border-radius: 50%;
-          box-shadow: 0.5em 1em 1em blueviolet,
-            -0.5em 0.5em 1em blue,
-            0.5em -0.5em 1em purple,
-            -0.5em -0.5em 1em cyan;
-        }
-
-        .external-shadow {
-          width: 10em;
-          height: 10em;
-          border-radius: 50%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          box-shadow: 0.5em 0.5em 3em blueviolet,
-            -0.5em 0.5em 3em blue,
-            0.5em -0.5em 3em purple,
-            -0.5em -0.5em 3em cyan;
-          z-index: 999;
-          animation: rotate 3s linear infinite;
-          background-color: #212121;
-        }
-
-        .intern {
-          position: absolute;
-          color: white;
-          z-index: 9999;
-          font-family: 'Inter', sans-serif;
-          font-weight: bold;
-          font-size: 1.5rem;
-        }
-
-        /* Dynamic percent using JS variable */
-        .intern::before {
-          content: var(--loading-percent, "0%"); 
-        }
-
-        @keyframes rotate {
-          0% { transform: rotate(0deg); }
-          50% { transform: rotate(180deg); }
-          100% { transform: rotate(360deg); }
-        }
+        .loader { display: flex; justify-content: center; align-items: center; position: relative; cursor: not-allowed; scale: 0.7; }
+        .central { display: flex; justify-content: center; align-items: center; position: relative; width: 10em; height: 10em; border-radius: 50%; box-shadow: 0.5em 1em 1em blueviolet, -0.5em 0.5em 1em blue, 0.5em -0.5em 1em purple, -0.5em -0.5em 1em cyan; }
+        .external-shadow { width: 10em; height: 10em; border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; box-shadow: 0.5em 0.5em 3em blueviolet, -0.5em 0.5em 3em blue, 0.5em -0.5em 3em purple, -0.5em -0.5em 3em cyan; z-index: 999; animation: rotate 3s linear infinite; background-color: #212121; }
+        .intern { position: absolute; color: white; z-index: 9999; font-family: 'Inter', sans-serif; font-weight: bold; font-size: 1.5rem; }
+        .intern::before { content: var(--loading-percent, "0%"); }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(180deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
     
-    <!-- Background Mesh (Dark Mode) -->
     <div class="bg-gradient-mesh"></div>
-
-    <!-- Toast Notification -->
     <div id="toast-container" class="fixed top-4 left-4 right-4 md:left-auto md:top-20 md:right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
     
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/50 backdrop-blur-md border-b border-slate-200 dark:border-white/5 h-16 transition-colors shadow-sm">
         <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <!-- UPDATED LINK HERE -->
                 <a href="https://ndt.io.vn/" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
                     <i data-lucide="arrow-left" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
                 </a>
@@ -465,11 +172,9 @@
     <!-- Main Content -->
     <main class="flex-grow w-full max-w-7xl mx-auto px-3 md:px-4 py-4 space-y-4 md:space-y-6">
         
-        <!-- Controls & Filters -->
+        <!-- Controls -->
         <div class="glass-panel p-3 md:p-4 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-40 shadow-sm border border-white/20">
-            <!-- Time & Search Group -->
             <div class="flex flex-col sm:flex-row items-stretch gap-3 w-full md:w-auto">
-                <!-- Date Picker -->
                 <div class="flex items-center justify-between gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm min-w-[160px]">
                     <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                     <div class="flex items-center gap-2 px-2">
@@ -485,29 +190,18 @@
                     <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition text-slate-500"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                 </div>
                 
-                <!-- NEW SEARCH BOX -->
                 <div class="search-form flex-1">
-                    <button>
-                        <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
-                            <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                    </button>
+                    <button><svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
                     <input class="search-input" id="search-input" placeholder="Tìm tên, mã số..." type="text">
-                    <button class="search-reset" onclick="document.getElementById('search-input').value = ''; renderTable();" type="reset">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                    </button>
+                    <button class="search-reset" onclick="document.getElementById('search-input').value = ''; renderTable();" type="reset"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
                 </div>
             </div>
 
-            <!-- Action Buttons Group -->
             <div class="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto justify-end">
-                
-                <!-- Sync All Button -->
                 <button onclick="window.syncAllApi()" class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800 transition active:scale-95 h-[44px] w-[44px] flex items-center justify-center group relative" title="Đồng bộ tất cả API">
                     <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
                 </button>
 
-                <!-- NEW CHECKBOX -->
                 <div class="flex items-center gap-3 bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 h-[44px]">
                     <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Chưa nộp</span>
                     <label class="container-checkbox">
@@ -516,58 +210,34 @@
                     </label>
                 </div>
 
-                <!-- ADD Button -->
                 <button onclick="window.openAddUserModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/20 transition transform active:scale-95 h-[44px]">
                     <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Thêm</span>
                 </button>
                 
-                <!-- NEW EXPORT BUTTON -->
                 <button class="button-export" data-tooltip="Tải xuống" onclick="window.exportExcel()">
                     <div class="text">Xuất</div>
-                    <div class="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                    </div>
+                    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></div>
                 </button>
             </div>
         </div>
 
-        <!-- NEW Stats Overview -->
+        <!-- Stats -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-            <!-- Stat 1 -->
             <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-blue-500">
-                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
-                    <i data-lucide="files" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Tổng thẻ tháng</p>
-                    <h3 id="stat-total-cards" class="text-2xl font-extrabold text-slate-800 dark:text-white">0</h3>
-                </div>
+                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="files" class="w-6 h-6"></i></div>
+                <div><p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Tổng thẻ tháng</p><h3 id="stat-total-cards" class="text-2xl font-extrabold text-slate-800 dark:text-white">0</h3></div>
             </div>
-
-            <!-- Stat 2 -->
             <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-green-500">
-                <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl">
-                    <i data-lucide="users" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Đã nộp / Tổng số</p>
-                    <h3 id="stat-submitted-ratio" class="text-2xl font-extrabold text-slate-800 dark:text-white">0 / 0</h3>
-                </div>
+                <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl"><i data-lucide="users" class="w-6 h-6"></i></div>
+                <div><p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Đã nộp / Tổng số</p><h3 id="stat-submitted-ratio" class="text-2xl font-extrabold text-slate-800 dark:text-white">0 / 0</h3></div>
             </div>
-
-            <!-- Stat 3 -->
             <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-l-4 border-red-500">
-                <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl">
-                    <i data-lucide="alert-circle" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Chưa nộp</p>
-                    <h3 id="stat-unsubmitted" class="text-2xl font-extrabold text-red-600 dark:text-red-400">0</h3>
-                </div>
+                <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl"><i data-lucide="alert-circle" class="w-6 h-6"></i></div>
+                <div><p class="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Chưa nộp</p><h3 id="stat-unsubmitted" class="text-2xl font-extrabold text-red-600 dark:text-red-400">0</h3></div>
             </div>
         </div>
 
-        <!-- Main Table -->
+        <!-- Table -->
         <div class="glass-panel rounded-2xl overflow-hidden min-h-[400px] flex flex-col shadow-md border-0 bg-white dark:bg-slate-900">
             <div class="overflow-x-auto custom-scrollbar flex-grow">
                 <table class="w-full text-left border-collapse">
@@ -581,18 +251,11 @@
                             <th class="p-4 font-bold w-20 text-center">Log</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body" class="text-sm font-medium">
-                        <!-- Rows injected by JS -->
-                        <tr>
-                            <td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu...</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="table-body" class="text-sm font-medium"><tr><td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu...</td></tr></tbody>
                 </table>
             </div>
-            
             <span id="sort-status" class="hidden"></span>
         </div>
-
     </main>
 
     <!-- Footer -->
@@ -609,7 +272,7 @@
         </div>
     </footer>
 
-    <!-- MODALS (Hidden by default) -->
+    <!-- Modals -->
     <div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in flex-col gap-4">
         <div class="loader"><div class="external-shadow"><div class="central"></div></div><div class="intern" id="loading-text"></div></div>
         <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
@@ -618,36 +281,18 @@
     <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-6 relative">
             <button onclick="window.closeAddUserModal()" class="absolute top-4 right-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
-            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-3">
-                <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="user-plus" class="w-6 h-6"></i></div>
-                Thêm Nhân Sự
-            </h3>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-3"><div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="user-plus" class="w-6 h-6"></i></div>Thêm Nhân Sự</h3>
             <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">Danh số (ID)</label>
-                    <input type="text" id="new-user-id" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: 0123">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">Họ và Tên</label>
-                    <input type="text" id="new-user-name" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: Nguyễn Văn A">
-                </div>
+                <div><label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">Danh số (ID)</label><input type="text" id="new-user-id" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: 0123"></div>
+                <div><label class="block text-xs font-bold text-slate-500 mb-2 uppercase ml-1">Họ và Tên</label><input type="text" id="new-user-name" class="w-full p-3.5 text-base border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 transition" placeholder="VD: Nguyễn Văn A"></div>
             </div>
-            <div class="flex gap-3 mt-8">
-                <button onclick="window.closeAddUserModal()" class="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">Hủy</button>
-                <button onclick="window.confirmAddUser()" class="flex-1 py-3 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">Lưu</button>
-            </div>
+            <div class="flex gap-3 mt-8"><button onclick="window.closeAddUserModal()" class="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">Hủy</button><button onclick="window.confirmAddUser()" class="flex-1 py-3 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">Lưu</button></div>
         </div>
     </div>
 
     <div id="history-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 p-6 relative flex flex-col max-h-[85vh]">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-                    <div class="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-xl"><i data-lucide="history" class="w-5 h-5"></i></div>
-                    Lịch sử chỉnh sửa
-                </h3>
-                <button onclick="document.getElementById('history-modal').classList.add('hidden'); document.getElementById('history-modal').classList.remove('flex')" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
+            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-3"><div class="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-xl"><i data-lucide="history" class="w-5 h-5"></i></div>Lịch sử chỉnh sửa</h3><button onclick="document.getElementById('history-modal').classList.add('hidden'); document.getElementById('history-modal').classList.remove('flex')" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button></div>
             <div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2"></div>
         </div>
     </div>
@@ -655,10 +300,7 @@
     <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-none md:rounded-2xl shadow-2xl w-full md:max-w-6xl h-full md:h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
             <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="cloud-download" class="w-6 h-6"></i></div>
-                    <div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3><p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p></div>
-                </div>
+                <div class="flex items-center gap-3"><div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="cloud-download" class="w-6 h-6"></i></div><div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3><p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p></div></div>
                 <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition text-slate-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="flex-1 overflow-auto custom-scrollbar p-0 bg-white dark:bg-slate-950">
@@ -673,7 +315,7 @@
         </div>
     </div>
 
-    <!-- Firebase Logic - Optimized Structure -->
+    <!-- Firebase Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -692,10 +334,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // --- CONSTANTS ---
         const CONFIG_USERS_DOC = doc(db, 'stopcard_config', 'users_list');
         
-        // DEFAULT USER LIST (Sẽ dùng nếu database trống)
         const DEFAULT_PERSONNEL = [
             { id: "13453", name: "Nguyễn Anh Đức" },
             { id: "XL2467", name: "Trần Thanh Quang", apiId: "39a7fc3b-c4f5-4e2a-88e0-42dc9d139d9a" },
@@ -759,15 +399,13 @@
             { id: "XL853", name: "Cù Chí Công", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
         ];
 
-        // State
-        let masterData = { users: {}, records: {} }; // records now maps uid -> { count, history } locally
+        let masterData = { users: {}, records: {} };
         let currentYear = parseInt(localStorage.getItem('stopcard_year')) || new Date().getFullYear();
         let currentMonth = parseInt(localStorage.getItem('stopcard_month')) || (new Date().getMonth() + 1);
         let sortMode = 'id_asc';
         let unsubscribeMonth = null;
         let isRenderPending = false;
 
-        // --- TOAST ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -781,12 +419,10 @@
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // --- INIT ---
         const init = async () => {
             renderTimeSelectors();
             const html = document.documentElement;
             if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
-            
             try { await signInAnonymously(auth); } catch (e) { console.error(e); }
 
             onAuthStateChanged(auth, (user) => {
@@ -794,44 +430,19 @@
                     document.getElementById('connection-status').className = "hidden md:flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-medium text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
                     document.getElementById('connection-status').innerHTML = `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online`;
 
-                    // 1. Get Users
                     onSnapshot(CONFIG_USERS_DOC, async (snap) => {
                         let dbUsers = {};
-                        if (snap.exists()) {
-                            dbUsers = snap.data().users || {};
-                        }
-                        
-                        // --- AUTO-MIGRATE: Merge Code Constants into DB Data ---
-                        // Logic: Ưu tiên dữ liệu trong code (DEFAULT_PERSONNEL) nếu DB thiếu API ID
+                        if (snap.exists()) { dbUsers = snap.data().users || {}; }
                         let needsUpdate = false;
                         DEFAULT_PERSONNEL.forEach(defUser => {
                             const uid = "U_" + defUser.id.replace(/\s+/g, '');
-                            if (!dbUsers[uid]) {
-                                // Nếu user mới chưa có trong DB -> Thêm vào
-                                dbUsers[uid] = defUser;
-                                needsUpdate = true;
-                            } else {
-                                // Nếu user đã có, kiểm tra xem có thiếu API ID không
-                                if (defUser.apiId && dbUsers[uid].apiId !== defUser.apiId) {
-                                    dbUsers[uid].apiId = defUser.apiId; // Cập nhật API ID từ code vào DB object
-                                    needsUpdate = true;
-                                }
-                            }
+                            if (!dbUsers[uid]) { dbUsers[uid] = defUser; needsUpdate = true; } 
+                            else { if (defUser.apiId && dbUsers[uid].apiId !== defUser.apiId) { dbUsers[uid].apiId = defUser.apiId; needsUpdate = true; } }
                         });
-
                         masterData.users = dbUsers;
-                        renderTable(); // Render lại bảng ngay lập tức với dữ liệu đã merge
-
-                        // Nếu có thay đổi, lưu ngược lại vào Database để lần sau không cần merge nữa
-                        if (needsUpdate) {
-                            console.log("Auto-updating missing API IDs to Firestore...");
-                            try {
-                                await setDoc(CONFIG_USERS_DOC, { users: dbUsers }, { merge: true });
-                            } catch (e) { console.error("Auto-update failed", e); }
-                        }
+                        renderTable();
+                        if (needsUpdate) { try { await setDoc(CONFIG_USERS_DOC, { users: dbUsers }, { merge: true }); } catch (e) {} }
                     });
-
-                    // 2. Listen to Records
                     listenToMonthRecords();
                 }
             });
@@ -839,51 +450,21 @@
 
         const listenToMonthRecords = () => {
             if (unsubscribeMonth) unsubscribeMonth();
-            
             const monthKey = `${currentYear}_${currentMonth}`;
-            masterData.records = {}; // Reset local cache for new month
-            
-            // KEY CHANGE: Listen to a SUB-COLLECTION instead of one big document
-            // Path: stopcard_records / {YYYY_MM} / user_data (collection)
+            masterData.records = {}; 
             const recordsCollectionRef = collection(db, 'stopcard_records', monthKey, 'user_data');
-            
             document.querySelector('#table-body').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 animate-pulse">Đang tải dữ liệu tháng ${currentMonth}/${currentYear}...</td></tr>`;
 
             unsubscribeMonth = onSnapshot(recordsCollectionRef, (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
                     const uid = change.doc.id;
-                    if (change.type === "removed") {
-                        delete masterData.records[uid];
-                    } else {
-                        // Merge individual doc into local state
-                        masterData.records[uid] = change.doc.data(); 
-                    }
+                    if (change.type === "removed") { delete masterData.records[uid]; } 
+                    else { masterData.records[uid] = change.doc.data(); }
                 });
-                
-                // Debounce render to prevent UI flickering if many updates come at once
-                if (!isRenderPending) {
-                    isRenderPending = true;
-                    requestAnimationFrame(() => {
-                        renderTable();
-                        isRenderPending = false;
-                    });
-                }
-            }, (error) => {
-                console.error("Error:", error);
-                if (error.code === 'resource-exhausted') showToast("Hết Quota Firebase!", "error");
-            });
+                if (!isRenderPending) { isRenderPending = true; requestAnimationFrame(() => { renderTable(); isRenderPending = false; }); }
+            }, (error) => { if (error.code === 'resource-exhausted') showToast("Hết Quota Firebase!", "error"); });
         };
 
-        const seedDefaultUsers = async () => {
-            const usersMap = {};
-            DEFAULT_PERSONNEL.forEach(u => {
-                const uid = "U_" + u.id.replace(/\s+/g, '');
-                usersMap[uid] = u;
-            });
-            await setDoc(CONFIG_USERS_DOC, { users: usersMap }, { merge: true });
-        };
-
-        // --- RENDER LOGIC ---
         function renderTimeSelectors() {
             const mSelect = document.getElementById('filter-month');
             const ySelect = document.getElementById('filter-year');
@@ -920,31 +501,20 @@
         }
 
         function renderTable() {
-            // Save currently focused element to restore after render
             const activeEl = document.activeElement;
             const activeId = activeEl ? activeEl.id : null;
-
             const tbody = document.getElementById('table-body');
             const search = document.getElementById('search-input').value.toLowerCase();
             const showUnsubmittedOnly = document.getElementById('filter-unsubmitted').checked;
 
-            // Combine Users + Records
             let list = Object.entries(masterData.users || {}).map(([uid, info]) => {
                 const record = masterData.records[uid] || { count: 0, history: [] };
-                return {
-                    uid: uid,
-                    id: info.id || "---",
-                    name: info.name || "Không tên",
-                    count: record.count || 0,
-                    history: record.history || [],
-                    apiId: info.apiId || null
-                };
+                return { uid: uid, id: info.id || "---", name: info.name || "Không tên", count: record.count || 0, history: record.history || [], apiId: info.apiId || null };
             });
 
             if (search) list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
             if (showUnsubmittedOnly) list = list.filter(u => u.count === 0);
 
-            // Sort & Rank
             const rankedList = [...list].sort((a, b) => b.count - a.count);
             const rankMap = {};
             let currentRank = 1;
@@ -958,7 +528,6 @@
             else if (sortMode === 'count_desc') list.sort((a, b) => b.count - a.count);
             else if (sortMode === 'count_asc') list.sort((a, b) => a.count - b.count);
 
-            // Stats
             const totalCards = list.reduce((sum, item) => sum + item.count, 0);
             const totalPersonnel = Object.keys(masterData.users).length;
             const submittedCount = Object.keys(masterData.records).filter(uid => masterData.records[uid].count > 0).length;
@@ -967,10 +536,7 @@
             document.getElementById('stat-submitted-ratio').innerText = `${submittedCount} / ${totalPersonnel}`;
             document.getElementById('stat-unsubmitted').innerText = totalPersonnel - submittedCount;
 
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu.</td></tr>`;
-                return;
-            }
+            if (list.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu.</td></tr>`; return; }
 
             tbody.innerHTML = list.map((item, index) => {
                 const rank = rankMap[item.uid];
@@ -980,196 +546,125 @@
                     else if (rank === 2) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[10px] shadow-sm">🥈</span>`;
                     else if (rank === 3) badgeHtml = `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-orange-100 text-orange-800 border border-orange-300 text-[10px] shadow-sm">🥉</span>`;
                 }
-
                 const hasHistory = item.history && item.history.length > 0;
                 const statusColor = item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
                 const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/50 dark:bg-red-900/10' : '';
-                
                 const apiBtnHtml = item.apiId 
                     ? `<button onclick="window.fetchApiData('${item.uid}', '${item.apiId}', '${item.name}')" class="btn-api-new group" title="Xem chi tiết"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></button>`
                     : `<span class="text-slate-300 dark:text-slate-700 cursor-not-allowed p-2 inline-block"><i data-lucide="cloud-off" class="w-5 h-5"></i></span>`;
 
-                return `
-                <tr class="data-row transition-colors duration-150 border-b border-slate-200 dark:border-slate-700 group ${rowClass}">
+                return `<tr class="data-row transition-colors duration-150 border-b border-slate-200 dark:border-slate-700 group ${rowClass}">
                     <td class="p-4 text-center font-bold text-slate-400 text-sm">${index + 1}</td>
                     <td class="p-4 text-left font-mono text-blue-700 dark:text-blue-400 text-base font-bold tracking-wide shadow-sm min-w-[100px]">${item.id}</td>
                     <td class="p-4 font-medium text-slate-800 dark:text-slate-200 text-base whitespace-nowrap min-w-[180px]">${item.name} ${badgeHtml}</td>
-                    <td class="p-4 text-center flex items-center justify-center gap-2">
-                        <input type="number" min="0" 
-                            id="input-${item.uid}"
-                            class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900"
-                            value="${item.count}" 
-                            onchange="window.updateCount('${item.uid}', this.value)"
-                            onfocus="this.select()">
-                    </td>
+                    <td class="p-4 text-center flex items-center justify-center gap-2"><input type="number" min="0" id="input-${item.uid}" class="editable-input w-24 text-center font-bold bg-transparent rounded-lg py-2 ${statusColor} transition cursor-pointer hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900" value="${item.count}" onchange="window.updateCount('${item.uid}', this.value)" onfocus="this.select()"></td>
                     <td class="p-4 text-center align-middle">${apiBtnHtml}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="window.viewHistory('${item.uid}')" class="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}">
-                            <i data-lucide="history" class="w-5 h-5"></i>
-                        </button>
-                    </td>
+                    <td class="p-4 text-center"><button onclick="window.viewHistory('${item.uid}')" class="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${hasHistory ? 'text-blue-400' : 'opacity-30'}"><i data-lucide="history" class="w-5 h-5"></i></button></td>
                 </tr>`;
             }).join('');
             lucide.createIcons();
-            
-            // Restore Focus
-            if (activeId) {
-                const el = document.getElementById(activeId);
-                if (el) {
-                    el.focus();
-                    // Optional: Restore cursor position logic if needed, but for numbers select() is usually better
-                }
-            }
+            if (activeId) { const el = document.getElementById(activeId); if (el) el.focus(); }
         }
         window.renderTable = renderTable;
         document.getElementById('search-input').oninput = renderTable;
 
-        // --- WRITE LOGIC (Updated to Prevent Overwrites) ---
         window.updateCount = async (uid, newVal) => {
             const count = parseInt(newVal);
             if (isNaN(count) || count < 0) { renderTable(); return; }
-
             const monthKey = `${currentYear}_${currentMonth}`;
             const userDocRef = doc(db, 'stopcard_records', monthKey, 'user_data', uid);
-
-            // Optimistic UI Update (Cập nhật giao diện ngay lập tức cho mượt)
-            // Lưu ý: Đây chỉ là hiển thị tạm, dữ liệu thật sẽ được lưu sau khi gọi server
             const oldRecord = masterData.records[uid] || { count: 0, history: [] };
             const oldVal = oldRecord.count;
-            
             if (count === oldVal) return;
-
-            // Hiển thị tạm thời trên giao diện (Optimistic UI)
             masterData.records[uid] = { ...oldRecord, count: count };
             
             try {
-                // UPDATE: Lấy dữ liệu MỚI NHẤT từ Server trước khi ghi (Tránh ghi đè lịch sử cũ)
                 const docSnap = await getDoc(userDocRef);
                 let currentServerData = { count: 0, history: [] };
-                
-                if (docSnap.exists()) {
-                    currentServerData = docSnap.data();
-                }
-
-                // Nếu server có dữ liệu khác 0 mà ta đang định ghi 0 (do lỗi load), chặn lại
-                // Trừ khi người dùng thực sự nhập số 0
-                // Logic này giúp tránh việc "reset về 0" do mạng lag
-                if (currentServerData.count > 0 && count === 0 && !confirm("Bạn có chắc chắn muốn đặt số thẻ về 0 không?")) {
-                    renderTable(); // Revert
-                    return;
-                }
-
+                if (docSnap.exists()) { currentServerData = docSnap.data(); }
+                if (currentServerData.count > 0 && count === 0 && !confirm("Bạn có chắc chắn muốn đặt số thẻ về 0 không?")) { renderTable(); return; }
                 const now = new Date().toLocaleString('vi-VN');
                 const newHistoryItem = {date: now, by: "User", old: currentServerData.count || 0, new: count};
-                
-                // Nối lịch sử mới vào lịch sử CỦA SERVER (chứ không phải của máy local)
                 const newHistory = [newHistoryItem, ...(currentServerData.history || [])].slice(0, 9);
-                
-                await setDoc(userDocRef, {
-                    count: count,
-                    history: newHistory,
-                    lastUpdated: now
-                }, { merge: true });
-                
+                await setDoc(userDocRef, { count: count, history: newHistory, lastUpdated: now }, { merge: true });
                 showToast("Đã lưu!");
-            } catch (e) {
-                console.error(e);
-                showToast("Lỗi khi lưu!", "error");
-                // Revert nếu lỗi mạng
-                masterData.records[uid] = oldRecord;
-                renderTable();
-            }
+            } catch (e) { showToast("Lỗi khi lưu!", "error"); masterData.records[uid] = oldRecord; renderTable(); }
         };
 
-        // --- OTHER ACTIONS (Modal, API) ---
-        // (Giữ nguyên logic cũ, chỉ cập nhật cách gọi updateCount)
-
-        window.openAddUserModal = () => {
-            document.getElementById('add-user-modal').classList.remove('hidden');
-            document.getElementById('add-user-modal').classList.add('flex');
-            document.getElementById('new-user-id').value = '';
-            document.getElementById('new-user-name').value = '';
-            document.getElementById('new-user-id').focus();
-        }
-
-        window.closeAddUserModal = () => {
-            document.getElementById('add-user-modal').classList.add('hidden');
-            document.getElementById('add-user-modal').classList.remove('flex');
-        }
-
+        window.openAddUserModal = () => { document.getElementById('add-user-modal').classList.remove('hidden'); document.getElementById('add-user-modal').classList.add('flex'); document.getElementById('new-user-id').value = ''; document.getElementById('new-user-name').value = ''; document.getElementById('new-user-id').focus(); }
+        window.closeAddUserModal = () => { document.getElementById('add-user-modal').classList.add('hidden'); document.getElementById('add-user-modal').classList.remove('flex'); }
         window.confirmAddUser = async () => {
-            const id = document.getElementById('new-user-id').value.trim();
-            const name = document.getElementById('new-user-name').value.trim();
+            const id = document.getElementById('new-user-id').value.trim(); const name = document.getElementById('new-user-name').value.trim();
             if (!id || !name) return alert("Thiếu thông tin!");
-            
             const uid = "U_" + id.replace(/\s+/g, '');
             if (masterData.users[uid]) return alert("Đã tồn tại!");
-            
-            try {
-                await setDoc(CONFIG_USERS_DOC, { users: { [uid]: { id, name } } }, { merge: true });
-                showToast("Đã thêm!");
-                window.closeAddUserModal();
-            } catch (e) { alert("Lỗi: " + e.message); }
+            try { await setDoc(CONFIG_USERS_DOC, { users: { [uid]: { id, name } } }, { merge: true }); showToast("Đã thêm!"); window.closeAddUserModal(); } catch (e) { alert("Lỗi: " + e.message); }
         }
 
         window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
             if (!apiId) return alert("Chưa có API ID.");
             if (!isBulk) showToast("Đang kết nối API...", "info");
             
+            const noCache = `?t=${Date.now()}`;
             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
-            let data = null; // KEY FIX: Initialize as NULL, not []
-            try {
+            let data = null;
+
+            const fetchWithTimeout = (url, options = {}, timeout = 5000) => {
+                return Promise.race([
+                    fetch(url, options),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+                ]);
+            };
+
+            const proxies = [
+                { name: 'Direct', url: targetUrl + noCache }, 
+                { name: 'CorsProxy', url: `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` }, 
+                { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` }
+            ];
+
+            for (const proxy of proxies) {
+                if (data) break;
                 try {
-                    const res = await fetch(targetUrl);
-                    if(res.ok) data = await res.json();
-                } catch {
-                    const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
-                    const res = await fetch(proxyUrl);
-                    if(res.ok) data = await res.json();
-                }
+                    const res = await fetchWithTimeout(proxy.url, {}, 5000);
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (proxy.name === 'AllOrigins') {
+                            if (json && json.contents) { try { data = JSON.parse(json.contents); } catch(e) {} }
+                        } else { data = json; }
+                        if (!Array.isArray(data)) { data = null; }
+                    }
+                } catch (e) {}
+            }
 
-                // CRITICAL SAFETY GUARD: If data is NOT an array (means both fetch attempts failed), ABORT.
-                // Do NOT proceed to treat it as empty list (0 count).
-                if (!Array.isArray(data)) {
-                    console.warn(`Failed to fetch for ${name}`);
-                    if (!isBulk) showToast("Lỗi kết nối API (Không lấy được dữ liệu)", "error");
-                    return; 
-                }
-                
-                // --- UPDATE: Custom Date Range Logic ---
-                const allMonthData = data.filter(item => {
-                    const d = new Date(item.createdDate);
-                    
-                    // JS Date Month: 0-11. currentMonth: 1-12.
-                    // Start: 25th of Previous Month (currentMonth - 2 in JS index)
-                    // End: 24th of Current Month (currentMonth - 1 in JS index)
-                    // Note: Date object handles year wrap around correctly (e.g. Month -1 becomes Dec prev year)
-                    const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0);
-                    const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59);
-                    
-                    return d >= startDate && d <= endDate;
-                });
+            if (!Array.isArray(data)) {
+                console.warn(`Failed to fetch for ${name} using all methods.`);
+                if (!isBulk) showToast("Lỗi kết nối API (Chặn mạng hoặc Server lỗi)", "error");
+                return; 
+            }
+            
+            const allMonthData = data.filter(item => {
+                const d = new Date(item.createdDate);
+                const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0);
+                const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59);
+                return d >= startDate && d <= endDate;
+            });
 
-                const approvedData = allMonthData.filter(item => {
-                    const s = (item.trangThai?.name || "").toLowerCase();
-                    return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý');
-                });
-                
-                const approvedCount = approvedData.length;
-                const inputEl = document.getElementById(`input-${uid}`);
-                
-                const oldVal = masterData.records[uid]?.count || 0;
-                
-                if (approvedCount !== oldVal) {
-                    if(inputEl) inputEl.value = approvedCount; 
-                    await window.updateCount(uid, approvedCount);
-                } else if (!isBulk) {
-                    showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
-                }
-                
-                if (!isBulk) renderApiReport(name, allMonthData);
-
-            } catch (error) { console.error(error); if (!isBulk) alert("Lỗi API"); }
+            const approvedData = allMonthData.filter(item => {
+                const s = (item.trangThai?.name || "").toLowerCase();
+                return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý');
+            });
+            
+            const approvedCount = approvedData.length;
+            const inputEl = document.getElementById(`input-${uid}`);
+            const oldVal = masterData.records[uid]?.count || 0;
+            
+            if (approvedCount !== oldVal) {
+                if(inputEl) inputEl.value = approvedCount; 
+                await window.updateCount(uid, approvedCount);
+            } else if (!isBulk) {
+                showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
+            }
+            if (!isBulk) renderApiReport(name, allMonthData);
         };
 
         window.syncAllApi = async () => {
@@ -1178,7 +673,6 @@
             const modal = document.getElementById('loading-modal');
             const percentText = document.querySelector('.intern');
             modal.classList.remove('hidden'); modal.classList.add('flex');
-            
             for (let i = 0; i < usersWithApi.length; i++) {
                 const u = usersWithApi[i];
                 await window.fetchApiData(u.uid, u.apiId, u.name, true);
@@ -1191,14 +685,9 @@
 
         function renderApiReport(name, data) {
             const tbody = document.getElementById('api-report-body');
-            
-            // Display valid date range for user clarity
             const prevMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-            const prevYearDisplay = currentMonth === 1 ? currentYear - 1 : currentYear;
             const rangeText = `(25/${prevMonth} - 24/${currentMonth})`;
-            
             document.getElementById('api-report-subtitle').innerText = `${name} - Kỳ T${currentMonth}/${currentYear} ${rangeText}`;
-            
             if (data.length === 0) tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ.</td></tr>`;
             else {
                 tbody.innerHTML = data.map((item, i) => `
@@ -1228,22 +717,12 @@
         }
 
         window.exportExcel = () => {
-            const list = Object.entries(masterData.users).map(([uid, info]) => ({
-                "Danh Số": info.id, "Họ và Tên": info.name, "Tháng": `${currentMonth}/${currentYear}`, 
-                "Số thẻ nộp": masterData.records[uid]?.count || 0
-            }));
+            const list = Object.entries(masterData.users).map(([uid, info]) => ({ "Danh Số": info.id, "Họ và Tên": info.name, "Tháng": `${currentMonth}/${currentYear}`, "Số thẻ nộp": masterData.records[uid]?.count || 0 }));
             if(list.length === 0) return alert("Không có dữ liệu");
-            const ws = XLSX.utils.json_to_sheet(list);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, `Stopcard_T${currentMonth}_${currentYear}`);
-            XLSX.writeFile(wb, `Stopcard_Report_${currentMonth}_${currentYear}.xlsx`);
+            const ws = XLSX.utils.json_to_sheet(list); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, `Stopcard_T${currentMonth}_${currentYear}`); XLSX.writeFile(wb, `Stopcard_Report_${currentMonth}_${currentYear}.xlsx`);
         }
 
-        document.getElementById('theme-toggle').onclick = () => {
-            const html = document.documentElement; // Sửa lỗi ở đây: Khai báo lại biến html
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-        };
+        document.getElementById('theme-toggle').onclick = () => { const html = document.documentElement; html.classList.toggle('dark'); localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light'); };
 
         init();
     </script>
