@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V20</title>
+    <title>Quản Lý Stopcard - Final V20.3</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,8 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <!-- LOAD DỮ LIỆU TỪ FILE JS NGOÀI -->
-    <script src="stopcard-api-ndt.js"></script>
+    <!-- Nếu lỗi tải file (chưa up lên Github), sẽ hiện Popup thông báo -->
+    <script src="stopcard-api-ndt.js" onerror="alert('⚠️ LƯU Ý:\n\nKhông tìm thấy file danh sách nhân sự (stopcard-api-ndt.js).\n- Nếu bạn đang chạy local: Hãy chắc chắn file này nằm cùng thư mục.\n- Nếu chạy trên Web: Hệ thống sẽ tự động chuyển sang dùng dữ liệu từ Database.');"></script>
 
     <script>
         tailwind.config = {
@@ -38,7 +39,8 @@
     </script>
 
     <style>
-        body { background-color: #f8fafc; color: #334155; font-size: 13px; -webkit-tap-highlight-color: transparent; }
+        /* NATIVE SCROLL: Remove hidden overflow on body */
+        body { background-color: #f8fafc; color: #334155; font-size: 13px; -webkit-tap-highlight-color: transparent; min-height: 100vh; }
         html.dark body { background-color: #0f172a; color: #cbd5e1; }
 
         /* --- UI ELEMENTS --- */
@@ -59,7 +61,7 @@
         html.dark .report-table th { background: #1e293b; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         html.dark ::-webkit-scrollbar-thumb { background: #475569; }
@@ -87,304 +89,163 @@
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="antialiased h-screen flex flex-col bg-slate-50 dark:bg-slate-950 overflow-hidden">
+<body class="antialiased">
     
     <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
     
-    <!-- HEADER & STATUS BAR -->
-    <header class="flex-none bg-white/95 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-white/5 z-40">
-        <div class="max-w-7xl mx-auto px-4 py-3">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <!-- Left: Title & Navigation -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
-                            <i data-lucide="shield-check" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h1 class="font-bold text-slate-800 dark:text-white leading-tight">Stopcard Manager</h1>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 rounded font-bold uppercase tracking-wide">V20</span>
-                                <div id="connection-status" class="hidden items-center gap-1 text-[10px] text-green-600 font-medium">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online
+    <!-- STICKY HEADER WRAPPER -->
+    <div class="sticky top-0 z-50 shadow-md">
+        <!-- HEADER & STATUS BAR -->
+        <header class="bg-white/95 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
+            <div class="max-w-7xl mx-auto px-4 py-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <!-- Left: Title & Navigation -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h1 class="font-bold text-slate-800 dark:text-white leading-tight">Stopcard Manager</h1>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 rounded font-bold uppercase tracking-wide">V20.3</span>
+                                    <div id="connection-status" class="hidden items-center gap-1 text-[10px] text-green-600 font-medium">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Mobile Toggle Theme -->
+                        <button id="theme-toggle-mobile" class="md:hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                            <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        </button>
                     </div>
-                    
-                    <!-- Mobile Toggle Theme -->
-                    <button id="theme-toggle-mobile" class="md:hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                    </button>
-                </div>
 
-                <!-- Right: Stats Strip (Redesigned) -->
-                <div class="flex-1 max-w-2xl bg-slate-100/50 dark:bg-slate-800/50 rounded-xl p-1.5 flex items-center justify-around border border-slate-200 dark:border-slate-700/50 relative overflow-hidden group">
-                    <!-- Decor -->
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
-
-                    <div class="flex items-center gap-2 px-2">
-                        <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg"><i data-lucide="files" class="w-4 h-4"></i></div>
-                        <div class="leading-none">
-                            <div class="text-[10px] text-slate-500 font-semibold uppercase">Tổng thẻ</div>
-                            <div id="stat-total-cards" class="text-lg font-bold text-slate-800 dark:text-white">0</div>
+                    <!-- Right: Stats Strip -->
+                    <div class="flex-1 max-w-2xl bg-slate-100/50 dark:bg-slate-800/50 rounded-xl p-1.5 flex items-center justify-around border border-slate-200 dark:border-slate-700/50 relative overflow-hidden group">
+                        <div class="flex items-center gap-2 px-2">
+                            <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg"><i data-lucide="files" class="w-4 h-4"></i></div>
+                            <div class="leading-none">
+                                <div class="text-[10px] text-slate-500 font-semibold uppercase">Tổng thẻ</div>
+                                <div id="stat-total-cards" class="text-lg font-bold text-slate-800 dark:text-white">0</div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
-
-                    <div class="flex items-center gap-2 px-2">
-                        <div class="p-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
-                        <div class="leading-none">
-                            <div class="text-[10px] text-slate-500 font-semibold uppercase">Đã nộp</div>
-                            <div id="stat-submitted-ratio" class="text-lg font-bold text-slate-800 dark:text-white">0/0</div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex items-center gap-2 px-2">
+                            <div class="p-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
+                            <div class="leading-none">
+                                <div class="text-[10px] text-slate-500 font-semibold uppercase">Đã nộp</div>
+                                <div id="stat-submitted-ratio" class="text-lg font-bold text-slate-800 dark:text-white">0/0</div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
-
-                    <div class="flex items-center gap-2 px-2">
-                        <div class="p-1.5 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg"><i data-lucide="alert-octagon" class="w-4 h-4"></i></div>
-                        <div class="leading-none">
-                            <div class="text-[10px] text-slate-500 font-semibold uppercase">Chưa nộp</div>
-                            <div id="stat-unsubmitted" class="text-lg font-bold text-red-600 dark:text-red-400">0</div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex items-center gap-2 px-2">
+                            <div class="p-1.5 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg"><i data-lucide="alert-octagon" class="w-4 h-4"></i></div>
+                            <div class="leading-none">
+                                <div class="text-[10px] text-slate-500 font-semibold uppercase">Chưa nộp</div>
+                                <div id="stat-unsubmitted" class="text-lg font-bold text-red-600 dark:text-red-400">0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- TOOLBAR -->
-    <div class="flex-none bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm z-30">
-        <div class="max-w-7xl mx-auto px-4 py-2">
-            <div class="flex flex-col md:flex-row gap-2 md:gap-4 items-center">
-                
-                <!-- Combined Date & Search Control -->
-                <div class="flex-1 w-full flex bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-1 items-center gap-1 shadow-inner">
-                    <!-- Date Picker Area -->
-                    <div class="flex items-center gap-1 bg-white dark:bg-slate-700 rounded-md px-2 py-1 shadow-sm shrink-0">
-                        <button onclick="changeMonth(-1)" class="p-1 hover:text-blue-600 text-slate-400 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                        <div class="flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-200 px-1 cursor-pointer select-none relative group">
-                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
-                            <select id="filter-month" class="bg-transparent appearance-none outline-none cursor-pointer w-9 text-center">
-                                <!-- JS -->
-                            </select>
-                            <span class="text-slate-400">/</span>
-                            <select id="filter-year" class="bg-transparent appearance-none outline-none cursor-pointer w-14">
-                                <!-- JS -->
-                            </select>
+        <!-- TOOLBAR -->
+        <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 py-2">
+                <div class="flex flex-col md:flex-row gap-2 md:gap-4 items-center">
+                    <!-- Combined Date & Search Control -->
+                    <div class="flex-1 w-full flex bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-1 items-center gap-1 shadow-inner">
+                        <div class="flex items-center gap-1 bg-white dark:bg-slate-700 rounded-md px-2 py-1 shadow-sm shrink-0">
+                            <button onclick="changeMonth(-1)" class="p-1 hover:text-blue-600 text-slate-400 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <div class="flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-200 px-1 cursor-pointer select-none relative group">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <select id="filter-month" class="bg-transparent appearance-none outline-none cursor-pointer w-9 text-center"> <!-- JS --> </select>
+                                <span class="text-slate-400">/</span>
+                                <select id="filter-year" class="bg-transparent appearance-none outline-none cursor-pointer w-14"> <!-- JS --> </select>
+                            </div>
+                            <button onclick="changeMonth(1)" class="p-1 hover:text-blue-600 text-slate-400 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                         </div>
-                        <button onclick="changeMonth(1)" class="p-1 hover:text-blue-600 text-slate-400 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        <div class="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+                        <div class="flex-1 flex items-center px-2">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 mr-2"></i>
+                            <input id="search-input" type="text" placeholder="Tìm tên, mã số..." class="w-full bg-transparent border-none outline-none text-sm text-slate-700 dark:text-slate-200 placeholder-slate-400">
+                            <button onclick="document.getElementById('search-input').value='';renderTable()" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                        </div>
                     </div>
 
-                    <div class="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-1"></div>
-
-                    <!-- Search Input -->
-                    <div class="flex-1 flex items-center px-2">
-                        <i data-lucide="search" class="w-4 h-4 text-slate-400 mr-2"></i>
-                        <input id="search-input" type="text" placeholder="Tìm tên, mã số..." class="w-full bg-transparent border-none outline-none text-sm text-slate-700 dark:text-slate-200 placeholder-slate-400">
-                        <button onclick="document.getElementById('search-input').value='';renderTable()" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                    <!-- Actions Right -->
+                    <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                        <label class="cursor-pointer flex items-center gap-2 px-3 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition select-none group">
+                            <input type="checkbox" id="filter-unsubmitted" class="accent-red-500" onchange="renderTable()">
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 group-hover:text-red-500 transition">Chưa nộp</span>
+                        </label>
+                        <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                        <button onclick="window.syncAllApi()" class="p-2 rounded-lg text-purple-600 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition relative group" title="Đồng bộ tất cả"><i data-lucide="cloud-lightning" class="w-4 h-4"></i></button>
+                        <button onclick="window.openAddUserModal()" class="p-2 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition" title="Thêm nhân sự"><i data-lucide="user-plus" class="w-4 h-4"></i></button>
+                        <button onclick="window.openExportModal()" class="btn-excel flex items-center gap-2 px-3 py-1.5 rounded-lg text-white text-xs font-bold ml-1"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i><span>Xuất Excel</span></button>
+                        <button id="theme-toggle" class="hidden md:flex p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition"><i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i><i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i></button>
                     </div>
-                </div>
-
-                <!-- Actions Right -->
-                <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-                    <!-- Filter Checkbox -->
-                    <label class="cursor-pointer flex items-center gap-2 px-3 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition select-none group">
-                        <input type="checkbox" id="filter-unsubmitted" class="accent-red-500" onchange="renderTable()">
-                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 group-hover:text-red-500 transition">Chưa nộp</span>
-                    </label>
-
-                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
-
-                    <button onclick="window.syncAllApi()" class="p-2 rounded-lg text-purple-600 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition relative group" title="Đồng bộ tất cả">
-                        <i data-lucide="cloud-lightning" class="w-4 h-4"></i>
-                    </button>
-
-                    <button onclick="window.openAddUserModal()" class="p-2 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition" title="Thêm nhân sự">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
-                    </button>
-
-                    <button onclick="window.openExportModal()" class="btn-excel flex items-center gap-2 px-3 py-1.5 rounded-lg text-white text-xs font-bold ml-1">
-                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                        <span>Xuất Excel</span>
-                    </button>
-                    
-                    <button id="theme-toggle" class="hidden md:flex p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
-                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
-                    </button>
                 </div>
             </div>
-        </div>
-        
-        <!-- Proxy Status Indicator (Small) -->
-        <div id="proxy-status-bar" class="hidden bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-4 py-1 text-[10px] text-slate-400 justify-end items-center gap-2">
-            <span>Data Source:</span>
-            <span id="proxy-name-display" class="font-mono font-bold text-slate-600 dark:text-slate-300">Direct</span>
+            <!-- Proxy Status -->
+            <div id="proxy-status-bar" class="hidden bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-4 py-1 text-[10px] text-slate-400 justify-end items-center gap-2"><span>Data Source:</span><span id="proxy-name-display" class="font-mono font-bold text-slate-600 dark:text-slate-300">Direct</span></div>
         </div>
     </div>
 
-    <!-- MAIN TABLE -->
-    <main class="flex-grow overflow-hidden relative">
-        <div class="absolute inset-0 overflow-auto custom-scrollbar px-0 md:px-4 py-2 flex flex-col">
-            <div class="glass-panel md:rounded-xl overflow-hidden border-t md:border shadow-sm min-h-[300px] bg-white dark:bg-slate-900 flex-grow">
-                <table class="w-full text-left border-collapse table-compact">
-                    <thead class="sticky top-0 z-10 shadow-sm">
-                        <tr>
-                            <th class="w-10 text-center">#</th>
-                            <th class="w-24 cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('id')">Danh số</th>
-                            <th class="cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('name')">Họ và Tên</th>
-                            <th class="w-24 text-center cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('count')">Số thẻ</th>
-                            <th class="w-16 text-center">API</th>
-                            <th class="w-16 text-center">Log</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body" class="text-slate-700 dark:text-slate-300">
-                        <tr><td colspan="6" class="p-10 text-center text-slate-400">
-                            <div class="loader mb-2"></div><br>Đang tải dữ liệu...
-                        </td></tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- FOOTER (Request 2) -->
-            <div class="py-4 text-center">
-                <p class="text-[11px] text-slate-400 dark:text-slate-600 font-medium">© 2025 BCH-XNXL. Developed by Phong Luu.</p>
-            </div>
-            <!-- Extra Padding bottom for scrolling -->
-            <div class="h-4"></div>
+    <!-- MAIN CONTENT (NATIVE SCROLL) -->
+    <main class="w-full max-w-7xl mx-auto px-0 md:px-4 py-4">
+        <div class="glass-panel md:rounded-xl overflow-hidden border-t md:border shadow-sm min-h-[500px] bg-white dark:bg-slate-900">
+            <table class="w-full text-left border-collapse table-compact">
+                <thead>
+                    <tr>
+                        <th class="w-10 text-center">#</th>
+                        <th class="w-24 cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('id')">Danh số</th>
+                        <th class="cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('name')">Họ và Tên</th>
+                        <th class="w-24 text-center cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('count')">Số thẻ</th>
+                        <th class="w-16 text-center">API</th>
+                        <th class="w-16 text-center">Log</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="text-slate-700 dark:text-slate-300">
+                    <tr><td colspan="6" class="p-10 text-center text-slate-400"><div class="loader mb-2"></div><br>Đang tải dữ liệu...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="py-6 text-center">
+            <p class="text-[11px] text-slate-400 dark:text-slate-600 font-medium">© 2025 BCH-XNXL. Developed by Phong Luu.</p>
         </div>
     </main>
 
-    <!-- === MODALS === -->
-
-    <!-- 1. EXPORT EXCEL MODAL -->
+    <!-- Modals (kept same logic, just ensure z-index is high) -->
     <div id="export-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-5">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i data-lucide="file-spreadsheet" class="w-5 h-5 text-green-600"></i> Xuất Excel
-                </h3>
-                <button onclick="document.getElementById('export-modal').classList.add('hidden');document.getElementById('export-modal').classList.remove('flex')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            
+            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-5 h-5 text-green-600"></i> Xuất Excel</h3><button onclick="document.getElementById('export-modal').classList.add('hidden');document.getElementById('export-modal').classList.remove('flex')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button></div>
             <div class="space-y-3 mb-6">
-                <!-- Option 1: Current Month -->
-                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition group relative overflow-hidden">
-                    <input type="radio" name="exportOption" value="current" checked class="w-4 h-4 text-green-600 accent-green-600">
-                    <div class="flex-1">
-                        <div class="font-semibold text-sm text-slate-700 dark:text-slate-200">Tháng hiện tại</div>
-                        <div class="text-xs text-slate-500">Chỉ xuất dữ liệu tháng <span id="export-current-label">...</span></div>
-                    </div>
-                </label>
-
-                <!-- Option 2: Full Year -->
-                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition group">
-                    <input type="radio" name="exportOption" value="all" class="w-4 h-4 text-green-600 accent-green-600">
-                    <div class="flex-1">
-                        <div class="font-semibold text-sm text-slate-700 dark:text-slate-200">Toàn bộ năm <span id="export-year-label">...</span></div>
-                        <div class="text-xs text-slate-500">Tạo file có 12 Sheet (T1 - T12)</div>
-                    </div>
-                    <div class="px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-bold">PRO</div>
-                </label>
-
-                <!-- Option 3: Select Months -->
-                <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition group">
-                    <input type="radio" name="exportOption" value="select" class="w-4 h-4 text-green-600 accent-green-600 mt-0.5" id="radio-select-months">
-                    <div class="flex-1">
-                        <div class="font-semibold text-sm text-slate-700 dark:text-slate-200 mb-2">Chọn tháng cụ thể</div>
-                        <div class="grid grid-cols-4 gap-1" id="month-selector-grid">
-                            <!-- JS generates checkboxes here -->
-                        </div>
-                    </div>
-                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition group relative overflow-hidden"><input type="radio" name="exportOption" value="current" checked class="w-4 h-4 text-green-600 accent-green-600"><div class="flex-1"><div class="font-semibold text-sm text-slate-700 dark:text-slate-200">Tháng hiện tại</div><div class="text-xs text-slate-500">Chỉ xuất dữ liệu tháng <span id="export-current-label">...</span></div></div></label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition group"><input type="radio" name="exportOption" value="all" class="w-4 h-4 text-green-600 accent-green-600"><div class="flex-1"><div class="font-semibold text-sm text-slate-700 dark:text-slate-200">Toàn bộ năm <span id="export-year-label">...</span></div><div class="text-xs text-slate-500">Tạo file có 12 Sheet (T1 - T12)</div></div><div class="px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-bold">PRO</div></label>
+                <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition group"><input type="radio" name="exportOption" value="select" class="w-4 h-4 text-green-600 accent-green-600 mt-0.5" id="radio-select-months"><div class="flex-1"><div class="font-semibold text-sm text-slate-700 dark:text-slate-200 mb-2">Chọn tháng cụ thể</div><div class="grid grid-cols-4 gap-1" id="month-selector-grid"></div></div></label>
             </div>
-
-            <button onclick="window.executeExport()" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-500/20 transition active:scale-95 flex justify-center items-center gap-2">
-                <i data-lucide="download" class="w-4 h-4"></i> Tiến hành xuất file
-            </button>
+            <button onclick="window.executeExport()" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-500/20 transition active:scale-95 flex justify-center items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Tiến hành xuất file</button>
         </div>
     </div>
 
-    <!-- 2. LOADING OVERLAY -->
-    <div id="loading-overlay" class="fixed inset-0 z-[99] hidden items-center justify-center bg-black/80 backdrop-blur-sm flex-col gap-4 animate-fade-in">
-        <div class="loader border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent"></div>
-        <div class="text-white font-bold text-sm tracking-wide" id="loading-text">Đang xử lý...</div>
-        <div class="w-48 h-1 bg-slate-700 rounded-full overflow-hidden">
-            <div id="loading-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
-        </div>
-    </div>
-
-    <!-- 3. ADD USER MODAL -->
-    <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-6 relative">
-            <button onclick="window.closeAddUserModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6">Thêm Nhân Sự Mới</h3>
-            <div class="space-y-4">
-                <div><label class="text-xs font-bold text-slate-500 uppercase">Danh số (ID)</label><input type="text" id="new-user-id" class="w-full p-2 mt-1 border border-slate-300 dark:border-slate-600 rounded-lg bg-transparent focus:border-blue-500 outline-none dark:text-white"></div>
-                <div><label class="text-xs font-bold text-slate-500 uppercase">Họ và Tên</label><input type="text" id="new-user-name" class="w-full p-2 mt-1 border border-slate-300 dark:border-slate-600 rounded-lg bg-transparent focus:border-blue-500 outline-none dark:text-white"></div>
-            </div>
-            <button onclick="window.confirmAddUser()" class="w-full mt-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">Lưu nhân sự</button>
-        </div>
-    </div>
-
-    <!-- 4. HISTORY MODAL -->
-    <div id="history-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 p-5 flex flex-col max-h-[80vh]">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800 dark:text-white">Lịch sử cập nhật</h3><button onclick="document.getElementById('history-modal').classList.add('hidden');document.getElementById('history-modal').classList.remove('flex')"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button></div>
-            <div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-3"></div>
-        </div>
-    </div>
-
-    <!-- 5. API REPORT MODAL (UPDATED REQUEST 3: Detailed Columns) -->
-    <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-6 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 w-full h-full md:rounded-2xl md:h-[90vh] md:max-w-6xl flex flex-col overflow-hidden relative">
-            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
-                <div><h3 class="font-bold text-lg dark:text-white">Chi tiết thẻ an toàn</h3><p id="api-report-subtitle" class="text-xs text-slate-500"></p></div>
-                <button onclick="document.getElementById('api-report-modal').classList.add('hidden');document.getElementById('api-report-modal').classList.remove('flex')" class="p-2 bg-white dark:bg-slate-700 rounded-full hover:bg-red-50 text-slate-500 hover:text-red-500 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="flex-1 overflow-auto custom-scrollbar bg-white dark:bg-slate-950 p-0">
-                <table class="w-full text-left border-collapse report-table table-compact">
-                    <thead>
-                        <tr>
-                            <th class="p-3 border-b">STT</th>
-                            <th class="p-3 border-b">Ngày tạo</th>
-                            <th class="p-3 border-b">Công trình</th>
-                            <th class="p-3 border-b">Đơn vị</th>
-                            <th class="p-3 border-b">Tổ chức</th>
-                            <th class="p-3 border-b">Người tạo</th>
-                            <th class="p-3 border-b">Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody id="api-report-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 6. RATE LIMIT MODAL (Spam prevention) -->
-    <div id="rate-limit-modal" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-orange-200 dark:border-orange-900 p-6 text-center">
-            <div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-alert" class="w-6 h-6"></i></div>
-            <h3 class="font-bold text-lg mb-2 dark:text-white">Cảnh báo Spam</h3>
-            <p id="rate-limit-msg" class="text-sm text-slate-500 mb-6"></p>
-            <div class="flex gap-3">
-                <button id="btn-wait" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold text-sm">Chờ thêm</button>
-                <button id="btn-switch" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-sm">Đổi Proxy</button>
-            </div>
-        </div>
-    </div>
+    <!-- Other Modals (Loading, Add User, History, API Report, Rate Limit, Sync Error - kept intact) -->
+    <div id="loading-overlay" class="fixed inset-0 z-[99] hidden items-center justify-center bg-black/80 backdrop-blur-sm flex-col gap-4 animate-fade-in"><div class="loader border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent"></div><div class="text-white font-bold text-sm tracking-wide" id="loading-text">Đang xử lý...</div><div class="w-48 h-1 bg-slate-700 rounded-full overflow-hidden"><div id="loading-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div></div></div>
     
-    <!-- 7. SYNC ERROR MODAL -->
-    <div id="sync-error-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-red-200 dark:border-red-900 p-6 flex flex-col max-h-[70vh]">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-red-600 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5 h-5"></i> Kết quả Đồng bộ</h3><button onclick="document.getElementById('sync-error-modal').classList.add('hidden');document.getElementById('sync-error-modal').classList.remove('flex')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-            <div id="sync-error-list" class="flex-1 overflow-y-auto custom-scrollbar border rounded-lg p-2 bg-slate-50 dark:bg-slate-950"></div>
-        </div>
-    </div>
+    <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in"><div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 p-6 relative"><button onclick="window.closeAddUserModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button><h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6">Thêm Nhân Sự Mới</h3><div class="space-y-4"><div><label class="text-xs font-bold text-slate-500 uppercase">Danh số (ID)</label><input type="text" id="new-user-id" class="w-full p-2 mt-1 border border-slate-300 dark:border-slate-600 rounded-lg bg-transparent focus:border-blue-500 outline-none dark:text-white"></div><div><label class="text-xs font-bold text-slate-500 uppercase">Họ và Tên</label><input type="text" id="new-user-name" class="w-full p-2 mt-1 border border-slate-300 dark:border-slate-600 rounded-lg bg-transparent focus:border-blue-500 outline-none dark:text-white"></div></div><button onclick="window.confirmAddUser()" class="w-full mt-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">Lưu nhân sự</button></div></div>
+    
+    <div id="history-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in"><div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 p-5 flex flex-col max-h-[80vh]"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800 dark:text-white">Lịch sử cập nhật</h3><button onclick="document.getElementById('history-modal').classList.add('hidden');document.getElementById('history-modal').classList.remove('flex')"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button></div><div id="history-content" class="flex-1 overflow-y-auto custom-scrollbar space-y-3"></div></div></div>
+    
+    <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-6 animate-fade-in"><div class="bg-white dark:bg-slate-900 w-full h-full md:rounded-2xl md:h-[90vh] md:max-w-6xl flex flex-col overflow-hidden relative"><div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800"><div><h3 class="font-bold text-lg dark:text-white">Chi tiết thẻ an toàn</h3><p id="api-report-subtitle" class="text-xs text-slate-500"></p></div><button onclick="document.getElementById('api-report-modal').classList.add('hidden');document.getElementById('api-report-modal').classList.remove('flex')" class="p-2 bg-white dark:bg-slate-700 rounded-full hover:bg-red-50 text-slate-500 hover:text-red-500 transition"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="flex-1 overflow-auto custom-scrollbar bg-white dark:bg-slate-950 p-0"><table class="w-full text-left border-collapse report-table table-compact"><thead><tr><th class="p-3 border-b">STT</th><th class="p-3 border-b">Ngày tạo</th><th class="p-3 border-b">Công trình</th><th class="p-3 border-b">Đơn vị</th><th class="p-3 border-b">Tổ chức</th><th class="p-3 border-b">Người tạo</th><th class="p-3 border-b">Trạng thái</th></tr></thead><tbody id="api-report-body"></tbody></table></div></div></div>
+    
+    <div id="rate-limit-modal" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"><div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm border border-orange-200 dark:border-orange-900 p-6 text-center"><div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-alert" class="w-6 h-6"></i></div><h3 class="font-bold text-lg mb-2 dark:text-white">Cảnh báo Spam</h3><p id="rate-limit-msg" class="text-sm text-slate-500 mb-6"></p><div class="flex gap-3"><button id="btn-wait" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold text-sm">Chờ thêm</button><button id="btn-switch" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-sm">Đổi Proxy</button></div></div></div>
+    
+    <div id="sync-error-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"><div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-red-200 dark:border-red-900 p-6 flex flex-col max-h-[70vh]"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-red-600 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5 h-5"></i> Kết quả Đồng bộ</h3><button onclick="document.getElementById('sync-error-modal').classList.add('hidden');document.getElementById('sync-error-modal').classList.remove('flex')"><i data-lucide="x" class="w-5 h-5"></i></button></div><div id="sync-error-list" class="flex-1 overflow-y-auto custom-scrollbar border rounded-lg p-2 bg-slate-50 dark:bg-slate-950"></div></div></div>
 
     <!-- FIREBASE LOGIC -->
     <script type="module">
@@ -392,13 +253,10 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, onSnapshot, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ==========================================
-        // DỮ LIỆU ĐƯỢC LOAD TỪ STOPCARD-API-NDT.JS
-        // ==========================================
-        // Kiểm tra xem file JS ngoài đã load chưa
+        // Logic Check file JS ngoài: Nếu không tìm thấy, đã có alert ở trên (onerror tag).
+        // Đoạn này chỉ log nhẹ để dev biết.
         if (typeof window.DEFAULT_PERSONNEL === 'undefined') {
-            console.error("Lỗi: Không tìm thấy file stopcard-api-ndt.js hoặc chưa load xong!");
-            alert("Lỗi: Không tìm thấy file dữ liệu nhân sự (stopcard-api-ndt.js). Vui lòng kiểm tra lại!");
+            console.warn("Info: Chạy chế độ Database Only.");
         }
 
         const CUSTOM_PROXY_URL = "https://api-proxy.phongluuservices.workers.dev/"; 
@@ -442,37 +300,25 @@
             if(text) text.textContent = proxyName;
         }
 
-        // --- EXCEL LOGIC (NEW) ---
+        // --- EXCEL LOGIC ---
         window.openExportModal = () => {
             const modal = document.getElementById('export-modal');
             modal.classList.remove('hidden'); modal.classList.add('flex');
             document.getElementById('export-current-label').innerText = `${currentMonth}/${currentYear}`;
             document.getElementById('export-year-label').innerText = `${currentYear}`;
             
-            // Generate Checkboxes for month selection
             const grid = document.getElementById('month-selector-grid');
             grid.innerHTML = '';
             for(let i=1; i<=12; i++) {
-                grid.innerHTML += `
-                    <label class="flex items-center justify-center p-2 rounded border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 peer-checked:bg-green-100 dark:peer-checked:bg-green-900/40 select-none text-xs font-bold transition">
-                        <input type="checkbox" class="month-checkbox hidden" value="${i}">
-                        <span class="text-slate-600 dark:text-slate-400 checkbox-label">T${i}</span>
-                    </label>
-                `;
+                grid.innerHTML += `<label class="flex items-center justify-center p-2 rounded border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 peer-checked:bg-green-100 dark:peer-checked:bg-green-900/40 select-none text-xs font-bold transition"><input type="checkbox" class="month-checkbox hidden" value="${i}"><span class="text-slate-600 dark:text-slate-400 checkbox-label">T${i}</span></label>`;
             }
             
-            // Highlight selected boxes script
             document.querySelectorAll('.month-checkbox').forEach(cb => {
                 cb.addEventListener('change', (e) => {
                     const label = e.target.nextElementSibling;
                     const parent = e.target.parentElement;
-                    if(e.target.checked) {
-                        parent.classList.add('bg-green-100', 'dark:bg-green-900/40', 'border-green-500');
-                        label.classList.add('text-green-700', 'dark:text-green-300');
-                    } else {
-                        parent.classList.remove('bg-green-100', 'dark:bg-green-900/40', 'border-green-500');
-                        label.classList.remove('text-green-700', 'dark:text-green-300');
-                    }
+                    if(e.target.checked) { parent.classList.add('bg-green-100', 'dark:bg-green-900/40', 'border-green-500'); label.classList.add('text-green-700', 'dark:text-green-300'); } 
+                    else { parent.classList.remove('bg-green-100', 'dark:bg-green-900/40', 'border-green-500'); label.classList.remove('text-green-700', 'dark:text-green-300'); }
                     document.getElementById('radio-select-months').checked = true;
                 });
             });
@@ -489,85 +335,51 @@
             loading.classList.remove('hidden'); loading.classList.add('flex');
             
             let monthsToExport = [];
-            
-            if (option === 'current') {
-                monthsToExport.push(currentMonth);
-            } else if (option === 'all') {
-                for(let i=1; i<=12; i++) monthsToExport.push(i);
-            } else if (option === 'select') {
-                document.querySelectorAll('.month-checkbox:checked').forEach(cb => monthsToExport.push(parseInt(cb.value)));
-            }
+            if (option === 'current') monthsToExport.push(currentMonth);
+            else if (option === 'all') for(let i=1; i<=12; i++) monthsToExport.push(i);
+            else if (option === 'select') document.querySelectorAll('.month-checkbox:checked').forEach(cb => monthsToExport.push(parseInt(cb.value)));
 
-            if(monthsToExport.length === 0) {
-                loading.classList.add('hidden'); loading.classList.remove('flex');
-                return alert("Vui lòng chọn ít nhất 1 tháng!");
-            }
+            if(monthsToExport.length === 0) { loading.classList.add('hidden'); loading.classList.remove('flex'); return alert("Vui lòng chọn ít nhất 1 tháng!"); }
 
             const wb = XLSX.utils.book_new();
             let hasData = false;
 
             try {
-                // Fetch Users once
-                const users = masterData.users; // Use cached users
-                
+                const users = masterData.users;
                 for (let i = 0; i < monthsToExport.length; i++) {
                     const m = monthsToExport[i];
                     loadingText.innerText = `Đang lấy dữ liệu Tháng ${m}/${currentYear}...`;
                     loadingBar.style.width = `${((i+1) / monthsToExport.length) * 100}%`;
                     
-                    // Fetch data from Firestore
                     let monthRecords = {};
-                    
-                    // If it's current month, use cache. Else fetch.
-                    if (m === currentMonth && masterData.records) {
-                        monthRecords = masterData.records;
-                    } else {
+                    if (m === currentMonth && masterData.records) { monthRecords = masterData.records; } 
+                    else {
                         const snap = await getDocs(collection(db, 'stopcard_records', `${currentYear}_${m}`, 'user_data'));
                         snap.forEach(doc => { monthRecords[doc.id] = doc.data(); });
                     }
 
-                    // Build Sheet Data
                     const sheetData = [];
-                    // Header
                     sheetData.push(["STT", "Danh Số", "Họ và Tên", `Thẻ Tháng ${m}/${currentYear}`, "Trạng thái"]);
-                    
                     let stt = 1;
                     Object.entries(users).forEach(([uid, info]) => {
                         const count = monthRecords[uid]?.count || 0;
-                        sheetData.push([
-                            stt++,
-                            info.id,
-                            info.name,
-                            count,
-                            count > 0 ? "Đã nộp" : "Chưa nộp"
-                        ]);
+                        sheetData.push([stt++, info.id, info.name, count, count > 0 ? "Đã nộp" : "Chưa nộp"]);
                     });
 
                     if (sheetData.length > 1) {
                         const ws = XLSX.utils.aoa_to_sheet(sheetData);
-                        // Auto-width
                         const wscols = [{wch:5}, {wch:10}, {wch:25}, {wch:15}, {wch:15}];
                         ws['!cols'] = wscols;
                         XLSX.utils.book_append_sheet(wb, ws, `T${m}-${currentYear}`);
                         hasData = true;
                     }
-                    
-                    // Small delay to let UI breathe
                     await new Promise(r => setTimeout(r, 100));
                 }
 
-                if (!hasData) {
-                    alert("Không có dữ liệu để xuất!");
-                } else {
-                    XLSX.writeFile(wb, `BaoCao_Stopcard_Nam${currentYear}.xlsx`);
-                    showToast("Xuất file thành công!");
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Lỗi khi xuất file: " + e.message);
-            } finally {
-                loading.classList.add('hidden'); loading.classList.remove('flex');
-            }
+                if (!hasData) alert("Không có dữ liệu để xuất!");
+                else { XLSX.writeFile(wb, `BaoCao_Stopcard_Nam${currentYear}.xlsx`); showToast("Xuất file thành công!"); }
+            } catch (e) { console.error(e); alert("Lỗi khi xuất file: " + e.message); } 
+            finally { loading.classList.add('hidden'); loading.classList.remove('flex'); }
         }
 
         // --- MAIN INIT ---
@@ -576,7 +388,6 @@
             const html = document.documentElement;
             if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
             
-            // Theme toggles
             const toggleFn = () => { html.classList.toggle('dark'); localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light'); };
             document.getElementById('theme-toggle').onclick = toggleFn;
             document.getElementById('theme-toggle-mobile').onclick = toggleFn;
@@ -588,14 +399,12 @@
                     document.getElementById('connection-status').classList.remove('hidden');
                     document.getElementById('connection-status').classList.add('flex');
                     
-                    // 1. Listen to Users Config
                     onSnapshot(CONFIG_USERS_DOC, async (snap) => {
                         let dbUsers = {};
                         if (snap.exists()) { dbUsers = snap.data().users || {}; }
                         
-                        // Sync with DEFAULT_PERSONNEL (from global window variable)
                         let needsUpdate = false;
-                        const defaultList = window.DEFAULT_PERSONNEL || [];
+                        const defaultList = window.DEFAULT_PERSONNEL || []; // Fallback to empty if js file missing
 
                         defaultList.forEach(defUser => {
                             const uid = "U_" + defUser.id.replace(/\s+/g, '');
@@ -607,8 +416,6 @@
                         renderTable();
                         if (needsUpdate) { try { await setDoc(CONFIG_USERS_DOC, { users: dbUsers }, { merge: true }); } catch (e) {} }
                     });
-
-                    // 2. Listen to Month Records
                     listenToMonthRecords();
                 }
             });
@@ -639,12 +446,7 @@
             ySelect.innerHTML = '';
             for(let i=currentYear-1; i<=currentYear+1; i++) ySelect.innerHTML += `<option value="${i}" ${i === currentYear ? 'selected' : ''}>${i}</option>`;
             
-            const updateDate = () => {
-                localStorage.setItem('stopcard_month', currentMonth);
-                localStorage.setItem('stopcard_year', currentYear);
-                renderTimeSelectors();
-                listenToMonthRecords();
-            };
+            const updateDate = () => { localStorage.setItem('stopcard_month', currentMonth); localStorage.setItem('stopcard_year', currentYear); renderTimeSelectors(); listenToMonthRecords(); };
             mSelect.onchange = (e) => { currentMonth = parseInt(e.target.value); updateDate(); };
             ySelect.onchange = (e) => { currentYear = parseInt(e.target.value); updateDate(); };
         }
@@ -668,8 +470,6 @@
         }
 
         function renderTable() {
-            const activeEl = document.activeElement;
-            const activeId = activeEl ? activeEl.id : null;
             const tbody = document.getElementById('table-body');
             const search = document.getElementById('search-input').value.toLowerCase();
             const showUnsubmittedOnly = document.getElementById('filter-unsubmitted').checked;
@@ -682,7 +482,6 @@
             if (search) list = list.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
             if (showUnsubmittedOnly) list = list.filter(u => u.count === 0);
 
-            // Sorting logic
             if (sortMode === 'id_asc') list.sort((a, b) => a.id.toString().localeCompare(b.id.toString(), 'en', { numeric: true }));
             else if (sortMode === 'id_desc') list.sort((a, b) => b.id.toString().localeCompare(a.id.toString(), 'en', { numeric: true }));
             else if (sortMode === 'name_asc') list.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
@@ -710,46 +509,31 @@
                     <td class="text-center font-bold text-slate-400 text-xs">${index + 1}</td>
                     <td class="font-mono text-blue-700 dark:text-blue-400 font-bold text-xs">${item.id}</td>
                     <td class="font-medium text-slate-700 dark:text-slate-300 text-sm whitespace-nowrap">${item.name}</td>
-                    <td class="text-center">
-                        <input type="number" min="0" id="input-${item.uid}" 
-                            class="modern-input w-16 text-center font-bold rounded py-1 ${item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}" 
-                            value="${item.count}" 
-                            onchange="window.updateCount('${item.uid}', this.value)" 
-                            onfocus="this.select()">
-                    </td>
+                    <td class="text-center"><input type="number" min="0" id="input-${item.uid}" class="modern-input w-16 text-center font-bold rounded py-1 ${item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}" value="${item.count}" onchange="window.updateCount('${item.uid}', this.value)" onfocus="this.select()"></td>
                     <td class="text-center">${apiBtnHtml}</td>
-                    <td class="text-center">
-                         <button onclick="window.viewHistory('${item.uid}')" class="p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${item.history.length > 0 ? 'text-blue-400' : 'opacity-20'}"><i data-lucide="history" class="w-3.5 h-3.5"></i></button>
-                    </td>
+                    <td class="text-center"><button onclick="window.viewHistory('${item.uid}')" class="p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${item.history.length > 0 ? 'text-blue-400' : 'opacity-20'}"><i data-lucide="history" class="w-3.5 h-3.5"></i></button></td>
                 </tr>`;
             }).join('');
-            
             lucide.createIcons();
-            if (activeId) { const el = document.getElementById(activeId); if (el) el.focus(); }
         }
         window.renderTable = renderTable;
         document.getElementById('search-input').oninput = renderTable;
 
-        // DB ACTIONS
         window.updateCount = async (uid, newVal) => {
             const count = parseInt(newVal);
             if (isNaN(count) || count < 0) { renderTable(); return; }
             const monthKey = `${currentYear}_${currentMonth}`;
             const userDocRef = doc(db, 'stopcard_records', monthKey, 'user_data', uid);
             const oldRecord = masterData.records[uid] || { count: 0, history: [] };
-            
             if (count === oldRecord.count) return;
-            
-            // Optimistic Update
             masterData.records[uid] = { ...oldRecord, count: count };
-            
             try {
                 const docSnap = await getDoc(userDocRef);
                 let currentServerData = { count: 0, history: [] };
                 if (docSnap.exists()) { currentServerData = docSnap.data(); }
                 const now = new Date().toLocaleString('vi-VN');
                 const newHistoryItem = {date: now, by: "User", old: currentServerData.count || 0, new: count};
-                const newHistory = [newHistoryItem, ...(currentServerData.history || [])].slice(0, 5); // Keep last 5
+                const newHistory = [newHistoryItem, ...(currentServerData.history || [])].slice(0, 5);
                 await setDoc(userDocRef, { count: count, history: newHistory, lastUpdated: now }, { merge: true });
                 showToast("Đã cập nhật!");
             } catch (e) { showToast("Lỗi khi lưu!", "error"); masterData.records[uid] = oldRecord; renderTable(); }
@@ -765,93 +549,44 @@
             try { await setDoc(CONFIG_USERS_DOC, { users: { [uid]: { id, name } } }, { merge: true }); showToast("Đã thêm!"); window.closeAddUserModal(); } catch (e) { alert("Lỗi: " + e.message); }
         }
 
-        // HISTORY VIEWER
         window.viewHistory = (uid) => {
             const history = masterData.records[uid]?.history || [];
             const userName = masterData.users[uid]?.name;
             const container = document.getElementById('history-content');
-            container.innerHTML = `<div class="font-bold border-b pb-2 mb-2 dark:text-white">${userName}</div>` + (history.length ? history.map(h => `
-                <div class="text-xs p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700">
-                    <div class="flex justify-between font-bold dark:text-slate-300"><span>${h.old} ➝ <span class="text-blue-500">${h.new}</span></span></div>
-                    <div class="text-slate-400 mt-1">${h.date}</div>
-                </div>`).join('') : '<div class="text-slate-400 italic text-sm">Trống</div>');
+            container.innerHTML = `<div class="font-bold border-b pb-2 mb-2 dark:text-white">${userName}</div>` + (history.length ? history.map(h => `<div class="text-xs p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700"><div class="flex justify-between font-bold dark:text-slate-300"><span>${h.old} ➝ <span class="text-blue-500">${h.new}</span></span></div><div class="text-slate-400 mt-1">${h.date}</div></div>`).join('') : '<div class="text-slate-400 italic text-sm">Trống</div>');
             document.getElementById('history-modal').classList.remove('hidden'); document.getElementById('history-modal').classList.add('flex');
         }
 
-        // API & PROXY LOGIC
-        function showRateLimitModal(message) {
-            return new Promise((resolve) => {
-                const modal = document.getElementById('rate-limit-modal');
-                const msgEl = document.getElementById('rate-limit-msg');
-                msgEl.innerText = message || "Rate Limit Exceeded";
-                modal.classList.remove('hidden'); modal.classList.add('flex');
-                document.getElementById('btn-wait').onclick = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(false); };
-                document.getElementById('btn-switch').onclick = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(true); };
-            });
-        }
+        function showRateLimitModal(message) { return new Promise((resolve) => { const modal = document.getElementById('rate-limit-modal'); const msgEl = document.getElementById('rate-limit-msg'); msgEl.innerText = message || "Rate Limit Exceeded"; modal.classList.remove('hidden'); modal.classList.add('flex'); document.getElementById('btn-wait').onclick = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(false); }; document.getElementById('btn-switch').onclick = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(true); }; }); }
 
         window.fetchApiData = async (uid, apiId, name, isBulk = false) => {
             if (!apiId) return alert("Chưa có API ID.");
             if (!isBulk) showToast("Đang tải dữ liệu...", "info");
-            
             const noCache = `?t=${Date.now()}`;
             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
             let data = null;
-
-            const fetchWithTimeout = (url, opts = {}, time = 5000) => {
-                return Promise.race([ fetch(url, opts), new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout')), time)) ]);
-            };
-
+            const fetchWithTimeout = (url, opts = {}, time = 5000) => { return Promise.race([ fetch(url, opts), new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout')), time)) ]); };
             const proxies = [];
             if (CUSTOM_PROXY_URL) proxies.push({ name: 'CustomWorker', url: `${CUSTOM_PROXY_URL}?apiId=${apiId}` });
-            proxies.push(
-                { name: 'Direct', url: targetUrl + noCache }, 
-                { name: 'CorsProxy', url: `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` }, 
-                { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}` },
-                { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` }
-            );
+            proxies.push({ name: 'Direct', url: targetUrl + noCache }, { name: 'CorsProxy', url: `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` }, { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}` }, { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` });
 
             for (const proxy of proxies) {
                 if (data) break;
                 try {
                     const res = await fetchWithTimeout(proxy.url, {}, 5000);
-                    if (res.status === 429) {
-                        if (!isBulk) {
-                            const json = await res.json();
-                            if (await showRateLimitModal(json.message)) continue; else return false;
-                        } else continue;
-                    }
-                    if (res.ok) {
-                        const json = await res.json();
-                        if (proxy.name === 'AllOrigins') { if (json && json.contents) try { data = JSON.parse(json.contents); } catch(e){} }
-                        else data = json;
-                        if (Array.isArray(data)) updateProxyStatus(proxy.name); else data = null;
-                    }
+                    if (res.status === 429) { if (!isBulk) { const json = await res.json(); if (await showRateLimitModal(json.message)) continue; else return false; } else continue; }
+                    if (res.ok) { const json = await res.json(); if (proxy.name === 'AllOrigins') { if (json && json.contents) try { data = JSON.parse(json.contents); } catch(e){} } else data = json; if (Array.isArray(data)) updateProxyStatus(proxy.name); else data = null; }
                 } catch (e) {}
             }
 
             if (!Array.isArray(data)) { if (!isBulk) showToast("Lỗi kết nối API", "error"); return false; }
             
-            const allMonthData = data.filter(item => {
-                const d = new Date(item.createdDate);
-                const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0);
-                const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59);
-                return d >= startDate && d <= endDate;
-            });
-
-            const approvedData = allMonthData.filter(item => {
-                const s = (item.trangThai?.name || "").toLowerCase();
-                return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý');
-            });
-            
+            const allMonthData = data.filter(item => { const d = new Date(item.createdDate); const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0); const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59); return d >= startDate && d <= endDate; });
+            const approvedData = allMonthData.filter(item => { const s = (item.trangThai?.name || "").toLowerCase(); return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý'); });
             const approvedCount = approvedData.length;
             const inputEl = document.getElementById(`input-${uid}`);
-            
-            if (approvedCount !== (masterData.records[uid]?.count || 0)) {
-                if(inputEl) inputEl.value = approvedCount; 
-                await window.updateCount(uid, approvedCount);
-            } else if (!isBulk) showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
-            
+            if (approvedCount !== (masterData.records[uid]?.count || 0)) { if(inputEl) inputEl.value = approvedCount; await window.updateCount(uid, approvedCount); } 
+            else if (!isBulk) showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
             if (!isBulk) renderApiReport(name, allMonthData);
             return true; 
         };
@@ -859,17 +594,7 @@
         function renderApiReport(name, data) {
             const tbody = document.getElementById('api-report-body');
             document.getElementById('api-report-subtitle').innerText = `${name} - T${currentMonth}`;
-            // Updated to detailed columns as requested
-            tbody.innerHTML = data.length ? data.map((item, i) => `
-                <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">
-                    <td class="p-3 text-sm">${i + 1}</td>
-                    <td class="p-3 text-sm font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">${new Date(item.createdDate).toLocaleDateString('vi-VN')}</td>
-                    <td class="p-3 text-sm truncate max-w-[150px]" title="${item.constructionName || ''}">${item.constructionName || '-'}</td>
-                    <td class="p-3 text-sm whitespace-nowrap">${(item.departmentName || '').replace('Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí', 'XNXL')}</td>
-                    <td class="p-3 text-sm whitespace-nowrap">${item.toChuc || '-'}</td>
-                    <td class="p-3 text-sm font-mono text-slate-500 dark:text-slate-500">${(item.createBy || '').split('@')[0]}</td>
-                    <td class="p-3 text-sm"><span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 font-bold ${item.trangThai?.name?.includes('Đạt') ? 'text-green-600' : 'text-slate-600'}">${item.trangThai?.name || ''}</span></td>
-                </tr>`).join('') : `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Không có thẻ trong kỳ báo cáo này.</td></tr>`;
+            tbody.innerHTML = data.length ? data.map((item, i) => `<tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800"><td class="p-3 text-sm">${i + 1}</td><td class="p-3 text-sm font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">${new Date(item.createdDate).toLocaleDateString('vi-VN')}</td><td class="p-3 text-sm truncate max-w-[150px]" title="${item.constructionName || ''}">${item.constructionName || '-'}</td><td class="p-3 text-sm whitespace-nowrap">${(item.departmentName || '').replace('Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí', 'XNXL')}</td><td class="p-3 text-sm whitespace-nowrap">${item.toChuc || '-'}</td><td class="p-3 text-sm font-mono text-slate-500 dark:text-slate-500">${(item.createBy || '').split('@')[0]}</td><td class="p-3 text-sm"><span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 font-bold ${item.trangThai?.name?.includes('Đạt') ? 'text-green-600' : 'text-slate-600'}">${item.trangThai?.name || ''}</span></td></tr>`).join('') : `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Không có thẻ trong kỳ báo cáo này.</td></tr>`;
             document.getElementById('api-report-modal').classList.remove('hidden'); document.getElementById('api-report-modal').classList.add('flex');
         }
 
@@ -878,26 +603,17 @@
             const users = Object.entries(masterData.users).map(([uid, info]) => ({ uid, ...info })).filter(u => u.apiId);
             const overlay = document.getElementById('loading-overlay');
             const bar = document.getElementById('loading-bar');
-            
             overlay.classList.remove('hidden'); overlay.classList.add('flex');
             const failed = [];
-            
             const batch = 5;
             for(let i=0; i<users.length; i+=batch) {
                 const chunk = users.slice(i, i+batch);
-                await Promise.all(chunk.map(async u => {
-                    const ok = await window.fetchApiData(u.uid, u.apiId, u.name, true);
-                    if(!ok) failed.push(u.name);
-                }));
+                await Promise.all(chunk.map(async u => { const ok = await window.fetchApiData(u.uid, u.apiId, u.name, true); if(!ok) failed.push(u.name); }));
                 const pct = Math.round(((i+batch)/users.length)*100);
                 bar.style.width = `${pct}%`;
             }
             overlay.classList.add('hidden'); overlay.classList.remove('flex');
-            
-            if(failed.length) {
-                document.getElementById('sync-error-list').innerHTML = failed.map(n => `<div class="text-red-600 text-sm py-1 border-b">${n}</div>`).join('');
-                document.getElementById('sync-error-modal').classList.remove('hidden'); document.getElementById('sync-error-modal').classList.add('flex');
-            } else showToast("Đồng bộ hoàn tất!", "success");
+            if(failed.length) { document.getElementById('sync-error-list').innerHTML = failed.map(n => `<div class="text-red-600 text-sm py-1 border-b">${n}</div>`).join(''); document.getElementById('sync-error-modal').classList.remove('hidden'); document.getElementById('sync-error-modal').classList.add('flex'); } else showToast("Đồng bộ hoàn tất!", "success");
         }
 
         init();
