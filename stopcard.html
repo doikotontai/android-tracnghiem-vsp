@@ -12,7 +12,8 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <!-- LOAD DỮ LIỆU TỪ FILE JS NGOÀI -->
-    <script src="stopcard-api-ndt.js" onerror="alert('⚠️ LƯU Ý:\n\nKhông tìm thấy file danh sách nhân sự (stopcard-api-ndt.js).\n- Nếu bạn đang chạy local: Hãy chắc chắn file này nằm cùng thư mục.\n- Nếu chạy trên Web: Hệ thống sẽ tự động chuyển sang dùng dữ liệu từ Database.');"></script>
+    <!-- Bỏ onerror ở đây, chuyển vào script chính để check chắc chắn hơn -->
+    <script src="stopcard-api-ndt.js"></script>
 
     <script>
         tailwind.config = {
@@ -255,10 +256,10 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, onSnapshot, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Logic Check file JS ngoài: Nếu không tìm thấy, đã có alert ở trên (onerror tag).
-        // Đoạn này chỉ log nhẹ để dev biết.
+        // Logic check file JS ngoài chính xác hơn: Kiểm tra biến global sau khi trang load
+        // Nếu biến không tồn tại -> File JS bị xóa hoặc lỗi -> Hiện Alert
         if (typeof window.DEFAULT_PERSONNEL === 'undefined') {
-            console.warn("Info: Chạy chế độ Database Only.");
+            alert('⚠️ CẢNH BÁO QUAN TRỌNG:\n\nKhông tìm thấy file "stopcard-api-ndt.js".\nHệ thống sẽ chạy bằng dữ liệu cũ trong Database.');
         }
 
         const CUSTOM_PROXY_URL = "https://api-proxy.phongluuservices.workers.dev/"; 
