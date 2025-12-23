@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Direct Connection</title>
+    <title>Quản Lý Stopcard - Optimized V4</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -734,7 +734,6 @@
             { id: "XL1123", name: "Nguyễn Văn Lộc", apiId: "6c58b2aa-2b0b-400d-8113-dbc0fd1fe793" },
             { id: "XL2064", name: "Nguyễn Quốc Tài", apiId: "25489db6-948f-4504-a1fc-d692127958bf" },
             { id: "XL1375", name: "Nguyễn Anh Tiến", apiId: "0f30900c-83e6-4021-bc02-9bc86fdab368" },
-            // UPDATED HERE: Added API ID for Phạm Hồng Vũ
             { id: "XL1665", name: "Phạm Hồng Vũ", apiId: "1e0f9d58-7e4a-44fe-91ab-6e57d0c54573" },
             { id: "XL1781", name: "Lê Nguyễn Huy Hoàn", apiId: "3e2df8bd-c965-4eb2-83c1-5806169aedce" },
             { id: "XL1124", name: "Ngô Đức Thuận", apiId: "52be4e27-3831-425e-80ca-fc0990e751ee" },
@@ -1117,25 +1116,23 @@
             if (!apiId) return alert("Chưa có API ID.");
             if (!isBulk) showToast("Đang kết nối API...", "info");
             
-            // Generate unique param to prevent caching
-            const noCache = `?t=${Date.now()}`;
-            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}${noCache}`;
-            
-            let data = null;
-
+            const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
+            let data = null; // KEY FIX: Initialize as NULL, not []
             try {
-                // Direct Fetch ONLY as requested
-                const res = await fetch(targetUrl);
-                if (res.ok) {
-                    data = await res.json();
-                } else {
-                    console.warn(`Direct fetch failed with status: ${res.status}`);
+                try {
+                    const res = await fetch(targetUrl);
+                    if(res.ok) data = await res.json();
+                } catch {
+                    const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
+                    const res = await fetch(proxyUrl);
+                    if(res.ok) data = await res.json();
                 }
 
-                // CRITICAL SAFETY GUARD: If data is NOT an array (means fetch failed), ABORT.
+                // CRITICAL SAFETY GUARD: If data is NOT an array (means both fetch attempts failed), ABORT.
+                // Do NOT proceed to treat it as empty list (0 count).
                 if (!Array.isArray(data)) {
-                    console.warn(`Failed to fetch for ${name} using direct connection.`);
-                    if (!isBulk) showToast("Lỗi kết nối API (CORS hoặc Mạng)", "error");
+                    console.warn(`Failed to fetch for ${name}`);
+                    if (!isBulk) showToast("Lỗi kết nối API (Không lấy được dữ liệu)", "error");
                     return; 
                 }
                 
@@ -1146,6 +1143,7 @@
                     // JS Date Month: 0-11. currentMonth: 1-12.
                     // Start: 25th of Previous Month (currentMonth - 2 in JS index)
                     // End: 24th of Current Month (currentMonth - 1 in JS index)
+                    // Note: Date object handles year wrap around correctly (e.g. Month -1 becomes Dec prev year)
                     const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0);
                     const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59);
                     
@@ -1171,10 +1169,7 @@
                 
                 if (!isBulk) renderApiReport(name, allMonthData);
 
-            } catch (error) { 
-                console.error(error); 
-                if (!isBulk) showToast("Lỗi hệ thống hoặc bị chặn bởi trình duyệt", "error"); 
-            }
+            } catch (error) { console.error(error); if (!isBulk) alert("Lỗi API"); }
         };
 
         window.syncAllApi = async () => {
