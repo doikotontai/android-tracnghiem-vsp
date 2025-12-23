@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V9</title>
+    <title>Quản Lý Stopcard - Final V10</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -276,6 +276,23 @@
     <div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in flex-col gap-4">
         <div class="loader"><div class="external-shadow"><div class="central"></div></div><div class="intern" id="loading-text"></div></div>
         <div class="text-white font-bold text-lg mt-4 animate-pulse" id="loading-status">Đang đồng bộ dữ liệu...</div>
+    </div>
+
+    <!-- NEW: Error Report Modal -->
+    <div id="sync-error-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-red-200 dark:border-red-900 p-6 relative flex flex-col">
+            <button onclick="document.getElementById('sync-error-modal').classList.add('hidden'); document.getElementById('sync-error-modal').classList.remove('flex')" class="absolute top-4 right-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h3 class="text-xl font-bold text-red-600 dark:text-red-400 mb-2 flex items-center gap-3">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i> Kết quả Đồng bộ
+            </h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Các nhân sự sau đây không lấy được dữ liệu (do mạng hoặc lỗi server):</p>
+            <div id="sync-error-list" class="flex-1 overflow-y-auto custom-scrollbar max-h-[60vh] space-y-2 border border-slate-100 dark:border-slate-800 rounded-xl p-2 bg-slate-50 dark:bg-slate-950">
+                <!-- Error items -->
+            </div>
+            <div class="mt-6 text-center">
+                <button onclick="document.getElementById('sync-error-modal').classList.add('hidden'); document.getElementById('sync-error-modal').classList.remove('flex')" class="px-6 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-bold text-sm transition">Đóng</button>
+            </div>
+        </div>
     </div>
 
     <div id="add-user-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
@@ -638,9 +655,8 @@
             }
 
             if (!Array.isArray(data)) {
-                console.warn(`Failed to fetch for ${name} using all methods.`);
                 if (!isBulk) showToast("Lỗi kết nối API (Chặn mạng hoặc Server lỗi)", "error");
-                return; 
+                return false; // Return false on failure
             }
             
             const allMonthData = data.filter(item => {
@@ -666,6 +682,7 @@
                 showToast(`Dữ liệu khớp (${approvedCount} thẻ)`, "success");
             }
             if (!isBulk) renderApiReport(name, allMonthData);
+            return true; // Return true on success
         };
 
         window.syncAllApi = async () => {
@@ -673,23 +690,46 @@
             const usersWithApi = Object.entries(masterData.users).map(([uid, info]) => ({ uid, apiId: info.apiId, name: info.name })).filter(u => u.apiId);
             const modal = document.getElementById('loading-modal');
             const percentText = document.querySelector('.intern');
+            const failedUsers = []; // Track failures
+
             modal.classList.remove('hidden'); modal.classList.add('flex');
             
             // Turbo Sync: Concurrency of 5
             const batchSize = 5;
             for (let i = 0; i < usersWithApi.length; i += batchSize) {
                 const batch = usersWithApi.slice(i, i + batchSize);
-                await Promise.all(batch.map(u => window.fetchApiData(u.uid, u.apiId, u.name, true)));
+                // Capture results
+                const results = await Promise.all(batch.map(async u => {
+                    const success = await window.fetchApiData(u.uid, u.apiId, u.name, true);
+                    return { name: u.name, success };
+                }));
                 
+                // Collect failed
+                results.forEach(r => { if (!r.success) failedUsers.push(r.name); });
+
                 const progress = Math.min(100, Math.round(((i + batchSize) / usersWithApi.length) * 100));
                 percentText.style.setProperty('--loading-percent', `"${progress}%"`);
                 
-                // Minimal delay between batches to keep UI responsive
+                // Minimal delay
                 await new Promise(r => setTimeout(r, 50)); 
             }
             
             modal.classList.add('hidden'); modal.classList.remove('flex');
-            showToast("Hoàn tất!", "success");
+            
+            if (failedUsers.length > 0) {
+                const listEl = document.getElementById('sync-error-list');
+                listEl.innerHTML = failedUsers.map(name => 
+                    `<div class="flex items-center gap-2 p-2 bg-white dark:bg-slate-900 rounded border border-red-100 dark:border-red-900/30">
+                        <i data-lucide="x-circle" class="w-4 h-4 text-red-500"></i>
+                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">${name}</span>
+                    </div>`
+                ).join('');
+                document.getElementById('sync-error-modal').classList.remove('hidden');
+                document.getElementById('sync-error-modal').classList.add('flex');
+                lucide.createIcons();
+            } else {
+                showToast("Hoàn tất! Tất cả đều thành công.", "success");
+            }
         }
 
         function renderApiReport(name, data) {
