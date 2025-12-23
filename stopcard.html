@@ -35,7 +35,7 @@
     </script>
 
     <style>
-        /* NATIVE SCROLL: Remove hidden overflow on body */
+        /* NATIVE SCROLL: Fix chuẩn cho cả Mobile & PC */
         body { background-color: #f8fafc; color: #334155; font-size: 13px; -webkit-tap-highlight-color: transparent; min-height: 100vh; }
         html.dark body { background-color: #0f172a; color: #cbd5e1; }
 
@@ -461,7 +461,8 @@
                         
                         let needsUpdate = false;
                         
-                        // Sử dụng mảng DEFAULT_PERSONNEL đã được nhúng trực tiếp ở trên
+                        // Sử dụng mảng DEFAULT_PERSONNEL (Biến nội bộ)
+                        // Logic: Ưu tiên dữ liệu trong code. Nếu trong code có gì mới/khác -> Cập nhật lên DB.
                         DEFAULT_PERSONNEL.forEach(defUser => {
                             const uid = "U_" + defUser.id.replace(/\s+/g, '');
                             
@@ -470,7 +471,7 @@
                                 dbUsers[uid] = defUser; 
                                 needsUpdate = true; 
                             } else { 
-                                // 2. Nếu user đã có, kiểm tra và CẬP NHẬT nếu file code mới hơn
+                                // 2. Nếu user đã có, kiểm tra và CẬP NHẬT nếu dữ liệu trong Code khác
                                 let changed = false;
                                 if (defUser.name && dbUsers[uid].name !== defUser.name) {
                                     dbUsers[uid].name = defUser.name;
