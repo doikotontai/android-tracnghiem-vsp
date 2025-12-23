@@ -34,9 +34,26 @@
     <style>
         body { transition: background-color 0.3s ease; background-color: #f8fafc; color: #334155; font-size: 14px; -webkit-tap-highlight-color: transparent; }
         html.dark body { background-color: #0f172a; color: #cbd5e1; }
+
+        /* --- UPDATED DARK MODE BACKGROUND (From Index) --- */
+        .bg-gradient-mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0; transition: opacity 0.5s ease;
+            background: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+            background-color: #0f172a;
+            pointer-events: none;
+        }
+        html.dark .bg-gradient-mesh { opacity: 1; }
         
+        /* Updated Glass Panel for better contrast in Dark Mode */
         .glass-panel { background: rgba(255, 255, 255, 0.95); border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        html.dark .glass-panel { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
+        html.dark .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); }
         
         .editable-input:focus { outline: none; border-bottom: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
@@ -46,7 +63,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         html.dark ::-webkit-scrollbar-thumb { background: #475569; }
         
-        .no-select { user-select: none; }
+        /* Removed .no-select class usage to allow text selection */
         
         /* Zebra Striping */
         tr.data-row:nth-child(even) { background-color: #f8fafc; } 
@@ -404,16 +421,20 @@
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col no-select bg-slate-50 dark:bg-slate-950">
+<body class="antialiased min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
+    
+    <!-- Background Mesh (Dark Mode) -->
+    <div class="bg-gradient-mesh"></div>
 
     <!-- Toast Notification -->
     <div id="toast-container" class="fixed top-4 left-4 right-4 md:left-auto md:top-20 md:right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
     
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5 h-16 transition-colors shadow-sm">
+    <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/50 backdrop-blur-md border-b border-slate-200 dark:border-white/5 h-16 transition-colors shadow-sm">
         <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <a href="#" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
+                <!-- UPDATED LINK HERE -->
+                <a href="https://ndt.io.vn/" class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition active:scale-95">
                     <i data-lucide="arrow-left" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
                 </a>
                 <div class="flex items-center gap-2.5">
@@ -436,7 +457,8 @@
                     Connecting...
                 </div>
                 <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 hover:bg-slate-100 transition active:scale-95">
-                    <i data-lucide="moon" class="w-5 h-5"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                 </button>
             </div>
         </div>
@@ -714,7 +736,8 @@
             { id: "XL1123", name: "Nguyễn Văn Lộc", apiId: "6c58b2aa-2b0b-400d-8113-dbc0fd1fe793" },
             { id: "XL2064", name: "Nguyễn Quốc Tài", apiId: "25489db6-948f-4504-a1fc-d692127958bf" },
             { id: "XL1375", name: "Nguyễn Anh Tiến", apiId: "0f30900c-83e6-4021-bc02-9bc86fdab368" },
-            { id: "XL1665", name: "Phạm Hồng Vũ" },
+            // UPDATED HERE: Added API ID for Phạm Hồng Vũ
+            { id: "XL1665", name: "Phạm Hồng Vũ", apiId: "1e0f9d58-7e4a-44fe-91ab-6e57d0c54573" },
             { id: "XL1781", name: "Lê Nguyễn Huy Hoàn", apiId: "3e2df8bd-c965-4eb2-83c1-5806169aedce" },
             { id: "XL1124", name: "Ngô Đức Thuận", apiId: "52be4e27-3831-425e-80ca-fc0990e751ee" },
             { id: "XL2066", name: "Nguyễn Quang Vinh", apiId: "62e56afa-22e5-4edc-b2a3-81c7e2ba9e25" },
@@ -776,12 +799,39 @@
 
                     // 1. Get Users
                     onSnapshot(CONFIG_USERS_DOC, async (snap) => {
+                        let dbUsers = {};
                         if (snap.exists()) {
-                            masterData.users = snap.data().users || {};
-                        } else {
-                            await seedDefaultUsers();
+                            dbUsers = snap.data().users || {};
                         }
-                        renderTable();
+                        
+                        // --- AUTO-MIGRATE: Merge Code Constants into DB Data ---
+                        // Logic: Ưu tiên dữ liệu trong code (DEFAULT_PERSONNEL) nếu DB thiếu API ID
+                        let needsUpdate = false;
+                        DEFAULT_PERSONNEL.forEach(defUser => {
+                            const uid = "U_" + defUser.id.replace(/\s+/g, '');
+                            if (!dbUsers[uid]) {
+                                // Nếu user mới chưa có trong DB -> Thêm vào
+                                dbUsers[uid] = defUser;
+                                needsUpdate = true;
+                            } else {
+                                // Nếu user đã có, kiểm tra xem có thiếu API ID không
+                                if (defUser.apiId && dbUsers[uid].apiId !== defUser.apiId) {
+                                    dbUsers[uid].apiId = defUser.apiId; // Cập nhật API ID từ code vào DB object
+                                    needsUpdate = true;
+                                }
+                            }
+                        });
+
+                        masterData.users = dbUsers;
+                        renderTable(); // Render lại bảng ngay lập tức với dữ liệu đã merge
+
+                        // Nếu có thay đổi, lưu ngược lại vào Database để lần sau không cần merge nữa
+                        if (needsUpdate) {
+                            console.log("Auto-updating missing API IDs to Firestore...");
+                            try {
+                                await setDoc(CONFIG_USERS_DOC, { users: dbUsers }, { merge: true });
+                            } catch (e) { console.error("Auto-update failed", e); }
+                        }
                     });
 
                     // 2. Listen to Records
@@ -1065,9 +1115,19 @@
                 }
 
                 if (!Array.isArray(data)) data = []; 
+                
+                // --- UPDATE: Custom Date Range Logic ---
                 const allMonthData = data.filter(item => {
                     const d = new Date(item.createdDate);
-                    return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
+                    
+                    // JS Date Month: 0-11. currentMonth: 1-12.
+                    // Start: 25th of Previous Month (currentMonth - 2 in JS index)
+                    // End: 24th of Current Month (currentMonth - 1 in JS index)
+                    // Note: Date object handles year wrap around correctly (e.g. Month -1 becomes Dec prev year)
+                    const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0);
+                    const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59);
+                    
+                    return d >= startDate && d <= endDate;
                 });
 
                 const approvedData = allMonthData.filter(item => {
@@ -1078,7 +1138,6 @@
                 const approvedCount = approvedData.length;
                 const inputEl = document.getElementById(`input-${uid}`);
                 
-                // Logic updated to check against local MasterData instead of reading DOM
                 const oldVal = masterData.records[uid]?.count || 0;
                 
                 if (approvedCount !== oldVal) {
@@ -1112,7 +1171,14 @@
 
         function renderApiReport(name, data) {
             const tbody = document.getElementById('api-report-body');
-            document.getElementById('api-report-subtitle').innerText = `${name} - T${currentMonth}/${currentYear}`;
+            
+            // Display valid date range for user clarity
+            const prevMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+            const prevYearDisplay = currentMonth === 1 ? currentYear - 1 : currentYear;
+            const rangeText = `(25/${prevMonth} - 24/${currentMonth})`;
+            
+            document.getElementById('api-report-subtitle').innerText = `${name} - Kỳ T${currentMonth}/${currentYear} ${rangeText}`;
+            
             if (data.length === 0) tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ.</td></tr>`;
             else {
                 tbody.innerHTML = data.map((item, i) => `
@@ -1154,6 +1220,7 @@
         }
 
         document.getElementById('theme-toggle').onclick = () => {
+            const html = document.documentElement; // Sửa lỗi ở đây: Khai báo lại biến html
             html.classList.toggle('dark');
             localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
         };
