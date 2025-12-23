@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V13</title>
+    <title>Quản Lý Stopcard - Final V14</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -195,6 +195,12 @@
                     <input class="search-input" id="search-input" placeholder="Tìm tên, mã số..." type="text">
                     <button class="search-reset" onclick="document.getElementById('search-input').value = ''; renderTable();" type="reset"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
                 </div>
+                
+                <!-- NEW: Proxy Status Indicator -->
+                <div id="proxy-status" class="hidden items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-500 whitespace-nowrap border border-slate-200 dark:border-slate-700" title="Proxy đang sử dụng">
+                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                    <span>...</span>
+                </div>
             </div>
 
             <div class="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto justify-end">
@@ -317,7 +323,12 @@
     <div id="api-report-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-900 rounded-none md:rounded-2xl shadow-2xl w-full md:max-w-6xl h-full md:h-[90vh] border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
             <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 shadow-sm">
-                <div class="flex items-center gap-3"><div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="cloud-download" class="w-6 h-6"></i></div><div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3><p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p></div></div>
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="cloud-download" class="w-6 h-6"></i></div>
+                    <div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight">Báo Cáo API</h3><p id="api-report-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Đang đồng bộ...</p></div>
+                </div>
+                <!-- NEW: Status info in Modal -->
+                <div id="api-source-info" class="hidden md:flex px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-mono text-slate-500">Source: ...</div>
                 <button onclick="document.getElementById('api-report-modal').classList.add('hidden'); document.getElementById('api-report-modal').classList.remove('flex')" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition text-slate-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="flex-1 overflow-auto custom-scrollbar p-0 bg-white dark:bg-slate-950">
@@ -437,6 +448,28 @@
             container.appendChild(toast);
             lucide.createIcons();
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // Updated function to show proxy status
+        function updateProxyStatus(proxyName) {
+            const el = document.getElementById('proxy-status');
+            const dot = el.querySelector('span:first-child');
+            const text = el.querySelector('span:last-child');
+            
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+            text.textContent = proxyName;
+
+            if (proxyName === 'CustomWorker') {
+                dot.className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
+                el.className = "flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-xs font-bold text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 whitespace-nowrap";
+            } else if (proxyName === 'Direct') {
+                dot.className = "w-2 h-2 rounded-full bg-blue-500";
+                el.className = "flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-xs font-bold text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 whitespace-nowrap";
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-orange-500";
+                el.className = "flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-900/20 text-xs font-bold text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 whitespace-nowrap";
+            }
         }
 
         const init = async () => {
@@ -656,7 +689,11 @@
                         if (proxy.name === 'AllOrigins') {
                             if (json && json.contents) { try { data = JSON.parse(json.contents); } catch(e) {} }
                         } else { data = json; }
-                        if (!Array.isArray(data)) { data = null; }
+                        if (Array.isArray(data)) { 
+                             updateProxyStatus(proxy.name);
+                        } else {
+                            data = null;
+                        }
                     }
                 } catch (e) {}
             }
@@ -698,6 +735,7 @@
             const modal = document.getElementById('loading-modal');
             const percentText = document.querySelector('.intern');
             const failedUsers = []; 
+            const successUsers = [];
 
             modal.classList.remove('hidden'); modal.classList.add('flex');
             
@@ -709,7 +747,10 @@
                     return { name: u.name, success };
                 }));
                 
-                results.forEach(r => { if (!r.success) failedUsers.push(r.name); });
+                results.forEach(r => { 
+                    if (!r.success) failedUsers.push(r.name); 
+                    else successUsers.push(r.name);
+                });
 
                 const progress = Math.min(100, Math.round(((i + batchSize) / usersWithApi.length) * 100));
                 percentText.style.setProperty('--loading-percent', `"${progress}%"`);
@@ -721,17 +762,23 @@
             
             if (failedUsers.length > 0) {
                 const listEl = document.getElementById('sync-error-list');
-                listEl.innerHTML = failedUsers.map(name => 
+                const proxyName = document.getElementById('proxy-status').innerText;
+                listEl.innerHTML = `
+                    <div class="p-2 mb-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800 text-xs">
+                        <span class="font-bold text-blue-700 dark:text-blue-400">Nguồn dữ liệu:</span> ${proxyName || 'Không xác định'}
+                    </div>
+                    ${failedUsers.map(name => 
                     `<div class="flex items-center gap-2 p-2 bg-white dark:bg-slate-900 rounded border border-red-100 dark:border-red-900/30">
                         <i data-lucide="x-circle" class="w-4 h-4 text-red-500"></i>
                         <span class="text-sm font-medium text-slate-700 dark:text-slate-300">${name}</span>
                     </div>`
-                ).join('');
+                ).join('')}`;
                 document.getElementById('sync-error-modal').classList.remove('hidden');
                 document.getElementById('sync-error-modal').classList.add('flex');
                 lucide.createIcons();
             } else {
-                showToast("Hoàn tất! Tất cả đều thành công.", "success");
+                const proxyName = document.getElementById('proxy-status').innerText;
+                showToast(`Hoàn tất! (Nguồn: ${proxyName || 'Unknown'})`, "success");
             }
         }
 
@@ -740,6 +787,12 @@
             const prevMonth = currentMonth === 1 ? 12 : currentMonth - 1;
             const rangeText = `(25/${prevMonth} - 24/${currentMonth})`;
             document.getElementById('api-report-subtitle').innerText = `${name} - Kỳ T${currentMonth}/${currentYear} ${rangeText}`;
+            
+            // Show Source in Modal
+            const proxyName = document.getElementById('proxy-status').innerText;
+            const sourceEl = document.getElementById('api-source-info');
+            if(sourceEl) sourceEl.innerText = `Source: ${proxyName || 'Unknown'}`;
+
             if (data.length === 0) tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không có thẻ.</td></tr>`;
             else {
                 tbody.innerHTML = data.map((item, i) => `
