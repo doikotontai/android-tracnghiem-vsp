@@ -63,5 +63,7 @@ window.DEFAULT_PERSONNEL = [
     { id: "XL260", name: "Vũ Xuân Chính", apiId: "8f1ad5d0-3791-4690-82ff-6eea272f55fd" },
     { id: "XL2619", name: "Nguyễn Tuấn Đạt" },
     { id: "XL853", name: "Cù Chí Công", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
+    { id: "XL8555", name: "Cù Chí Cônf", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
 ];
+
 
