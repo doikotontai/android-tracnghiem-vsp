@@ -11,9 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
-    <!-- LOAD DỮ LIỆU TỪ FILE JS NGOÀI -->
-    <!-- Bỏ onerror ở đây, chuyển vào script chính để check chắc chắn hơn -->
-    <script src="stopcard-api-ndt.js"></script>
+    <!-- CHÚ Ý: Đã xóa thẻ script load file JS tĩnh ở đây để chuyển xuống xử lý động bên dưới -->
 
     <script>
         tailwind.config = {
@@ -256,12 +254,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, onSnapshot, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Logic check file JS ngoài chính xác hơn: Kiểm tra biến global sau khi trang load
-        // Nếu biến không tồn tại -> File JS bị xóa hoặc lỗi -> Hiện Alert
-        if (typeof window.DEFAULT_PERSONNEL === 'undefined') {
-            alert('⚠️ CẢNH BÁO QUAN TRỌNG:\n\nKhông tìm thấy file "stopcard-api-ndt.js".\nHệ thống sẽ chạy bằng dữ liệu cũ trong Database.');
-        }
-
         const CUSTOM_PROXY_URL = "https://api-proxy.phongluuservices.workers.dev/"; 
         const firebaseConfig = {
             apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
@@ -385,8 +377,29 @@
             finally { loading.classList.add('hidden'); loading.classList.remove('flex'); }
         }
 
+        // --- DYNAMIC SCRIPT LOADER ---
+        // Hàm này tự động thêm script tag với timestamp để chặn cache
+        const loadPersonnelData = () => {
+            return new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = `stopcard-api-ndt.js?t=${Date.now()}`; // Add timestamp
+                script.onload = () => {
+                    console.log("Đã tải dữ liệu nhân sự mới nhất.");
+                    resolve();
+                };
+                script.onerror = () => {
+                    alert('⚠️ LƯU Ý:\n\nKhông tìm thấy file "stopcard-api-ndt.js" (hoặc lỗi mạng).\nHệ thống sẽ chạy bằng dữ liệu lưu trong Database.');
+                    resolve(); // Vẫn resolve để app chạy tiếp
+                };
+                document.head.appendChild(script);
+            });
+        };
+
         // --- MAIN INIT ---
         const init = async () => {
+            // Load script động trước khi init
+            await loadPersonnelData();
+
             renderTimeSelectors();
             const html = document.documentElement;
             if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
@@ -404,17 +417,30 @@
                         if (snap.exists()) { dbUsers = snap.data().users || {}; }
                         
                         let needsUpdate = false;
-                        const defaultList = window.DEFAULT_PERSONNEL || []; // Fallback to empty if js file missing
+                        const defaultList = window.DEFAULT_PERSONNEL || []; // Lấy từ file JS vừa load
 
                         defaultList.forEach(defUser => {
                             const uid = "U_" + defUser.id.replace(/\s+/g, '');
-                            if (!dbUsers[uid]) { dbUsers[uid] = defUser; needsUpdate = true; } 
-                            else { if (defUser.apiId && dbUsers[uid].apiId !== defUser.apiId) { dbUsers[uid].apiId = defUser.apiId; needsUpdate = true; } }
+                            // Logic: Thêm mới hoặc Cập nhật API ID nếu khác biệt
+                            if (!dbUsers[uid]) { 
+                                dbUsers[uid] = defUser; 
+                                needsUpdate = true; 
+                            } else { 
+                                if (defUser.apiId && dbUsers[uid].apiId !== defUser.apiId) { 
+                                    dbUsers[uid].apiId = defUser.apiId; 
+                                    needsUpdate = true; 
+                                } 
+                            }
                         });
                         
                         masterData.users = dbUsers;
                         renderTable();
-                        if (needsUpdate) { try { await setDoc(CONFIG_USERS_DOC, { users: dbUsers }, { merge: true }); } catch (e) {} }
+                        
+                        // Tự động lưu ngược lại vào Database nếu có thay đổi từ file JS
+                        if (needsUpdate) { 
+                            try { await setDoc(CONFIG_USERS_DOC, { users: dbUsers }, { merge: true }); console.log("Đã đồng bộ dữ liệu mới lên Database."); } 
+                            catch (e) { console.error("Lỗi đồng bộ:", e); } 
+                        }
                     });
                     listenToMonthRecords();
                 }
