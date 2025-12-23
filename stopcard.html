@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V16</title>
+    <title>Quản Lý Stopcard - Final V18</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -106,21 +106,76 @@
         .btn-api-new:hover svg { transform: scale(1.1); }
         .btn-api-new svg { transition: all 0.3s ease-out; width: 24px; height: 24px; }
 
-        .button-export { --width: 100px; --height: 40px; --tooltip-height: 35px; --tooltip-width: 90px; --gap-between-tooltip-to-button: 18px; --button-color: #1e293b; --tooltip-color: #fff; width: var(--width); height: var(--height); background: var(--button-color); position: relative; text-align: center; border-radius: 0.45em; font-family: "Arial"; transition: background 0.3s; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        html.dark .button-export { --button-color: #334155; }
-        .button-export::before { position: absolute; content: attr(data-tooltip); width: var(--tooltip-width); height: var(--tooltip-height); background-color: var(--tooltip-color); font-size: 0.9rem; color: #111; border-radius: .25em; line-height: var(--tooltip-height); bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px); left: calc(50% - var(--tooltip-width) / 2); }
-        .button-export::after { position: absolute; content: ''; width: 0; height: 0; border: 10px solid transparent; border-top-color: var(--tooltip-color); left: calc(50% - 10px); bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px); }
-        .button-export::after,.button-export::before { opacity: 0; visibility: hidden; transition: all 0.5s; pointer-events: none; }
-        .button-export .text { display: flex; align-items: center; justify-content: center; position: absolute; width: 100%; height: 100%; left: 0; top: 0; color: #fff; font-weight: 600; font-size: 14px; transition: top 0.5s; }
-        .button-export .icon { color: #fff; position: absolute; width: 100%; height: 100%; left: 0; top: 100%; display: flex; align-items: center; justify-content: center; transition: top 0.5s; }
-        .button-export .icon svg { width: 24px; height: 24px; }
-        .button-export:hover { background: #0f172a; }
-        html.dark .button-export:hover { background: #475569; }
-        .button-export:hover .text { top: -100%; }
-        .button-export:hover .icon { top: 0; }
-        .button-export:hover:before,.button-export:hover:after { opacity: 1; visibility: visible; }
-        .button-export:hover:after { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px); }
-        .button-export:hover:before { bottom: calc(var(--height) + var(--gap-between-tooltip-to-button)); }
+        /* --- NEW BUTTON DOWNLOAD STYLE --- */
+        .buttonDownload {
+            display: inline-flex; /* Use flex to align text vertically */
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 10px 25px;
+            background-color: #4CC713;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            font-size: 0.9em;
+            text-align: center;
+            text-indent: 15px; /* Keeps text to the right of icon */
+            border: none;
+            cursor: pointer;
+            border-radius: 12px; /* Matching rounded-xl */
+            height: 44px; /* Matching neighbor buttons */
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .buttonDownload:hover {
+            background-color: #45a21a;
+            color: white;
+        }
+
+        .buttonDownload:before, .buttonDownload:after {
+            content: ' ';
+            display: block;
+            position: absolute;
+            left: 15px;
+            top: 52%;
+        }
+
+        .buttonDownload:before {
+            width: 10px;
+            height: 2px;
+            border-style: solid;
+            border-width: 0 2px 2px;
+        }
+
+        .buttonDownload:after {
+            width: 0;
+            height: 0;
+            margin-left: 3px;
+            margin-top: -7px;
+            border-style: solid;
+            border-width: 4px 4px 0 4px;
+            border-color: transparent;
+            border-top-color: inherit;
+            animation: downloadArrow 1s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .buttonDownload:hover:before {
+            border-color: #cdefbd;
+        }
+
+        .buttonDownload:hover:after {
+            border-top-color: #cdefbd;
+            animation-play-state: running;
+        }
+
+        @keyframes downloadArrow {
+            0% { margin-top: -7px; opacity: 1; }
+            0.001% { margin-top: -15px; opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { margin-top: 0; opacity: 0.4; }
+        }
 
         .loader { display: flex; justify-content: center; align-items: center; position: relative; cursor: not-allowed; scale: 0.7; }
         .central { display: flex; justify-content: center; align-items: center; position: relative; width: 10em; height: 10em; border-radius: 50%; box-shadow: 0.5em 1em 1em blueviolet, -0.5em 0.5em 1em blue, 0.5em -0.5em 1em purple, -0.5em -0.5em 1em cyan; }
@@ -220,10 +275,8 @@
                     <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Thêm</span>
                 </button>
                 
-                <button class="button-export" data-tooltip="Tải xuống" onclick="window.exportExcel()">
-                    <div class="text">Xuất</div>
-                    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></div>
-                </button>
+                <!-- NEW EXPORT BUTTON (Custom Excel Style) -->
+                <button class="buttonDownload" onclick="window.exportExcel()">Xuất Excel</button>
             </div>
         </div>
 
