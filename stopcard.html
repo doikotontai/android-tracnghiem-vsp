@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Optimized V2</title>
+    <title>Quản Lý Stopcard - Optimized V4</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -62,8 +62,6 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         html.dark ::-webkit-scrollbar-thumb { background: #475569; }
-        
-        /* Removed .no-select class usage to allow text selection */
         
         /* Zebra Striping */
         tr.data-row:nth-child(even) { background-color: #f8fafc; } 
@@ -679,7 +677,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt14_pkmWE0MhD0SeH_MisjmHjlY-Mu84",
@@ -736,7 +734,6 @@
             { id: "XL1123", name: "Nguyễn Văn Lộc", apiId: "6c58b2aa-2b0b-400d-8113-dbc0fd1fe793" },
             { id: "XL2064", name: "Nguyễn Quốc Tài", apiId: "25489db6-948f-4504-a1fc-d692127958bf" },
             { id: "XL1375", name: "Nguyễn Anh Tiến", apiId: "0f30900c-83e6-4021-bc02-9bc86fdab368" },
-            // UPDATED HERE: Added API ID for Phạm Hồng Vũ
             { id: "XL1665", name: "Phạm Hồng Vũ", apiId: "1e0f9d58-7e4a-44fe-91ab-6e57d0c54573" },
             { id: "XL1781", name: "Lê Nguyễn Huy Hoàn", apiId: "3e2df8bd-c965-4eb2-83c1-5806169aedce" },
             { id: "XL1124", name: "Ngô Đức Thuận", apiId: "52be4e27-3831-425e-80ca-fc0990e751ee" },
@@ -1027,7 +1024,7 @@
         window.renderTable = renderTable;
         document.getElementById('search-input').oninput = renderTable;
 
-        // --- WRITE LOGIC (Sub-collection) ---
+        // --- WRITE LOGIC (Updated to Prevent Overwrites) ---
         window.updateCount = async (uid, newVal) => {
             const count = parseInt(newVal);
             if (isNaN(count) || count < 0) { renderTable(); return; }
@@ -1035,21 +1032,39 @@
             const monthKey = `${currentYear}_${currentMonth}`;
             const userDocRef = doc(db, 'stopcard_records', monthKey, 'user_data', uid);
 
-            // Optimistic UI Update (Update local state immediately)
+            // Optimistic UI Update (Cập nhật giao diện ngay lập tức cho mượt)
+            // Lưu ý: Đây chỉ là hiển thị tạm, dữ liệu thật sẽ được lưu sau khi gọi server
             const oldRecord = masterData.records[uid] || { count: 0, history: [] };
             const oldVal = oldRecord.count;
             
             if (count === oldVal) return;
 
-            const now = new Date().toLocaleString('vi-VN');
-            const newHistoryItem = {date: now, by: "User", old: oldVal, new: count};
-            const newHistory = [newHistoryItem, ...oldRecord.history].slice(0, 9);
-            
-            // Temporary local update to avoid flicker
-            masterData.records[uid] = { count, history: newHistory };
+            // Hiển thị tạm thời trên giao diện (Optimistic UI)
+            masterData.records[uid] = { ...oldRecord, count: count };
             
             try {
-                // WRITE to specific User Document
+                // UPDATE: Lấy dữ liệu MỚI NHẤT từ Server trước khi ghi (Tránh ghi đè lịch sử cũ)
+                const docSnap = await getDoc(userDocRef);
+                let currentServerData = { count: 0, history: [] };
+                
+                if (docSnap.exists()) {
+                    currentServerData = docSnap.data();
+                }
+
+                // Nếu server có dữ liệu khác 0 mà ta đang định ghi 0 (do lỗi load), chặn lại
+                // Trừ khi người dùng thực sự nhập số 0
+                // Logic này giúp tránh việc "reset về 0" do mạng lag
+                if (currentServerData.count > 0 && count === 0 && !confirm("Bạn có chắc chắn muốn đặt số thẻ về 0 không?")) {
+                    renderTable(); // Revert
+                    return;
+                }
+
+                const now = new Date().toLocaleString('vi-VN');
+                const newHistoryItem = {date: now, by: "User", old: currentServerData.count || 0, new: count};
+                
+                // Nối lịch sử mới vào lịch sử CỦA SERVER (chứ không phải của máy local)
+                const newHistory = [newHistoryItem, ...(currentServerData.history || [])].slice(0, 9);
+                
                 await setDoc(userDocRef, {
                     count: count,
                     history: newHistory,
@@ -1060,7 +1075,7 @@
             } catch (e) {
                 console.error(e);
                 showToast("Lỗi khi lưu!", "error");
-                // Revert if failed
+                // Revert nếu lỗi mạng
                 masterData.records[uid] = oldRecord;
                 renderTable();
             }
@@ -1102,19 +1117,24 @@
             if (!isBulk) showToast("Đang kết nối API...", "info");
             
             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
-            let data = [];
+            let data = null; // KEY FIX: Initialize as NULL, not []
             try {
                 try {
                     const res = await fetch(targetUrl);
                     if(res.ok) data = await res.json();
-                    else throw new Error("API Error");
                 } catch {
                     const proxyUrl = `https://corsproxy.io/?${targetUrl}`;
                     const res = await fetch(proxyUrl);
                     if(res.ok) data = await res.json();
                 }
 
-                if (!Array.isArray(data)) data = []; 
+                // CRITICAL SAFETY GUARD: If data is NOT an array (means both fetch attempts failed), ABORT.
+                // Do NOT proceed to treat it as empty list (0 count).
+                if (!Array.isArray(data)) {
+                    console.warn(`Failed to fetch for ${name}`);
+                    if (!isBulk) showToast("Lỗi kết nối API (Không lấy được dữ liệu)", "error");
+                    return; 
+                }
                 
                 // --- UPDATE: Custom Date Range Logic ---
                 const allMonthData = data.filter(item => {
