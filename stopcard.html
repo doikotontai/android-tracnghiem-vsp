@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quản Lý Stopcard - Final V20.3</title>
+    <title>Quản lý Stopcard NDT</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,6 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <!-- LOAD DỮ LIỆU TỪ FILE JS NGOÀI -->
-    <!-- Nếu lỗi tải file (chưa up lên Github), sẽ hiện Popup thông báo -->
     <script src="stopcard-api-ndt.js" onerror="alert('⚠️ LƯU Ý:\n\nKhông tìm thấy file danh sách nhân sự (stopcard-api-ndt.js).\n- Nếu bạn đang chạy local: Hãy chắc chắn file này nằm cùng thư mục.\n- Nếu chạy trên Web: Hệ thống sẽ tự động chuyển sang dùng dữ liệu từ Database.');"></script>
 
     <script>
@@ -106,13 +105,7 @@
                                 <i data-lucide="shield-check" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h1 class="font-bold text-slate-800 dark:text-white leading-tight">Stopcard Manager</h1>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[10px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 rounded font-bold uppercase tracking-wide">V20.3</span>
-                                    <div id="connection-status" class="hidden items-center gap-1 text-[10px] text-green-600 font-medium">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online
-                                    </div>
-                                </div>
+                                <h1 class="font-bold text-slate-800 dark:text-white leading-tight">Quản lý Stopcard NDT</h1>
                             </div>
                         </div>
                         
@@ -125,6 +118,9 @@
 
                     <!-- Right: Stats Strip -->
                     <div class="flex-1 max-w-2xl bg-slate-100/50 dark:bg-slate-800/50 rounded-xl p-1.5 flex items-center justify-around border border-slate-200 dark:border-slate-700/50 relative overflow-hidden group">
+                        <!-- Decor -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
+
                         <div class="flex items-center gap-2 px-2">
                             <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg"><i data-lucide="files" class="w-4 h-4"></i></div>
                             <div class="leading-none">
@@ -132,15 +128,20 @@
                                 <div id="stat-total-cards" class="text-lg font-bold text-slate-800 dark:text-white">0</div>
                             </div>
                         </div>
+                        
                         <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+
                         <div class="flex items-center gap-2 px-2">
-                            <div class="p-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
+                            <!-- ICON CHANGED TO USER-CHECK -->
+                            <div class="p-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg"><i data-lucide="user-check" class="w-4 h-4"></i></div>
                             <div class="leading-none">
                                 <div class="text-[10px] text-slate-500 font-semibold uppercase">Đã nộp</div>
                                 <div id="stat-submitted-ratio" class="text-lg font-bold text-slate-800 dark:text-white">0/0</div>
                             </div>
                         </div>
+
                         <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+
                         <div class="flex items-center gap-2 px-2">
                             <div class="p-1.5 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg"><i data-lucide="alert-octagon" class="w-4 h-4"></i></div>
                             <div class="leading-none">
@@ -206,7 +207,8 @@
                         <th class="w-24 cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('id')">Danh số</th>
                         <th class="cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('name')">Họ và Tên</th>
                         <th class="w-24 text-center cursor-pointer hover:text-blue-500 transition" onclick="toggleSort('count')">Số thẻ</th>
-                        <th class="w-16 text-center">API</th>
+                        <!-- CHANGED TO SYNC -->
+                        <th class="w-16 text-center">Sync</th>
                         <th class="w-16 text-center">Log</th>
                     </tr>
                 </thead>
@@ -396,9 +398,6 @@
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    document.getElementById('connection-status').classList.remove('hidden');
-                    document.getElementById('connection-status').classList.add('flex');
-                    
                     onSnapshot(CONFIG_USERS_DOC, async (snap) => {
                         let dbUsers = {};
                         if (snap.exists()) { dbUsers = snap.data().users || {}; }
@@ -594,7 +593,7 @@
         function renderApiReport(name, data) {
             const tbody = document.getElementById('api-report-body');
             document.getElementById('api-report-subtitle').innerText = `${name} - T${currentMonth}`;
-            tbody.innerHTML = data.length ? data.map((item, i) => `<tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800"><td class="p-3 text-sm">${i + 1}</td><td class="p-3 text-sm font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">${new Date(item.createdDate).toLocaleDateString('vi-VN')}</td><td class="p-3 text-sm truncate max-w-[150px]" title="${item.constructionName || ''}">${item.constructionName || '-'}</td><td class="p-3 text-sm whitespace-nowrap">${(item.departmentName || '').replace('Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí', 'XNXL')}</td><td class="p-3 text-sm whitespace-nowrap">${item.toChuc || '-'}</td><td class="p-3 text-sm font-mono text-slate-500 dark:text-slate-500">${(item.createBy || '').split('@')[0]}</td><td class="p-3 text-sm"><span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 font-bold ${item.trangThai?.name?.includes('Đạt') ? 'text-green-600' : 'text-slate-600'}">${item.trangThai?.name || ''}</span></td></tr>`).join('') : `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Không có thẻ trong kỳ báo cáo này.</td></tr>`;
+            tbody.innerHTML = data.length ? data.map((item, i) => `<tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800"><td class="p-3 text-sm">${i + 1}</td><td class="p-3 text-sm font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">${new Date(item.createdDate).toLocaleString('vi-VN')}</td><td class="p-3 text-sm truncate max-w-[150px]" title="${item.constructionName || ''}">${item.constructionName || '-'}</td><td class="p-3 text-sm whitespace-nowrap">${(item.departmentName || '').replace('Xí nghiệp Xây lắp Khảo sát & Sửa chữa Công trình Dầu khí', 'XNXL')}</td><td class="p-3 text-sm whitespace-nowrap">${item.toChuc || '-'}</td><td class="p-3 text-sm font-mono text-slate-500 dark:text-slate-500">${(item.createBy || '').split('@')[0]}</td><td class="p-3 text-sm"><span class="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 font-bold ${item.trangThai?.name?.includes('Đạt') ? 'text-green-600' : 'text-slate-600'}">${item.trangThai?.name || ''}</span></td></tr>`).join('') : `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Không có thẻ trong kỳ báo cáo này.</td></tr>`;
             document.getElementById('api-report-modal').classList.remove('hidden'); document.getElementById('api-report-modal').classList.add('flex');
         }
 
