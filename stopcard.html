@@ -129,6 +129,7 @@
                         <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
 
                         <div class="flex items-center gap-2 px-2">
+                            <!-- ICON CHANGED TO USER-CHECK -->
                             <div class="p-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg"><i data-lucide="user-check" class="w-4 h-4"></i></div>
                             <div class="leading-none">
                                 <div class="text-[10px] text-slate-500 font-semibold uppercase">Đã nộp</div>
@@ -641,7 +642,9 @@
             const noCache = `?t=${Date.now()}`;
             const targetUrl = `https://apistopcard.vietsov.com.vn/api/StopCard/GetStopCardsByUserId/${apiId}`;
             let data = null;
-            const fetchWithTimeout = (url, opts = {}, time = 5000) => { return Promise.race([ fetch(url, opts), new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout')), time)) ]); };
+            let lastError = null;
+
+            const fetchWithTimeout = (url, opts = {}, time = 8000) => { return Promise.race([ fetch(url, opts), new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout')), time)) ]); };
             const proxies = [];
             if (CUSTOM_PROXY_URL) proxies.push({ name: 'CustomWorker', url: `${CUSTOM_PROXY_URL}?apiId=${apiId}` });
             proxies.push({ name: 'Direct', url: targetUrl + noCache }, { name: 'CorsProxy', url: `https://corsproxy.io/?${encodeURIComponent(targetUrl)}` }, { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}` }, { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` });
@@ -649,13 +652,51 @@
             for (const proxy of proxies) {
                 if (data) break;
                 try {
-                    const res = await fetchWithTimeout(proxy.url, {}, 5000);
-                    if (res.status === 429) { if (!isBulk) { const json = await res.json(); if (await showRateLimitModal(json.message)) continue; else return false; } else continue; }
-                    if (res.ok) { const json = await res.json(); if (proxy.name === 'AllOrigins') { if (json && json.contents) try { data = JSON.parse(json.contents); } catch(e){} } else data = json; if (Array.isArray(data)) updateProxyStatus(proxy.name); else data = null; }
-                } catch (e) {}
+                    const res = await fetchWithTimeout(proxy.url, {}, 8000);
+                    
+                    if (!res.ok) {
+                        throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+                    }
+
+                    let json = await res.json();
+                    
+                    if (proxy.name === 'AllOrigins') { 
+                        if (json && json.contents) {
+                            try { json = JSON.parse(json.contents); } 
+                            catch(e) { throw new Error("AllOrigins: Lỗi parse JSON nội dung"); }
+                        } else {
+                            throw new Error("AllOrigins: Không có nội dung trả về");
+                        }
+                    }
+
+                    if (!Array.isArray(json)) {
+                        throw new Error("Dữ liệu trả về không phải là mảng (List).");
+                    }
+
+                    // Validate Structure (Optional but recommended)
+                    if (json.length > 0) {
+                        const item = json[0];
+                        if (!Object.prototype.hasOwnProperty.call(item, 'createdDate')) {
+                             throw new Error("Cấu trúc thay đổi: Thiếu trường 'createdDate'");
+                        }
+                    }
+
+                    data = json;
+                    updateProxyStatus(proxy.name);
+
+                } catch (e) {
+                    console.warn(`Proxy ${proxy.name} failed:`, e);
+                    lastError = e.message;
+                }
             }
 
-            if (!Array.isArray(data)) { if (!isBulk) showToast("Lỗi kết nối API", "error"); return false; }
+            if (!Array.isArray(data)) { 
+                if (!isBulk) {
+                    alert(`❌ KHÔNG THỂ LẤY DỮ LIỆU!\n\nNguyên nhân có thể:\n1. Server API Vietsov bị lỗi hoặc chặn truy cập.\n2. Cấu trúc API đã thay đổi.\n3. Lỗi mạng hoặc Proxy.\n\nChi tiết lỗi cuối cùng: ${lastError || "Unknown Error"}`);
+                }
+                if (!isBulk) showToast("Lỗi kết nối API", "error"); 
+                return false; 
+            }
             
             const allMonthData = data.filter(item => { const d = new Date(item.createdDate); const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0); const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59); return d >= startDate && d <= endDate; });
             const approvedData = allMonthData.filter(item => { const s = (item.trangThai?.name || "").toLowerCase(); return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý'); });
