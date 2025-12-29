@@ -234,6 +234,10 @@
         /* Question Navigation Dark Mode */
         body.dark-mode .legacy-question-nav-item { border-color: rgba(255,255,255,0.2) !important; color: #e2e8f0 !important; }
         body.dark-mode .legacy-question-nav-item.current { background-color: rgba(255,255,255,0.2) !important; color: #fff !important; border-color: white !important; }
+        /* Giữ màu đúng/sai cho ô câu hỏi ngay cả khi đang là câu hiện tại */
+        body.dark-mode .legacy-question-nav-item.answered.correct.current { background-color: #006600 !important; border-color: #004d00 !important; color: #fff !important; }
+        body.dark-mode .legacy-question-nav-item.answered.wrong.current { background-color: #990000 !important; border-color: #800000 !important; color: #fff !important; }
+
         body.dark-mode .legacy-question-list-container { border-top-color: rgba(255,255,255,0.2) !important; }
 
         /* Home Nav Button Styles in Dark Mode */
@@ -493,7 +497,7 @@
         // --- GIỮ NGUYÊN TOÀN BỘ LOGIC JS CŨ ---
         const state = {
             currentSubjectKey: null, mode: 'review', questions: [], pickedIndices: [], currentIndex: 0,
-            userAnswers: {}, timerId: null, secondsLeft: 0, viewedIndices: new Set(),
+            userAnswers: {}, draftAnswers: {}, timerId: null, secondsLeft: 0, viewedIndices: new Set(),
             testConfig: { questionCount: 20, durationMinutes: 20 },
             userName: null, userDanhSo: null, db: null, auth: null, firebaseReady: false, isFinished: false
         };
@@ -664,7 +668,7 @@
                     if (mode === 'review') state.pickedIndices = [...Array(total).keys()].sort(() => 0.5 - Math.random());
                 }
                 if(mode === 'review-wrong') { $('#submit-btn').style.display = 'none'; $('#hint-btn').style.display = 'none'; $('#stop-btn').style.display = 'inline-flex'; }
-                state.currentIndex = 0; state.userAnswers = {}; this.renderQuestionList(); this.renderQuestion();
+                state.currentIndex = 0; state.userAnswers = {}; state.draftAnswers = {}; this.renderQuestionList(); this.renderQuestion();
             },
             async finishQuiz(isAuto = false) {
                 if (state.isFinished) return; state.isFinished = true; clearInterval(state.timerId); $('#timer').classList.add('hidden');
@@ -708,23 +712,105 @@
                 $('#question-text').textContent = question.question; $('#question-text').className = 'legacy-question-text';
                 const optionsContainer = $('#options-container'); optionsContainer.innerHTML = ''; optionsContainer.className = 'legacy-answer-container';
                 indexedOptions.forEach((opt) => {
-                    optionsContainer.insertAdjacentHTML('beforeend', `<label><input type="checkbox" name="answer" data-original-index="${opt.originalIndex}"><span>${opt.text}</span></label>`);
+                    optionsContainer.insertAdjacentHTML('beforeend', `<label><input type="radio" name="answer" data-original-index="${opt.originalIndex}"><span>${opt.text}</span></label>`);
                 });
-                $$('.legacy-answer-container label').forEach(label => { label.style.backgroundColor = ''; label.style.border = '1px solid #000'; label.style.textDecoration = 'none'; });
+// Lưu lựa chọn tạm thời (chưa bấm 'Trả lời') để khi quay lại vẫn còn tick
+$$('#options-container input').forEach(inp => {
+    inp.addEventListener('change', () => {
+        if (inp.checked) {
+            state.draftAnswers[qIndex] = [parseInt(inp.dataset.originalIndex)];
+        }
+    });
+});
+
+                $$('.legacy-answer-container label').forEach(label => { label.style.removeProperty('background-color'); label.style.removeProperty('border'); label.style.removeProperty('text-decoration'); label.style.removeProperty('font-weight'); label.style.removeProperty('color'); label.style.removeProperty('opacity'); });
                 this.updateUIForQuestionState(); this.updateQuestionListStatus();
             },
             updateUIForQuestionState() {
-                const qIndex = state.pickedIndices[state.currentIndex]; const question = state.questions[qIndex]; if (!question || !question.answer) return;
-                const isAnswered = qIndex in state.userAnswers; $('#feedback-container').classList.add('hidden');
-                if (state.mode !== 'review-wrong') { $('#submit-btn').disabled = isAnswered; $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời'; }
-                if (isAnswered) {
-                    const userAnswer = state.userAnswers[qIndex]; const isCorrect = this.checkCorrectness(qIndex, userAnswer); const correctIndices = question.answer;
-                    $$('#options-container input').forEach(el => el.disabled = true); userAnswer.forEach(ansIdx => { const cb = $(`#options-container input[data-original-index="${ansIdx}"]`); if(cb) cb.checked = true; });
-                    if (state.mode === 'review-wrong') {
-                        correctIndices.forEach(idx => { const lbl = $(`#options-container input[data-original-index="${idx}"]`).closest('label'); if(lbl) { lbl.style.backgroundColor = '#d4edda'; lbl.style.border = '2px solid #006600'; } });
-                        userAnswer.forEach(idx => { if (!correctIndices.includes(idx)) { const lbl = $(`#options-container input[data-original-index="${idx}"]`).closest('label'); if(lbl) { lbl.style.backgroundColor = '#f8d7da'; lbl.style.textDecoration = 'line-through'; } } });
-                    } else if (!isCorrect) { correctIndices.forEach(idx => { const lbl = $(`#options-container input[data-original-index="${idx}"]`).closest('label'); if(lbl) lbl.style.backgroundColor = '#d4edda'; }); }
-                } else { $$('#options-container input').forEach(el => el.disabled = false); }
+                const qIndex = state.pickedIndices[state.currentIndex];
+                const question = state.questions[qIndex];
+                if (!question || !question.answer) return;
+
+                // Reset style mỗi lần cập nhật UI
+                $$('#options-container label').forEach(lbl => {
+                    lbl.style.removeProperty('background-color');
+                    lbl.style.removeProperty('border');
+                    lbl.style.removeProperty('text-decoration');
+                    lbl.style.removeProperty('font-weight');
+                    lbl.style.removeProperty('color');
+                    lbl.style.removeProperty('opacity');
+                });
+
+                const isAnswered = qIndex in state.userAnswers;
+                $('#feedback-container').classList.add('hidden');
+
+                if (state.mode !== 'review-wrong') {
+                    $('#submit-btn').disabled = isAnswered;
+                    $('#submit-btn').textContent = isAnswered ? 'Đã trả lời' : 'Trả lời';
+                }
+
+                if (!isAnswered) {
+    $$('#options-container input').forEach(el => el.disabled = false);
+
+    // Khôi phục lựa chọn tạm (nếu có) để khi chuyển câu/nhảy câu vẫn giữ tick
+    const draft = state.draftAnswers[qIndex];
+    if (draft && draft.length) {
+        const el = $(`#options-container input[data-original-index="${draft[0]}"]`);
+        if (el) el.checked = true;
+    }
+    return;
+}
+
+                const userAnswer = state.userAnswers[qIndex] || [];
+                const correctIndices = Array.isArray(question.answer) ? question.answer : [];
+                const isCorrect = this.checkCorrectness(qIndex, userAnswer);
+
+                // Khóa input + restore tick đã chọn
+                $$('#options-container input').forEach(el => el.disabled = true);
+                userAnswer.forEach(ansIdx => {
+                    const el = $(`#options-container input[data-original-index="${ansIdx}"]`);
+                    if (el) el.checked = true;
+                });
+
+                // 1) Tô xanh đáp án đúng (có theme riêng cho dark-mode để dễ nhìn)
+                const isDark = document.body.classList.contains('dark-mode');
+
+                const STYLE_CORRECT = isDark
+                    ? { bg: 'rgba(34, 197, 94, 0.22)', border: '2px solid #22c55e', color: '#f0fdf4' }
+                    : { bg: '#dcfce7', border: '2px solid #16a34a', color: '#064e3b' };
+
+                const STYLE_WRONG = isDark
+                    ? { bg: 'rgba(239, 68, 68, 0.22)', border: '2px solid #ef4444', color: '#fff1f2' }
+                    : { bg: '#fee2e2', border: '2px solid #dc2626', color: '#7f1d1d' };
+
+                correctIndices.forEach(idx => {
+                    const el = $(`#options-container input[data-original-index="${idx}"]`);
+                    const lbl = el ? el.closest('label') : null;
+                    if (lbl) {
+                        lbl.style.setProperty('background-color', STYLE_CORRECT.bg, 'important');
+                        lbl.style.setProperty('border', STYLE_CORRECT.border, 'important');
+                        lbl.style.setProperty('color', STYLE_CORRECT.color, 'important');
+                        lbl.style.setProperty('font-weight', '600', 'important');
+                        lbl.style.setProperty('opacity', '1', 'important');
+                    }
+                });
+
+                // 2) Nếu sai: tô đỏ đáp án đã chọn (vẫn giữ tick)
+                if (!isCorrect) {
+                    userAnswer.forEach(idx => {
+                        if (!correctIndices.includes(idx)) {
+                            const el = $(`#options-container input[data-original-index="${idx}"]`);
+                            const lbl = el ? el.closest('label') : null;
+                            if (lbl) {
+                                lbl.style.setProperty('background-color', STYLE_WRONG.bg, 'important');
+                                lbl.style.setProperty('border', STYLE_WRONG.border, 'important');
+                                lbl.style.setProperty('color', STYLE_WRONG.color, 'important');
+                                lbl.style.setProperty('font-weight', '600', 'important');
+                                lbl.style.setProperty('opacity', '1', 'important');
+                            }
+                        }
+                    });
+                }
             },
             findNextUnansweredQuestionIndex() {
                 const total = state.pickedIndices.length;
@@ -734,9 +820,15 @@
             },
             submitAnswer() {
                 const qIndex = state.pickedIndices[state.currentIndex]; if (qIndex in state.userAnswers) return;
-                const selectedOptions = [...$$('#options-container input:checked')].map(el => parseInt(el.dataset.originalIndex));
+const checkedEl = $('#options-container input:checked');
+let selectedOptions = checkedEl ? [parseInt(checkedEl.dataset.originalIndex)] : [];
+
+// Nếu đã chọn nhưng chưa bấm 'Trả lời', ta lưu tạm vào draftAnswers để khi quay lại vẫn còn tick
+if (selectedOptions.length === 0 && state.draftAnswers[qIndex] && state.draftAnswers[qIndex].length) {
+    selectedOptions = [state.draftAnswers[qIndex][0]];
+}
                 if (selectedOptions.length === 0) { alert("Chọn đáp án."); return; }
-                state.userAnswers[qIndex] = selectedOptions; this.updateUIForQuestionState(); this.updateQuestionListStatus();
+                state.userAnswers[qIndex] = selectedOptions; delete state.draftAnswers[qIndex]; this.updateUIForQuestionState(); this.updateQuestionListStatus();
                 setTimeout(() => { if (Object.keys(state.userAnswers).length === state.pickedIndices.length) this.finishQuiz(false); else { const next = this.findNextUnansweredQuestionIndex(); if (next !== -1) { state.currentIndex = next; this.renderQuestion(); } } }, 200);
             },
             navigateQuestion(dir) { const next = state.currentIndex + dir; if (next >= 0 && next < state.pickedIndices.length) { state.currentIndex = next; this.renderQuestion(); } },
