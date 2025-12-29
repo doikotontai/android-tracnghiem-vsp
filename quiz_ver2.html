@@ -107,6 +107,39 @@
             border-color: rgba(56, 189, 248, 0.5) !important;
         }
         
+        
+        /* --- OPTION STATES (LIGHT MODE) --- */
+        .option-card.selected {
+            background-color: rgba(59, 130, 246, 0.10) !important;
+            border-color: #2563eb !important;
+        }
+        .option-card.correct {
+            background-color: #dcfce7 !important;
+            border-color: #16a34a !important;
+        }
+        .option-card.wrong {
+            background-color: #fee2e2 !important;
+            border-color: #dc2626 !important;
+        }
+
+        /* --- OPTION STATES (DARK MODE) --- */
+        body.dark-mode .option-card.selected {
+            background-color: rgba(59, 130, 246, 0.14) !important;
+            border-color: rgba(96, 165, 250, 0.90) !important;
+        }
+        body.dark-mode .option-card.correct {
+            background-color: rgba(22, 163, 74, 0.18) !important;
+            border-color: rgba(34, 197, 94, 0.90) !important;
+        }
+        body.dark-mode .option-card.wrong {
+            background-color: rgba(220, 38, 38, 0.18) !important;
+            border-color: rgba(239, 68, 68, 0.90) !important;
+        }
+        body.dark-mode .option-card.correct span,
+        body.dark-mode .option-card.wrong span {
+            color: #f1f5f9 !important;
+        }
+
         body.dark-mode input {
             background-color: rgba(30, 41, 59, 0.6) !important;
             border-color: rgba(255, 255, 255, 0.2) !important;
@@ -943,75 +976,108 @@
                 this.updateQuestionListStatus();
             },
 
-            toggleOption(el) {
+                        toggleOption(el) {
+                // Mỗi câu chỉ được chọn 1 đáp án
                 if ($('#submit-btn').disabled) return;
-                const input = el.querySelector('.check-mark');
+
                 const isSelected = el.classList.contains('selected');
-                if (isSelected) {
-                    el.classList.remove('selected', 'bg-primary-50', 'border-primary-500');
-                    input.classList.add('opacity-0');
-                } else {
-                    el.classList.add('selected', 'bg-primary-50', 'border-primary-500');
-                    input.classList.remove('opacity-0');
-                }
+
+                // Bỏ chọn tất cả các đáp án khác
+                $$('.option-card').forEach(card => {
+                    card.classList.remove('selected');
+                    card.querySelector('.check-mark')?.classList.add('opacity-0');
+                });
+
+                // Nếu click lại đúng option đang chọn -> bỏ chọn (cho phép về trạng thái chưa chọn)
+                if (isSelected) return;
+
+                // Chọn option hiện tại
+                el.classList.add('selected');
+                el.querySelector('.check-mark')?.classList.remove('opacity-0');
             },
 
-            updateUIForQuestionState() {
+
+                        updateUIForQuestionState() {
                 const qIdx = state.pickedIndices[state.currentIndex];
                 const q = state.questions[qIdx];
                 const isAns = qIdx in state.userAnswers;
                 const submitBtn = $('#submit-btn');
-                
+
                 $('#feedback-container').classList.add('hidden');
 
                 if (state.mode !== 'review-wrong') {
                     submitBtn.disabled = isAns;
-                    submitBtn.className = isAns 
-                        ? 'px-6 py-2.5 rounded-xl bg-slate-200 text-slate-400 font-medium cursor-not-allowed' 
+                    submitBtn.className = isAns
+                        ? 'px-6 py-2.5 rounded-xl bg-slate-200 text-slate-400 font-medium cursor-not-allowed'
                         : 'px-6 py-2.5 rounded-xl bg-primary-600 text-white hover:bg-primary-700 font-medium transition-all shadow-lg shadow-primary-500/30 transform active:scale-95';
                     submitBtn.textContent = isAns ? 'Đã trả lời' : 'Trả lời';
                 }
 
                 const opts = $$('.option-card');
+
+                // Reset UI trạng thái option
                 opts.forEach(o => {
                     o.style.pointerEvents = isAns ? 'none' : 'auto';
-                    o.classList.remove('selected', 'bg-primary-50', 'border-primary-500', 'bg-green-50', 'border-green-500', 'bg-red-50', 'border-red-500');
-                    o.querySelector('.check-mark').classList.add('opacity-0');
+                    o.classList.remove('selected', 'correct', 'wrong');
+                    o.querySelector('.check-mark')?.classList.add('opacity-0');
                 });
 
+                // Nếu đã trả lời: tô đỏ câu sai (có tick), tô xanh câu đúng để dễ học lại
                 if (isAns) {
-                    const userAns = state.userAnswers[qIdx];
-                    const correct = q.answer;
+                    const userAns = state.userAnswers[qIdx] || [];
+                    const correct = Array.isArray(q.answer) ? q.answer : [q.answer];
+
+                    // Tô đáp án người dùng đã chọn (sai/đúng) và giữ tick
                     userAns.forEach(ai => {
                         const el = opts[ai];
-                        if (el) {
-                            el.querySelector('.check-mark').classList.remove('opacity-0');
-                            if (correct.includes(ai)) el.classList.add('bg-green-50', 'border-green-500');
-                            else el.classList.add('bg-red-50', 'border-red-500');
-                        }
+                        if (!el) return;
+                        el.querySelector('.check-mark')?.classList.remove('opacity-0');
+                        if (correct.includes(ai)) el.classList.add('correct');
+                        else el.classList.add('wrong');
                     });
-                    if (state.mode === 'review-wrong' || !this.checkCorrectness(qIdx, userAns)) {
-                         correct.forEach(ci => {
-                             const el = opts[ci];
-                             if(el && !userAns.includes(ci)) el.classList.add('bg-green-50', 'border-green-500', 'ring-2', 'ring-green-200');
-                         });
+
+                    // Nếu trả lời sai hoặc đang ở chế độ xem lại câu sai -> tô toàn bộ đáp án đúng
+                    const isCorrect = this.checkCorrectness(qIdx, userAns);
+                    if (state.mode === 'review-wrong' || !isCorrect) {
+                        correct.forEach(ci => {
+                            const el = opts[ci];
+                            if (el) el.classList.add('correct');
+                        });
                     }
+                } else {
+                    // Chưa trả lời: khôi phục đáp án đang chọn tạm (nếu có)
+                    opts.forEach(o => {
+                        if (o.classList.contains('selected')) o.querySelector('.check-mark')?.classList.remove('opacity-0');
+                    });
                 }
             },
 
-            submitAnswer() {
+
+                        submitAnswer() {
                 const qIdx = state.pickedIndices[state.currentIndex];
                 if (qIdx in state.userAnswers) return;
+
                 const selected = [];
                 $$('.option-card').forEach((el, i) => { if (el.classList.contains('selected')) selected.push(i); });
-                if (selected.length === 0) { alert("Chọn ít nhất 1 đáp án."); return; }
+
+                if (selected.length === 0) { alert("Chọn 1 đáp án."); return; }
+                if (selected.length > 1) { alert("Mỗi câu chỉ được chọn 1 đáp án."); return; }
+
                 state.userAnswers[qIdx] = selected;
                 this.updateUIForQuestionState();
                 this.updateQuestionListStatus();
+
                 const total = state.pickedIndices.length;
-                if (Object.keys(state.userAnswers).length === total) { setTimeout(() => this.finishQuiz(false), 500); } 
-                else { setTimeout(() => { const next = this.findNextUnansweredQuestionIndex(); if(next !== -1) { state.currentIndex = next; this.renderQuestion(); } }, 800); }
+                if (Object.keys(state.userAnswers).length === total) {
+                    setTimeout(() => this.finishQuiz(false), 500);
+                } else {
+                    setTimeout(() => {
+                        const next = this.findNextUnansweredQuestionIndex();
+                        if (next !== -1) { state.currentIndex = next; this.renderQuestion(); }
+                    }, 800);
+                }
             },
+
 
             findNextUnansweredQuestionIndex() {
                 for (let i = state.currentIndex + 1; i < state.pickedIndices.length; i++) { if (!(state.pickedIndices[i] in state.userAnswers)) return i; }
