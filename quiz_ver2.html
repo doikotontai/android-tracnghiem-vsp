@@ -977,9 +977,24 @@
             },
 
                         toggleOption(el) {
-                // Mỗi câu chỉ được chọn 1 đáp án
                 if ($('#submit-btn').disabled) return;
 
+                const allowMulti = (state.currentSubjectKey === 'antoan');
+
+                if (allowMulti) {
+                    // Môn An Toàn Lao Động: cho phép chọn nhiều đáp án (toggle)
+                    const isSelected = el.classList.contains('selected');
+                    if (isSelected) {
+                        el.classList.remove('selected');
+                        el.querySelector('.check-mark')?.classList.add('opacity-0');
+                    } else {
+                        el.classList.add('selected');
+                        el.querySelector('.check-mark')?.classList.remove('opacity-0');
+                    }
+                    return;
+                }
+
+                // Các môn còn lại: mỗi câu chỉ được chọn 1 đáp án
                 const isSelected = el.classList.contains('selected');
 
                 // Bỏ chọn tất cả các đáp án khác
@@ -996,8 +1011,7 @@
                 el.querySelector('.check-mark')?.classList.remove('opacity-0');
             },
 
-
-                        updateUIForQuestionState() {
+            updateUIForQuestionState() {
                 const qIdx = state.pickedIndices[state.currentIndex];
                 const q = state.questions[qIdx];
                 const isAns = qIdx in state.userAnswers;
@@ -1057,11 +1071,19 @@
                 const qIdx = state.pickedIndices[state.currentIndex];
                 if (qIdx in state.userAnswers) return;
 
+                const allowMulti = (state.currentSubjectKey === 'antoan');
+
                 const selected = [];
                 $$('.option-card').forEach((el, i) => { if (el.classList.contains('selected')) selected.push(i); });
 
-                if (selected.length === 0) { alert("Chọn 1 đáp án."); return; }
-                if (selected.length > 1) { alert("Mỗi câu chỉ được chọn 1 đáp án."); return; }
+                if (selected.length === 0) {
+                    alert(allowMulti ? "Chọn ít nhất 1 đáp án." : "Chọn 1 đáp án.");
+                    return;
+                }
+                if (!allowMulti && selected.length > 1) {
+                    alert("Mỗi câu chỉ được chọn 1 đáp án.");
+                    return;
+                }
 
                 state.userAnswers[qIdx] = selected;
                 this.updateUIForQuestionState();
