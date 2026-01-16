@@ -218,10 +218,11 @@
                         <!-- CHANGED TO SERVER -->
                         <th class="w-16 text-center">Server</th>
                         <th class="w-16 text-center">Log</th>
+                        <th class="w-16 text-center text-red-600">Xóa</th>
                     </tr>
                 </thead>
                 <tbody id="table-body" class="text-slate-700 dark:text-slate-300">
-                    <tr><td colspan="6" class="p-10 text-center text-slate-400"><div class="loader mb-2"></div><br>Đang tải dữ liệu...</td></tr>
+                    <tr><td colspan="7" class="p-10 text-center text-slate-400"><div class="loader mb-2"></div><br>Đang tải dữ liệu...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -312,7 +313,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, onSnapshot, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, onSnapshot, setDoc, getDoc, getDocs, writeBatch, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
         // DANH SÁCH NHÂN SỰ MẶC ĐỊNH
@@ -376,8 +377,7 @@
             { id: "XL2618", name: "Hoàng Trọng Linh", apiId: "2af53c6a-f202-41be-a6fd-52ac68de2343" },
             { id: "XL260", name: "Vũ Xuân Chính", apiId: "8f1ad5d0-3791-4690-82ff-6eea272f55fd" },
             { id: "XL2619", name: "Nguyễn Tuấn Đạt", apiId: "263f961c-8f31-42be-8af4-f74a6bed7581" },
-            { id: "XL853", name: "Cù Chí Công", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" },
-            { id: "XL2676", name: "Nguyễn Thái Hòa", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
+            { id: "XL853", name: "Cù Chí Công", apiId: "988618de-5453-4944-b47a-e0cc8175a4de" }
         ];
 
         const CUSTOM_PROXY_URL = "https://api-proxy.phongluuservices.workers.dev/"; 
@@ -549,26 +549,35 @@
                 if (user) {
                     onSnapshot(CONFIG_USERS_DOC, async (snap) => {
                         let dbUsers = {};
-                        if (snap.exists()) { dbUsers = snap.data().users || {}; }
-                        
                         let needsUpdate = false;
+
+                        // NOTE: Chỉ seed DEFAULT_PERSONNEL ở lần đầu (khi doc chưa tồn tại).
+                        // Nếu đã có dữ liệu trong Firebase, sẽ TÔN TRỌNG dữ liệu đó (kể cả xóa người).
+                        if (snap.exists()) {
+                            dbUsers = snap.data().users || {};
+                        } else {
+                            DEFAULT_PERSONNEL.forEach(defUser => {
+                                const uid = "U_" + defUser.id.replace(/\s+/g, '');
+                                dbUsers[uid] = defUser;
+                            });
+                            needsUpdate = true;
+                        }
+
+                        // Nếu user đang tồn tại trong DB và có trong DEFAULT_PERSONNEL -> tự cập nhật name/apiId (không tự re-add nếu đã bị xóa)
                         DEFAULT_PERSONNEL.forEach(defUser => {
                             const uid = "U_" + defUser.id.replace(/\s+/g, '');
-                            if (!dbUsers[uid]) { 
-                                dbUsers[uid] = defUser; 
-                                needsUpdate = true; 
-                            } else { 
-                                let changed = false;
-                                if (defUser.name && dbUsers[uid].name !== defUser.name) {
-                                    dbUsers[uid].name = defUser.name;
-                                    changed = true;
-                                }
-                                if (defUser.apiId && dbUsers[uid].apiId !== defUser.apiId) {
-                                    dbUsers[uid].apiId = defUser.apiId;
-                                    changed = true;
-                                }
-                                if (changed) needsUpdate = true;
+                            if (!dbUsers[uid]) return;
+
+                            let changed = false;
+                            if (defUser.name && dbUsers[uid].name !== defUser.name) {
+                                dbUsers[uid].name = defUser.name;
+                                changed = true;
                             }
+                            if (defUser.apiId && dbUsers[uid].apiId !== defUser.apiId) {
+                                dbUsers[uid].apiId = defUser.apiId;
+                                changed = true;
+                            }
+                            if (changed) needsUpdate = true;
                         });
                         
                         masterData.users = dbUsers;
@@ -588,7 +597,7 @@
             const monthKey = `${currentYear}_${currentMonth}`;
             masterData.records = {}; 
             const tbody = document.querySelector('#table-body');
-            tbody.innerHTML = `<tr><td colspan="6" class="p-10 text-center text-slate-400"><div class="loader mb-2"></div><br>Đang tải dữ liệu T${currentMonth}/${currentYear}...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="p-10 text-center text-slate-400"><div class="loader mb-2"></div><br>Đang tải dữ liệu T${currentMonth}/${currentYear}...</td></tr>`;
 
             unsubscribeMonth = onSnapshot(collection(db, 'stopcard_records', monthKey, 'user_data'), (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
@@ -658,7 +667,7 @@
             document.getElementById('stat-submitted-ratio').innerText = `${submittedCount}/${totalPersonnel}`;
             document.getElementById('stat-unsubmitted').innerText = totalPersonnel - submittedCount;
 
-            if (list.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu.</td></tr>`; return; }
+            if (list.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 italic">Không tìm thấy dữ liệu.</td></tr>`; return; }
 
             tbody.innerHTML = list.map((item, index) => {
                 const rowClass = item.count === 0 && !showUnsubmittedOnly ? 'bg-red-50/60 dark:bg-red-900/10' : '';
@@ -673,6 +682,11 @@
                     <td class="text-center"><input type="number" min="0" id="input-${item.uid}" class="modern-input w-16 text-center font-bold rounded py-1 ${item.count > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}" value="${item.count}" onchange="window.updateCount('${item.uid}', this.value, 'User')" onfocus="this.select()"></td>
                     <td class="text-center">${apiBtnHtml}</td>
                     <td class="text-center"><button onclick="window.viewHistory('${item.uid}')" class="p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition ${item.history.length > 0 ? 'text-blue-400' : 'opacity-20'}"><i data-lucide="history" class="w-3.5 h-3.5"></i></button></td>
+                    <td class="text-center">
+                        <button onclick="window.deleteUser('${item.uid}')" class="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:border-red-900/40 transition" title="Xóa người">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </td>
                 </tr>`;
             }).join('');
             lucide.createIcons();
@@ -709,6 +723,77 @@
             if (masterData.users[uid]) return alert("Đã tồn tại!");
             try { await setDoc(CONFIG_USERS_DOC, { users: { [uid]: { id, name } } }, { merge: true }); showToast("Đã thêm!"); window.closeAddUserModal(); } catch (e) { alert("Lỗi: " + e.message); }
         }
+
+        // ==========================================
+        // XÓA NHÂN SỰ (xóa cả trên Firebase)
+        // - Xóa khỏi stopcard_config/users_list
+        // - Xóa dữ liệu stopcard_records theo dải năm đang cho phép chọn (currentYear-2 -> currentYear+5)
+        // ==========================================
+        window.deleteUser = async (uid) => {
+            const info = masterData.users?.[uid];
+            if (!info) return;
+
+            const ok = await showConfirmModal(
+                `Bạn chắc chắn muốn XÓA nhân sự:
+
+- ${info.name} (${info.id})
+
+Hành động này sẽ xóa trong Firebase và không thể khôi phục.`
+            );
+            if (!ok) return;
+
+            const loading = document.getElementById('loading-overlay');
+            const loadingText = document.getElementById('loading-text');
+            const loadingBar = document.getElementById('loading-bar');
+            loadingText.innerText = 'Đang xóa nhân sự...';
+            loadingBar.style.width = '0%';
+            loading.classList.remove('hidden');
+            loading.classList.add('flex');
+
+            try {
+                const startYear = currentYear - 2;
+                const endYear = currentYear + 5;
+                const totalOps = ((endYear - startYear + 1) * 12) + 1; // +1: config
+                let done = 0;
+
+                const batch = writeBatch(db);
+
+                // 1) Xóa khỏi danh sách users
+                batch.update(CONFIG_USERS_DOC, { [`users.${uid}`]: deleteField() });
+                done++;
+                loadingBar.style.width = `${Math.round((done / totalOps) * 100)}%`;
+
+                // 2) Xóa stopcard_records (nhiều tháng/năm)
+                for (let y = startYear; y <= endYear; y++) {
+                    for (let m = 1; m <= 12; m++) {
+                        const monthKey = `${y}_${m}`;
+                        const ref = doc(db, 'stopcard_records', monthKey, 'user_data', uid);
+                        batch.delete(ref);
+                        done++;
+                        if (done % 12 === 0) {
+                            loadingText.innerText = `Đang xóa dữ liệu: ${y} - Tháng ${m}...`;
+                            loadingBar.style.width = `${Math.round((done / totalOps) * 100)}%`;
+                            await new Promise(r => setTimeout(r, 0));
+                        }
+                    }
+                }
+
+                await batch.commit();
+
+                // 3) Update local cache
+                delete masterData.users[uid];
+                delete masterData.records[uid];
+                renderTable();
+                showToast('Đã xóa nhân sự (Firebase).', 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('Lỗi khi xóa: ' + (e?.message || e), 'error');
+            } finally {
+                loading.classList.add('hidden');
+                loading.classList.remove('flex');
+            }
+        };
+
 
         window.viewHistory = (uid) => {
             const history = masterData.records[uid]?.history || [];
@@ -809,7 +894,5 @@
     </script>
 </body>
 </html>
-
-
 
 
