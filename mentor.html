@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Hướng dẫn vận hành Mentor UT (PAUT)</title>
+<style>
+    :root {
+      --navy:#0b2d4f;
+      --navy2:#123a63;
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --border:rgba(15,23,42,.12);
+      --shadow:0 10px 22px rgba(2,6,23,.08);
+      --radius:14px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    /* Layout */
+    .app { display:flex; min-height:100vh; }
+
+    .sidebar {
+      width: 310px;
+      background: linear-gradient(180deg, var(--navy) 0%, #061a2c 100%);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 18px 14px;
+      overflow: auto;
+      border-right: 1px solid rgba(255,255,255,.10);
+    }
+
+    .brand { display:flex; align-items:center; gap:10px; padding:12px 12px 6px; }
+    .brand-badge {
+      width:38px; height:38px; border-radius:12px;
+      background: rgba(255,255,255,.14);
+      display:grid; place-items:center;
+      font-weight: 800; letter-spacing:.5px;
+    }
+    .brand-title { font-weight: 800; line-height: 1.1; }
+    .brand-sub { font-size: 12px; color: rgba(255,255,255,.75); }
+
+    .search { padding: 10px 12px 6px; }
+    .search input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+    }
+    .search input::placeholder { color: rgba(255,255,255,.65); }
+
+    .nav { margin-top: 6px; display:flex; flex-direction:column; gap:6px; padding:8px 6px 14px; }
+    .nav-item {
+      text-decoration:none;
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      transition: transform .12s ease, background .12s ease;
+      font-weight: 650;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.12); transform: translateX(2px); }
+    .nav-item.active { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.22); }
+
+    .content {
+      flex: 1;
+      padding: 18px 20px 80px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display:flex;
+      gap: 12px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .hamburger {
+      display:none;
+      align-items:center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      color: var(--navy);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .doc-title {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(11,45,79,.08), rgba(18,58,99,.05));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .doc-title h1 { margin:0; font-size: 20px; letter-spacing:.2px; color: var(--navy); }
+    .doc-title p { margin: 6px 0 0; color: var(--muted); }
+
+    .khoi { margin-top: 18px; }
+    .khoi-head h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: var(--navy);
+      letter-spacing: .2px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .card h3, .card h4 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      line-height: 1.25;
+    }
+    .card h3.h-khoi { font-size: 16px; }
+    .card h3.h-sub { font-size: 16px; }
+    .card h4.h-sub { font-size: 15px; }
+
+    p { margin: 8px 0; }
+
+    figure { margin: 10px 0; }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .caption {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .table-wrap { overflow-x: auto; margin: 10px 0; }
+    table.doc-table { width: 100%; border-collapse: collapse; }
+    table.doc-table td, table.doc-table th {
+      border: 1px solid rgba(15,23,42,.18);
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+
+    .callout {
+      margin: 10px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 12px 12px 10px;
+    }
+    .callout-title { font-weight: 900; letter-spacing: .3px; margin-bottom: 6px; }
+    .callout-note { border-left: 6px solid #2563eb; background: rgba(37,99,235,.06); }
+    .callout-warn { border-left: 6px solid #f59e0b; background: rgba(245,158,11,.08); }
+    .callout-important { border-left: 6px solid #ef4444; background: rgba(239,68,68,.07); }
+
+    .backtop {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      box-shadow: var(--shadow);
+      display: none;
+      cursor: pointer;
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .sidebar { position: fixed; left: -330px; transition: left .2s ease; z-index: 50; }
+      .sidebar.open { left: 0; }
+      .content { padding: 16px 14px 80px; }
+      .hamburger { display: inline-flex; }
+    }
+  
+
+    /* Word-perfect icons (inline + in tables) */
+    img.icon-inline {
+      max-width: none;
+      height: 1.05em;
+      width: auto;
+      vertical-align: -0.18em;
+      margin: 0 .22em;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      display: inline-block;
+    }
+
+    .doc-table img.icon-table {
+      max-width: none;
+      height: 34px;
+      width: auto;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      margin: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    table.icon-table-grid td:first-child,
+    table.icon-table-grid th:first-child {
+      text-align: center;
+      width: 150px;
+    }
+    table.icon-table-grid td:first-child p,
+    table.icon-table-grid th:first-child p {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    p.p-img {
+      text-align: center;
+    }
+    p.p-img img {
+      display: inline-block;
+    }
+    .caption {
+      text-align: center;
+    }
+
+    /* --- Special multi-image figure (giữ đúng bố cục như Word) --- */
+    .figure-grid {
+      margin: 12px 0;
+      padding: 12px;
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: 14px;
+      background: rgba(15,23,42,.02);
+      overflow-x: auto;
+    }
+    .figure-grid .figure-row {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 18px;
+      justify-content: center;
+      align-items: flex-start; /* fix lệch hàng do baseline */
+    }
+    .figure-grid .figure-row + .figure-row {
+      margin-top: 18px;
+    }
+    /* Khoá kích thước theo chiều cao để hình gọn gàng, không nhảy lệch */
+    .figure-grid .row1 img {
+      height: clamp(260px, 42vh, 500px);
+      width: auto;
+      max-width: none;
+    }
+    .figure-grid .row2 img {
+      height: clamp(300px, 48vh, 600px);
+      width: auto;
+      max-width: none;
+    }
+    .figure-grid img {
+      flex: 0 0 auto;
+    }
+
+    .mid-annot {
+      flex: 0 0 auto;
+      align-self: center;
+      position: relative;
+      width: 165px;
+      height: clamp(240px, 40vh, 520px);
+      padding: 14px 10px;
+      border: 2px solid #16a34a;
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.35;
+      margin: 0 18px; /* chừa khoảng để mũi tên không đè lên hình */
+    }
+    .mid-annot .mid-sep {
+      border-top: 1px dashed rgba(15,23,42,.55);
+      margin: 14px 8px;
+    }
+    .mid-annot .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 0;
+      border-top: 2px solid #1d4ed8;
+    }
+    .mid-annot .arrow-left {
+      left: -28px;
+    }
+    .mid-annot .arrow-left::after {
+      content: "";
+      position: absolute;
+      left: -2px;
+      top: -6px;
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 10px solid #1d4ed8;
+    }
+    .mid-annot .arrow-right {
+      right: -28px;
+    }
+    .mid-annot .arrow-right::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: -6px;
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 10px solid #1d4ed8;
+    }
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<div class="brand-badge">UT</div>
+<div>
+<div class="brand-title">Mentor UT (PAUT)</div>
+<div class="brand-sub">Hướng dẫn vận hành &amp; hiệu chuẩn</div>
+</div>
+</div>
+<div class="search">
+<input id="navSearch" placeholder="Tìm nhanh Khối..." type="text"/>
+</div>
+<nav class="nav" id="navList"><a class="nav-item" href="#khoi-tong-quan">TỔNG QUAN</a><a class="nav-item" href="#mục-lục">MỤC LỤC</a><a class="nav-item" href="#khối-1-vận-hành-thiết-bị-mentor-ut">KHỐI 1 – VẬN HÀNH THIẾT BỊ MENTOR UT</a><a class="nav-item" href="#khối-1-tổng-quan-giao-diện-hiệu-chuẩn">KHỐI 1 – TỔNG QUAN &amp; GIAO DIỆN HIỆU CHUẨN</a><a class="nav-item" href="#khối-2-kiểm-tra-biến-tử-chết-dead-element-check">KHỐI 2 – KIỂM TRA BIẾN TỬ CHẾT (DEAD ELEMENT CHECK)</a><a class="nav-item" href="#khối-3-thiết-lập-thông-số-cơ-bản-và-hiệu-chuẩn-vận-tốc-velocity">KHỐI 3 – THIẾT LẬP THÔNG SỐ CƠ BẢN VÀ HIỆU CHUẨN VẬN TỐC (VELOCITY)</a><a class="nav-item" href="#khối-4-hiệu-chuẩn-độ-trễ-nêm-wedge-delay">KHỐI 4 – HIỆU CHUẨN ĐỘ TRỄ NÊM (WEDGE DELAY)</a><a class="nav-item" href="#khối-5-xây-dựng-đường-tcg-time-correction-gain">KHỐI 5 – XÂY DỰNG ĐƯỜNG TCG (TIME CORRECTION GAIN)</a><a class="nav-item" href="#khối-6-hiệu-chuẩn-độ-nhạy-sensitivity">KHỐI 6 – HIỆU CHUẨN ĐỘ NHẠY (SENSITIVITY)</a><a class="nav-item" href="#khối-7-hiệu-chuẩn-encoder">KHỐI 7 – HIỆU CHUẨN ENCODER</a><a class="nav-item" href="#khối-8-thiết-lập-thông-số-quét-lưu-file">KHỐI 8 – THIẾT LẬP THÔNG SỐ QUÉT &amp; LƯU FILE</a><a class="nav-item" href="#khối-9-quét-mối-hàn-tofd-quản-lý-dữ-liệu">KHỐI 9 – QUÉT MỐI HÀN, TOFD &amp; QUẢN LÝ DỮ LIỆU</a></nav>
+</aside>
+<main class="content" id="top">
+<div class="topbar">
+<button aria-label="Mở menu" class="hamburger" id="btnMenu">☰ Menu</button>
+<div class="doc-title">
+<h1>HƯỚNG DẪN VẬN HÀNH THIẾT BỊ MENTOR UT (PAUT)</h1>
+<p>Sidebar nhảy nhanh theo Khối • Nội dung &amp; hình ảnh giữ nguyên theo file Word</p>
+</div>
+</div>
+<section class="khoi" data-khoi="1" id="khoi-tong-quan"><div class="khoi-head"><h2>TỔNG QUAN</h2></div><div class="card"><h3 class="h-sub">HƯỚNG DẪN VẬN HÀNH
+THIẾT BỊ MENTOR UT (PAUT)</h3><p>Phiên bản: 1.0</p><p>Ngày cập nhật: 13/01/2026</p><p>Phạm vi: Tài liệu lưu hành nội bộ<br/>Hướng dẫn hiệu chuẩn và vận hành kiểm tra mối hàn.</p></div></section><section class="khoi" data-khoi="1" id="mục-lục"><div class="khoi-head"><h2>MỤC LỤC</h2></div><div class="card"><h3 class="h-khoi">MỤC LỤC</h3><p>KHỐI 1: TỔNG QUAN &amp; GIAO DIỆN HIỆU CHUẨN</p><p>KHỐI 2: KIỂM TRA BIẾN TỬ CHẾT (DEAD ELEMENT)</p><p>KHỐI 3: HIỆU CHUẨN VẬN TỐC (VELOCITY)</p><p>KHỐI 4: HIỆU CHUẨN ĐỘ TRỄ NÊM (WEDGE DELAY)</p><p>KHỐI 5: XÂY DỰNG ĐƯỜNG TCG (TIME CORRECTION GAIN)</p><p>KHỐI 6: HIỆU CHUẨN ĐỘ NHẠY (SENSITIVITY)</p><p>KHỐI 7: HIỆU CHUẨN ENCODER</p><p>KHỐI 8: THIẾT LẬP THÔNG SỐ QUÉT &amp; LƯU FILE</p><p>KHỐI 9: QUÉT MỐI HÀN, TOFD &amp; QUẢN LÝ DỮ LIỆU</p></div></section><section class="khoi" data-khoi="1" id="khối-1-vận-hành-thiết-bị-mentor-ut"><div class="khoi-head"><h2>KHỐI 1 – VẬN HÀNH THIẾT BỊ MENTOR UT</h2></div><div class="card"><h3 class="h-khoi">KHỐI 1 – VẬN HÀNH THIẾT BỊ MENTOR UT</h3><p>Cài đặt, nâng cấp ứng dụng</p><p>Để cài đặt / nâng cấp ứng dụng, thực hiện trình tự theo các bước sau:</p><p>Nhấn và giữ nút nguồn (vị trí 1 – Hình 2) để khởi động thiết bị</p><p>Giao diện thiết bị sau khi khởi động như hình 1</p><p class="p-img"><img alt="" height="1052" loading="lazy" src="assets/img_001.png" width="1706"/></p><p class="caption">Hình 1: Giao diện sau khi khởi động thiết bị</p><p>Nhấn chọn biểu tượng <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_002.png" width="56"/> trên màn hình. Hộp thoại cài đặt ứng dụng được hiển thị như hình 2</p><p class="p-img"><img alt="" height="800" loading="lazy" src="assets/img_003.png" width="1342"/></p><p class="caption">Hình 2: Hộp thoại cài đặt ứng dụng</p><p>Nhấn <em><strong>Select Location</strong></em><em> </em>và chọn file iwp (ứng dụng) cần cài đặt</p><p>Chọn ứng dụng muốn cài đặt và nhấn “<em><strong>Add</strong></em>”</p><p>Ví dụ: Trên hình 3, chọn cài đặt ứng dụng “<em><strong>Weld 3.5”</strong></em></p><p class="p-img"><img alt="" height="711" loading="lazy" src="assets/img_004.png" width="1196"/></p><p class="caption">Hình 5: Chọn ứng dụng cần cài đặt</p><div class="callout callout-note"><div class="callout-title">LƯU Ý</div><div class="callout-body"><strong>Lưu ý:</strong> Ứng dụng được cài đặt phải có tên mở rộng “<em><strong>.iwp”</strong></em></div></div><p>Sau khi cài đặt, trên màn hình hiển thị thông báo cài đặt ứng dụng thành công “<em><strong>Successfully installed the application</strong></em>” và biểu tượng của ứng dụng hiển thị trên màn hình giao diện của thiết bị (Hình 6)</p><p class="p-img"><img alt="" height="523" loading="lazy" src="assets/img_005.png" width="955"/></p><p class="caption">Hình 6: Cài đặt ứng dụng thành công</p><p>Khởi động ứng dụng</p><p>Ứng dụng sau khi được cài đặt thành công được hiển thị trên giao diện màn hình. Nhấn chọn vào ứng dụng để bắt đầu</p><p>Cửa sổ ứng dụng được chọn hiển thị như hình 7</p><p class="p-img"><img alt="" height="1051" loading="lazy" src="assets/img_006.png" width="1703"/></p><p class="caption">Hình 7: Cửa sổ ứng dụng “<em><strong>Weld 3.5</strong></em>”</p><p>Chọn “<em>Launch</em>”<em> </em>hoặc “<em>Start (Cover)</em>” để chạy ứng dụng từ đầu</p><p>Chọn “<em>Resume</em>” để tiếp tục ứng dụng từ phần đã tạm dừng trước đó</p><p>Sau đó nhấn chọn “<em><strong>OK</strong></em>”.</p><p class="p-img"><img alt="" height="593" loading="lazy" src="assets/img_007.png" width="1196"/></p><p class="caption">Hình 8: Giao diện ứng dụng “<em><strong>Weld 3.5</strong></em>”</p><div class="callout callout-note"><div class="callout-title">LƯU Ý</div><div class="callout-body"><strong>Ghi chú hình 8:</strong></div></div><p>Quay về màn hình giao diện của thiết bị</p><p>Cài đặt hệ thống của thiết bị, bao gồm cài đặt hiển thị, thời gian, ngôn ngữ, đơn vị sử dụng trên thiết bị,...(hình 9)</p><p>Các bước hiệu chuẩn file cài đặt.</p><p>Trở về bước thực hiện trước</p><p>Chuyển tới bước thực hiện tiếp theo</p><p>Lưu / mở file cài đặt hoặc file dữ liệu</p><p>Chụp ảnh màn hình / thực hiện báo cáo</p><p>Sau khi cài đặt hoàn tất, nhấn nút <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_008.png" width="53"/> để quay về</p><p class="p-img"><img alt="" height="545" loading="lazy" src="assets/img_009.png" width="1088"/></p><p class="caption">Hình 9: Phần cài đặt hệ thống của thiết bị</p><p>Nhấn chọn <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_010.png" width="56"/> (nút 5 – hình 8) để chuyển tới bước “<em><strong>Application checklist</strong></em>”.</p><p>Kiểm tra ứng dụng theo danh sách các thông số đã thiết lập trước cho ứng dụng bằng phần mềm <em><strong>Mentor Creator</strong></em> (hoặc có thể điều chỉnh lại các thông số thiết lập trong bước tiếp theo).</p><p class="p-img"><img alt="" height="602" loading="lazy" src="assets/img_011.png" width="1194"/></p><p class="caption">Hình 10: Kiểm tra danh sách thông số cài đặt</p><p>Sau khi kiểm tra hoàn tất, nhấn chọn <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_010.png" width="56"/> để chuyển tới bước “<em><strong>Danh sách các bước hiệu chuẩn” </strong></em>(“<em><strong>Table of Contents</strong></em>”)</p><p class="p-img"><img alt="" height="547" loading="lazy" src="assets/img_012.png" width="1199"/></p><p class="caption">Hình 11: Danh sách các bước hiệu chuẩn</p></div></section><section class="khoi" data-khoi="1" id="khối-1-tổng-quan-giao-diện-hiệu-chuẩn"><div class="khoi-head"><h2>KHỐI 1 – TỔNG QUAN &amp; GIAO DIỆN HIỆU CHUẨN</h2></div><div class="card"><h3 class="h-khoi">KHỐI 1 – TỔNG QUAN &amp; GIAO DIỆN HIỆU CHUẨN</h3></div><div class="card"><h3 class="h-sub">1.1. LƯU Ý QUAN TRỌNG TRƯỚC KHI BẮT ĐẦU</h3><div class="callout callout-important"><div class="callout-title">QUAN TRỌNG</div><div class="callout-body">QUAN TRỌNG: Quá trình hiệu chuẩn cho ứng dụng có 2 Group (ví dụ: A15) thì phải làm 2 bước riêng biệt cho 2 Group (áp dụng cho mọi loại Calib).</div></div><p>Người vận hành phải thiết lập lại thông số của từng Group một cách độc lập.</p><p>Ví dụ: Thông số mối hàn (Part Setup) sau khi cài cho Group 1 thì phải chuyển sang Group 2 và cài đặt thủ công (manual) các thông số tương tự.</p><p>Điều này áp dụng tương tự với tất cả các quy trình hiệu chuẩn khác như: Velocity, Wedge Delay, Sensitivity, TCG…</p></div><div class="card"><h3 class="h-sub">1.2. THANH TRẠNG THÁI HIỆU CHUẨN (STATUS BAR)</h3><p class="p-img"><img alt="" height="163" loading="lazy" src="assets/img_013.png" width="1078"/></p><p class="p-img"><img alt="" height="113" loading="lazy" src="assets/img_014.png" width="727"/></p><p>Vị trí: Nằm trên cùng màn hình giao diện.</p><p>Chức năng: Hiển thị tiến trình của các hạng mục cần hiệu chuẩn.</p><p>● Màu cam: Chưa hiệu chuẩn.</p><p>● Màu xanh lá: Đã hiệu chuẩn.</p><p>Thứ tự các biểu tượng (Từ trái qua phải):</p><p>Velocity: Hiệu chuẩn Vận tốc.</p><p>Wedge Delay: Hiệu chuẩn Độ trễ nêm.</p><p>TCG: Hiệu chuẩn đường cong TCG.</p><p>Sensitivity: Hiệu chuẩn Độ nhạy.</p><p>Encoder: Hiệu chuẩn bộ mã hóa vị trí (Encoder).</p></div><div class="card"><h3 class="h-sub">1.3. CÁC BIỂU TƯỢNG CHỨC NĂNG</h3><p class="p-img"><img alt="" height="51" loading="lazy" src="assets/img_015.png" width="388"/></p><p>Trong quá trình hiệu chuẩn, khi nhấn chạm vào cửa sổ bất kỳ trên màn hình, các biểu tượng sau sẽ hiển thị để điều chỉnh thông số:</p><div class="table-wrap"><table class="doc-table icon-table-grid"><tr><td><p><strong>Biểu tượng</strong></p></td><td><p><strong>Ý nghĩa / Chức năng</strong></p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="34" loading="lazy" src="assets/img_016.png" width="34"/></p></td><td><p>Hiển thị thông số cài đặt cho đầu dò.</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="31" loading="lazy" src="assets/img_017.png" width="33"/></p></td><td><p>Hiển thị thông số cài đặt cho nêm.</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="30" loading="lazy" src="assets/img_018.png" width="31"/></p></td><td><p>Hiển thị thông số cài đặt cho luật phát.</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="31" loading="lazy" src="assets/img_019.png" width="32"/></p></td><td><p>Hiển thị thông số cài đặt cho kênh phát.</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="31" loading="lazy" src="assets/img_020.png" width="32"/></p></td><td><p>Hiển thị thông số cài đặt cho mối hàn (Part Setup).</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="32" loading="lazy" src="assets/img_021.png" width="32"/></p></td><td><p>Hiển thị thông số cài đặt cho hiệu chuẩn.</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="30" loading="lazy" src="assets/img_022.png" width="32"/></p></td><td><p>Hiển thị thông số cài đặt cho chùm sóng âm (Gain, Range)</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="28" loading="lazy" src="assets/img_023.png" width="32"/></p></td><td><p>Tùy chọn hiển thị (dải mã hóa màu, cấu hình hiển thị).</p></td></tr><tr><td><p class="p-img"><img alt="" class="icon-table" height="31" loading="lazy" src="assets/img_024.png" width="34"/></p></td><td><p>Hiển thị thông số cài đặt cho các cổng sóng âm (Gate)</p></td></tr></table></div></div></section><section class="khoi" data-khoi="1" id="khối-2-kiểm-tra-biến-tử-chết-dead-element-check"><div class="khoi-head"><h2>KHỐI 2 – KIỂM TRA BIẾN TỬ CHẾT (DEAD ELEMENT CHECK)</h2></div><div class="card"><h3 class="h-khoi">KHỐI 2 – KIỂM TRA BIẾN TỬ CHẾT (DEAD ELEMENT CHECK)</h3></div><div class="card"><h3 class="h-sub">2.1. MỤC TIÊU</h3><p>Xác định tình trạng sức khỏe của đầu dò, đảm bảo không có biến tử hỏng trước khi kiểm tra.</p></div><div class="card"><h3 class="h-sub">2.2. CHUẨN BỊ</h3><p>Đầu dò kết nối đúng cách vào thiết bị (nghe tiếng "tách").</p><p>Thông số khai báo phù hợp với đầu dò PAUT đang sử dụng.</p></div><div class="card"><h3 class="h-sub">2.3. CHI TIẾT THAO TÁC</h3><p>Truy cập chức năng: Nhấn biểu tượng <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_025.png" width="104"/> -&gt; Chọn <strong>Dead El</strong> (hoặc nhấn nút <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_010.png" width="56"/> 3 lần để chuyển tới bước này).</p><p>Màn hình hiển thị thông báo:</p><p class="p-img"><img alt="" height="51" loading="lazy" src="assets/img_026.png" width="567"/></p><p>Thiết lập cổng (Gate):</p><p>Trên A-Scan xuất hiện xung bắt đầu.</p><p>Nhấn giữ và kéo cổng Gate A sao cho bao phủ toàn bộ đỉnh xung.</p><p>Tăng biên độ xung lên ~80% FSH (chiều cao màn hình).</p><p>Trên S-Scan: Đảm bảo cổng màu xanh lá phải bao phủ hết dải xung của các biến tử.</p><p>Thực hiện: Nhấn biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/>. Quá trình diễn ra tự động.</p></div><div class="card"><h3 class="h-sub">2.4. KẾT QUẢ</h3><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_028.jpg" width="1024"/></p><p>Màn hình hiển thị khi check biến tử (Ví dụ: Chết biến tử số 2 / Dead El No.2)</p></div><div class="card"><h3 class="h-sub">2.5. LỖI THƯỜNG GẶP &amp; XỬ LÝ</h3><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_029.jpg" width="1024"/></p><p>Triệu chứng: Thông báo "Attached Probe is not good..."</p><p>Nguyên nhân/Xử lý: Số lượng biến tử chết vượt mức cho phép. Vệ sinh lại đầu dò hoặc thay đầu dò mới.</p></div></section><section class="khoi" data-khoi="1" id="khối-3-thiết-lập-thông-số-cơ-bản-và-hiệu-chuẩn-vận-tốc-velocity"><div class="khoi-head"><h2>KHỐI 3 – THIẾT LẬP THÔNG SỐ CƠ BẢN VÀ HIỆU CHUẨN VẬN TỐC (VELOCITY)</h2></div><div class="card"><h3 class="h-khoi">KHỐI 3 – THIẾT LẬP THÔNG SỐ CƠ BẢN VÀ HIỆU CHUẨN VẬN TỐC (VELOCITY)</h3></div><div class="card"><h3 class="h-sub">3.1. MỤC TIÊU</h3><p>Xác định vận tốc sóng âm thực tế trong vật liệu mẫu (thường là V1 hoặc V2).</p></div><div class="card"><h3 class="h-sub">3.2. CHUẨN BỊ &amp; LƯU Ý</h3><p>Mẫu chuẩn: Khối chuẩn V1 hoặc V2 (sử dụng 2 cung tròn bán kính 50mm/100mm hoặc 25mm/50mm tùy loại).</p><div class="callout callout-note"><div class="callout-title">LƯU Ý</div><div class="callout-body">Lưu ý quan trọng: Nếu sử dụng 2 Group (Ví dụ: Group 1 &amp; Group 2), phải thực hiện quy trình này cho từng Group riêng biệt.</div></div></div><div class="card"><h3 class="h-sub">3.3. THIẾT LẬP THÔNG SỐ CƠ BẢN (SETUP)</h3><p>Trước khi vào menu Calib, cần đảm bảo các thông số sau đã nhập đúng theo Scan Plan:</p><p>Cài đặt Đầu dò (Probe): Nhập đúng Tần số (Frequency), Số lượng biến tử (Element Qty), Pitch, Elevation.</p><p>Cài đặt Nêm (Wedge): Nhập đúng Góc nêm (Wedge Angle), Vận tốc nêm (Wedge Velocity), Z-Offset, Wedge Front.</p><p>Cài đặt Luật phát (Focal Law/Group):</p><p>Type: Chọn Sectorial (Quét quạt) hoặc Linear (Quét thẳng).</p><p>Elements: Chọn biến tử bắt đầu (First) và kết thúc (Last).</p><p>Angle: Nhập góc phát, độ phân giải góc (thường là 1 độ).</p><p>Focal Distance: Nên đặt 1000mm (hội tụ vô cực) hoặc theo Scan Plan.</p><p>Cài đặt Mối hàn (Part Setup) &amp; Pulser:</p><p>Vào menu Part Setup <img alt="" class="icon-inline" height="31" loading="lazy" src="assets/img_020.png" width="32"/></p><p>Nhập chính xác: Chiều dày vật liệu, Vận tốc sóng (Ngang/Dọc).</p><p>Geometry: Nhập các thông số vát mép (A, B, C, D..., xem hướng dẫn ở Mục 8.2)</p><p>Angle: Nhập góc vát Alpha/Beta.</p><div class="figure-grid fig-probe-wedge">  <div class="figure-row row1">    <img alt="" height="1041" loading="lazy" src="assets/img_030.png" width="283"/>    <img alt="" height="1043" loading="lazy" src="assets/img_031.png" width="278"/>    <img alt="" height="856" loading="lazy" src="assets/img_032.png" width="231"/>  </div>  <div class="figure-row row2">    <img alt="" height="962" loading="lazy" src="assets/img_033.png" width="251"/>    <img alt="" height="1049" loading="lazy" src="assets/img_034.png" width="284"/>    <div class="mid-annot">      <span class="arrow arrow-left" aria-hidden="true"></span>      <span class="arrow arrow-right" aria-hidden="true"></span>      <div>Các thông số cài đặt cho đầu dò A10 (bên trái)</div>      <div class="mid-sep"></div>      <div>Các thông số cài đặt cho đầu dò A15 (bên phải)</div>    </div>    <img alt="" height="1109" loading="lazy" src="assets/img_035.png" width="245"/>    <img alt="" height="992" loading="lazy" src="assets/img_036.png" width="264"/>  </div></div></div><div class="card"><h3 class="h-sub">3.4. QUY TRÌNH HIỆU CHUẨN VẬN TỐC (CALIBRATION PROCESS)</h3><p>Bước 1: Truy cập Menu Hiệu chuẩn<br/>Trên màn hình chính, nhấn biểu tượng <img alt="" class="icon-inline" height="32" loading="lazy" src="assets/img_021.png" width="32"/></p><p>Bước 2: Cài đặt thông số Hiệu chuẩn</p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_037.jpg" width="1024"/></p><div class="table-wrap"><table class="doc-table"><tr><td><p><strong>Thông số</strong></p></td><td><p><strong>Giá trị cài đặt</strong></p></td><td><p><strong>Giải thích ý nghĩa</strong></p></td></tr><tr><td><p>Vel Cal Type</p></td><td><p>Multi Step</p></td><td><p>Chế độ hiệu chuẩn đa điểm (dùng 2 điểm mốc).</p></td></tr><tr><td><p>Reflector Type</p></td><td><p>Radius</p></td><td><p>Loại phản xạ là cung tròn (do dùng mẫu V1/V2).</p></td></tr><tr><td><p>Cal Block Dist / Ref 1</p></td><td><p>50.00 mm</p></td><td><p>Bán kính cung nhỏ (tùy mẫu V2 là 25mm hoặc 50mm).</p></td></tr><tr><td><p>Cal Block Dist / Ref 2</p></td><td><p>100.00 mm</p></td><td><p>Bán kính cung lớn.</p></td></tr><tr><td><p>Mode</p></td><td><p>Shear / Long</p></td><td><p>Chọn sóng Ngang (Shear) hoặc Dọc (Long).</p></td></tr></table></div><p>Bước 3: Thực hiện Quét</p><p>Bôi mỡ tiếp âm, đặt đầu dò lên mẫu chuẩn V1/V2.</p><p>Tìm vị trí tín hiệu cực đại (Peak) của cả 2 xung từ 2 cung tròn.</p><p>Kéo Cổng 1 (Gate A) bao trùm đỉnh xung cung nhỏ (Ref 1).</p><p>Kéo Cổng 2 (Gate B) bao trùm đỉnh xung cung lớn (Ref 2).</p><p>Bước 4: Tính toán &amp; Lưu</p><p>Nhấn nút <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/>. Máy tự động tính toán vận tốc mới.</p><p class="p-img"><img alt="" height="42" loading="lazy" src="assets/img_038.png" width="217"/></p><p>Kiểm tra kết quả: Thép ~3250m/s (sóng ngang), ~5900m/s (sóng dọc).</p><p>Nếu đạt, nhấn <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_010.png" width="56"/> để chuyển sang bước Độ trễ nêm.</p></div></section><section class="khoi" data-khoi="1" id="khối-4-hiệu-chuẩn-độ-trễ-nêm-wedge-delay"><div class="khoi-head"><h2>KHỐI 4 – HIỆU CHUẨN ĐỘ TRỄ NÊM (WEDGE DELAY)</h2></div><div class="card"><h3 class="h-khoi">KHỐI 4 – HIỆU CHUẨN ĐỘ TRỄ NÊM (WEDGE DELAY)</h3></div><div class="card"><h3 class="h-sub">4.1. MỤC TIÊU</h3><p>Bù trừ thời gian sóng đi trong nêm để hiển thị đúng độ sâu và vị trí.</p></div><div class="card"><h3 class="h-sub">4.2. CHUẨN BỊ</h3><p>Chọn đúng Probe/Group cần hiệu chuẩn.</p><p>Sử dụng mẫu chuẩn có cung tròn (Radius).</p><p>Đảm bảo bề mặt tiếp xúc đủ chất tiếp âm.</p></div><div class="card"><h3 class="h-sub">4.3. THIẾT LẬP THÔNG SỐ &amp; THỰC HIỆN</h3><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_039.jpg" width="1024"/></p><p>Nhấn vào biểu tượng <img alt="" class="icon-inline" height="28" loading="lazy" src="assets/img_023.png" width="32"/> trên màn hình.</p><p>Cài đặt:</p><p>Cal Block Dist: Nhập bán kính cung (Ví dụ: 100mm).</p><p>Reflector Type: Radius.</p><p>Range Ruler: Chọn Sound Path (nếu dùng cung tròn) hoặc Material Depth (nếu dùng lỗ khoan cạnh).</p><p>Thực hiện:</p><p>Thông báo: "Press Calibrate to Start Recording".</p><p>Nhấn <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> lần 1.</p><p>Di chuyển đầu dò qua lại để ghi nhận xung phản hồi cực đại từ cung tròn.</p><p>Nhấn biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> sau khi thu nhận xung từ các tia sóng âm.</p><p>Di chuyển đầu dò ghi nhận lại toàn bộ xung phản hồi từ các tia sóng âm để kiểm tra lại quá trình hiệu chuẩn. Nếu chưa đạt yêu cầu, nhấn vào biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để máy ghi nhận tiếp tín hiệu mới.</p><p>Khi chạy xong, nhấn biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> , dòng thông báo <em>“Delay Recorded”</em> sẽ hiển thị trên màn hình khi Calib hoàn tất.</p><p>Kiểm tra:</p><p>Đường cong hiệu chuẩn (trên màn hình) phải mượt, không bị gãy khúc.</p><p>Biểu tượng hiệu chuẩn chuyển sang màu xanh lá cây.</p><p class="p-img"><img alt="" height="43" loading="lazy" src="assets/img_040.png" width="215"/></p><p>Nhấn biểu tượng <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_010.png" width="56"/> để sang bước tiếp theo.</p><div class="callout callout-warn"><div class="callout-title">CẢNH BÁO</div><div class="callout-body">CẢNH BÁO: TUYỆT ĐỐI KHÔNG NHẤN NÚT CLEAR. Hành động này sẽ xóa mất dữ liệu Vận tốc vừa làm ở bước trước.</div></div></div></section><section class="khoi" data-khoi="1" id="khối-5-xây-dựng-đường-tcg-time-correction-gain"><div class="khoi-head"><h2>KHỐI 5 – XÂY DỰNG ĐƯỜNG TCG (TIME CORRECTION GAIN)</h2></div><div class="card"><h3 class="h-khoi">KHỐI 5 – XÂY DỰNG ĐƯỜNG TCG (TIME CORRECTION GAIN)</h3></div><div class="card"><h3 class="h-sub">5.1. MỤC TIÊU</h3><p>Đồng nhất biên độ xung phản hồi theo độ sâu (làm đều độ nhạy cho các lỗ khoan ở độ sâu khác nhau).</p></div><div class="card"><h3 class="h-sub">5.2. CHUẨN BỊ</h3><p>Mẫu chuẩn có các lỗ khoan cạnh (SDH) ở các độ sâu khác nhau (Ví dụ: 15mm, 30mm, 45mm...).</p><p>Đã hoàn tất hiệu chuẩn Vận tốc và Độ trễ nêm.</p></div><div class="card"><h3 class="h-sub">5.3. THIẾT LẬP THÔNG SỐ</h3><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_041.jpg" width="1024"/></p><div class="table-wrap"><table class="doc-table"><tr><td><p><strong>Thông số</strong></p></td><td><p><strong>Giá trị cài đặt</strong></p></td><td><p><strong>Giải thích</strong></p></td></tr><tr><td><p>Reflector Type</p></td><td><p>Depth</p></td><td><p>Sử dụng lỗ khoan cạnh (SDH).</p></td></tr><tr><td><p>TCG Type</p></td><td><p>Multi Step</p></td><td><p>Xây dựng đường cong qua nhiều điểm độ sâu.</p></td></tr><tr><td><p>TCG Count</p></td><td><p>(Tổng số điểm)</p></td><td><p>Nhập tổng số lỗ khoan (Ví dụ: 3). Lưu ý: Khai báo bao nhiêu điểm phải chạy bấy nhiêu.</p></td></tr><tr><td><p>Range Ruler</p></td><td><p>Material Depth</p></td><td><p>BẮT BUỘC để hiển thị theo độ sâu vật liệu.</p></td></tr></table></div></div><div class="card"><h3 class="h-sub">5.4. QUY TRÌNH THAO TÁC</h3><p><em>Trước khi bắt đầu quét, tại giao diện TCG, cần thiết lập:</em></p><p><strong>TCG Count:</strong> Nhập tổng số lỗ khoan cần xây dựng đường cong (Ví dụ: 3 điểm, 4 điểm...).</p></div><div class="card"><h3 class="h-sub">⚠️ LƯU Ý QUAN TRỌNG:</h3><p>Bạn khai báo bao nhiêu điểm (TCG Count) thì bắt buộc phải thực hiện quét đủ bấy nhiêu điểm. Không được bỏ dở giữa chừng.</p><p>Phần mềm Mentor không thể cắt góc để Calib từng góc nhỏ giống như MX2 được. Nên để Gate nhỏ khi calib những lỗ sâu.</p><p>Bước 1: Điểm đầu tiên (Point 1)</p><p>Nhấn <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để bắt đầu.</p><p>TCG Point Dist: Nhập độ sâu lỗ khoan số 1 (Ví dụ: 13.00 mm).</p><p>Di chuyển đầu dò tìm xung cực đại của lỗ 1 (Lưu ý: Cổng (Gate) sẽ tự động nhảy về độ sâu tương ứng. Chỉ cần đảm bảo đỉnh xung nằm trong ngưỡng của cổng và không bị bão hòa.</p><p>Nhấn <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/>. Màn hình báo "Point Recorded" (Đã ghi xong lỗ số 1)</p><p>Di chuyển đầu dò qua lại lỗ 1 một lần nữa để kiểm tra.</p><p>Bước 2: Các điểm tiếp theo (Point 2, 3...)</p><p>Nhấn <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/>. Màn hình báo "Record TCG Point 2...".</p><p>TCG Point Dist: Nhập độ sâu lỗ 2.</p><p>Di chuyển đầu dò tìm xung cực đại của lỗ 2.</p><p>Nhấn <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/>.</p><p>Lặp lại cho đến hết số điểm đã khai báo.</p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_042.jpg" width="1024"/></p><p>Bước 3: Hoàn tất</p><p>Sau khi thực hiện xong điểm cuối cùng, màn hình hiển thị: "TCG calibration completed successfully".</p><p>Biểu tượng TCG trên thanh trạng thái sẽ chuyển sang màu xanh lá cây.</p><p class="p-img"><img alt="" height="40" loading="lazy" src="assets/img_043.png" width="218"/></p><p><strong>Xử lý lỗi trong quá trình quét:</strong><em> </em>Nếu biên độ xung của điểm nào không đạt (quá thấp hoặc sai lệch), sau khi ghi nhận:</p><p>Nhấn lại biểu tượng Calibrate để máy hủy kết quả tạm thời của điểm đó.</p><p>Thực hiện quét lại đầu dò qua lỗ khoan và nhấn Calibrate để ghi lại.</p></div></section><section class="khoi" data-khoi="1" id="khối-6-hiệu-chuẩn-độ-nhạy-sensitivity"><div class="khoi-head"><h2>KHỐI 6 – HIỆU CHUẨN ĐỘ NHẠY (SENSITIVITY)</h2></div><div class="card"><h3 class="h-khoi">KHỐI 6 – HIỆU CHUẨN ĐỘ NHẠY (SENSITIVITY)</h3></div><div class="card"><h3 class="h-sub">6.1. MỤC TIÊU</h3><p>Cân bằng độ nhạy giữa các góc quét (All Beams).</p><p>Hiệu chuẩn độ nhạy theo tiêu chuẩn áp dụng.</p></div><div class="card"><h3 class="h-sub">6.2. CÀI ĐẶT</h3><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_044.jpg" width="1024"/></p><p>Reflector Type Sens: Depth (Hiệu chuẩn bằng độ sâu lỗ khoan/vết khấc).</p><p>Cal Block Dist Sens: Giá trị độ sâu của lỗ khoan cạnh hoặc vết khấc. Giá trị này có thể khác nhau tùy theo tiêu chuẩn chấp nhận áp dụng.</p><p>Sensitivity Type: All Beams (Hiệu chuẩn độ nhạy được áp dụng cho tất cả các chùm tia trong luật phát).</p><p>Recording:</p><p>Chọn “<strong>ON</strong>” khi hiệu chuẩn độ nhạy bằng độ sâu lỗ khoan cạnh / vết khấc.</p><p>Chọn “<strong>OFF</strong>” khi hiệu chuẩn độ nhạy bằng cung tròn (Radius) hoặc hiệu chuẩn độ nhạy cho chùm tia tuyến tính 00 bằng xung phản xạ mặt đáy. Trong trường hợp này, quá trình hiệu chuẩn không cần di chuyển đầu dò để ghi nhận xung phản hồi.</p><p>Ref Amplitude: Giá trị biên độ xung mong muốn hiệu chuẩn, thông thường được thiết lập ở mức 80% FSH.</p></div><div class="card"><h3 class="h-sub">6.3. THỰC HIỆN</h3><p>Trên màn hình hiển thị thông báo:“<em><strong>Place the probe on calibration block and press calibrate button”</strong></em> (Đặt đầu dò lên mẫu hiệu chuẩn và nhấn nút hiệu chuẩn)</p><p>Nhấn nút <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để bắt đầu hiệu chuẩn.</p><p>Di chuyển đầu dò qua lại lỗ khoan để ghi nhận xung của tất cả các chùm tia.</p><p>Nhấn nút Calibrate và di chuyển đầu dò để kiểm tra.</p><p>Yêu cầu: tất cả xung phản hồi phải nằm trong dải cho phép (vùng màu xanh).</p><p>Nếu chưa đạt, màn hình có thể báo trạng thái “Recorded” nhưng biểu tượng hiệu chuẩn chưa chuyển xanh.</p><p>Khi tất cả biên độ xung phản hồi nằm trong giới hạn cho phép (dải màu tím hiển thị trên màn hình), nhấn nút <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/>, thông báo quá trình hiệu chuẩn thành công được hiển thị, biểu tượng hiệu chuẩn độ nhạy chuyển trạng thái sang màu xanh lá cây.</p><p>Nếu có bất kỳ biên độ của xung ghi nhận nào không nằm trong giới hạn cho phép, sau khi ghi nhận các xung phản hồi, nhấn chọn <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để hiệu chuẩn lại cho đến khi có thông báo hiệu chuẩn thành công được hiển thị.</p><p>Nếu thành công: Thông báo "Sensitivity Calibration completed successfully". Biểu tượng chuyển sang màu xanh lá (Xem hình dưới)</p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_045.png" width="1024"/></p><p>Sau khi hoàn thành nhấn biểu tượng <img alt="" class="icon-inline" height="55" loading="lazy" src="assets/img_010.png" width="56"/> để chuyển tới bước hiệu chuẩn tiếp theo.</p></div></section><section class="khoi" data-khoi="1" id="khối-7-hiệu-chuẩn-encoder"><div class="khoi-head"><h2>KHỐI 7 – HIỆU CHUẨN ENCODER</h2></div><div class="card"><h3 class="h-khoi">KHỐI 7 – HIỆU CHUẨN ENCODER</h3><p class="p-img"><img alt="" height="583" loading="lazy" src="assets/img_046.png" width="1143"/></p></div><div class="card"><h3 class="h-sub">7.1. MỤC TIÊU</h3><p>Đảm bảo máy ghi nhận đúng quãng đường di chuyển của bộ quét.</p></div><div class="card"><h3 class="h-sub">7.2. THIẾT LẬP VÀ THỰC HIỆN</h3><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_047.jpg" width="1024"/></p><p>Vào menu Encoder.</p><p>Expected Dist X: Nhập khoảng cách thực tế sẽ di chuyển (Ví dụ: 200mm).</p><p>Scan Tolerance: Sai số của hiệu chuẩn Encoder</p><p>Khai báo cài đặt cho Encoder:</p><p>Encoder Axis = “<em>Scan/ Index/ Both</em>”: Hướng di chuyển encoder khi hiệu chuẩn, thông thường chọn “<em><strong>Scan</strong></em>”</p><p><em>Scan</em>: Hiệu chuẩn encoder bằng cách di chuyển quét một đoạn cho trước.</p><p><em>Index</em>: Hiệu chuẩn encoder theo chiều index (ví dụ chiều vuông góc với mối hàn). Áp dụng trong trường hợp sử dụng kiểu quét 2 chiều.</p><p><em>Both: </em>Kết hợp cả 2 kiểu trên.</p><p><em>Encoder Type” = “Directional/ Quadrature”</em>: Loại encoder được sử dụng</p><p>Encoder Type: Quadrature (2 chiều) hoặc Directional (1 chiều).</p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_047.jpg" width="1024"/></p><p>  Thao tác:</p><p>Màn hình hiển thị thông báo “<em><strong>Move the scanner to it’s origin and hit the calibration icon</strong></em>”</p><p>Đặt bộ quét về vị trí 0. Nhấn biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để bắt đầu.</p><p>Di chuyển bộ quét đúng quãng đường đã nhập.</p><p>Nhấn biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/></p><p>Phần mềm sẽ tính toán và hiển thị kết quả độ phân giải quét của Encoder tại <em><strong>“Encoder Res. X”</strong></em></p><p>Kéo ngược bộ quét về 0 để kiểm tra sai số.</p><p>Khi sai số hiệu chuẩn encoder được thỏa mãn, nhấn chọn <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để chấp nhận kết quả hiệu chuẩn và màn hình hiển thị thông báo “<em><strong>The scanner is now calibrated and within tolerance</strong></em>”</p><p>Nếu giá trị sai số vượt quá mức cho phép, thực hiện hiệu chuẩn lại theo trình tự các bước trên.</p></div></section><section class="khoi" data-khoi="1" id="khối-8-thiết-lập-thông-số-quét-lưu-file"><div class="khoi-head"><h2>KHỐI 8 – THIẾT LẬP THÔNG SỐ QUÉT &amp; LƯU FILE</h2></div><div class="card"><h3 class="h-khoi">KHỐI 8 – THIẾT LẬP THÔNG SỐ QUÉT &amp; LƯU FILE</h3></div><div class="card"><h3 class="h-sub">8.1. THÔNG SỐ QUÉT (SCAN SETUP)</h3><p><strong>Phân loại: các mục dưới đây thuộc NHÓM THÔNG SỐ QUÉT (Scan Setup).</strong></p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_048.jpg" width="1024"/></p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_049.jpg" width="1024"/></p><div class="table-wrap"><table class="doc-table"><tr><td><p><strong>Thông số</strong></p></td><td><p><strong>Giá trị/Thiết lập</strong></p></td><td><p><strong>Giải thích</strong></p></td></tr><tr><td><p>Scan Pattern</p></td><td><p>Line</p></td><td><p>Quét đường thẳng.</p></td></tr><tr><td><p>Position Mode</p></td><td><p>Encoded</p></td><td><p>Dùng encoder ghi vị trí.</p></td></tr><tr><td><p>Manual Index</p></td><td><p>Off</p></td><td><p>Tắt nhập index thủ công khi dùng encoder.</p></td></tr><tr><td><p>Scan Size</p></td><td><p>Theo chiều dài mối hàn</p></td><td><p>Chiều dài hành trình quét.</p></td></tr><tr><td><p>Active Scan Size</p></td><td><p>Theo Scan Size</p></td><td><p>Chiều dài vùng dữ liệu hiển thị/ghi nhận.</p></td></tr><tr><td><p>Scan Resoln.(Dist)</p></td><td><p>Theo yêu cầu kỹ thuật</p></td><td><p>Độ phân giải quét theo khoảng cách.</p></td></tr><tr><td><p><strong>Index Overlap</strong></p></td><td><p>Theo yêu cầu</p></td><td><p>Tỷ lệ chồng lấp giữa các đường index.</p></td></tr><tr><td><p><strong>Index Distance</strong></p></td><td><p>Theo thiết lập raster</p></td><td><p>Bước dịch index khi quét raster.</p></td></tr><tr><td><p><strong>Global Gain</strong></p></td><td><p>Điều chỉnh khi cần</p></td><td><p>dB cộng thêm trong quá trình quét.</p></td></tr><tr><td><p><strong>Range Start / Range End</strong></p></td><td><p>Đồng nhất giữa các luật phát</p></td><td><p>Nếu dùng nhiều luật phát, nên đặt cùng Range Start.</p></td></tr></table></div></div><div class="card"><h3 class="h-sub">8.2. THÔNG SỐ MỐI HÀN (PART SETUP)</h3><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_050.jpg" width="1024"/></p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_051.jpg" width="1024"/></p><p><strong>Phân loại: các mục dưới đây thuộc NHÓM THÔNG SỐ CÀI ĐẶT MỐI HÀN (Part Setup).</strong></p><div class="table-wrap"><table class="doc-table"><tr><td><p><strong>Thông số</strong><strong> (Weld)</strong></p></td><td><p><strong>Giá trị/Thiết lập</strong></p></td><td><p><strong>Giải thích</strong></p></td></tr><tr><td><p>Overlay Type</p></td><td><p>Biên dạng mối hàn</p></td><td><p>Chọn V-weld / J-weld… tùy cấu hình mối hàn.</p></td></tr><tr><td><p>Part Thickness</p></td><td><p>Theo chiều dày thực tế</p></td><td><p>Chiều dày vật kiểm/mối hàn.</p></td></tr><tr><td><p>Index Offset</p></td><td><p>Theo layout đầu dò</p></td><td><p>Khoảng cách từ mũi nêm đến tâm mối hàn.</p></td></tr><tr><td><p>Wave Type</p></td><td><p>Shear/Longitudinal…</p></td><td><p>Dạng sóng sử dụng.</p></td></tr><tr><td><p>Velocity L</p></td><td><p>m/s</p></td><td><p>Vận tốc sóng dọc.</p></td></tr><tr><td><p>Velocity N</p></td><td><p>m/s</p></td><td><p>Vận tốc sóng ngang.</p></td></tr><tr><td><p>Skew Angle</p></td><td><p>90° / 270°</p></td><td><p>Góc định hướng đầu dò so với mối hàn (trái/phải).</p></td></tr></table></div><p class="p-img"><img alt="" height="695" loading="lazy" src="assets/img_052.png" width="1509"/></p><p>Kí hiệu thông số biên dạng mối hàn</p></div><div class="card"><h3 class="h-sub">8.3. LƯU CẤU HÌNH (SAVE SETTING)</h3><p>Nhấn biểu tượng <img alt="" class="icon-inline" height="54" loading="lazy" src="assets/img_053.png" width="104"/> -&gt; Chọn Save Setting.</p><p>Đặt tên File -&gt; Nhấn Save.</p></div></section><section class="khoi" data-khoi="1" id="khối-9-quét-mối-hàn-tofd-quản-lý-dữ-liệu"><div class="khoi-head"><h2>KHỐI 9 – QUÉT MỐI HÀN, TOFD &amp; QUẢN LÝ DỮ LIỆU</h2></div><div class="card"><h3 class="h-khoi">KHỐI 9 – QUÉT MỐI HÀN, TOFD &amp; QUẢN LÝ DỮ LIỆU</h3></div><div class="card"><h3 class="h-sub">9.1. QUÉT MỐI HÀN VÀ LƯU DỮ LIỆU</h3><p>Trình tự các nút bấm trên màn hình khi quét:</p><p class="p-img"><img alt="" height="651" loading="lazy" src="assets/img_054.png" width="617"/></p><p>Trình tự thực hiện quét mối hàn</p><div class="table-wrap"><table class="doc-table"><tr><td><p><strong>Nút bấm</strong></p></td><td><p><strong>Chức năng</strong></p></td></tr><tr><td><p>Record</p></td><td><p>Nhấn chọn để kích hoạt ghi nhận dữ liệu quét. Sau đó bắt đầu di chuyển bộ quét để kiểm tra mối hàn.</p></td></tr><tr><td><p>Pause</p></td><td><p>Trong quá trình quét, nhấn chọn để tạm dừng ghi nhận dữ liệu và tiếp tục ghi nhận dữ liệu khi nhấn chọn “<em><strong>Record</strong></em>” (phím 1)</p></td></tr><tr><td><p>Stop</p></td><td><p>Kết thúc quá trình ghi.</p></td></tr><tr><td><p>Clr</p></td><td><p>Xóa dữ liệu vừa ghi (làm lại).</p></td></tr><tr><td><p>Save Data</p></td><td><p>Lưu dữ liệu vừa ghi nhận</p></td></tr><tr><td><p>Load Data</p></td><td><p>Tải lại dữ liệu đã được ghi nhận và lưu từ trước</p></td></tr><tr><td><p>Save Setting</p></td><td><p>Lưu file cài đặt đã được hiệu chuẩn</p></td></tr><tr><td><p>Load Setting</p></td><td><p>Mở file cài đặt đã được lưu từ trước</p></td></tr></table></div></div><div class="card"><h3 class="h-sub">9.2. THIẾT LẬP CÀI ĐẶT NHIỀU LUẬT PHÁT</h3><p>Thiết bị Mentor UT cho phép thực hiện kiểm tra mối hàn với nhiều luật phát trên một hoặc hai đầu dò PAUT khác nhau.</p><p>Thiết lập cài đặt nhiều luật phát cho ứng dụng bằng phần mềm “<em><strong>Mentor Create</strong></em>”. Ứng dụng có thể được thiết lập từ đầu hoặc điều chỉnh từ các ứng dụng có sẵn có số lượng luật phát mong muốn như “<em><strong>2 Sided Weld</strong></em>”, “<em><strong>3-Group Weld</strong></em>”,...</p><p>Khi số lượng luật phát đã được thiết lập, không thể thực hiện xóa luật phát trên thiết bị Mentor UT.</p><p>Để hiển thị một hoặc nhiều luật phát đồng thời trên màn hình, nhấn chọn <img alt="" class="icon-inline" height="30" loading="lazy" src="assets/img_018.png" width="31"/> để mở cửa sổ cài đặt luật phát  “<em><strong>Group Select</strong></em>”: chọn luật phát muốn hiển thị.</p><p>Quá trình hiệu chuẩn và lưu file cài đặt, dữ liệu quét được thực hiện tương tự mục 5.3.</p></div><div class="card"><h3 class="h-sub">9.3. KỸ THUẬT TOFD (TÓM TẮT)</h3><p>Kỹ thuật TOFD (Time of Flight Diffraction) được thiết lập thông qua ứng dụng Mentor Create với các ứng dụng có sẵn hoặc điều chỉnh cho phù hợp với thực tế kiểm tra.</p><p>Các biểu tượng để mở các cửa sổ khai báo đầu dò, nêm, đối tượng kiểm tra như ở mục 5.3</p><p>Các bước hiệu chuẩn cho kỹ thuật TOFD bao gồm: Hiệu chuẩn PCS và Hiệu chuẩn độ nhạy</p><p>Hiệu chuẩn PCS (<strong>Probe center separation)</strong>: Khoảng cách giữa điểm phát chùm âm của hai đầu dò phát và thu tín hiệu.</p><p class="p-img"><img alt="" height="467" loading="lazy" src="assets/img_055.png" width="628"/></p><p>Hiệu chuẩn PCS</p><p>“<em><strong>Cal Block Thickness</strong></em>”: Nhập giá trị chiều dày mẫu hiệu chuẩn</p><p>“<em><strong>PCS</strong></em>”: Nhập giá trị PCS theo tính toán</p><p>PCS = 4/3 * (chiều dày mẫu) * tan(góc đầu dò)</p><p>Cài đặt chùm âm kiểm tra: “<em><strong>Longitudinal wave</strong></em>” (<em><strong>Sóng dọc) </strong></em></p><p>Trên màn hình hiển thị thông báo:</p><p>“<em><strong>Place the probe on calibration block “25.00mm” and press calibration button</strong></em>”</p><p>Đặt hai đầu dò phát và thu theo giá trị PCS</p><p>Di chuyển cổng A đến vị trí xung mặt và cổng B đến vị trí xung đáy như hình 19.</p><p>Nhấn chọn biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để hiệu chuẩn</p><p>Ứng dụng tự động tính toán giá trị PCS dựa trên khoảng cách xung ghi nhận và so sánh với thực tế khoảng cách giữa hai đầu dò.</p><p>Nếu giá trị PCS thỏa mãn, màn hình sẽ hiển thị thông báo “<em><strong>PCS is successfully calibrated</strong></em>” và biểu tượng PCS chuyển trạng thái sang màu xanh lá cây.</p><p>Nếu giá trị PCS không đạt yêu cầu, kiểm tra lại các thông số, khoảng cách giữa hai đầu dò và thực hiện lại các bước hiệu chuẩn như trên.</p><p>Hiệu chuẩn Độ nhạy: Đặt đầu dò, di chuyển cổng bao xung mặt, máy tự động điều chỉnh biên độ.</p><p class="p-img"><img alt="" height="621" loading="lazy" src="assets/img_056.png" width="831"/></p><p>Trên màn hình hiển thị thông báo:</p><p>“<em><strong>Place the probe on calibration block and press calibration button</strong></em>”</p><p>Đặt hai đầu dò phát và thu theo giá trị PCS</p><p>Di chuyển cổng A đến vị trí xung mặt như hình 19.</p><p>Nhấn chọn biểu tượng <img alt="" class="icon-inline" height="42" loading="lazy" src="assets/img_027.png" width="43"/> để hiệu chuẩn.</p><p>Ứng dụng tự động tính toán, màn hình sẽ hiển thị thông báo “<em><strong>Sensitivity calibration completed successfully</strong></em>” và biểu tượng sensitivity chuyển trạng thái sang màu xanh lá cây.</p></div><div class="card"><h3 class="h-sub">9.4. SAO LƯU VÀ GIẢI ĐOÁN DỮ LIỆU</h3></div><div class="card"><h3 class="h-sub">1. Sao lưu ra USB:</h3><p class="p-img"><img alt="" height="612" loading="lazy" src="assets/img_057.png" width="903"/></p><p>Nhấn để mở menu.</p><p>Cài đặt hệ thống của máy.</p><p>Quản lý dữ liệu.</p><p>Kết nối Mentor UT với máy tính.</p><p>Kết nối với InspectionWorks, dùng khi có internet.</p><p>Shut down máy.</p><p>Trở lại màn hình chính.</p><p>Nhấn vào quản lý dữ liệu để tiến hành sao lưu, chọn ứng dụng đã lưu file.</p><p>Nhấn <strong>“Select Location” </strong>&gt; USB drive &gt; chọn nhưng file cần sao lưu &gt; nhấn <img alt="" class="icon-inline" height="52" loading="lazy" src="assets/img_058.png" width="51"/> để copy dữ liệu vào USB.</p><p>Nhấn vào “Rename” và biểu tượng thùng rác để đổi tên và xóa dữ liệu.</p><p>Giải đoán dữ liệu:</p><p>Sau khi quét xong nhấn kết thúc ghi nhận dữ liệu, lúc này mọi sự dịch chuyển đầu dò và Encoder đều không ảnh hưởng đến dữ liệu quét. Sau đó lưu file dữ liệu đã quét để giải đoán hoặc dung các công cụ có sẵn trên máy để giải đoán.</p><p>Việc giải đoán sẽ dựa vào B,C,S-scan và con trỏ trên màn hình</p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_059.png" width="1024"/></p><p><em><strong> </strong></em>Bật chế độ Grid View khi màn hình bị nhòe</p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_060.png" width="1024"/></p><p class="p-img"><img alt="" height="768" loading="lazy" src="assets/img_061.png" width="1024"/></p><p>Các thông số để giải đoán trên màn hình</p><div class="table-wrap"><table class="doc-table"><tr><td><p><strong>Thông số</strong></p></td><td><p><strong>Ý nghĩa</strong></p></td></tr><tr><td><p>Len</p></td><td><p>Độ dài của hộp dùng cho sizing</p></td></tr><tr><td><p>H</p></td><td><p>Chiều cao của hộp theo chiều sâu dùng cho sizing</p></td></tr><tr><td><p>W</p></td><td><p>Chiều rộng của hộp dùng cho sizing</p></td></tr><tr><td><p>Max Amp</p></td><td><p>Biên độ cao nhất của xung trong hộp</p></td></tr><tr><td><p><strong>Z</strong></p></td><td><p>Độ sâu của chỉ thị có biên độ cao nhất</p></td></tr><tr><td><p><strong>D</strong></p></td><td><p>Độ sâu theo chiều dày mẫu của chỉ thị có biên độ cao nhất</p></td></tr><tr><td><p><strong>S</strong></p></td><td><p>Quãng đường âm của chỉ thị có biên độ cao nhất</p></td></tr><tr><td><p><strong>A%r</strong></p></td><td><p>Biên độ của chỉ thị có biên độ cao nhất so sánh với TCG</p></td></tr></table></div><p><em>Kết thúc tài liệu hướng dẫn.</em></p></div></section>
+<button class="backtop" id="backTop" title="Lên đầu trang">↑</button>
+</main>
+</div>
+<script>
+    // Sidebar toggle (mobile)
+    const sidebar = document.getElementById('sidebar');
+    const btnMenu = document.getElementById('btnMenu');
+    if (btnMenu) btnMenu.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+    // Close sidebar when clicking a nav item (mobile)
+    document.querySelectorAll('.nav-item').forEach(a => {
+      a.addEventListener('click', () => sidebar.classList.remove('open'));
+    });
+
+    // Filter nav
+    const navSearch = document.getElementById('navSearch');
+    const navList = document.getElementById('navList');
+    if (navSearch) {
+      navSearch.addEventListener('input', () => {
+        const q = navSearch.value.trim().toLowerCase();
+        [...navList.querySelectorAll('.nav-item')].forEach(item => {
+          item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+      });
+    }
+
+    // Active section highlight
+    const navLinks = [...document.querySelectorAll('.nav-item')];
+    const sections = [...document.querySelectorAll('section.khoi')];
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const id = e.target.getAttribute('id');
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      });
+    }, { rootMargin: '-30% 0px -65% 0px', threshold: 0.01 });
+    sections.forEach(s => obs.observe(s));
+
+    // Back to top button
+    const backTop = document.getElementById('backTop');
+    window.addEventListener('scroll', () => {
+      backTop.style.display = window.scrollY > 600 ? 'block' : 'none';
+    });
+    backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  </script>
+</body>
+</html>
