@@ -12,16 +12,16 @@
 <!-- =============================================================== -->
 <!-- LOAD DỮ LIỆU NỘI DUNG TỪ FILE BÊN NGOÀI                         -->
 <!-- =============================================================== -->
-<script src="./media_veo3/Khối 1.js"></script>
-<script src="./media_veo3/Khối 2.js"></script>
-<script src="./media_veo3/Khối 3.js"></script>
-<script src="./media_veo3/Khối 4.js"></script>
-<script src="./media_veo3/Khối 5.js"></script>
-<script src="./media_veo3/Khối 6.js"></script>
-<script src="./media_veo3/Khối 7.js"></script>
-<script src="./media_veo3/Khối 8.js"></script>
+<script src="./assets/veo3/Khối 1.js"></script>
+<script src="./assets/veo3/Khối 2.js"></script>
+<script src="./assets/veo3/Khối 3.js"></script>
+<script src="./assets/veo3/Khối 4.js"></script>
+<script src="./assets/veo3/Khối 5.js"></script>
+<script src="./assets/veo3/Khối 6.js"></script>
+<script src="./assets/veo3/Khối 7.js"></script>
+<script src="./assets/veo3/Khối 8.js"></script>
 <!-- THÊM FILE HDSD CHI TIẾT -->
-<script src="./media_veo3/hdsd_chitiet.js"></script>
+<script src="./assets/veo3/hdsd_chitiet.js"></script>
 
 <script>
     tailwind.config = {
@@ -571,7 +571,7 @@
 
             <div class="map-node type-main" id="main-node">
                 <!-- ĐÃ XÓA FILTER DROP-SHADOW TRONG CLASS DƯỚI ĐÂY -->
-                <img src="./media_veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain transition-all duration-300">
+                <img src="./assets/veo3/veo3hinhmay.png" alt="VEO3 Machine" class="w-full h-full object-contain transition-all duration-300">
             </div>
             
             <!-- ĐÃ ĐỔI TÊN THÀNH 'HDSD - VIDEO' -->
@@ -655,7 +655,7 @@
     var contentKhoi7 = "<i>(Chưa tìm thấy dữ liệu)</i>";
     var contentKhoi8 = "<i>(Chưa tìm thấy dữ liệu)</i>";
     // Biến cho nội dung HDSD Chi tiết
-    var contentHdsdChitiet = "<i>(Chưa tìm thấy dữ liệu. Vui lòng kiểm tra file media_veo3/hdsd_chitiet.js)</i>";
+    var contentHdsdChitiet = "<i>(Chưa tìm thấy dữ liệu. Vui lòng kiểm tra file assets/veo3/hdsd_chitiet.js)</i>";
 
     // Kiểm tra và gán giá trị
     if (typeof DATA_KHOI_1 !== 'undefined') contentKhoi1 = DATA_KHOI_1;
@@ -700,7 +700,7 @@
                     description: 'Phân tích cấu trúc khối 1 và các bước chuẩn bị ban đầu.', 
                     icon: 'settings_power', 
                     link: '#', 
-                    image: './media_veo3/Khối 1.png',
+                    image: './assets/veo3/Khối 1.png',
                     manualContent: contentKhoi1 
                 },
                 { 
@@ -709,7 +709,7 @@
                     description: 'Hướng dẫn tạo cấu hình (Configuration) cho thiết bị.', 
                     icon: 'add_circle', 
                     link: '#', 
-                    image: './media_veo3/Khối 2.png',
+                    image: './assets/veo3/Khối 2.png',
                     manualContent: contentKhoi2 
                 },
                 { 
@@ -718,7 +718,7 @@
                     description: 'Load Probe/Wedge', 
                     icon: 'sensors', 
                     link: '#', 
-                    image: './media_veo3/Khối 3.png',
+                    image: './assets/veo3/Khối 3.png',
                     manualContent: contentKhoi3
                 },
                 { 
@@ -727,7 +727,7 @@
                     description: 'Group Setup', 
                     icon: 'qr_code_scanner', 
                     link: '#', 
-                    image: './media_veo3/Khối 4.png',
+                    image: './assets/veo3/Khối 4.png',
                     manualContent: contentKhoi4
                 },
                 { 
@@ -736,7 +736,7 @@
                     description: 'Nếu cần thiết', 
                     icon: 'layers', 
                     link: '#', 
-                    image: './media_veo3/Khối 5.png',
+                    image: './assets/veo3/Khối 5.png',
                     manualContent: contentKhoi5
                 },
                 { 
@@ -745,7 +745,7 @@
                     description: 'Calibration', 
                     icon: 'tune', 
                     link: '#', 
-                    image: './media_veo3/Khối 6.png',
+                    image: './assets/veo3/Khối 6.png',
                     manualContent: contentKhoi6
                 },
                 { 
@@ -754,7 +754,7 @@
                     description: 'Final Setup', 
                     icon: 'check_circle', 
                     link: '#', 
-                    image: './media_veo3/Khối 7.png',
+                    image: './assets/veo3/Khối 7.png',
                     manualContent: contentKhoi7
                 },
                 { 
@@ -763,10 +763,10 @@
                     description: 'Data Acquisition', 
                     icon: 'database', 
                     link: '#', 
-                    image: './media_veo3/Khối 8.png',
+                    image: './assets/veo3/Khối 8.png',
                     manualContent: contentKhoi8
                 },
-                { type: 'image', title: '9 – GIẢI ĐOÁN DỮ LIỆU VỚI UT-STUDIO PC', description: 'Data Acquisition', icon: 'database', link: '#', image: './media_veo3/UTstudio_giaidoan.png' },
+                { type: 'image', title: '9 – GIẢI ĐOÁN DỮ LIỆU VỚI UT-STUDIO PC', description: 'Data Acquisition', icon: 'database', link: '#', image: './assets/veo3/UTstudio_giaidoan.png' },
 		]
         },
         'structure-map': {
@@ -774,7 +774,7 @@
             description: 'Sơ đồ tổng quan toàn bộ hệ thống VEO3.',
             icon: 'hub',
             link: '#',
-            image: './media_veo3/mindmaptong.png',
+            image: './assets/veo3/mindmaptong.png',
             children: []
         }
     };
@@ -1051,7 +1051,7 @@
                     description: 'Thiết bị kiểm tra siêu âm mảng pha (PAUT) tiên tiến. Nhấp vào các nút xung quanh để xem tài liệu.',
                     icon: 'science',
                     link: '#',
-                    image: './media_veo3/veo3hinhmay.png'
+                    image: './assets/veo3/veo3hinhmay.png'
                 });
             }
         });
