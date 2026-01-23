@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light"/>
+  <title>HƯỚNG DẪN SỬ DỤNG VÀ VẬN HÀNH OMNISCAN MX2</title>
+  <style>
+:root{
+  color-scheme: light;
+  --bg:#f6f8fc;
+  --surface:#ffffff;
+  --card:#ffffff;
+  --text:#0b1220;
+  --muted:#475569;
+  --accent:#0b3a7a;
+  --border:rgba(15,23,42,.12);
+  --shadow:0 10px 30px rgba(15,23,42,.10);
+  --warn:#f59e0b;
+  --danger:#dc2626;
+  --info:#0284c7;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  background: radial-gradient(1200px 700px at 20% 0%, rgba(11,58,122,.10), transparent 60%),
+              radial-gradient(900px 600px at 80% 20%, rgba(2,132,199,.08), transparent 60%),
+              var(--bg);
+  color:var(--text);
+  line-height:1.55;
+}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline}
+.layout{
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  gap:18px;
+  max-width:1200px;
+  margin:0 auto;
+  padding:18px;
+}
+.sidebar{
+  position:sticky;
+  top:18px;
+  height: calc(100vh - 36px);
+  overflow:auto;
+  background:rgba(255,255,255,.88);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow: var(--shadow);
+  padding:14px;
+  backdrop-filter: blur(10px);
+}
+.brand{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px 12px 10px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:12px;
+}
+.badge{
+  font-size:12px; color:var(--muted);
+  border:1px solid var(--border);
+  padding:2px 8px;
+  border-radius:999px;
+}
+.search{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(15,23,42,.03);
+  color:var(--text);
+  outline:none;
+}
+.search::placeholder{color:rgba(71,85,105,.70)}
+.toc{
+  margin:12px 0 0 0;
+  padding:0 6px;
+  font-size:14px;
+}
+.toc ul{margin:6px 0 6px 16px; padding:0}
+.toc li{margin:6px 0; list-style: none}
+.toc a{display:block; padding:6px 8px; border-radius:10px}
+.toc a:hover{background:rgba(11,58,122,.08)}
+.main{
+  min-width:0;
+}
+.header{
+  background:rgba(255,255,255,.78);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow: var(--shadow);
+  padding:16px 18px;
+  margin-bottom:18px;
+  backdrop-filter: blur(8px);
+}
+.header h1{
+  margin:0 0 6px 0;
+  font-size:22px;
+  letter-spacing:.2px;
+}
+.header .meta{color:var(--muted); font-size:13px}
+.card{
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow: var(--shadow);
+  padding:16px 18px;
+  margin-bottom:16px;
+  backdrop-filter: blur(8px);
+}
+.card h2,.card h3,.card h4,.card h5{
+  margin:14px 0 8px;
+  line-height:1.25;
+}
+.card h2{font-size:18px}
+.card h3{font-size:16px; color:var(--text)}
+.card h4{font-size:15px; color:var(--text)}
+.card h5{font-size:14px; color:var(--text)}
+p{margin:8px 0}
+.spacer{height:8px}
+.figure{margin:12px 0; padding:10px; border:1px dashed rgba(15,23,42,.18); border-radius:14px; background:rgba(15,23,42,.03)}
+.figure img{max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px}
+.doc-table{
+  width:100%;
+  border-collapse:collapse;
+  overflow:hidden;
+  border-radius:14px;
+}
+.table-wrap{
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin:12px 0;
+}
+.doc-table th,.doc-table td{
+  border-bottom:1px solid rgba(15,23,42,.10);
+  padding:10px 10px;
+  vertical-align:top;
+}
+.doc-table th{
+  position:sticky; top:0;
+  background:rgba(11,58,122,.08);
+  color:var(--text);
+  text-align:left;
+}
+.doc-list{
+  margin:8px 0 8px 18px;
+  padding-left:18px;
+}
+.doc-list li{margin:6px 0}
+.callout{
+  border:1px solid var(--border);
+  border-left-width:5px;
+  border-radius:16px;
+  padding:12px 12px;
+  margin:12px 0;
+  background:rgba(15,23,42,.03);
+}
+.callout.warning{border-left-color: var(--warn)}
+.callout.danger{border-left-color: var(--danger)}
+.callout.info{border-left-color: var(--info)}
+.callout-inline.warning{color: var(--warn)}
+.callout-inline.danger{color: var(--danger)}
+.callout-inline.info{color: var(--info)}
+.topbtn{
+  position:fixed;
+  right:18px; bottom:18px;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.92);
+  color:var(--text);
+  cursor:pointer;
+  box-shadow: var(--shadow);
+  display:none;
+}
+@media (max-width: 980px){
+  .layout{grid-template-columns: 1fr}
+  .sidebar{position:relative; height:auto}
+  .topbtn{right:14px; bottom:14px}
+}
+</style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div style="font-weight:700;">MX2</div>
+        <div class="badge">HTML</div>
+      </div>
+      <input id="tocSearch" class="search" placeholder="Tìm nhanh mục... (gõ từ khóa)" />
+      <nav class="toc" aria-label="Mục lục">
+        <li><a href='#hướng-dẫn-sử-dụng-và-vận-hành-omniscan-mx2'>HƯỚNG DẪN SỬ DỤNG VÀ VẬN HÀNH OMNISCAN MX2</a></li>
+<li><a href='#1-thiết-lập-kế-hoạch-quét-scan-plan'>1. THIẾT LẬP KẾ HOẠCH QUÉT (SCAN PLAN)</a></li>
+<li><a href='#2-thiết-lập-cấu-hình-mối-hàn-part-weld'>2. THIẾT LẬP CẤU HÌNH MỐI HÀN (PART &amp; WELD)</a></li>
+<li><a href='#3-thiết-lập-luật-phát-focal-law'>3. THIẾT LẬP LUẬT PHÁT (FOCAL LAW)</a></li>
+<ul>
+<li><a href='#3-2-cấu-hình-chi-tiết'>3.2. Cấu hình chi tiết</a></li>
+</ul>
+<li><a href='#4-hiệu-chuẩn-calibration'>4. HIỆU CHUẨN (CALIBRATION)</a></li>
+<li><a href='#mục-ultrasound'>MỤC ULTRASOUND:</a></li>
+<li><a href='#mục-sizing-xác-định-kích-thước-khuyết-tật'>MỤC SIZING (XÁC ĐỊNH KÍCH THƯỚC KHUYẾT TẬT)</a></li>
+<li><a href='#mục-encoder-hiệu-chuẩn-encoder'>MỤC ENCODER (HIỆU CHUẨN ENCODER)</a></li>
+<li><a href='#5-quản-lý-dữ-liệu-file-management'>5. QUẢN LÝ DỮ LIỆU (FILE MANAGEMENT)</a></li>
+<ul>
+<li><a href='#8-1-lưu-dữ-liệu-save-data'>8.1. Lưu dữ liệu (Save Data)</a></li>
+<li><a href='#8-2-kiểm-tra-lại'>8.2. Kiểm tra lại</a></li>
+</ul>
+      </nav>
+      <div style="margin-top:14px; color:var(--muted); font-size:12px; border-top:1px solid var(--border); padding-top:12px;">
+        <div><b>Mẹo:</b> Nhấn mục để nhảy nhanh.</div>
+        <div>Gõ ô tìm để lọc mục lục.</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="header" id="top">
+        <h1>HƯỚNG DẪN SỬ DỤNG VÀ VẬN HÀNH OMNISCAN MX2</h1>
+        <div class="meta">Thiết kế lại dạng thẻ (cards), giữ nguyên nội dung & hình ảnh theo file gốc.</div>
+      </header>
+
+      <section class='card'><h2 id='hướng-dẫn-sử-dụng-và-vận-hành-omniscan-mx2'>HƯỚNG DẪN SỬ DỤNG VÀ VẬN HÀNH OMNISCAN MX2</h2>
+<p>Thiết bị: OMNI SCAN MX2 (Module 32:128 PR)</p>
+<div class='callout info'><p>Mục đích: Thiết lập file setup và thực hiện kiểm tra mối hàn bằng phương pháp PAUT.</p></div>
+<div class="spacer"></div></section><section class='card'><h2 id='1-thiết-lập-kế-hoạch-quét-scan-plan'>1. THIẾT LẬP KẾ HOẠCH QUÉT (SCAN PLAN)</h2>
+<p>Việc thiết lập Scan Plan là bước đầu tiên và quan trọng nhất:</p>
+<p>Độ bao phủ phải rộng hơn toàn bộ mối hàn và vùng ảnh hưởng nhiệt (HAZ).</p>
+<p>Đảm bảo nếu quét lệch Index một chút thì vẫn bao phủ được toàn bộ mối hàn.</p>
+<p>Xác định các thông số đầu vào: Loại đầu dò, nêm, góc vát mối hàn, độ dày vật liệu.</p></section><section class='card'><h2 id='2-thiết-lập-cấu-hình-mối-hàn-part-weld'>2. THIẾT LẬP CẤU HÌNH MỐI HÀN (PART &amp; WELD)</h2>
+<div class='callout info'><p>Đường dẫn: WIZARD &gt; Part &amp; Weld</p></div>
+<figure class="figure"><img src="assets/mx2/img_001.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Sử dụng nút Next để đi qua từng bước. Các thông số cần nhập bao gồm:</p>
+<figure class="figure"><img src="assets/mx2/img_002.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<figure class="figure"><img src="assets/mx2/img_003.png" alt="Hình ảnh" loading="lazy"></figure>
+<div class="table-wrap"><table class="doc-table"><tr><th>Thông số</th><th>Giải thích</th></tr><tr><td>Thickness</td><td>Độ dày vật liệu cơ bản.</td></tr><tr><td>Material</td><td>Loại vật liệu (Steel, Stainless Steel, Aluminum...).</td></tr><tr><td>Specimen Type</td><td>Hình dạng kim loại cơ bản (Plate - Tấm, Pipe - Ống...).</td></tr><tr><td>Weld</td><td>Cấu hình mối hàn (V, Double V, V offset...).</td></tr><tr><td>Symmetry</td><td>Đối xứng (Symmetric) hoặc vát lệch một bên (Left/Right).</td></tr><tr><td>Height</td><td>Chiều cao của đáy vát mép (Root Height)</td></tr><tr><td>Offset</td><td>Khe hở đáy (Root Gap)</td></tr></table></div>
+<p>Thông số kích thước mối hàn (Weld Parameters):</p>
+<figure class="figure"><img src="assets/mx2/img_004.png" alt="Hình ảnh" loading="lazy"></figure>
+<figure class="figure"><img src="assets/mx2/img_005.png" alt="Hình ảnh" loading="lazy"></figure>
+<figure class="figure"><img src="assets/mx2/img_006.png" alt="Hình ảnh" loading="lazy"></figure>
+<div class="table-wrap"><table class="doc-table"><tr><th>Thông số</th><th>Giải thích</th></tr><tr><td>Height (Land Size)</td><td>Chiều cao vát mép đáy (Root Height)</td></tr><tr><td>Offset (Land Size)</td><td>Khe hở đáy (Root Gap)</td></tr><tr><td>Height (Hot Pass Size)</td><td>Chiều cao vát mép giữa</td></tr><tr><td>Angle (Hot Pass Size)</td><td>Góc vát giữa (thông thường sẽ là 30 độ)</td></tr><tr><td>Height (Fill Size)</td><td>Chiều cao vát mép trên</td></tr><tr><td>Angle (Fill Size)</td><td>Góc vát trên (thông thường sẽ là 30 độ)</td></tr></table></div>
+<p>Kết thúc chọn &quot;Finish&quot;.</p></section><section class='card'><h2 id='3-thiết-lập-luật-phát-focal-law'>3. THIẾT LẬP LUẬT PHÁT (FOCAL LAW)</h2>
+<div class='callout info'><p>Đường dẫn: WIZARD &gt; Setup</p></div>
+<p>Với thiết bị Omni MX2 trở lên, Focal law có thể được thiết lập trên thiết bị hoặc bằng phần mềm Omni PC trên máy tính rồi Import vào thiết bị Omni Mx2.</p>
+<figure class="figure"><img src="assets/mx2/img_007.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<p>Mô tả các nút chức năng:</p>
+<ul class="doc-list"><li>Operation:</li><li>Modify: Thay đổi luật phát trên Group hiện tại.</li><li>Add: Thêm Group mới.</li></ul>
+<p>Default: Tạo mới hoàn toàn.</p>
+<p>Copy From: Sao chép từ Group có sẵn.</p>
+<ul class="doc-list"><li>Delete: Xóa Group.</li><li>Current Group:</li><li>Chọn Group cần chỉnh</li><li>Group Mode:</li><li>UT Using UT connector (khi sử dụng đầu dò UT / jack cắm UT)</li><li>UT Using PA connector (khi sử dụng đầu dò UT / jack cắm PA)</li><li>PA Phased Array (mặc định khi sử dụng đầu dò PA / jack cắm PA)</li><li>Application:</li><li>Weld (mặc định)</li><li>Stacked A-Scans</li><li>Other</li></ul>
+<h3 id='3-2-cấu-hình-chi-tiết'>3.2. Cấu hình chi tiết</h3>
+<p>Khi tạo 1 Group mới: Add &gt; Default</p>
+<p>Người dùng sẽ phải chọn đầy đủ các loại thông số “Group mode”, bao gồm:</p>
+<figure class="figure"><img src="assets/mx2/img_008.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<div class="spacer"></div>
+<figure class="figure"><img src="assets/mx2/img_009.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<figure class="figure"><img src="assets/mx2/img_010.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<div class="spacer"></div>
+<figure class="figure"><img src="assets/mx2/img_011.png" alt="Hình ảnh" loading="lazy"></figure>
+<div class="spacer"></div>
+<figure class="figure"><img src="assets/mx2/img_012.png" alt="Hình ảnh" loading="lazy"></figure>
+<div class="spacer"></div>
+<div class="table-wrap"><table class="doc-table"><tr><th>Mục</th><th>Cài đặt khuyến nghị</th></tr><tr><td>Group Mode</td><td>PA (Phased Array) hoặc UT (Siêu âm thường).</td></tr><tr><td>Application</td><td>Weld</td></tr><tr><td>Probe / Wedge</td><td>Chọn đúng mã sản phẩm (Part Number) ghi trên thiết bị.</td></tr><tr><td>Law Configuration</td><td>Sectorial (Quét quạt) hoặc Linear (Quét thẳng).</td></tr><tr><td>Wave Type</td><td>SW (Sóng ngang) hoặc LW (Sóng dọc).</td></tr><tr><td>Element Qty</td><td>Số biến tử sử dụng (thường là 16, 32 hoặc 64).</td></tr><tr><td>First Element</td><td>Biến tử phát đầu tiên (thường là 1).</td></tr><tr><td>Beam Angle</td><td>Góc quét (Ví dụ: Start 40° - Stop 70°).</td></tr><tr><td>Focus Depth</td><td>Độ sâu hội tụ (chọn theo chiều dày hoặc Unfocused).</td></tr></table></div>
+<p>Kết thúc chọn &quot;Generate&quot;.</p>
+<p>Khi copy từ 1 Group đã có sẵn: Add &gt; Copy From -&gt; PA(xx)</p>
+<p>Copy From: máy sẽ copy toàn bộ thông số của Group nguồn được lấy để copy, tuy nhiên người dùng vẫn có thể thay đổi các thông số cài đặt từng bước như mục Default ở trên.</p>
+<figure class="figure"><img src="assets/mx2/img_013.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Tiếp tục nhấn Next -&gt; Lặp lại tương tự các bước giống như lúc tạo Group mới -&gt; Generate.</p>
+<div class="spacer"></div>
+<p>Khi copy từ 1 Group đã có sẵn: Add &gt; Copy From -&gt; PA(xx)</p>
+<p>Delete: chọn group muốn xóa (Curent Group) và chọn Finish</p>
+<div class="spacer"></div></section><section class='card'><h2 id='4-hiệu-chuẩn-calibration'>4. HIỆU CHUẨN (CALIBRATION)</h2>
+<div class='callout info'><p>Đường dẫn: WIZARD &gt; Calibration</p></div>
+<div class='callout danger'><p>Hiệu chuẩn bắt buộc phải thực hiện trước khi kiểm tra bao gồm Ultrasound; Sizing và Encoder.</p></div>
+<p>Trong đó mục Ultrasound và Sizing phải thực hiện cho từng Group còn mục Encoder thực hiện 1 lần và máy sẽ lấy kết quả sử dụng chung cho các Group</p>
+<div class='callout warning'><p>Lưu ý quan trọng: Phải thực hiện tuần tự các bước dưới đây. Thay đổi Probe/Wedge sau khi Calib sẽ làm mất dữ liệu hiệu chuẩn.</p></div></section><section class='card'><h2 id='mục-ultrasound'>MỤC ULTRASOUND:</h2>
+<figure class="figure"><img src="assets/mx2/img_014.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Hiệu chuẩn Velocity (Vận tốc)</p>
+<p>Thực hiện trên mẫu V1 hoặc V2, sử dụng cung tròn</p>
+<p>Type (Ultrasound) &gt; Mode (Velocity) -&gt; Start</p>
+<figure class="figure"><img src="assets/mx2/img_015.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Echo Type: Lựa chọn 1 trong 3 chế độ Calib (Radius/Depth/Thickness)</li><li>Ở chế độ Radius, nhập cung của mẫu chuẩn muốn Calib</li></ul>
+<figure class="figure"><img src="assets/mx2/img_016.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Ở màn hình tiếp theo, xác định và nhập dải cung / độ nhạy dB</p>
+<figure class="figure"><img src="assets/mx2/img_017.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<p>Nhấn Next &gt; Lúc này màn hình sẽ ở bước Set gate A on Radius 1 &gt; Set các thông số phù hợp để lấy được xung thứ 1 và xung thứ 2 của cung tròn (Nếu chọn Radius)</p>
+<figure class="figure"><img src="assets/mx2/img_018.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<p>Khi đã xác định xong, nếu thấy vận tốc đạt mức cho phép, nhấn “Accept”.</p>
+<figure class="figure"><img src="assets/mx2/img_019.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Lúc này, chữ “V” bên trái phía dưới màn hình sẽ chuyển từ màu vàng sang màu xanh (Đã hiệu chuẩn)</p>
+<p>Hiệu chuẩn Wedge Delay (Độ trễ nêm)</p>
+<div class='callout danger'><p style="margin-left:18.0pt">Chức năng tương tự như chỉnh dải trong siêu âm thông thường, thực hiện cho tất cả các tia trong chùm âm. Thực hiện trên mẫu V1, V2, sử dụng cung tròn, không dùng các lỗ khoan để hiệu chuẩn Wedge Delay. Tuyệt đối KHÔNG dùng lỗ khoan (SDH) để hiệu chuẩn Wedge Delay.</p></div>
+<p>Type (Ultrasound) &gt; Mode (Wedge Delay) -&gt; Apply To (All Angles) &gt; Start</p>
+<figure class="figure"><img src="assets/mx2/img_020.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<p>Echo Type: chọn chế độ Radius</p>
+<figure class="figure"><img src="assets/mx2/img_021.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Radius A: nhập cung tròn cần Calib &gt; Next</p>
+<figure class="figure"><img src="assets/mx2/img_022.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Ở màn hình Set Section, để mặc định góc nhỏ nhất và góc lớn nhất &gt; Next</p>
+<figure class="figure"><img src="assets/mx2/img_023.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Nhập các thông số cần thiết để calib.</p>
+<p>Start: vị trí bắt đầu của dải</p>
+<p>Width: độ rộng dải</p>
+<p>Thresold: độ nhạy tối thiểu để bắt được xung</p>
+<figure class="figure"><img src="assets/mx2/img_024.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<p>Di chuyển đầu dò thật chậm, ổn định để tìm vị trí tín hiệu phản hồi từ cung tròn đạt biên độ cao nhất</p>
+<p>Nếu chưa đạt, nhấn Clear Env.</p>
+<p>Nếu đạt, nhấn Calibrate</p>
+<p>Chạy lại một lần nữa, sau đó nhấn “Accept” để hoàn tất quá trình calib Wedge Delay.</p>
+<p>Hiệu chuẩn Sensitivity (Độ nhạy)</p>
+<p style="margin-left:18.0pt">Sử dụng 01 mặt phản xạ chuẩn để thiết bị bổ chính các khác biệt của các chùm tia (sóng truyền trong nêm, vật liệu) để tất cả các tia cho biên độ đồng nhất đối với 1 mặt phản xạ chuẩn (80%).</p>
+<p style="margin-left:18.0pt">Nên sử dụng lỗ khoan hoặc Cung tròn trên mẫu V1, V2</p>
+<p style="margin-left:18.0pt">Không sử dụng các vết khấc (Notch) để thiết lập độ nhạy trước khi tiến hành xây dựng TCG/DAC.</p>
+<figure class="figure"><img src="assets/mx2/img_014.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Mode &gt; Sensitivity</li><li>Ở màn hình Set reference amplitude &gt; Để mặc định Ref. 80% / Tolerance 5% &gt; Next</li></ul>
+<figure class="figure"><img src="assets/mx2/img_025.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Nhập giá trị độ sâu của lỗ khoan hoặc cung tròn và các thông số cần thiết</li><li>Sau đó di chuyển đầu dò chạy calib.</li><li>Sau khi hoàn tất:</li><li>Nếu đạt: nhấn Calibrate</li><li>Nếu chưa đạt: nhấn Clear Env. để xóa giá trị cũ và chạy lại</li></ul></section><section class='card'><h2 id='mục-sizing-xác-định-kích-thước-khuyết-tật'>MỤC SIZING (XÁC ĐỊNH KÍCH THƯỚC KHUYẾT TẬT)</h2>
+<p>Hiệu chuẩn TCG (Time Corrected Gain)</p>
+<figure class="figure"><img src="assets/mx2/img_026.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Type &gt; Sizing</p>
+<ul class="doc-list"><li>Chọn mức chuẩn so sánh (Mode) là TCG, DAC hoặc DGS. Tất cả các tia trong chùm âm đều phải được thiết lập TCG/DAC/DGS cho dải kiểm tra mà tia đó kiểm soát.</li><li>Nhấn Next và chọn các thông số thiết lập như các hình dưới</li></ul>
+<figure class="figure"><img src="assets/mx2/img_027.png" alt="Hình ảnh" loading="lazy"></figure>
+<figure class="figure"><img src="assets/mx2/img_028.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Set Section: chọn dải góc cần Calib (First / Last Angle)</li></ul>
+<figure class="figure"><img src="assets/mx2/img_029.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Set A-Scan: Chỉnh mức dB phù hợp</li><li>Điền các thông số Start / Range (dải cần calib, bao quát toàn bộ các điểm TCG)</li></ul>
+<figure class="figure"><img src="assets/mx2/img_030.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Set Gate A on Echo: Nhập thông số Start / Width / Threshold sao cho bao phủ toàn bộ xung</li></ul>
+<figure class="figure"><img src="assets/mx2/img_031.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Tiếp tục Next đến màn hình Add Point, thao tác chi tiết từng bước cho lỗ đầu tiên và các lỗ tiếp theo như sau:</li><li>Bắt đầu Calib điểm đầu tiên, di chuyển đầu dò thật chậm sao cho đỉnh xung bao trùm hết đường phủ</li></ul>
+<figure class="figure"><img src="assets/mx2/img_032.png" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Khi thấy đường xung đã đạt chuẩn, nhấn Add Point</li></ul>
+<figure class="figure"><img src="assets/mx2/img_033.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<div class="spacer"></div>
+<ul class="doc-list"><li>Kiểm tra lại xem xung đã đạt hay chưa, nếu chưa, nhấn Cancel Point</li><li>Nếu đạt, nhấn Next Point để qua lỗ tiếp theo</li></ul>
+<figure class="figure"><img src="assets/mx2/img_034.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<ul class="doc-list"><li>Tiếp tục chạy lấy xung của lỗ thứ 2 tương tự như lỗ đầu tiên</li><li>Lặp lại cho đến khi hoàn tất đủ các lỗ cần lấy thì bấm “Accept TCG”</li><li>Hoàn tất quá trình calib TCG</li></ul>
+<p>Sau khi hoàn tất các bước hiệu chuẩn, góc trái bên dưới màn hình sẽ hiển thị đầy đủ các ký hiệu (màu xanh)</p>
+<figure class="figure"><img src="assets/mx2/img_035.png" alt="Hình ảnh" loading="lazy"></figure>
+<div class="spacer"></div></section><section class='card'><h2 id='mục-encoder-hiệu-chuẩn-encoder'>MỤC ENCODER (HIỆU CHUẨN ENCODER)</h2>
+<div class='callout info'><p>Đường dẫn: Scan &gt; Inspection &gt; Scan (Chọn Encoder 1) sau đó vào Calibration &gt; Encoder.</p></div>
+<p>Đặt đầu dò tại vạch 0</p>
+<figure class="figure"><img src="assets/mx2/img_036.jpeg" alt="Hình ảnh" loading="lazy"></figure>
+<p>Set Origin Position: Cur. Position nhập giá trị 0.00mm</p>
+<figure class="figure"><img src="assets/mx2/img_037.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Set Distance: nhập giá trị chiều dài thực tế (300mm)</p>
+<figure class="figure"><img src="assets/mx2/img_038.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Di chuyển đầu dò một khoảng chính xác (ví dụ 300mm).</p>
+<p>Di chuyển xong, chọn Calibrate.</p>
+<p>Kéo ngược lại 1 lần nữa xem khoảng cách đã chính xác hay chưa</p>
+<figure class="figure"><img src="assets/mx2/img_039.png" alt="Hình ảnh" loading="lazy"></figure>
+<p>Nếu đạt, nhấn Accept</p>
+<p>Nếu sai thì nhấn Restart để làm lại</p>
+<p>Sau đó thiết lập các cấu hình cơ bản như:</p>
+<ul class="doc-list"><li>Dải quét</li><li>Skew</li><li>Pulser / Receiver</li><li>Points Qty.</li><li>Ref. dB</li></ul>
+<p>Và các thông số cần thiết khác tùy theo cấu hình/ độ dày mối hàn cần quét.</p></section><section class='card'><h2 id='5-quản-lý-dữ-liệu-file-management'>5. QUẢN LÝ DỮ LIỆU (FILE MANAGEMENT)</h2>
+<h3 id='8-1-lưu-dữ-liệu-save-data'>8.1. Lưu dữ liệu (Save Data)</h3>
+<div class='callout info'><p>Đường dẫn: File &gt; Data Setting</p></div>
+<p>Data Selection: Chọn “All A-Scan &amp; C-Scan” (Để lưu đầy đủ dữ liệu sóng phục vụ phân tích).</p>
+<p>Storage: Mặc định (hoặc USB nếu có gắn USB ngoài)</p>
+<p>Save Key: Chọn Data.</p>
+<p>File Name: Nhập tên file gợi nhớ.</p>
+<p>Nhấn Save Data / nút phím cứng dưới cùng bên trái</p>
+<h3 id='8-2-kiểm-tra-lại'>8.2. Kiểm tra lại</h3>
+<p>Sau khi lưu, vào File &gt; Open để mở lại file vừa lưu.</p>
+<p>Kiểm tra xem dữ liệu có bị miss (Drop-out) hay không.</p>
+<div class="spacer"></div>
+<p>Tài liệu hướng dẫn vận hành nội bộ - OmniScan MX2.</p></section>
+    </main>
+  </div>
+
+  <button id="topBtn" class="topbtn" title="Lên đầu trang">↑</button>
+  <script>
+(function(){
+  const q = (s)=>document.querySelector(s);
+  const qa = (s)=>Array.from(document.querySelectorAll(s));
+  const search = q('#tocSearch');
+  const tocLinks = qa('.toc a');
+  function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,''); }
+  function filter(){
+    const term = norm(search.value.trim());
+    tocLinks.forEach(a=>{
+      const hit = norm(a.textContent).includes(term);
+      a.parentElement.style.display = hit ? '' : 'none';
+    });
+  }
+  search && search.addEventListener('input', filter);
+
+  // Active link highlight on scroll
+  const headings = qa('.main h2[id], .main h3[id], .main h4[id], .main h5[id]');
+  const map = new Map(tocLinks.map(a=>[a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        tocLinks.forEach(a=>a.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if(a){ a.classList.add('active'); a.style.background='rgba(11,58,122,.08)'; }
+      }else{
+        const a = map.get(e.target.id);
+        if(a){ a.style.background=''; }
+      }
+    });
+  }, {rootMargin:'-30% 0px -65% 0px', threshold:0.01});
+  headings.forEach(h=>obs.observe(h));
+
+  // Back to top
+  const btn = q('#topBtn');
+  window.addEventListener('scroll', ()=>{
+    if(window.scrollY > 600){ btn.style.display='block'; } else { btn.style.display='none'; }
+  });
+  btn.addEventListener('click', ()=>window.scrollTo({top:0, behavior:'smooth'}));
+})();
+</script>
+</body>
+</html>
