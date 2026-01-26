@@ -851,7 +851,7 @@ Hành động này sẽ xóa trong Firebase và không thể khôi phục.`
             }
             
             const allMonthData = data.filter(item => { const d = new Date(item.createdDate); const startDate = new Date(currentYear, currentMonth - 2, 25, 0, 0, 0); const endDate = new Date(currentYear, currentMonth - 1, 24, 23, 59, 59); return d >= startDate && d <= endDate; });
-            const approvedData = allMonthData.filter(item => { const s = (item.trangThai?.name || "").toLowerCase(); return s.includes('đạt') || s.includes('duyệt') || s.includes('approved') || s.includes('đã xử lý'); });
+            const approvedData = allMonthData.filter(item => { const s = (item.trangThai?.name || "").toLowerCase(); return s.includes('đạt'); });
             const approvedCount = approvedData.length;
             const inputEl = document.getElementById(`input-${uid}`);
             if (approvedCount !== (masterData.records[uid]?.count || 0)) { if(inputEl) inputEl.value = approvedCount; await window.updateCount(uid, approvedCount, 'API'); } 
@@ -895,6 +895,7 @@ Hành động này sẽ xóa trong Firebase và không thể khôi phục.`
     </script>
 </body>
 </html>
+
 
 
 
